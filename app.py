@@ -222,7 +222,7 @@ def guardar_config(config):
 config = cargar_config()
 
 # Título
-st.markdown('<div class="main-header">099 Podcast Control Center </div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">NUEVO Podcast Control Center </div>', unsafe_allow_html=True)
 
 # Sidebar para acciones rápidas
 with st.sidebar:
