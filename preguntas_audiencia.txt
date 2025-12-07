@@ -1,0 +1,124 @@
+fecha: 01-11-2025
+autor: Carlos Sánchez
+texto: ¡Empezando el mes con vosotros, como cada día! Sois la mejor compañía para el primer café. Gracias por mantenernos informados con tanto rigor y cercanía.
+---
+fecha: 02-11-2025
+autor: Laura Jiménez
+texto: Enhorabuena por el programa. Hacía falta una voz que contara la realidad de la Castilla-La Mancha rural sin tópicos y con cariño. Sois esenciales.
+---
+fecha: 03-11-2025
+autor: David Moreno
+texto: ¡Viernes! Y como siempre, un episodio fantástico. Se nota la profesionalidad y el corazón que le ponéis. ¡Gran trabajo, equipo!
+---
+fecha: 04-11-2025
+autor: Sofía Ruiz
+texto: Incluso en fin de semana, no falláis. Gracias por ser esa ventana diaria a la que asomarse para ver la vida real de nuestros pueblos.
+---
+fecha: 05-11-2025
+autor: Manuel Díaz
+texto: Escucharos en el tractor es ya una tradición. Sois la banda sonora del campo manchego. ¡No cambiéis nunca!
+---
+fecha: 06-11-2025
+autor: Carmen Castillo
+texto: ¡Feliz inicio de semana! Gracias por la energía que transmitís y por poner en valor el trabajo de tanta gente en el sector primario. Sois un altavoz necesario.
+---
+fecha: 07-11-2025
+autor: Antonio Romero
+texto: El reportaje de hoy sobre la ganadería extensiva ha sido magnífico. Aprendo algo nuevo con cada programa. ¡Felicidades!
+---
+fecha: 08-11-2025
+autor: Lucía Navarro
+texto: Sois mi conexión diaria con la tierra, aunque viva en la ciudad. Gracias por no dejar que olvidemos de dónde venimos. Un abrazo.
+---
+fecha: 09-11-2025
+autor: José Fernández
+texto: Qué importante es vuestra labor para dar a conocer los desafíos a los que nos enfrentamos en el campo. Gracias por vuestro compromiso.
+---
+fecha: 10-11-2025
+autor: Isabel Gil
+texto: Un programa más y un motivo más para daros las gracias. Hacéis un periodismo pegado al terreno, honesto y muy valioso. ¡Enhorabuena!
+---
+fecha: 11-11-2025
+autor: Francisco Gómez
+texto: Gracias a vosotros estoy al día de noticias que no aparecen en otros medios. Sois imprescindibles para la comarca.
+---
+fecha: 12-11-2025
+autor: Ana Marín
+texto: En un día festivo, vuestro programa se siente aún más como un hogar. Gracias por acompañarnos siempre. ¡Feliz día del Pilar!
+---
+fecha: 13-11-2025
+autor: Javier López
+texto: ¡Qué gran entrevista la de hoy! Siempre traéis a gente interesante que tiene mucho que contar. Sois unos profesionales excelentes.
+---
+fecha: 14-11-2025
+autor: María Torres
+texto: Vuestro podcast es aire fresco, sin duda. Una mirada limpia y honesta a la actualidad de nuestra gente y nuestros campos.
+---
+fecha: 15-11-2025
+autor: Elena García
+texto: ¡Felicidades por el programa! Es una ventana de aire fresco que se agradece enormemente. Para muchos, vuestro podcast se ha convertido en una cita diaria imprescindible para conocer la actualidad real de nuestros pueblos y nuestro campo. ¡Enhorabuena por la fantástica labor!
+---
+fecha: 16-11-2025
+autor: Pedro Vidal
+texto: Escuchar las historias de nuestros agricultores y ganaderos en vuestra voz es un verdadero lujo. Gracias por darles el protagonismo que merecen.
+---
+fecha: 17-11-2025
+autor: Cristina Alonso
+texto: Se acaba la semana y no puedo dejar de felicitaros por el trabajo bien hecho. Cada día os superáis. ¡Buen fin de semana!
+---
+fecha: 18-11-2025
+autor: Sergio Rubio
+texto: Me encanta cómo mezcláis la actualidad con las tradiciones. Vuestro podcast es cultura, es información, es pura Castilla-La Mancha.
+---
+fecha: 19-11-2025
+autor: Raquel Molina
+texto: Un domingo más, enganchada a vuestro resumen semanal. Es la mejor forma de ponerse al día. ¡Gracias por vuestra dedicación!
+---
+fecha: 20-11-2025
+autor: Jorge Sáez
+texto: Empezamos la semana con fuerza gracias a vuestro programa. Ponéis sobre la mesa los temas que de verdad importan. ¡Seguid con esa línea!
+---
+fecha: 21-11-2025
+autor: Natalia Ortega
+texto: Desde que os descubrí, no ha pasado un día sin que os escuche. Me habéis hecho ver el mundo rural con otros ojos. ¡Mil gracias!
+---
+fecha: 22-11-2025
+autor: Ricardo Soler
+texto: Felicidades por la calidad del sonido, la producción y, sobre todo, por el contenido. Un programa de diez.
+---
+fecha: 23-11-2025
+autor: Patricia Muñoz
+texto: Vuestra voz es la voz de la sensatez y el conocimiento. Da gusto escuchar a gente que sabe de lo que habla y lo cuenta con pasión.
+---
+fecha: 24-11-2025
+autor: Iván Herrero
+texto: Cada episodio es una píldora de optimismo y realidad. Mostráis los problemas, pero también las soluciones y el futuro del campo. ¡Bravo!
+---
+fecha: 25-11-2025
+autor: Mónica Bravo
+texto: Gracias por hacerme sentir más cerca de casa. Vuestro programa es un trocito de mi pueblo que me llega cada mañana.
+---
+fecha: 26-11-2025
+autor: Gabriel Pardo
+texto: Los domingos con vuestro podcast son más amenos. Gracias por el trabajo y por ser fieles a vuestra cita con los oyentes.
+---
+fecha: 27-11-2025
+autor: Beatriz Cano
+texto: Una nueva semana y una nueva razón para felicitaros. La sección sobre innovación en el campo ha sido interesantísima.
+---
+fecha: 28-11-2025
+autor: Samuel Ramos
+texto: Me emociona el respeto y la dignidad con la que tratáis cada tema y a cada entrevistado. Gracias por vuestra humanidad.
+---
+fecha: 29-11-2025
+autor: Victoria Reyes
+texto: Me emociona el respeto y la dignidad con la que tratáis cada tema y a cada entrevistado. Gracias por vuestra humanidad.
+---
+fecha: 30-11-2025
+autor: Adrián Soto
+texto: Recta final del mes y seguís al pie del cañón con la misma calidad de siempre. Sois incansables. ¡Enhorabuena por vuestra constancia!
+---
+fecha: 31-11-2025
+autor: Pilar Cruz
+texto: Terminando el mes con vosotros. Gracias por otros 31 días de información, compañía y amor por el mundo rural. Sois un referente. ¡A por noviembre!
+---

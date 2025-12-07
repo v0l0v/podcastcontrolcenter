@@ -1,0 +1,38 @@
+# Archivos de entorno y secretos (CRÍTICO: NO SUBIR NUNCA)
+.env
+keys/
+SEGURIDAD/
+ache-env/
+
+# Carpetas de entornos virtuales de Python
+venv/
+new_venv/
+env/
+
+# Archivos compilados de Python y caché
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos generados por la aplicación (Podcasts y cachés)
+podcast_apg_*/
+audio_cache/
+cache_noticias.json
+*.wav
+
+# Bloquear todos los mp3 por defecto
+*.mp3
+
+# ¡EXCEPCIÓN! Permitir la carpeta de recursos
+!audio_assets/*.mp3
+!assets/*.mp3
+
+# Archivos de sistema y editor
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Logs y temporales
+*.log
+tmp/

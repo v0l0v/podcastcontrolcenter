@@ -1,0 +1,13 @@
+feedparser
+numpy
+pydub
+num2words
+google-cloud-texttospeech
+google-cloud-translate
+google-cloud-aiplatform
+google-generativeai
+pyloudnorm
+rapidfuzz
+streamlit
+wordcloud
+matplotlib
