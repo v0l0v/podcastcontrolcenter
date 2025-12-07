@@ -17,7 +17,7 @@ from src.analytics import analizar_frecuencia_fuentes, analizar_contenido_notici
 
 # Configuración de la página
 st.set_page_config(
-    page_title=" Podcast Control Center V0.95",
+    page_title=" 095 Podcast Control Center",
     page_icon="🎙️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -222,7 +222,7 @@ def guardar_config(config):
 config = cargar_config()
 
 # Título
-st.markdown('<div class="main-header">Podcast Control Center v0.92 </div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">095 Podcast Control Center </div>', unsafe_allow_html=True)
 
 # Sidebar para acciones rápidas
 with st.sidebar:
