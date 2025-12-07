@@ -1,5 +1,5 @@
 [Unit]
-Description=Micomicona Podcast Generator Streamlit App
+Description=Podcast Control Center Streamlit App
 After=network.target
 
 [Service]
