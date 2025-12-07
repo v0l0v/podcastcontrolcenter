@@ -329,7 +329,7 @@ with st.sidebar:
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
 
 with tab1:
-    st.markdown('<div class="sub-header">Identidad del Podcast</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Identidad de Podcast</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
