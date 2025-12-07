@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv() # Cargar variables de entorno desde .env
 import subprocess
 import threading
 import threading

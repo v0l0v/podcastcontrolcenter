@@ -9,6 +9,8 @@
 import gc
 import io
 import os
+from dotenv import load_dotenv
+load_dotenv() # Cargar variables de entorno desde .env
 import re
 import random
 import html
