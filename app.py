@@ -17,7 +17,7 @@ from src.analytics import analizar_frecuencia_fuentes, analizar_contenido_notici
 
 # Configuración de la página
 st.set_page_config(
-    page_title=" 099 Podcast Control Center",
+    page_title=" NUEVO Podcast Control Center",
     page_icon="🎙️",
     layout="wide",
     initial_sidebar_state="expanded"
