@@ -3,12 +3,12 @@ Description=Micomicona Podcast Generator Streamlit App
 After=network.target
 
 [Service]
-User=podcast
-WorkingDirectory=/sites/podcast.ache.ovh/micomiconapg
-ExecStart=/sites/podcast.ache.ovh/micomiconapg/venv/bin/streamlit run app.py --server.port 8501 --server.address 127.0.0.1 --server.headless true --server.enableCORS false --server.enableXsrfProtection false
+User=podcastcontrolcenter
+WorkingDirectory=/sites/podcastcontrolcenter.ache.ovh/files
+ExecStart=/sites/podcastcontrolcenter.ache.ovh/files/venv/bin/streamlit run app.py --server.port 8502 --server.address 127.0.0.1 --server.headless true --server.enableCORS false --server.enableXsrfProtection false
 Restart=always
 RestartSec=5
-Environment=PATH=/sites/podcast.ache.ovh/micomiconapg/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=/sites/podcastcontrolcenter.ache.ovh/files/venv/bin:/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target
