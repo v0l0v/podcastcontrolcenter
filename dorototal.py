@@ -1128,6 +1128,113 @@ def detectar_duplicados_y_similares(resumenes: list, umbral_similitud: float = D
     print(f"    ✅ Eliminados {eliminados} duplicados. Quedan {len(noticias_unicas)} noticias únicas.")
     return noticias_unicas
 
+# --------- EXTRACCIÓN DE REPOSTS Y FUENTES COMPARTIDAS ---------
+
+def extraer_republicador_y_fuente(text: str) -> tuple[str | None, str | None, str]:
+    """
+    Intenta detectar el patrón de 'Republicador + Ruido Vertical + Fuente Original' en publicaciones de Facebook.
+    
+    Estuctura típica:
+    1. Republicador (Nombre largo)
+    2. Ruido vertical (Líneas de 1-2 chars)
+    3. Fuente Original (Nombre largo)
+    4. Ruido/Basura opcional
+    5. Contenido real
+    
+    Returns:
+        tuple: (republicador, fuente_original, texto_contenido_limpio)
+        Si no detecta patrón, devuelve (None, None, text)
+    """
+    lines = text.strip().splitlines()
+    if len(lines) < 5:
+        return None, None, text
+        
+    # Heurística básica basada en bloques de texto vs ruido
+    blocks = []
+    current_block = []
+    current_type = None # 'text' or 'noise'
+    
+    # Definimos ruido como líneas muy cortas (1-3 chars) típicas del copy-paste roto
+    for line in lines:
+        clean_line = line.strip()
+        if not clean_line: continue
+            
+        line_type = 'noise' if len(clean_line) <= 3 else 'text'
+        
+        if current_type is None:
+            current_type = line_type
+            current_block.append(clean_line)
+        elif line_type == current_type:
+            current_block.append(clean_line)
+        else:
+            blocks.append((current_type, current_block))
+            current_block = [clean_line]
+            current_type = line_type
+            
+    if current_block:
+         blocks.append((current_type, current_block))
+    
+    # Analizar secuencia de bloques de TEXTO
+    text_blocks = [b for t, b in blocks if t == 'text']
+    
+    # Patrón esperado: [Republicador] -> [Fuente Original] -> [Contenido...]
+    # Esto requiere al menos 3 bloques de texto separados por ruido, o 2 bloques si el contenido es corto/uno solo.
+    # El usuario indica que la estructura es: Reposter (primero) ... Source (segundo) ... Contenido
+    
+    if len(text_blocks) >= 2:
+        # Validar si el primer bloque parece un nombre de entidad (corto, pocas lineas)
+        posible_republicador = " ".join(text_blocks[0])
+        
+        # Si el republicador es demasiado largo (> 100 caracteres), probablemente es ya el contenido
+        if len(posible_republicador) > 100:
+            return None, None, text
+            
+        # Validar segundo bloque
+        posible_fuente = " ".join(text_blocks[1])
+        if len(posible_fuente) > 100:
+             # Podría ser: Republicador -> Contenido (sin fuente intermedia clara o fuente fusionada)
+             # Pero la tarea es DETECTAR republicador Y fuente original distintos.
+             return None, None, text
+             
+        # Si llegamos aquí, tenemos dos bloques iniciales cortos que parecen nombres.
+        # Asumimos:
+        # text_blocks[0] -> Republicador
+        # text_blocks[1] -> Fuente Original
+        # text_blocks[2:] -> Contenido
+        
+        republicador = posible_republicador
+        fuente_original = posible_fuente
+        
+        if len(text_blocks) > 2:
+            contenido = "\n".join([" ".join(b) for b in text_blocks[2:]])
+        else:
+            # Si solo hay 2 bloques de texto detectados, puede que el contenido esté mezclado o sea muy corto
+            # O que el patrón sea diferente.
+            # Para mayor seguridad, requerimos contenido explícito.
+            # Sin embargo, a veces el contenido es una sola línea larga final.
+            # Vamos a ser conservadores: si no identificamos un tercer bloque claro de contenido, devolvemos el original
+            # SALVO que el "ruido" intermedio sea significativo (indicando copy paste roto)
+            
+            # Chequear si hubo ruido entre bloque 0 y 1
+            hubo_ruido = False
+            for t, b in blocks:
+                if t == 'noise' and len(b) > 3: # Ruido significativo
+                    hubo_ruido = True
+                    break
+            
+            if not hubo_ruido:
+                return None, None, text
+                
+            # Si hubo ruido, asumimos que el segundo bloque ES el contenido si no hay tercero? 
+            # No, el usuario dice: Reposter ... Source ... Content.
+            # Si solo hay 2, falta algo.
+            return None, None, text
+
+        print(f"      🕵️ DETECTADO REPOST: {republicador} compartiendo a {fuente_original}")
+        return republicador, fuente_original, contenido
+
+    return None, None, text
+
 # --------- EXTRACCIÓN DE ENTIDADES/KEYWORDS DINÁMICAS ---------
 
 PROPER_NOUN_PHRASE_RE = re.compile(r'\b([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚñáéíóú\-]+(?:\s+de\s+|[\s\-])[A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚñáéíóú\-]+(?:\s+[A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚñáéíóú\-]+)*)\b')
@@ -2283,6 +2390,28 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 
                 print("      -> Fase 1/3: Extrayendo entidades clave con IA...")
                 prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
+                # Intentar detectar patrón de repost/compartido con ruido
+                republicador_detectado, fuente_original_detectada, texto_limpio_repost = extraer_republicador_y_fuente(texto_crudo)
+                
+                if republicador_detectado and fuente_original_detectada:
+                    # CASO: REPOST DETECTADO
+                    # Usamos los datos extraídos directamente
+                    fuente_original = fuente_original_detectada
+                    # El contenido a procesar será el texto limpio
+                    resumen_raw = texto_limpio_repost 
+                    # Añadimos el republicador a la metadata de la noticia para usarlo en el prompt
+                    # (Lo inyectaremos vía prompt engineering después o modificando la llamada a generar_resumen)
+                    tiene_republicador = republicador_detectado
+                else:
+                    tiene_republicador = None
+                    # Flujo normal: identificar fuente con IA
+                    resumen_raw = texto_crudo # Necesitamos definir resumen_raw para el uso normal
+                    fuente_original = identificar_fuente_original(resumen_raw)
+                
+                item_procesado = {} # Necesitamos un diccionario para almacenar 'fuente_original'
+                item_procesado['fuente_original'] = fuente_original
+                
+                # ... Extracción de entidades ...
                 respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
                 
                 entidades_clave = []
@@ -2310,13 +2439,27 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     )
                 else:
                     print("      -> Fase 2/3: Generando resumen enriquecido con IA (texto largo).")
-                    # Usamos el prompt 'enriquecido' de doro.py
-                    prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
-                        texto=texto_crudo,
+                    # Generar el resumen narrativo
+                # Si tenemos republicador, pasamos esa info al prompt (modificaremos mcmcn_prompts para aceptarlo)
+                print("      ✍️ Generando resumen narrativo...")
+                
+                if tiene_republicador:
+                    prompt_resumen = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
+                        texto=resumen_raw,
                         fuente_original=fuente_original,
-                        entidades_clave=entidades_clave, # <-- Usamos las entidades
+                        entidades_clave=entidades_clave,
+                        idioma_destino=idioma_destino,
+                        republicador=tiene_republicador # NUEVO ARGUMENTO
+                    )
+                else:
+                    prompt_resumen = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
+                        texto=resumen_raw,
+                        fuente_original=fuente_original,
+                        entidades_clave=entidades_clave,
                         idioma_destino=idioma_destino
                     )
+                    
+                resumen = generar_texto_con_gemini(prompt_resumen)
                 
                 # ============================================================
                 # === FIN DE LA MEJORA (FUSIÓN 'doro.py') ===

@@ -110,19 +110,30 @@ class PromptsAnalisis:
         texto: str,
         fuente_original: str,
         entidades_clave: List[str],
-        idioma_destino: str = "español"
+        idioma_destino: str = "español",
+        republicador: str = None
     ) -> str:
         """
         Genera un guion de resumen periodístico con control estricto de duración y contenido.
         """
         instruccion_fuente = ""
-        if fuente_original:
+        if fuente_original and not republicador:
             instruccion_fuente = f"- Integra de forma natural que la noticia proviene de '{fuente_original}'."
 
         instruccion_entidades = ""
         if entidades_clave:
             lista_entidades_str = ", ".join(f"'{entidad}'" for entidad in entidades_clave)
             instruccion_entidades = f"- CONTENIDO OBLIGATORIO: El resumen DEBE incluir y dar protagonismo a las siguientes entidades clave: {lista_entidades_str}."
+
+        instruccion_estructura = ""
+        if republicador:
+            instruccion_estructura = f"""
+### ESTRUCTURA OBLIGATORIA (REPOST):
+Esta noticia proviene de un organismo que ha compartido contenido de otro.
+Debes generar el resumen siguiendo ESTRICTAMENTE esta fórmula inicial:
+"La {republicador} nos cuenta que {fuente_original} [acción resumida del contenido]..."
+Ejemplo: "La Asociación Comarcal Don Quijote de la Mancha nos cuenta que el Ayuntamiento de Santa Cruz organizó..."
+"""
 
         instrucciones_base = PROMPTS_CONFIG.get('analysis_prompts', {}).get('resumen_instrucciones', "")
         if not instrucciones_base:
@@ -135,6 +146,7 @@ Crear un guion de resumen optimizado para formato audio, respetando reglas estri
 
 {instruccion_entidades}
 {instruccion_fuente}
+{instruccion_estructura}
 
 ### TEXTO ORIGINAL A RESUMIR
 ---
