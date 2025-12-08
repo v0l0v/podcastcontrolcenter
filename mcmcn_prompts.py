@@ -117,7 +117,7 @@ class PromptsAnalisis:
         """
         instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- Integra de forma natural que la noticia proviene de '{fuente_original}'."
+            instruccion_fuente = f"- OBLIGATORIO: Menciona explícitamente en el guion que la noticia proviene de '{fuente_original}'. Usa fórmulas variadas como 'nos informan desde...', 'según...', 'en... han comunicado'."
 
         instruccion_entidades = ""
         if entidades_clave:
@@ -452,7 +452,7 @@ CONTEXTO TEMPORAL:
 ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión temporal es CRÍTICA. Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") si es relevante para el contexto. **NO utilices expresiones relativas como "hoy", "ayer" o "mañana"**. **NO intentes adivinar el día de la semana** (ej: no digas "el lunes 15", di solo "el 15"). La "fecha de hoy" es solo para tu referencia contextual.
 📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
 📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
-📻 INTEGRACIÓN NATURAL: Menciona las fuentes de forma orgánica.
+📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
 {instruccion_contexto}
 
 ENTREGA: Párrafo de locución listo para ser leído al aire, sin ningún tipo de formato de marcado.

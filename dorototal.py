@@ -1546,11 +1546,11 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 1.  **SÍNTESIS EDITORIAL, NO UNA LISTA:** Tu tarea principal es actuar como un editor. Identifica la información clave y los datos únicos de cada noticia. **Elimina activamente la información redundante y las frases repetidas** entre las distintas fuentes.
 2.  **CONSTRUYE UNA ÚNICA HISTORIA:** No leas las noticias una por una. Fusiona los datos relevantes en una sola narración cohesionada. Usa el evento más importante como hilo conductor y enriquécelo con detalles complementarios de las otras noticias.
 3.  **LONGITUD PROPORCIONAL Y NATURAL:** La crónica debe sonar completa y natural. Al combinar {num_noticias} noticias, el texto final debería tener una longitud aproximada de **{longitud_deseada} palabras**.
-4.  **INTEGRACIÓN NATURAL DE FUENTES:** Es crucial dar crédito, pero hazlo de forma fluida y agradable al oído.
-    - **NO hagas una lista pesada al final.**
-    - Si son pocas fuentes, menciónalas intercaladas en el texto (ej: "Según informa el Ayuntamiento de...").
-    - Si son muchas fuentes (como aquí, que hay {len(fuentes_unicas)}), **AGRÚPALAS** de forma inteligente o cítalas de forma general durante la narración (ej: "Diversas asociaciones como RECAMDER y varios ayuntamientos de la región coinciden en...", "Fuentes locales destacan...").
-    - El objetivo es que el oyente sepa de dónde viene la info sin aburrirse con un listado.
+4.  **CITACIÓN EXPLÍCITA DE FUENTES:**
+    - Es **OBLIGATORIO** mencionar las fuentes originales de cada noticia integrada. El oyente debe saber quién lo dice.
+    - Úsalas como parte de la narración: "Según informa el Ayuntamiento de X...", "La Asociación Y ha comunicado que...", "Desde Z nos cuentan que...".
+    - Si son muchas fuentes (más de 3 o 4), intenta agruparlas pero **mencionando los nombres clave** (ej: "Municipios como A, B y C han lanzado...").
+    - SOLO usa generalizaciones ("varios ayuntamientos") si nombrarlos todos rompiera totalmente el ritmo, pero prioriza siempre la atribución específica.
 5.  **REGLA DE ORO SOBRE FECHAS:**
     - **PROHIBIDO** usar términos relativos como "hoy", "mañana", "ayer", "este lunes", "el próximo viernes". El podcast puede escucharse cualquier día.
     - **PROHIBIDO** intentar adivinar qué día de la semana cae una fecha (ej: NO digas "el lunes 25", di solo "el 25 de noviembre"). A menudo te equivocas con los días de la semana.
@@ -2434,7 +2434,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # PROCESAMIENTO COMÚN (Limpieza, Sentimiento, Audio)
                 # ----------------------------------------------------------------
                 if resumen:
-                    fuente_final = f"{noticia['sitio']} ({fuente_original})" if fuente_original else noticia['sitio']
+                    sitio_safe = noticia.get('sitio', 'Fuente desconocida')
+                    fuente_final = f"{sitio_safe} ({fuente_original})" if fuente_original else sitio_safe
                     audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}.mp3")
                     
                     texto_limpio = limpiar_artefactos_ia(resumen)
@@ -2471,10 +2472,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     if sentimiento_noticia not in ['positivo', 'negativo', 'neutro']: sentimiento_noticia = 'neutro'
                     
                     # Extraer localidad
-                    localidad_extraida = extraer_localidad_con_ia(noticia['texto'])
+                    localidad_extraida = extraer_localidad_con_ia(texto_crudo)
 
                     # === GENERACIÓN DE AUDIO (TTS) ===
-                    print(f"      🎙️  Generando audio para: {noticia['sitio'][:30]}...")
+                    sitio_print = noticia.get('sitio', 'Fuente desconocida')
+                    print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
                     audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
 
                     if audio_segment:
