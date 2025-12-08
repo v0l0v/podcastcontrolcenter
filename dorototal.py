@@ -2387,7 +2387,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
                 # CASO 1: RESUMEN YA EXISTENTE (Manual)
                 if 'resumen' in noticia and noticia.get('resumen'):
-                    print(f"      📝 Usando resumen editado manualmente: {noticia['titulo'][:50]}...")
+                    titulo_safe = noticia.get('titulo') or ""
+                    print(f"      📝 Usando resumen editado manualmente: {titulo_safe[:50]}...")
                     resumen = noticia['resumen']
                     # Intentamos recuperar entidades si vienen en el JSON
                     entidades_clave = noticia.get('entidades_clave', [])
