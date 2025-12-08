@@ -2295,7 +2295,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         nuevas_noticias_para_cache = {}
 
         for noticia in noticias_seleccionadas:
-            noticia_hash = noticia['hash']
+            # Soporte para ambas claves: 'hash' (raw) o 'id' (processed/edited)
+            noticia_hash = noticia.get('hash') or noticia.get('id')
+            
+            if not noticia_hash:
+                 # Fallback de emergencia si no hay ni hash ni id
+                 noticia_hash = stable_text_hash(noticia.get('texto', '') or noticia.get('resumen', ''))
+
             if noticia_hash in cache_noticias:
                 noticia_cacheada = cache_noticias[noticia_hash]
                 resumenes_finales.append(noticia_cacheada)
