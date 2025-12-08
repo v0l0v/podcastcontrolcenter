@@ -2302,17 +2302,18 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                  # Fallback de emergencia si no hay ni hash ni id
                  noticia_hash = stable_text_hash(noticia.get('texto', '') or noticia.get('resumen', ''))
 
+            # Determinar si necesitamos procesar (generar audio) o usar caché
+            necesita_procesamiento = True
+
             if noticia_hash in cache_noticias:
                 noticia_cacheada = cache_noticias[noticia_hash]
                 
                 # VERIFICACIÓN INTELIGENTE DE CACHÉ
                 # Si tenemos un resumen manual (input), SOLO usamos el caché si el texto coincide.
-                # Si el texto es distinto, significa que el usuario lo ha editado y debemos regenerar el audio.
                 usar_cache = True
                 if 'resumen' in noticia and noticia.get('resumen'):
                     resumen_input = noticia.get('resumen', '').strip()
                     resumen_cache = noticia_cacheada.get('resumen', '').strip()
-                    # Normalizamos un poco para evitar diferencias por espacios
                     if resumen_input != resumen_cache:
                         print(f"      ✏️ DETECTADO CAMBIO EN EL RESUMEN: Ignorando caché para regenerar audio.")
                         usar_cache = False
@@ -2320,9 +2321,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 if usar_cache:
                     resumenes_finales.append(noticia_cacheada)
                     print(f"      ⏩ Usando caché para '{noticia_cacheada['resumen'][:50]}...'")
-                    continue # Saltamos al siguiente
+                    necesita_procesamiento = False # Ya lo tenemos, no procesar más
 
-            else:
+            if necesita_procesamiento:
                 # ----------------------------------------------------------------
                 # LÓGICA UNIFICADA: Si ya tiene resumen (edición manual), lo usamos.
                 # Si no, lo generamos con IA. LUEGO, siempre hacemos el resto.
