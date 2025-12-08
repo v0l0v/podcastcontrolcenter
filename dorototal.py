@@ -1722,7 +1722,7 @@ def parsear_fecha_segura(entry):
                 return datetime.fromtimestamp(mktime(entry[field]))
             except (ValueError, TypeError):
                 continue
-    return datetime.now()  # Valor por defecto
+    return datetime(2000, 1, 1)  # Valor por defecto: antigua para ser filtrada si no tiene fecha
 
 def audio_cache_valido(audio_path):
     """Verifica la integridad de un archivo de audio en caché."""
