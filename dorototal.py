@@ -1772,6 +1772,47 @@ def _get_cta_text(tipo: str, dia_semana: str, base_dir: str) -> str:
     print(f"      ❌ No se encontró ningún archivo de CTA para '{tipo}'.")
     return ""
 
+def limpiar_cache_antiguo(cache_completo: Dict[str, Any], horas_retencion: int = 72):
+    """
+    Elimina entradas del caché y archivos de audio que sean más antiguos que el periodo de retención.
+    """
+    print(f"\n🧹 Limpiando caché (entradas anteriores a {horas_retencion} horas)...")
+    limite = datetime.now() - timedelta(hours=horas_retencion)
+    eliminar = []
+
+    for hash_id, datos in cache_completo.items():
+        fecha_str = datos.get('fecha')
+        if not fecha_str:
+            continue
+        
+        try:
+            # La fecha en cache suele guardarse como YYYY-MM-DD
+            # Asumimos fin del día para no borrar demasiado pronto si solo hay fecha
+            # O mejor, usamos la fecha tal cual (00:00:00)
+            fecha_dato = datetime.strptime(fecha_str, "%Y-%m-%d")
+            
+            # Si es más vieja que el límite...
+            if fecha_dato < limite:
+                eliminar.append(hash_id)
+        except ValueError:
+            pass # Fecha mal formada, la dejamos por seguridad (o borrarla, a gusto)
+
+    count = 0
+    for hash_id in eliminar:
+        datos = cache_completo.pop(hash_id)
+        audio_path = datos.get('audio_path')
+        if audio_path and os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+            except OSError:
+                pass
+        count += 1
+
+    if count > 0:
+        print(f"   🗑️  Se han eliminado {count} noticias antiguas y sus audios.")
+    else:
+        print("   ✅ El caché está limpio.")
+
 def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
     """
     Genera (o carga desde caché) el audio para una única noticia.
@@ -2473,8 +2514,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 pass 
             sys.exit(0)
 
+             sys.exit(0)
+             
         # Guardamos el caché actualizado (incluyendo las nuevas entidades)
         cache_noticias.update(nuevas_noticias_para_cache)
+        
+        # --- LIMPIEZA AUTOMÁTICA ---
+        limpiar_cache_antiguo(cache_noticias, horas_retencion=72)
+        # ---------------------------
+        
         guardar_cache_noticias(cache_noticias)
 
         debug_noticias_antes_agrupacion(resumenes_finales)
