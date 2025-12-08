@@ -304,7 +304,7 @@ with st.sidebar:
         st.session_state['config_check'] = False
 
     st.markdown("#### 1️⃣ Configuración")
-    st.caption("Antes de analizar, asegúrate de que en la pestaña [LÓGICA DE NOTICIAS] los Límites de Selección son correctos.\\nsi los modificas, guardalos presionando el boton de final de pantalla GUARDAR LOGICA DE NOTICIAS")
+    st.caption("Antes de analizar, asegúrate de que en la pestaña [LÓGICA DE NOTICIAS] los Límites de Selección son correctos.Si los modificas, guardalos presionando el boton al final de la pantalla [GUARDAR LÓGICA DE NOTICIAS]")
     
     config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config')
     st.session_state['config_check'] = config_checked
