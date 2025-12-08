@@ -286,13 +286,109 @@ with st.sidebar:
     except Exception as e:
         st.error(f"Error al buscar podcasts: {e}")
 
-    # Botón de Generar Podcast (Movido al final)
-    if st.button("GENERAR PODCAST", type="primary"):
-        with st.spinner("Iniciando generación del podcast... Esto puede tardar unos minutos."):
+    # Botón de Analizar Noticias
+    if st.button("🔎 ANALIZAR NOTICIAS (Paso 1)", type="secondary"):
+        with st.spinner("Conectando con feeds y filtrando noticias..."):
             try:
-                # Ejecutar el script en un subproceso
+                # Limpiar archivo de preview anterior
+                if os.path.exists("prevision_noticias.json"):
+                    os.remove("prevision_noticias.json")
+                
+                # Ejecutar script en modo preview
+                process = subprocess.run(
+                    ["python3", "dorototal.py", "--preview"],
+                    capture_output=True,
+                    text=True,
+                    cwd=os.getcwd()
+                )
+                
+                if process.returncode == 0:
+                    st.success("✅ Análisis completado. Revisa la lista abajo.")
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error(f"Error analizando noticias:\n{process.stderr}")
+            except Exception as e:
+                st.error(f"Error ejecución: {e}")
+
+    # Lógica de Selección Manual
+    manual_selection_mode = False
+    selected_news_to_process = []
+    
+    if os.path.exists("prevision_noticias.json"):
+        st.markdown("---")
+        st.markdown("#### 📋 Selección de Noticias")
+        try:
+            with open("prevision_noticias.json", "r", encoding="utf-8") as f:
+                news_candidates = json.load(f)
+            
+            if not news_candidates:
+                st.warning("No se encontraron noticias recientes.")
+            else:
+                manual_selection_mode = True
+                st.caption(f"Se detectaron {len(news_candidates)} noticias.")
+                
+                # Formulario para checkboxes
+                with st.form("seleccion_noticias"):
+                    selected_indices = []
+                    for i, news in enumerate(news_candidates):
+                        # Título robusto
+                        titulo = news.get("titulo") or news.get("sitio")
+                        fecha_str = news.get("fecha")
+                        # Intentar parsear fecha para mostrarla bonita
+                        try:
+                            fecha_dt = datetime.datetime.fromisoformat(fecha_str) if isinstance(fecha_str, str) else fecha_str
+                            fecha_display = fecha_dt.strftime("%d/%m %H:%M")
+                        except:
+                            fecha_display = "---"
+                            
+                        check = st.checkbox(
+                            f"[{fecha_display}] {titulo}", 
+                            value=True, 
+                            key=f"news_{i}"
+                        )
+                        if check:
+                            selected_indices.append(i)
+                    
+                    st.caption("Desmarca las que quieras excluir del podcast.")
+                    update_selection = st.form_submit_button("Confirmar Selección")
+                    
+                    if update_selection:
+                        st.session_state['indices_seleccionados'] = selected_indices
+                        st.toast("Selección actualizada")
+
+                # Obtener selección actual (de session state o por defecto todas)
+                final_indices = st.session_state.get('indices_seleccionados', list(range(len(news_candidates))))
+                selected_news_to_process = [news_candidates[i] for i in final_indices]
+                
+        except Exception as e:
+            st.error(f"Error leyendo previsión: {e}")
+
+    st.markdown("---")
+
+    # Botón de Generar Podcast
+    label_btn = "GENERAR PODCAST (Desde Selección)" if manual_selection_mode else "GENERAR PODCAST (Automático)"
+    
+    if st.button(label_btn, type="primary"):
+        with st.spinner("Iniciando generación del podcast..."):
+            try:
+                cmd = ["python3", "dorototal.py"]
+                
+                # Si estamos en modo manual, guardar JSON temporal y pasar argumento
+                if manual_selection_mode:
+                    if not selected_news_to_process:
+                        st.error("⚠️ No has seleccionado ninguna noticia. Marca al menos una.")
+                        st.stop()
+                        
+                    with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
+                        json.dump(selected_news_to_process, f, ensure_ascii=False, indent=4)
+                    
+                    cmd.extend(["--from-json", "seleccion_usuario.json"])
+                    st.info(f"Procesando {len(selected_news_to_process)} noticias seleccionadas...")
+                
+                # Ejecutar el script
                 process = subprocess.Popen(
-                    ["python3", "dorototal.py"],
+                    cmd,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
@@ -309,7 +405,7 @@ with st.sidebar:
                         break
                     if output:
                         logs.append(output.strip())
-                        # Mostrar solo las últimas 10 líneas
+                        # Mostrar solo las últimas 15 líneas
                         log_placeholder.code("\n".join(logs[-15:]))
                 
                 rc = process.poll()
@@ -317,6 +413,10 @@ with st.sidebar:
                 if rc == 0:
                     st.success("¡Podcast generado con éxito!")
                     st.balloons()
+                    # Limpiar archivos temporales
+                    if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
+                    if os.path.exists("prevision_noticias.json"): os.remove("prevision_noticias.json")
+                    
                     time.sleep(2) # Dar tiempo para que el sistema de archivos se actualice
                     st.rerun() # Recargar para mostrar el nuevo podcast abajo
                 else:

@@ -2193,7 +2193,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -2211,56 +2211,107 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         print("\n--- FASE 1: Recopilando, filtrando y resumiendo noticias ---")
         
         cache_noticias = cargar_cache_noticias()
-        with open(nombre_archivo_feeds, 'r', encoding='utf-8') as f:
-            feeds_urls = [url.strip() for url in f.read().replace(',', '\n').splitlines() if url.strip()]
-
-        if not feeds_urls:
-            print(f"Advertencia: El archivo de feeds '{nombre_archivo_feeds}' está vacío.")
-            sys.exit(1)
-
-        # Configuración de límites (con valores por defecto si no existen)
-        gen_config = CONFIG.get('generation_config', {})
-        window_hours = int(gen_config.get('news_window_hours', 48))
-        max_items = int(gen_config.get('max_news_items', 20))
-        
-        print(f"      ⚙️ Configuración: Ventana={window_hours}h, Máx. Noticias={max_items}")
-
-        limite_dias = datetime.now() - timedelta(hours=window_hours)
         noticias_candidatas_totales = []
 
-        for url in feeds_urls:
+        # --- MODO 1: CARGAR DESDE JSON (Selección de usuario) ---
+        if archivo_entrada_json:
+            print(f"📂 Cargando noticias seleccionadas desde: {archivo_entrada_json}")
             try:
-                feed = feedparser.parse(url)
-                sitio = feed.feed.get('title', 'Fuente desconocida').replace(" on Facebook", "").strip()
-                for entry in feed.entries:
-                    fecha_pub = parsear_fecha_segura(entry)
-                    if fecha_pub < limite_dias:
-                        continue
-                    contenido = entry.get('summary', entry.get('description', ''))
-                    if not contenido:
-                        continue
-
-                    noticia_hash = stable_text_hash(contenido)
-                    texto_crudo = limpiar_html(contenido)
-
-                    noticias_candidatas_totales.append({
-                        'sitio': sitio, 
-                        'texto': texto_crudo, 
-                        'fecha': fecha_pub, 
-                        'hash': noticia_hash,
-                        'titulo': entry.get('title', ''),
-                        'link': entry.get('link', '')
-                    })
+                with open(archivo_entrada_json, 'r', encoding='utf-8') as f:
+                    # Se asume que el JSON contiene una lista de objetos noticia completos
+                    noticias_candidatas_totales = json.load(f)
+                    # Convertir fechas string de vuelta a datetime si es necesario
+                    for n in noticias_candidatas_totales:
+                        if isinstance(n['fecha'], str):
+                            try:
+                                n['fecha'] = datetime.fromisoformat(n['fecha'])
+                            except:
+                                n['fecha'] = datetime.now() # Fallback
             except Exception as e:
-                print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
+                print(f"❌ Error leyendo JSON de entrada: {e}")
+                sys.exit(1)
+
+        # --- MODO 2: PROCESAMIENTO NORMAL (O PREVIEW) DESDE RSS ---
+        else:
+            with open(nombre_archivo_feeds, 'r', encoding='utf-8') as f:
+                feeds_urls = [url.strip() for url in f.read().replace(',', '\n').splitlines() if url.strip()]
+
+            if not feeds_urls:
+                print(f"Advertencia: El archivo de feeds '{nombre_archivo_feeds}' está vacío.")
+                sys.exit(1)
+
+            # Configuración de límites (con valores por defecto si no existen)
+            gen_config = CONFIG.get('generation_config', {})
+            window_hours = int(gen_config.get('news_window_hours', 48))
+            max_items = int(gen_config.get('max_news_items', 20))
+            
+            print(f"      ⚙️ Configuración: Ventana={window_hours}h, Máx. Noticias={max_items}")
+
+            limite_dias = datetime.now() - timedelta(hours=window_hours)
+
+            for url in feeds_urls:
+                try:
+                    feed = feedparser.parse(url)
+                    sitio = feed.feed.get('title', 'Fuente desconocida').replace(" on Facebook", "").strip()
+                    for entry in feed.entries:
+                        fecha_pub = parsear_fecha_segura(entry)
+                        if fecha_pub < limite_dias:
+                            continue
+                        contenido = entry.get('summary', entry.get('description', ''))
+                        if not contenido:
+                            continue
+
+                        noticia_hash = stable_text_hash(contenido)
+                        texto_crudo = limpiar_html(contenido)
+
+                        noticias_candidatas_totales.append({
+                            'sitio': sitio, 
+                            'texto': texto_crudo, 
+                            'fecha': fecha_pub, 
+                            'hash': noticia_hash,
+                            'titulo': entry.get('title', ''),
+                            'link': entry.get('link', '')
+                        })
+                except Exception as e:
+                    print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
 
         if not noticias_candidatas_totales:
             print("No se encontraron noticias válidas para procesar. Abortando.")
             sys.exit(0)
-
+            
+        # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
-        # Usar el límite configurado en lugar del argumento min_items (que era un nombre confuso para un max limit)
-        noticias_seleccionadas = noticias_candidatas_totales[:max_items]
+        
+        # --- MODO PREVIEW: GUARDAR Y SALIR ---
+        if solo_preview:
+            print("👀 MODO PREVIEW ACTIVADO: Guardando candidatos y saliendo...")
+            archivo_preview = "prevision_noticias.json"
+            
+            # Serializar fechas para JSON
+            export_data = []
+            for n in noticias_candidatas_totales:
+                n_copy = n.copy()
+                if isinstance(n_copy['fecha'], datetime):
+                    n_copy['fecha'] = n_copy['fecha'].isoformat()
+                export_data.append(n_copy)
+                
+            with open(archivo_preview, 'w', encoding='utf-8') as f:
+                json.dump(export_data, f, indent=4, ensure_ascii=False)
+                
+            print(f"✅ Preview guardada en: {archivo_preview}")
+            # Limpiar directorio vacío que creamos al principio si no se va a usar
+            try:
+                os.rmdir(output_dir)
+            except:
+                pass 
+            sys.exit(0)
+
+        # Continuar con el flujo normal...
+        # Usar el límite configurado solo si no venimos de un JSON manual (que manda el usuario)
+        if not archivo_entrada_json:
+            noticias_seleccionadas = noticias_candidatas_totales[:max_items]
+        else:
+            noticias_seleccionadas = noticias_candidatas_totales
 
         resumenes_finales = []
         nuevas_noticias_para_cache = {}
@@ -2883,17 +2934,23 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Asegúrate de crear una carpeta 'audio_assets' y 'cta_texts'
-    # y de tener un archivo 'feeds.txt' con URLs de RSS/Facebook.
+    import argparse
     
-    # Este script requiere variables de entorno:
-    # GOOGLE_APPLICATION_CREDENTIALS=/ruta/a/tu/credencial.json
-    # GCP_PROJECT_ID=tu-proyecto-id
-    
+    parser = argparse.ArgumentParser(description="Script de generación de podcast Micomicona")
+    parser.add_argument("--preview", action="store_true", help="Solo generar archivo de previsión de noticias, sin audios.")
+    parser.add_argument("--from-json", type=str, help="Ruta a un archivo JSON con noticias seleccionadas para procesar.")
+    args = parser.parse_args()
+
     # Cargar configuración para obtener el archivo de feeds
     config_app = cargar_configuracion()
     archivo_feeds = config_app.get('generation_config', {}).get('feeds_file', 'feeds.txt')
     
-    print(f"📄 Usando archivo de feeds: {archivo_feeds}")
-    
-    procesar_feeds_google(archivo_feeds, min_items=20)
+    if args.from_json:
+        print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json)
+    elif args.preview:
+        print(f"🔮 Modo: Preview de noticias (sin audio)")
+        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True)
+    else:
+        print(f"🚀 Modo: Generación automática estándar usando {archivo_feeds}")
+        procesar_feeds_google(archivo_feeds, min_items=20)
