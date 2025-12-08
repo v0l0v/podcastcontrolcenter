@@ -257,28 +257,36 @@ with st.sidebar:
                 
                 col_mp3, col_html = st.columns(2)
                 
+                # Pre-cargar datos MP3 en memoria para evitar conflictos de handle
+                with open(latest_mp3, "rb") as file:
+                    mp3_data = file.read()
+                
                 with col_mp3:
-                    # Botón de descarga explícito MP3
-                    with open(latest_mp3, "rb") as file:
-                        st.download_button(
-                            label="⬇️ MP3",
-                            data=file,
-                            file_name=os.path.basename(latest_mp3),
-                            mime="audio/mpeg",
-                            use_container_width=True
-                        )
+                    # Botón de descarga explícito MP3 con KEY única
+                    st.download_button(
+                        label="⬇️ MP3",
+                        data=mp3_data,
+                        file_name=os.path.basename(latest_mp3),
+                        mime="audio/mpeg",
+                        key="sidebar_dl_mp3",
+                        use_container_width=True
+                    )
                 
                 if html_files_in_dir:
                     latest_html = html_files_in_dir[0]
+                    # Pre-cargar datos HTML en memoria
+                    with open(latest_html, "rb") as file:
+                         html_data = file.read()
+                         
                     with col_html:
-                        with open(latest_html, "rb") as file:
-                            st.download_button(
-                                label="📄 HTML",
-                                data=file,
-                                file_name=os.path.basename(latest_html),
-                                mime="text/html",
-                                use_container_width=True
-                            )
+                        st.download_button(
+                            label="📄 HTML",
+                            data=html_data,
+                            file_name=os.path.basename(latest_html),
+                            mime="text/html",
+                            key="sidebar_dl_html",
+                            use_container_width=True
+                        )
             else:
                 st.warning(f"Se encontró la carpeta {latest_dir} pero no contiene MP3.")
         else:
@@ -286,15 +294,36 @@ with st.sidebar:
     except Exception as e:
         st.error(f"Error al buscar podcasts: {e}")
 
-    # Botón de Analizar Noticias
-    if st.button("🔎 ANALIZAR NOTICIAS (Paso 1)", type="secondary"):
-        with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA... (Esto tarda un poco)"):
+    st.markdown("---")
+    
+    # === ASISTENTE DE GENERACIÓN (WIZARD) ===
+    st.header("🧙‍♂️ Asistente de Producción")
+    
+    # Estado 1: Confirmación de Configuración
+    if 'config_check' not in st.session_state:
+        st.session_state['config_check'] = False
+
+    st.markdown("#### 1️⃣ Configuración")
+    st.caption("Antes de analizar, asegúrate de que la 'Ventana de tiempo' y los filtros en la pestaña 'Lógica de Noticias' son correctos.")
+    
+    config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config')
+    st.session_state['config_check'] = config_checked
+
+    # Estado 2: Análisis (Solo si check marcado)
+    st.markdown("#### 2️⃣ Análisis de Fuentes")
+    btn_analizar_disabled = not config_checked
+    
+    if st.button("🔎 ANALIZAR NOTICIAS", type="secondary", disabled=btn_analizar_disabled):
+        with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA..."):
             try:
-                # Limpiar archivo de preview anterior
                 if os.path.exists("prevision_noticias_resumidas.json"):
                     os.remove("prevision_noticias_resumidas.json")
-                
-                # Ejecutar script en modo preview
+                if os.path.exists("seleccion_usuario.json"):
+                    os.remove("seleccion_usuario.json")
+                    
+                # Resetear confirmación al re-analizar
+                st.session_state['news_confirmed'] = False
+
                 process = subprocess.run(
                     ["python3", "dorototal.py", "--preview"],
                     capture_output=True,
@@ -303,7 +332,7 @@ with st.sidebar:
                 )
                 
                 if process.returncode == 0:
-                    st.success("✅ Análisis completado. Puedes editar las noticias abajo.")
+                    st.success("✅ Análisis completado. Ve al panel principal para editar.")
                     time.sleep(1)
                     st.rerun()
                 else:
@@ -311,92 +340,88 @@ with st.sidebar:
             except Exception as e:
                 st.error(f"Error ejecución: {e}")
 
-    # Lógica de Selección Manual
+    # Lógica de Selección Manual (Edición)
     manual_selection_mode = False
     selected_news_to_process = []
     
     if os.path.exists("prevision_noticias_resumidas.json"):
-        st.markdown("---")
-        st.markdown("#### � Edición y Selección de Noticias")
+        st.markdown("#### 3️⃣ Revisión y Confirmación")
+        
+        # Cargar datos para el formulario principal (que se muestra en el sidebar también para feedback visual)
         try:
             with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
                 news_candidates = json.load(f)
+                
+            manual_selection_mode = True
+            st.info(f"Tienes {len(news_candidates)} noticias pendientes de revisión en el panel central.")
             
-            if not news_candidates:
-                st.warning("No se encontraron noticias recientes.")
+            # --- FORMULARIO DE EDICIÓN (PANEL CENTRAL REVISADO) ---
+            # Mostramos el formulario en un expander AQUI en el sidebar NO, debe ir en el main, 
+            # pero necesitamos la lógica de confirmación aquí.
+            # Para simplificar y seguir la petición del usuario: La edición se hace abajo (main), 
+            # pero el botón de CONFIRMAR lo ponemos aquí como paso del wizard.
+            
+            # Botón de confirmación explícita
+            if 'news_confirmed' not in st.session_state:
+                st.session_state['news_confirmed'] = False
+                
+            if st.button("✅ NOTICIAS REVISADAS Y CONFIRMADAS", type="secondary", disabled=False):
+                st.session_state['news_confirmed'] = True
+                st.success("¡Perfecto! Ahora puedes generar el podcast.")
+            
+            if st.session_state['news_confirmed']:
+                st.caption("✅ Selección confirmada.")
             else:
-                manual_selection_mode = True
-                st.caption(f"Se han generado {len(news_candidates)} borradores de noticias.")
-                
-                with st.form("seleccion_noticias"):
-                    edited_news_list = []
-                    
-                    for i, news in enumerate(news_candidates):
-                        # Título robusto
-                        titulo_original = news.get("titulo") or news.get("sitio")
-                        resumen_original = news.get("resumen", "")
-                        
-                        # Usar expander para el detalle
-                        with st.expander(f"Noticia {i+1}: {titulo_original}", expanded=False):
-                            
-                            col_check, col_content = st.columns([0.1, 0.9])
-                            
-                            with col_check:
-                                # Checkbox de inclusión
-                                incluir = st.checkbox("Incluir", value=True, key=f"check_{i}")
-                            
-                            with col_content:
-                                # Campos editables
-                                new_titulo = st.text_input("Título", value=titulo_original, key=f"title_{i}")
-                                new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=150, key=f"res_{i}")
-                                st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
-                            
-                            if incluir:
-                                # Crear copia de la noticia con los datos editados
-                                news_edited = news.copy()
-                                news_edited['titulo'] = new_titulo
-                                news_edited['resumen'] = new_resumen
-                                edited_news_list.append(news_edited)
+                st.warning("⚠️ Debes editar (si quieres) y luego pulsar confirmar arriba.")
 
-                    st.caption("Revisa los textos y desmarca las noticias que no quieras.")
-                    update_selection = st.form_submit_button("Confirmar Edición")
-                    
-                    if update_selection:
-                        st.session_state['noticias_editadas_finales'] = edited_news_list
-                        st.toast(f"✅ Se han confirmado {len(edited_news_list)} noticias para el podcast.")
-
-                # Recuperar la selección confirmada
-                selected_news_to_process = st.session_state.get('noticias_editadas_finales', [])
-                
         except Exception as e:
-            st.error(f"Error leyendo previsión: {e}")
+            st.error("Error leyendo archivo de preview.")
 
-    st.markdown("---")
-
-    # Botón de Generar Podcast
-    label_btn = "GENERAR PODCAST (Desde Selección)" if manual_selection_mode else "GENERAR PODCAST (Automático)"
+    # Estado 4: Generación
+    st.markdown("#### 4️⃣ Generación Final")
     
-    if st.button(label_btn, type="primary"):
-        with st.spinner("Iniciando generación del podcast..."):
+    # Solo activo si estamos en modo manual Y confirmado
+    can_generate = False
+    btn_type = "secondary"
+    btn_text = "GENERAR PODCAST (Espera...)"
+    
+    if manual_selection_mode:
+        if st.session_state.get('news_confirmed', False):
+            can_generate = True
+            btn_type = "primary"
+            btn_text = "🎙️ ¡VAMOS A GENERAR EL PODCAST!"
+        else:
+            btn_text = "Confirma las noticias primero"
+    else:
+        # Caso sin preview (no debería pasar con este flujo, pero fallback)
+        if config_checked: 
+             # Si no hay preview json, quizás quieran generar directo sin editar (legacy)
+             # Pero el usuario pidió guiado. Forzamos análisis primero.
+             btn_text = "Analiza las noticias primero (Paso 2)"
+
+    if st.button(btn_text, type=btn_type, disabled=not can_generate):
+        with st.spinner("Generando audios, montando bloques y finalizando podcast..."):
             try:
-                cmd = ["python3", "dorototal.py"]
+                # Recopilar la selección FINAL desde el session_state si se guardó en el formulario principal
+                # OJO: La edición real ocurre en el MAIN loop.
+                # Necesitamos que el formulario principal actualice 'noticias_editadas_finales'
+                # Y que usemos eso aquí.
                 
-                # Si estamos en modo manual, guardar JSON temporal y pasar argumento
-                if manual_selection_mode:
-                    if not selected_news_to_process:
-                        # Si el usuario no dio a confirmar, intentamos coger todo lo disponible por defecto...
-                        # PERO en Streamlit los inputs de un form no se leen fuera si no se submitea.
-                        # Así que obligamos a confirmar.
-                        st.error("⚠️ Por favor, pulsa 'Confirmar Edición' antes de generar el podcast.")
-                        st.stop()
-                        
-                    with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
-                        json.dump(selected_news_to_process, f, ensure_ascii=False, indent=4)
-                    
-                    cmd.extend(["--from-json", "seleccion_usuario.json"])
-                    st.info(f"Procesando {len(selected_news_to_process)} noticias editadas...")
+                # Leemos la selección del state o del archivo original si no se tocó nada
+                final_news = st.session_state.get('noticias_editadas_finales', [])
                 
-                # Ejecutar el script
+                # Si está vacío, puede ser que no hayan tocado nada y confirmado directo.
+                # En ese caso cargamos el json original de preview
+                if not final_news and os.path.exists("prevision_noticias_resumidas.json"):
+                     with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                        final_news = json.load(f)
+
+                # Guardar selección final para el script
+                with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
+                    json.dump(final_news, f, ensure_ascii=False, indent=4)
+                
+                cmd = ["python3", "dorototal.py", "--from-json", "seleccion_usuario.json"]
+                
                 process = subprocess.Popen(
                     cmd,
                     stdout=subprocess.PIPE,
@@ -405,36 +430,64 @@ with st.sidebar:
                     cwd=os.getcwd()
                 )
                 
-                # Mostrar logs en tiempo real (simplificado)
+                # Logs
                 log_placeholder = st.empty()
                 logs = []
-                
                 while True:
                     output = process.stdout.readline()
                     if output == '' and process.poll() is not None:
                         break
                     if output:
                         logs.append(output.strip())
-                        # Mostrar solo las últimas 15 líneas
                         log_placeholder.code("\n".join(logs[-15:]))
                 
-                rc = process.poll()
-                
-                if rc == 0:
+                if process.poll() == 0:
                     st.success("¡Podcast generado con éxito!")
                     st.balloons()
-                    # Limpiar archivos temporales
+                    # Resetear
                     if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
                     if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
-                    
-                    time.sleep(2) # Dar tiempo para que el sistema de archivos se actualice
-                    st.rerun() # Recargar para mostrar el nuevo podcast abajo
+                    st.session_state['news_confirmed'] = False # Reset
+                    time.sleep(2)
+                    st.rerun()
                 else:
-                    stderr = process.stderr.read()
-                    st.error(f"Error en la generación:\n{stderr}")
+                    st.error(f"Error generación:\n{process.stderr.read()}")
                     
             except Exception as e:
-                st.error(f"Error al ejecutar el script: {e}")
+                st.error(f"Error script: {e}")
+
+    # --- ZONA PRINCIPAL DE EDICIÓN (VISUALIZACIÓN) ---
+    # Esto estaba dentro del sidebar en el código original, pero para el Wizard
+    # lo ideal es que la edición "grande" esté en el panel principal o 
+    # si el usuario quiere, se mantiene. El código original tenía la edición
+    # en un bloque condicional.
+    # Vamos a MANTENER la lógica de que si existe el JSON, mostramos el editor.
+    # Pero el editor lo vamos a renderizar FUERA del sidebar si es posible,
+    # OJO: `with st.sidebar:` engloba todo este bloque. 
+    # El usuario dijo: "despues de mostrar las noticias me preguntas o recuerdas..."
+    # Si estamos dentro del `with st.sidebar`, todo sale ahí.
+    # El código original renderizaba forms en el sidebar.
+    
+    if manual_selection_mode:
+        st.markdown("---")
+        st.caption("📝 Editor Rápido (Sidebar)")
+        # Lógica de formulario de edición (Compacta para sidebar)
+        with st.form("seleccion_noticias_sidebar"):
+             # Recuperamos candidates que ya leímos arriba
+             edited_news_list_sb = []
+             for i, news in enumerate(news_candidates):
+                 titulo = news.get("titulo") or news.get("sitio", "Sin título")
+                 with st.expander(f"{i+1}. {titulo}", expanded=False):
+                     incluir = st.checkbox("Incluir", value=True, key=f"sb_chk_{i}")
+                     new_res = st.text_area("Resumen", value=news.get("resumen",""), height=100, key=f"sb_res_{i}")
+                     if incluir:
+                         n = news.copy()
+                         n['resumen'] = new_res
+                         edited_news_list_sb.append(n)
+             
+             if st.form_submit_button("💾 Guardar Cambios (Previo a confirmar)"):
+                 st.session_state['noticias_editadas_finales'] = edited_news_list_sb
+                 st.toast("Cambios guardados. Ahora confirma arriba.")
 
 # Pestañas principales
 # Pestañas principales
