@@ -2282,29 +2282,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
         
-        # --- MODO PREVIEW: GUARDAR Y SALIR ---
-        if solo_preview:
-            print("👀 MODO PREVIEW ACTIVADO: Guardando candidatos y saliendo...")
-            archivo_preview = "prevision_noticias.json"
-            
-            # Serializar fechas para JSON
-            export_data = []
-            for n in noticias_candidatas_totales:
-                n_copy = n.copy()
-                if isinstance(n_copy['fecha'], datetime):
-                    n_copy['fecha'] = n_copy['fecha'].isoformat()
-                export_data.append(n_copy)
-                
-            with open(archivo_preview, 'w', encoding='utf-8') as f:
-                json.dump(export_data, f, indent=4, ensure_ascii=False)
-                
-            print(f"✅ Preview guardada en: {archivo_preview}")
-            # Limpiar directorio vacío que creamos al principio si no se va a usar
-            try:
-                os.rmdir(output_dir)
-            except:
-                pass 
-            sys.exit(0)
+
 
         # Continuar con el flujo normal...
         # Usar el límite configurado solo si no venimos de un JSON manual (que manda el usuario)
@@ -2324,6 +2302,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 print(f"      ⏩ Usando caché para '{noticia_cacheada['resumen'][:50]}...'")
 
             else:
+                # Si venimos de un JSON con resumen ya hecho (edición manual), usamos ese
+                if 'resumen' in noticia and noticia.get('resumen'):
+                    print(f"      📝 Usando resumen editado manualmente: {noticia['titulo'][:50]}...")
+                    resumenes_finales.append(noticia)
+                    continue
+
                 print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
                 fuente_original = identificar_fuente_original(noticia['texto'])
                 
@@ -2429,6 +2413,30 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         if not resumenes_finales:
             print("No se pudieron generar resúmenes válidos. Abortando.")
+            sys.exit(0)
+
+        # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR ---
+        if solo_preview:
+            print("👀 MODO PREVIEW ACTIVADO: Guardando noticias resumidas y saliendo...")
+            archivo_preview = "prevision_noticias_resumidas.json"
+            
+            # Serializar fechas para JSON
+            export_data = []
+            for n in resumenes_finales:
+                n_copy = n.copy()
+                # Asegurar que no hay objetos datetime
+                if 'fecha' in n_copy and isinstance(n_copy['fecha'], datetime):
+                     n_copy['fecha'] = n_copy['fecha'].strftime("%Y-%m-%d")
+                export_data.append(n_copy)
+                
+            with open(archivo_preview, 'w', encoding='utf-8') as f:
+                json.dump(export_data, f, indent=4, ensure_ascii=False)
+                
+            print(f"✅ Preview resumida guardada en: {archivo_preview}")
+            try:
+                os.rmdir(output_dir)
+            except:
+                pass 
             sys.exit(0)
 
         # Guardamos el caché actualizado (incluyendo las nuevas entidades)

@@ -288,11 +288,11 @@ with st.sidebar:
 
     # Botón de Analizar Noticias
     if st.button("🔎 ANALIZAR NOTICIAS (Paso 1)", type="secondary"):
-        with st.spinner("Conectando con feeds y filtrando noticias..."):
+        with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA... (Esto tarda un poco)"):
             try:
                 # Limpiar archivo de preview anterior
-                if os.path.exists("prevision_noticias.json"):
-                    os.remove("prevision_noticias.json")
+                if os.path.exists("prevision_noticias_resumidas.json"):
+                    os.remove("prevision_noticias_resumidas.json")
                 
                 # Ejecutar script en modo preview
                 process = subprocess.run(
@@ -303,7 +303,7 @@ with st.sidebar:
                 )
                 
                 if process.returncode == 0:
-                    st.success("✅ Análisis completado. Revisa la lista abajo.")
+                    st.success("✅ Análisis completado. Puedes editar las noticias abajo.")
                     time.sleep(1)
                     st.rerun()
                 else:
@@ -315,51 +315,58 @@ with st.sidebar:
     manual_selection_mode = False
     selected_news_to_process = []
     
-    if os.path.exists("prevision_noticias.json"):
+    if os.path.exists("prevision_noticias_resumidas.json"):
         st.markdown("---")
-        st.markdown("#### 📋 Selección de Noticias")
+        st.markdown("#### � Edición y Selección de Noticias")
         try:
-            with open("prevision_noticias.json", "r", encoding="utf-8") as f:
+            with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
                 news_candidates = json.load(f)
             
             if not news_candidates:
                 st.warning("No se encontraron noticias recientes.")
             else:
                 manual_selection_mode = True
-                st.caption(f"Se detectaron {len(news_candidates)} noticias.")
+                st.caption(f"Se han generado {len(news_candidates)} borradores de noticias.")
                 
-                # Formulario para checkboxes
                 with st.form("seleccion_noticias"):
-                    selected_indices = []
+                    edited_news_list = []
+                    
                     for i, news in enumerate(news_candidates):
                         # Título robusto
-                        titulo = news.get("titulo") or news.get("sitio")
-                        fecha_str = news.get("fecha")
-                        # Intentar parsear fecha para mostrarla bonita
-                        try:
-                            fecha_dt = datetime.datetime.fromisoformat(fecha_str) if isinstance(fecha_str, str) else fecha_str
-                            fecha_display = fecha_dt.strftime("%d/%m %H:%M")
-                        except:
-                            fecha_display = "---"
+                        titulo_original = news.get("titulo") or news.get("sitio")
+                        resumen_original = news.get("resumen", "")
+                        
+                        # Usar expander para el detalle
+                        with st.expander(f"Noticia {i+1}: {titulo_original}", expanded=False):
                             
-                        check = st.checkbox(
-                            f"[{fecha_display}] {titulo}", 
-                            value=True, 
-                            key=f"news_{i}"
-                        )
-                        if check:
-                            selected_indices.append(i)
-                    
-                    st.caption("Desmarca las que quieras excluir del podcast.")
-                    update_selection = st.form_submit_button("Confirmar Selección")
+                            col_check, col_content = st.columns([0.1, 0.9])
+                            
+                            with col_check:
+                                # Checkbox de inclusión
+                                incluir = st.checkbox("Incluir", value=True, key=f"check_{i}")
+                            
+                            with col_content:
+                                # Campos editables
+                                new_titulo = st.text_input("Título", value=titulo_original, key=f"title_{i}")
+                                new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=150, key=f"res_{i}")
+                                st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
+                            
+                            if incluir:
+                                # Crear copia de la noticia con los datos editados
+                                news_edited = news.copy()
+                                news_edited['titulo'] = new_titulo
+                                news_edited['resumen'] = new_resumen
+                                edited_news_list.append(news_edited)
+
+                    st.caption("Revisa los textos y desmarca las noticias que no quieras.")
+                    update_selection = st.form_submit_button("Confirmar Edición")
                     
                     if update_selection:
-                        st.session_state['indices_seleccionados'] = selected_indices
-                        st.toast("Selección actualizada")
+                        st.session_state['noticias_editadas_finales'] = edited_news_list
+                        st.toast(f"✅ Se han confirmado {len(edited_news_list)} noticias para el podcast.")
 
-                # Obtener selección actual (de session state o por defecto todas)
-                final_indices = st.session_state.get('indices_seleccionados', list(range(len(news_candidates))))
-                selected_news_to_process = [news_candidates[i] for i in final_indices]
+                # Recuperar la selección confirmada
+                selected_news_to_process = st.session_state.get('noticias_editadas_finales', [])
                 
         except Exception as e:
             st.error(f"Error leyendo previsión: {e}")
@@ -377,14 +384,17 @@ with st.sidebar:
                 # Si estamos en modo manual, guardar JSON temporal y pasar argumento
                 if manual_selection_mode:
                     if not selected_news_to_process:
-                        st.error("⚠️ No has seleccionado ninguna noticia. Marca al menos una.")
+                        # Si el usuario no dio a confirmar, intentamos coger todo lo disponible por defecto...
+                        # PERO en Streamlit los inputs de un form no se leen fuera si no se submitea.
+                        # Así que obligamos a confirmar.
+                        st.error("⚠️ Por favor, pulsa 'Confirmar Edición' antes de generar el podcast.")
                         st.stop()
                         
                     with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
                         json.dump(selected_news_to_process, f, ensure_ascii=False, indent=4)
                     
                     cmd.extend(["--from-json", "seleccion_usuario.json"])
-                    st.info(f"Procesando {len(selected_news_to_process)} noticias seleccionadas...")
+                    st.info(f"Procesando {len(selected_news_to_process)} noticias editadas...")
                 
                 # Ejecutar el script
                 process = subprocess.Popen(
@@ -415,7 +425,7 @@ with st.sidebar:
                     st.balloons()
                     # Limpiar archivos temporales
                     if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
-                    if os.path.exists("prevision_noticias.json"): os.remove("prevision_noticias.json")
+                    if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
                     
                     time.sleep(2) # Dar tiempo para que el sistema de archivos se actualice
                     st.rerun() # Recargar para mostrar el nuevo podcast abajo
