@@ -2304,115 +2304,142 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
             if noticia_hash in cache_noticias:
                 noticia_cacheada = cache_noticias[noticia_hash]
-                resumenes_finales.append(noticia_cacheada)
-                print(f"      ⏩ Usando caché para '{noticia_cacheada['resumen'][:50]}...'")
+                
+                # VERIFICACIÓN INTELIGENTE DE CACHÉ
+                # Si tenemos un resumen manual (input), SOLO usamos el caché si el texto coincide.
+                # Si el texto es distinto, significa que el usuario lo ha editado y debemos regenerar el audio.
+                usar_cache = True
+                if 'resumen' in noticia and noticia.get('resumen'):
+                    resumen_input = noticia.get('resumen', '').strip()
+                    resumen_cache = noticia_cacheada.get('resumen', '').strip()
+                    # Normalizamos un poco para evitar diferencias por espacios
+                    if resumen_input != resumen_cache:
+                        print(f"      ✏️ DETECTADO CAMBIO EN EL RESUMEN: Ignorando caché para regenerar audio.")
+                        usar_cache = False
+                
+                if usar_cache:
+                    resumenes_finales.append(noticia_cacheada)
+                    print(f"      ⏩ Usando caché para '{noticia_cacheada['resumen'][:50]}...'")
+                    continue # Saltamos al siguiente
 
             else:
-                # Si venimos de un JSON con resumen ya hecho (edición manual), usamos ese
+                # ----------------------------------------------------------------
+                # LÓGICA UNIFICADA: Si ya tiene resumen (edición manual), lo usamos.
+                # Si no, lo generamos con IA. LUEGO, siempre hacemos el resto.
+                # ----------------------------------------------------------------
+                
+                resumen = None
+                entidades_clave = []
+                es_noticia_breve = False # Valor inicial
+                
+                # APLICAMOS LA PRE-LIMPIEZA SIEMPRE (para tener texto_crudo disponible)
+                texto_crudo = preprocesar_texto_para_fechas(noticia['texto'])
+                es_noticia_breve = len(texto_crudo) < 150
+                fuente_original = identificar_fuente_original(noticia['texto'])
+
+                # CASO 1: RESUMEN YA EXISTENTE (Manual)
                 if 'resumen' in noticia and noticia.get('resumen'):
                     print(f"      📝 Usando resumen editado manualmente: {noticia['titulo'][:50]}...")
-                    resumenes_finales.append(noticia)
-                    continue
-
-                print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
-                fuente_original = identificar_fuente_original(noticia['texto'])
+                    resumen = noticia['resumen']
+                    # Intentamos recuperar entidades si vienen en el JSON
+                    entidades_clave = noticia.get('entidades_clave', [])
                 
-                # APLICAMOS LA NUEVA FUNCIÓN DE LIMPIEZA DE FECHAS
-                texto_crudo = preprocesar_texto_para_fechas(noticia['texto'])
-
-                es_noticia_breve = len(texto_crudo) < 150
-                prompt_para_ia = ""
-
-                # ============================================================
-                # === INICIO DE LA MEJORA (FUSIÓN 'doro.py') ===
-                # ============================================================
-                
-                print("      -> Fase 1/3: Extrayendo entidades clave con IA...")
-                prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
-                respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
-                
-                entidades_clave = []
-                if respuesta_entidades_json:
-                    try:
-                        json_limpio = respuesta_entidades_json
-                        # Limpiar posible markdown de la IA
-                        if "```" in json_limpio:
-                            start_idx = json_limpio.find('[')
-                            end_idx = json_limpio.rfind(']')
-                            if start_idx != -1 and end_idx != -1:
-                                json_limpio = json_limpio[start_idx:end_idx+1]
-                        
-                        entidades_clave = json.loads(json_limpio)
-                        print(f"      ✅ Entidades extraídas: {', '.join(entidades_clave)}")
-                    except json.JSONDecodeError:
-                        print("      ⚠️ No se pudieron decodificar las entidades clave (JSON inválido).")
-                        entidades_clave = []
-
-                if es_noticia_breve:
-                    print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE (texto corto).")
-                    prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(
-                        texto=texto_crudo,
-                        fuente_original=fuente_original
-                    )
+                # CASO 2: GENERAR RESUMEN CON IA (Automático)
                 else:
-                    print("      -> Fase 2/3: Generando resumen enriquecido con IA (texto largo).")
-                    # Usamos el prompt 'enriquecido' de doro.py
-                    prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
-                        texto=texto_crudo,
-                        fuente_original=fuente_original,
-                        entidades_clave=entidades_clave, # <-- Usamos las entidades
-                        idioma_destino=idioma_destino
-                    )
-                
-                # ============================================================
-                # === FIN DE LA MEJORA (FUSIÓN 'doro.py') ===
-                # ============================================================
+                    print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
+                    
+                    # === FASE 1: Entidades (solo si no es manual) ===
+                    print("      -> Fase 1/3: Extrayendo entidades clave con IA...")
+                    prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
+                    respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
+                    
+                    if respuesta_entidades_json:
+                        try:
+                            json_limpio = respuesta_entidades_json
+                            if "```" in json_limpio:
+                                start_idx = json_limpio.find('[')
+                                end_idx = json_limpio.rfind(']')
+                                if start_idx != -1 and end_idx != -1:
+                                    json_limpio = json_limpio[start_idx:end_idx+1]
+                            entidades_clave = json.loads(json_limpio)
+                            print(f"      ✅ Entidades extraídas: {', '.join(entidades_clave)}")
+                        except:
+                            entidades_clave = []
 
-                # Llamamos a la IA con el prompt que hemos elegido
-                resumen = generar_texto_con_gemini(prompt_para_ia)
+                    # === FASE 2: Resumen ===
+                    if es_noticia_breve:
+                        print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
+                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
+                    else:
+                        print("      -> Fase 2/3: Generando resumen enriquecido con IA.")
+                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
+                            texto=texto_crudo,
+                            fuente_original=fuente_original,
+                            entidades_clave=entidades_clave,
+                            idioma_destino=idioma_destino
+                        )
+                    
+                    resumen = generar_texto_con_gemini(prompt_para_ia)
 
+                # ----------------------------------------------------------------
+                # PROCESAMIENTO COMÚN (Limpieza, Sentimiento, Audio)
+                # ----------------------------------------------------------------
                 if resumen:
                     fuente_final = f"{noticia['sitio']} ({fuente_original})" if fuente_original else noticia['sitio']
                     audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}.mp3")
                     
                     texto_limpio = limpiar_artefactos_ia(resumen)
-
-                    # NUEVO: Reemplazar URLs por una mención genérica DESPUÉS de resumir.
                     texto_limpio = reemplazar_urls_por_mencion(texto_limpio)
 
-                    # Filtrar noticias demasiado cortas después de resumir
-                    if len(texto_limpio.split()) < MIN_WORDS_FOR_AUDIO:
-                        print(f"      🗑️  Ignorando noticia por tener menos de {MIN_WORDS_FOR_AUDIO} palabras: '{texto_limpio[:60]}...'")
+                    # Si estamos en PREVIEW, guardamos el objeto parcial y CONTINUAMOS (Saltar TTS)
+                    if solo_preview:
+                         nueva_noticia_procesada = {
+                            'fuente': fuente_final,
+                            'resumen': texto_limpio, # Guardamos el limpio ya
+                            'titulo': noticia.get('titulo', ''), # Importante para editar
+                            'sitio': noticia.get('sitio', ''),
+                            'fecha': noticia['fecha'],
+                            'id': noticia_hash,
+                            'es_breve': es_noticia_breve,
+                            'entidades_clave': entidades_clave
+                        }
+                         resumenes_finales.append(nueva_noticia_procesada)
+                         continue # <--- SALTAR RESTO DEL BUCLE (TTS)
+
+                    # Filtrar noticias cortas (SOLO si no es manual, si es manual el usuario manda)
+                    # Si viene 'entidades_clave' asumimos que puede ser manual, pero mejor flag explícito.
+                    # Asumimos: si 'resumen' estaba en input, es manual -> NO FILTRAR.
+                    es_manual = 'resumen' in noticia and noticia.get('resumen')
+                    
+                    if not es_manual and len(texto_limpio.split()) < MIN_WORDS_FOR_AUDIO:
+                        print(f"      🗑️  Ignorando noticia por tener menos de {MIN_WORDS_FOR_AUDIO} palabras.")
                         continue
 
-                    # === ANÁLISIS DE SENTIMIENTO INDIVIDUAL ===
-                    print(f"      -> Fase 3/3: Analizando sentimiento de la noticia...")
+                    # === FASE 3: Sentimiento ===
+                    print(f"      -> Fase 3/3: Analizando sentimiento...")
                     prompt_sentimiento = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_limpio)
                     sentimiento_noticia = generar_texto_con_gemini(prompt_sentimiento).lower().strip()
-                    if sentimiento_noticia not in ['positivo', 'negativo', 'neutro']:
-                        sentimiento_noticia = 'neutro' # Fallback
-                    print(f"      ✅ Sentimiento detectado: {sentimiento_noticia.upper()}")
-                    # =========================================
-
-                    # === AÑADIR ESTAS LÍNEAS ===
-                    # Usamos el texto original para una mejor extracción de la localidad
+                    if sentimiento_noticia not in ['positivo', 'negativo', 'neutro']: sentimiento_noticia = 'neutro'
+                    
+                    # Extraer localidad
                     localidad_extraida = extraer_localidad_con_ia(noticia['texto'])
-                    # ==========================
 
+                    # === GENERACIÓN DE AUDIO (TTS) ===
+                    print(f"      🎙️  Generando audio para: {noticia['sitio'][:30]}...")
                     audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
 
                     if audio_segment:
                         audio_segment.export(audio_file_path, format="mp3")
                         nueva_noticia_procesada = {
                             'fuente': fuente_final,
-                            'resumen': resumen,
+                            'resumen': resumen, # Original o editado
                             'fecha': noticia['fecha'].strftime("%Y-%m-%d"),
                             'id': noticia_hash,
                             'audio_path': audio_file_path,
                             'es_breve': es_noticia_breve,
                             'localidad': localidad_extraida,
                             'sentimiento': sentimiento_noticia,
-                            'entidades_clave': entidades_clave # <-- AÑADIDO DE 'doro.py'
+                            'entidades_clave': entidades_clave
                         }
                         resumenes_finales.append(nueva_noticia_procesada)
                         nuevas_noticias_para_cache[noticia_hash] = nueva_noticia_procesada
