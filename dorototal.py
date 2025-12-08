@@ -2244,7 +2244,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     texto_crudo = limpiar_html(contenido)
 
                     noticias_candidatas_totales.append({
-                        'sitio': sitio, 'texto': texto_crudo, 'fecha': fecha_pub, 'hash': noticia_hash
+                        'sitio': sitio, 
+                        'texto': texto_crudo, 
+                        'fecha': fecha_pub, 
+                        'hash': noticia_hash,
+                        'titulo': entry.get('title', ''),
+                        'link': entry.get('link', '')
                     })
             except Exception as e:
                 print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
