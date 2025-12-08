@@ -2890,4 +2890,10 @@ if __name__ == "__main__":
     # GOOGLE_APPLICATION_CREDENTIALS=/ruta/a/tu/credencial.json
     # GCP_PROJECT_ID=tu-proyecto-id
     
-    procesar_feeds_google('feeds.txt', min_items=20)
+    # Cargar configuración para obtener el archivo de feeds
+    config_app = cargar_configuracion()
+    archivo_feeds = config_app.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+    
+    print(f"📄 Usando archivo de feeds: {archivo_feeds}")
+    
+    procesar_feeds_google(archivo_feeds, min_items=20)

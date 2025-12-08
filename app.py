@@ -342,12 +342,31 @@ with tab1:
     with col2:
         new_email = st.text_input("Email de Contacto", value=config['podcast_info'].get('email_contacto', ''))
         new_email_alias = st.text_input("Alias de Email (para leer)", value=config['podcast_info'].get('email_alias_ssml', ''))
+        
+        # Selector de archivo de feeds
+        txt_files = [f for f in os.listdir('.') if f.endswith('.txt')]
+        if 'feeds.txt' not in txt_files and os.path.exists('feeds.txt'):
+            txt_files.append('feeds.txt')
+        
+        current_feeds_file = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+        if current_feeds_file not in txt_files:
+            txt_files.append(current_feeds_file)
+            
+        new_feeds_file = st.selectbox(
+            "Archivo de Feeds",
+            options=sorted(list(set(txt_files))),
+            index=txt_files.index(current_feeds_file) if current_feeds_file in txt_files else 0
+        )
 
     if st.button("Guardar Cambios Generales"):
         config['podcast_info']['presentadora'] = new_presentadora
         config['podcast_info']['region'] = new_region
         config['podcast_info']['email_contacto'] = new_email
         config['podcast_info']['email_alias_ssml'] = new_email_alias
+        
+        if 'generation_config' not in config: config['generation_config'] = {}
+        config['generation_config']['feeds_file'] = new_feeds_file
+        
         guardar_config(config)
         st.success("✅ Configuración general actualizada.")
 
