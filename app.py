@@ -459,65 +459,66 @@ with st.sidebar:
 
 
 # Pestañas principales
-# --- ZONA PRINCIPAL DE EDICIÓN (VISUALIZACIÓN) ---
-# Si hay noticias para revisar, mostramos el editor AQUI (fuera del sidebar)
-if 'manual_selection_mode' in locals() and manual_selection_mode:
-    st.markdown("## 📝 Revisión de Noticias")
-    st.info("Revisa los resúmenes generados por la IA. Edita lo que quieras y pulsa 'Guardar Cambios' al final.")
-    
-    # Intentar recuperar candidates si no están en local (por si acaso)
-    if 'news_candidates' not in locals():
-         try:
-            with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                news_candidates = json.load(f)
-         except:
-            news_candidates = []
-
-    if news_candidates:
-        with st.form("seleccion_noticias_main"):
-             edited_news_list_main = []
-             
-             for i, news in enumerate(news_candidates):
-                 # Título robusto
-                 titulo_original = news.get("titulo") or news.get("sitio")
-                 resumen_original = news.get("resumen", "")
-                 
-                 # Usar expander para el detalle - expandido por defecto el primero? no, mejor colapsado para limpieza
-                 with st.expander(f"Noticia {i+1}: {titulo_original}", expanded=(i==0)):
-                     
-                     col_check, col_content = st.columns([0.1, 0.9])
-                     
-                     with col_check:
-                         # Checkbox de inclusión
-                         incluir = st.checkbox("Incluir", value=True, key=f"main_chk_{i}")
-                     
-                     with col_content:
-                         # Campos editables
-                         new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}")
-                         new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=150, key=f"main_res_{i}")
-                         st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
-                     
-                     if incluir:
-                         # Crear copia de la noticia con los datos editados
-                         news_edited = news.copy()
-                         news_edited['titulo'] = new_titulo
-                         news_edited['resumen'] = new_resumen
-                         edited_news_list_main.append(news_edited)
-
-             st.markdown("---")
-             col_save, col_info = st.columns([1, 2])
-             with col_save:
-                 update_selection = st.form_submit_button("💾 GUARDAR CAMBIOS", type="primary", use_container_width=True)
-             
-             if update_selection:
-                 st.session_state['noticias_editadas_finales'] = edited_news_list_main
-                 st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
-                 # Opcional: Auto-confirmar también para agilizar
-                 # st.session_state['news_confirmed'] = True 
-                 # Pero el usuario pidió botón de confirmación explicito en sidebar, así que solo guardamos.
-
 # Pestañas principales
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
+tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
+
+with tab_rev:
+    st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
+    # --- ZONA PRINCIPAL DE EDICIÓN (VISUALIZACIÓN) ---
+    # Si hay noticias para revisar, mostramos el editor AQUI
+    if 'manual_selection_mode' in locals() and manual_selection_mode:
+        
+        st.info("Revisa los resúmenes generados por la IA. Edita lo que quieras y pulsa 'Guardar Cambios' al final.")
+        
+        # Intentar recuperar candidates si no están en local (por si acaso)
+        if 'news_candidates' not in locals():
+             try:
+                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                    news_candidates = json.load(f)
+             except:
+                news_candidates = []
+
+        if news_candidates:
+            with st.form("seleccion_noticias_main"):
+                 edited_news_list_main = []
+                 
+                 for i, news in enumerate(news_candidates):
+                     # Título robusto
+                     titulo_original = news.get("titulo") or news.get("sitio")
+                     resumen_original = news.get("resumen", "")
+                     
+                     # Usar expander para el detalle - expandido por defecto el primero? no, mejor colapsado para limpieza
+                     with st.expander(f"Noticia {i+1}: {titulo_original}", expanded=(i==0)):
+                         
+                         col_check, col_content = st.columns([0.1, 0.9])
+                         
+                         with col_check:
+                             # Checkbox de inclusión
+                             incluir = st.checkbox("Incluir", value=True, key=f"main_chk_{i}")
+                         
+                         with col_content:
+                             # Campos editables
+                             new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}")
+                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=150, key=f"main_res_{i}")
+                             st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
+                         
+                         if incluir:
+                             # Crear copia de la noticia con los datos editados
+                             news_edited = news.copy()
+                             news_edited['titulo'] = new_titulo
+                             news_edited['resumen'] = new_resumen
+                             edited_news_list_main.append(news_edited)
+
+                 st.markdown("---")
+                 col_save, col_info = st.columns([1, 2])
+                 with col_save:
+                     update_selection = st.form_submit_button("💾 GUARDAR CAMBIOS", type="primary", use_container_width=True)
+                 
+                 if update_selection:
+                     st.session_state['noticias_editadas_finales'] = edited_news_list_main
+                     st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
+    else:
+        st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
 
 with tab1:
     st.markdown('<div class="sub-header">Identidad de Podcast</div>', unsafe_allow_html=True)
