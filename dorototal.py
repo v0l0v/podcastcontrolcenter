@@ -2375,9 +2375,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 es_noticia_breve = False # Valor inicial
                 
                 # APLICAMOS LA PRE-LIMPIEZA SIEMPRE (para tener texto_crudo disponible)
-                texto_crudo = preprocesar_texto_para_fechas(noticia['texto'])
-                es_noticia_breve = len(texto_crudo) < 150
-                fuente_original = identificar_fuente_original(noticia['texto'])
+                texto_origen = noticia.get('texto', '')
+                if texto_origen:
+                    texto_crudo = preprocesar_texto_para_fechas(texto_origen)
+                    es_noticia_breve = len(texto_crudo) < 150
+                    fuente_original = identificar_fuente_original(texto_origen)
+                else:
+                    texto_crudo = ""
+                    es_noticia_breve = noticia.get('es_breve', False)
+                    fuente_original = ""
 
                 # CASO 1: RESUMEN YA EXISTENTE (Manual)
                 if 'resumen' in noticia and noticia.get('resumen'):
