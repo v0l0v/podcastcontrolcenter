@@ -930,4 +930,4 @@ with tab8:
 
 # Footer
 st.markdown("---")
-st.markdown("Desarrollado para Ache Podcast Generator | v1.0")
+st.markdown("Desarrollado por Podcast control center | v1.0")

@@ -945,9 +945,22 @@ def convertir_ssml_a_texto_plano(ssml_text: str) -> str:
     
     return text
 
+def limpiar_markdown_audio(texto: str) -> str:
+    """
+    Elimina marcadores de markdown (negritas, cursivas) del texto para evitar
+    que el TTS los lea literalmente (ej: 'asterisco asterisco').
+    """
+    # Eliminar negritas/cursivas preservando el contenido
+    # **texto** -> texto
+    texto = re.sub(r'\*{1,2}([^*]+?)\*{1,2}', r'\1', texto)
+    # __texto__ -> texto
+    texto = re.sub(r'_{1,2}([^_]+?)_{1,2}', r'\1', texto)
+    return texto
+
 @retry_on_failure(retries=3, delay=3, backoff=2)
 def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
     ssml_corregido = preprocesar_texto_para_tts(ssml)
+    ssml_corregido = limpiar_markdown_audio(ssml_corregido)
     ssml_corregido = corregir_palabras_deletreadas_tts(ssml_corregido)
     ssml_corregido = corregir_numeros_con_puntos_tts(ssml_corregido)
     
