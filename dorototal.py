@@ -976,9 +976,13 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
         else:
             input_text = texttospeech.SynthesisInput(ssml=ssml_corregido)
             
+        # Limpiar nombre de voz si viene con indicador de género de la UI
+        # Ej: "es-ES-Chirp-HD-F [FEMALE]" -> "es-ES-Chirp-HD-F"
+        nombre_voz_limpio = voz.split(" [")[0].strip()
+
         voice = texttospeech.VoiceSelectionParams(
             language_code=LANGUAGE_CODE,
-            name=voz,
+            name=nombre_voz_limpio,
         )
         audio_config = texttospeech.AudioConfig(
             audio_encoding=texttospeech.AudioEncoding.MP3,

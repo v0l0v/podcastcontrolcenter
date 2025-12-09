@@ -568,8 +568,48 @@ with tab2:
     with col1:
         new_voice = st.selectbox(
             "Voz de Google TTS", 
-            options=["es-ES-Journey-F", "es-ES-Journey-D", "es-ES-Neural2-A", "es-ES-Neural2-B"],
-            index=0 if config['audio_config'].get('voice_name') == "es-ES-Journey-F" else 0
+            options=[
+                # --- CHIRP 3 HD (Generative, Ultra-Realistic) ---
+                "es-ES-Chirp3-HD-Achernar [FEMALE]", "es-ES-Chirp3-HD-Aoede [FEMALE]", 
+                "es-ES-Chirp3-HD-Autonoe [FEMALE]", "es-ES-Chirp3-HD-Callirrhoe [FEMALE]", 
+                "es-ES-Chirp3-HD-Despina [FEMALE]", "es-ES-Chirp3-HD-Erinome [FEMALE]", 
+                "es-ES-Chirp3-HD-Gacrux [FEMALE]", "es-ES-Chirp3-HD-Kore [FEMALE]", 
+                "es-ES-Chirp3-HD-Laomedeia [FEMALE]", "es-ES-Chirp3-HD-Leda [FEMALE]", 
+                "es-ES-Chirp3-HD-Pulcherrima [FEMALE]", "es-ES-Chirp3-HD-Sulafat [FEMALE]", 
+                "es-ES-Chirp3-HD-Vindemiatrix [FEMALE]", "es-ES-Chirp3-HD-Zephyr [FEMALE]",
+                
+                "es-ES-Chirp3-HD-Achird [MALE]", "es-ES-Chirp3-HD-Algenib [MALE]", 
+                "es-ES-Chirp3-HD-Algieba [MALE]", "es-ES-Chirp3-HD-Alnilam [MALE]", 
+                "es-ES-Chirp3-HD-Charon [MALE]", "es-ES-Chirp3-HD-Enceladus [MALE]", 
+                "es-ES-Chirp3-HD-Fenrir [MALE]", "es-ES-Chirp3-HD-Iapetus [MALE]", 
+                "es-ES-Chirp3-HD-Orus [MALE]", "es-ES-Chirp3-HD-Puck [MALE]", 
+                "es-ES-Chirp3-HD-Rasalgethi [MALE]", "es-ES-Chirp3-HD-Sadachbia [MALE]", 
+                "es-ES-Chirp3-HD-Sadaltager [MALE]", "es-ES-Chirp3-HD-Schedar [MALE]", 
+                "es-ES-Chirp3-HD-Umbriel [MALE]", "es-ES-Chirp3-HD-Zubenelgenubi [MALE]",
+
+                # --- CHIRP HD (Previous Gen) ---
+                "es-ES-Chirp-HD-F [FEMALE]", "es-ES-Chirp-HD-O [FEMALE]", 
+                "es-ES-Chirp-HD-D [MALE]",
+
+                # --- NEURAL2 (High Quality) ---
+                "es-ES-Neural2-A [FEMALE]", "es-ES-Neural2-E [FEMALE]", "es-ES-Neural2-H [FEMALE]",
+                "es-ES-Neural2-F [MALE]", "es-ES-Neural2-G [MALE]",
+
+                # --- STUDIO (Professional) ---
+                "es-ES-Studio-C [FEMALE]", "es-ES-Studio-F [MALE]",
+
+                # --- JOURNEY (Experimental) ---
+                "es-ES-Journey-F [FEMALE]", "es-ES-Journey-D [MALE]",
+                
+                # --- WAVENET (Legacy) ---
+                "es-ES-Wavenet-F [FEMALE]", "es-ES-Wavenet-H [FEMALE]",
+                "es-ES-Wavenet-E [MALE]", "es-ES-Wavenet-G [MALE]",
+                
+                # --- STANDARD (Basic) ---
+                "es-ES-Standard-F [FEMALE]", "es-ES-Standard-H [FEMALE]",
+                "es-ES-Standard-E [MALE]", "es-ES-Standard-G [MALE]"
+            ],
+            index=0
         )
         new_lufs = st.slider("Volumen Objetivo (LUFS)", min_value=-24.0, max_value=-10.0, value=float(config['audio_config'].get('target_lufs', -16.0)), step=0.5)
         
