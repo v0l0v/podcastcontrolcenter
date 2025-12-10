@@ -252,41 +252,7 @@ with st.sidebar:
                 st.success(f"📁 Carpeta: {latest_dir}")
                 st.audio(latest_mp3)
                 
-                # Buscar archivo HTML correspondiente
-                html_files_in_dir = glob.glob(os.path.join(latest_dir, "*.html"))
-                
-                col_mp3, col_html = st.columns(2)
-                
-                # Pre-cargar datos MP3 en memoria para evitar conflictos de handle
-                with open(latest_mp3, "rb") as file:
-                    mp3_data = file.read()
-                
-                with col_mp3:
-                    # Botón de descarga explícito MP3 con KEY única
-                    st.download_button(
-                        label="⬇️ MP3",
-                        data=mp3_data,
-                        file_name=os.path.basename(latest_mp3),
-                        mime="audio/mpeg",
-                        key="sidebar_dl_mp3",
-                        use_container_width=True
-                    )
-                
-                if html_files_in_dir:
-                    latest_html = html_files_in_dir[0]
-                    # Pre-cargar datos HTML en memoria
-                    with open(latest_html, "rb") as file:
-                         html_data = file.read()
-                         
-                    with col_html:
-                        st.download_button(
-                            label="📄 HTML",
-                            data=html_data,
-                            file_name=os.path.basename(latest_html),
-                            mime="text/html",
-                            key="sidebar_dl_html",
-                            use_container_width=True
-                        )
+
             else:
                 st.warning(f"Se encontró la carpeta {latest_dir} pero no contiene MP3.")
         else:
@@ -828,6 +794,7 @@ with tab6:
                     col_info, col_actions = st.columns([3, 1])
                     
                     mp3s = glob.glob(os.path.join(p_dir, "*.mp3"))
+                    htmls = glob.glob(os.path.join(p_dir, "*.html"))
                     
                     with col_info:
                         if mp3s:
@@ -840,10 +807,21 @@ with tab6:
                         if mp3s:
                             with open(mp3s[0], "rb") as f:
                                 st.download_button(
-                                    label="⬇️ Descargar",
+                                    label="⬇️ MP3",
                                     data=f,
                                     file_name=os.path.basename(mp3s[0]),
-                                    key=f"dl_{p_dir}",
+                                    key=f"dl_mp3_{p_dir}",
+                                    use_container_width=True
+                                )
+                        
+                        if htmls:
+                            with open(htmls[0], "rb") as f:
+                                st.download_button(
+                                    label="📄 HTML",
+                                    data=f,
+                                    file_name=os.path.basename(htmls[0]),
+                                    mime="text/html",
+                                    key=f"dl_html_{p_dir}",
                                     use_container_width=True
                                 )
                         
