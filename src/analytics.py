@@ -62,7 +62,7 @@ def analizar_frecuencia_fuentes(feeds_path):
                 
                 last_entry_date = None
                 
-                for entry in entries:
+                for entry in feed.entries:
                     # Intentar parsear fecha
                     published_parsed = entry.get('published_parsed') or entry.get('updated_parsed')
                     
