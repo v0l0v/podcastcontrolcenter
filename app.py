@@ -15,7 +15,7 @@ import pandas as pd
 # matplotlib.use('Agg') # Configurar backend no interactivo para servidor
 # import matplotlib.pyplot as plt
 # from wordcloud import WordCloud
-from src.analytics import analizar_frecuencia_fuentes, analizar_contenido_noticias
+
 
 # Configuración de la página
 st.set_page_config(
@@ -426,7 +426,7 @@ with st.sidebar:
 
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
+tab_rev, tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts"])
 
 with tab_rev:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -837,114 +837,6 @@ with tab6:
 
     except Exception as e:
         st.error(f"Error leyendo historial: {e}")
-
-with tab7:
-    st.markdown('<div class="sub-header">Informe de Actividad de Fuentes</div>', unsafe_allow_html=True)
-    st.markdown("Analiza cuántas noticias ha publicado cada fuente recientemente para detectar feeds inactivos o rotos.")
-    
-    with st.spinner("Analizando historial de RSS..."):
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        feeds_path = os.path.join(base_dir, 'feeds.txt')
-        if os.path.exists(feeds_path):
-            try:
-                df = analizar_frecuencia_fuentes(feeds_path)
-                st.dataframe(
-                    df, 
-                    column_config={
-                        "Estado": st.column_config.TextColumn("Salud"),
-                        "24h": st.column_config.ProgressColumn("Hoy", format="%d", min_value=0, max_value=10),
-                        "7 días": st.column_config.ProgressColumn("Semana", format="%d", min_value=0, max_value=20),
-                    },
-                    use_container_width=True,
-                    hide_index=True
-                )
-            except Exception as e:
-                st.error(f"Error al analizar fuentes: {e}")
-        else:
-            st.error("No se encuentra el archivo feeds.txt")
-
-with tab8:
-    st.markdown('<div class="sub-header">Análisis de Contenido</div>', unsafe_allow_html=True)
-    st.info("Visualiza qué temas, poblaciones y grupos GAL están dominando las noticias.")
-    
-    # Selector de rango de tiempo
-    time_range = st.selectbox(
-        "Filtrar por fecha:",
-        ["Todo el historial", "Últimas 24 horas", "Última Semana", "Último Mes", "Último Año"],
-        index=0
-    )
-    
-    with st.spinner("Analizando contenido de noticias..."):
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        cache_path = os.path.join(base_dir, 'cache_noticias.json')
-        
-        if os.path.exists(cache_path):
-            # Calcular fecha mínima
-            min_date = None
-            now = datetime.datetime.now()
-            
-            if time_range == "Últimas 24 horas":
-                min_date = now - datetime.timedelta(days=1)
-            elif time_range == "Última Semana":
-                min_date = now - datetime.timedelta(days=7)
-            elif time_range == "Último Mes":
-                min_date = now - datetime.timedelta(days=30)
-            elif time_range == "Último Año":
-                min_date = now - datetime.timedelta(days=365)
-            
-            # Pasar min_date a la función de análisis
-            poblaciones, gal, temas = analizar_contenido_noticias(cache_path, min_date=min_date)
-            
-            if not poblaciones and not gal and not temas:
-                st.warning("No se encontraron datos para el periodo seleccionado.")
-            else:
-                col_table1, col_table2 = st.columns(2)
-                
-                with col_table1:
-                    st.markdown("### 🏘️ Poblaciones")
-                    if poblaciones:
-                        df_pob = pd.DataFrame(list(poblaciones.items()), columns=['Población', 'Menciones'])
-                        st.dataframe(
-                            df_pob.sort_values('Menciones', ascending=False),
-                            use_container_width=True,
-                            hide_index=True,
-                            column_config={
-                                "Menciones": st.column_config.NumberColumn("Menciones", format="%d")
-                            }
-                        )
-                    else:
-                        st.info("No se detectaron poblaciones.")
-                    
-                with col_table2:
-                    st.markdown("### 🚜 Grupos GAL")
-                    if gal:
-                        df_gal = pd.DataFrame(list(gal.items()), columns=['Grupo GAL', 'Menciones'])
-                        st.dataframe(
-                            df_gal.sort_values('Menciones', ascending=False),
-                            use_container_width=True,
-                            hide_index=True,
-                            column_config={
-                                "Menciones": st.column_config.NumberColumn("Menciones", format="%d")
-                            }
-                        )
-                    else:
-                        st.info("No se detectaron Grupos de Acción Local.")
-                
-                st.markdown("---")
-                
-                st.markdown("### 🗣️ Temas Recurrentes")
-                if temas:
-                    df_temas = pd.DataFrame(list(temas.items()), columns=['Término', 'Frecuencia'])
-                    st.dataframe(
-                        df_temas.sort_values('Frecuencia', ascending=False).head(50),
-                        use_container_width=True,
-                        hide_index=True
-                    )
-                else:
-                    st.info("No se detectaron temas.")
-                
-        else:
-            st.error("No se encuentra cache_noticias.json. Genera un podcast primero para tener datos.")
 
 # Footer
 st.markdown("---")
