@@ -25,12 +25,25 @@ def analizar_frecuencia_fuentes(feeds_path):
     thirty_days_ago = now - timedelta(days=30)
     one_year_ago = now - timedelta(days=365)
 
+    one_year_ago = now - timedelta(days=365)
+
+    def reparar_codificacion(texto: str) -> str:
+        if not texto: return ""
+        try:
+           return texto.encode('cp1252').decode('utf-8')
+        except:
+           try:
+               return texto.encode('latin-1').decode('utf-8')
+           except:
+               return texto
+
     for url in urls:
         try:
             feed = feedparser.parse(url)
             
             # Nombre de la fuente (intentar sacar titulo)
             nombre_fuente = feed.feed.get('title', url)
+            nombre_fuente = reparar_codificacion(nombre_fuente)
             
             if feed.bozo:
                 # Error en el feed detectado por feedparser

@@ -296,6 +296,26 @@ DIGITS_RE = re.compile(r'\b\d{3,}\b')
 def strip_accents(s: str) -> str:
     return ''.join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
 
+def reparar_codificacion(texto: str) -> str:
+    """Intenta arreglar texto decodificado incorrectamente (mojibake)."""
+    if not texto: return ""
+    try:
+        # Caso común: UTF-8 interpretado como cp1252/latin-1
+        # Ejemplo: "Hellín" (UTF-8: c3 id) -> "HellÃn"
+        # Si podemos codificar a latin-1 y luego decodificar a utf-8, es que estaba roto.
+        fixed = texto.encode('cp1252').decode('utf-8')
+        return fixed
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+        
+    try:
+        fixed = texto.encode('latin-1').decode('utf-8')
+        return fixed
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+
+    return texto
+
 def normalize_text_for_similarity(text: str) -> str:
     if not text:
         return ""
@@ -2319,6 +2339,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         if not contenido:
                             continue
 
+                        # Reparar posible codificación rota
+                        contenido = reparar_codificacion(contenido)
+                        titulo_reparado = reparar_codificacion(entry.get('title', ''))
+
                         noticia_hash = stable_text_hash(contenido)
                         texto_crudo = limpiar_html(contenido)
 
@@ -2327,7 +2351,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             'texto': texto_crudo, 
                             'fecha': fecha_pub, 
                             'hash': noticia_hash,
-                            'titulo': entry.get('title', ''),
+                            'titulo': titulo_reparado,
                             'link': entry.get('link', '')
                         })
                 except Exception as e:
