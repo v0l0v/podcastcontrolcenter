@@ -16,6 +16,7 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes, analizar_contenido_noticias
+from src.micropilot import generate_pilot, MicropilotGenerator
 
 # Configuración de la página
 st.set_page_config(
@@ -426,7 +427,70 @@ with st.sidebar:
 
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
+tab_pilot, tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["🚀 Micropilotos", "📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📈 Estadísticas"])
+
+with tab_pilot:
+    st.markdown('<div class="main-header">Generador de Micropilotos (Beta)</div>', unsafe_allow_html=True)
+    st.info("Herramienta de ventas rápida: Genera un podcast de 3 minutos y un correo de contacto para un cliente potencial en un solo clic.")
+    
+    col_input, col_preview = st.columns([1, 1])
+    
+    with col_input:
+        st.markdown("### 1. Datos del Prospecto")
+        pilot_contact_name = st.text_input("Nombre del Contacto", placeholder="Ej. María")
+        pilot_group_name = st.text_input("Nombre del Grupo/Asociación", placeholder="Ej. ADER La Palma")
+        
+        st.markdown("### 2. Fuente de Noticias")
+        pilot_source_text = st.text_area("Pega aquí el contenido (Boletín, Web, Texto)", height=300, placeholder="Copia y pega el texto de su última noticia o boletín...")
+        
+        btn_generate_pilot = st.button("🎙️ GENERAR PILOTO AUTOMÁTICO", type="primary", use_container_width=True)
+    
+    with col_preview:
+        st.markdown("### 3. Resultados")
+        if btn_generate_pilot:
+            if not pilot_group_name or not pilot_source_text:
+                st.error("Por favor, rellena el nombre del grupo y el texto fuente.")
+            else:
+                with st.spinner("🤖 Analizando texto, redactando guion y generando audio (aprox. 30-60s)..."):
+                    try:
+                        # 1. Generar JSON
+                        news_json, json_path = generate_pilot(pilot_source_text, pilot_group_name)
+                        st.success(f"✅ Análisis completado: {len(news_json)} noticias extraídas.")
+                        
+                        # 2. Ejecutar DoroTotal
+                        cmd = ["python3", "dorototal.py", "--from-json", json_path]
+                        process = subprocess.run(cmd, capture_output=True, text=True, cwd=os.getcwd())
+                        
+                        if process.returncode == 0:
+                            st.success("✅ Audio generado correctamente.")
+                            
+                            # Buscar el archivo generado (el más reciente)
+                            list_of_dirs = glob.glob('podcast_apg_*')
+                            latest_dir = max(list_of_dirs, key=os.path.getctime)
+                            mp3_files = glob.glob(os.path.join(latest_dir, "*.mp3"))
+                            
+                            if mp3_files:
+                                audio_file = mp3_files[0]
+                                st.audio(audio_file)
+                                
+                                # Generar Email
+                                generator = MicropilotGenerator()
+                                email_draft = generator.generate_email_draft(pilot_contact_name, pilot_group_name)
+                                
+                                st.markdown("#### 📧 Borrador de Correo")
+                                st.code(email_draft, language="markdown")
+                                st.caption("Copia este texto y adjunta el MP3.")
+                                
+                                # Botón descarga
+                                with open(audio_file, "rb") as f:
+                                    st.download_button("⬇️ Descargar MP3 Piloto", f, file_name=f"piloto_{pilot_group_name.replace(' ', '_')}.mp3")
+                            else:
+                                st.error("No se encontró el MP3 generado.")
+                        else:
+                            st.error(f"Error en generación de audio:\n{process.stderr}")
+
+                    except Exception as e:
+                        st.error(f"Error crítico: {e}")
 
 with tab_rev:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
