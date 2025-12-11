@@ -951,10 +951,11 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
         print(f"      ✅ Texto preprocesado para pronunciación (números, siglas, etc.).")
     
     try:
-        # Lógica específica para voces Journey (no soportan SSML)
-        if "Journey" in voz:
+        # Lógica específica para voces Journey y Chirp (generativas, mal soporte SSML complejo)
+        if "Journey" in voz or "Chirp" in voz:
             texto_plano = convertir_ssml_a_texto_plano(ssml_corregido)
-            # print(f"      ℹ️ Voz Journey detectada. Convirtiendo SSML a texto plano: {texto_plano[:50]}...")
+            print(f"      ℹ️ Voz Generativa ({voz}) detectada. Limpiando SSML a texto plano...")
+            # Para Chirp 3 podríamos usar 'markup' con [pause], pero por estabilidad usamos 'text'
             input_text = texttospeech.SynthesisInput(text=texto_plano)
         else:
             input_text = texttospeech.SynthesisInput(ssml=ssml_corregido)
