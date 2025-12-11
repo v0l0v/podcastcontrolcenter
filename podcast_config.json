@@ -7,7 +7,7 @@
         "pausa_estandar": "600ms"
     },
     "audio_config": {
-        "voice_name": "es-ES-Chirp3-HD-Achernar",
+        "voice_name": "es-ES-Studio-C",
         "target_lufs": -18.0,
         "voice_target_peak_dbfs": -2.0,
         "silence_threshold_dbfs": -50,
