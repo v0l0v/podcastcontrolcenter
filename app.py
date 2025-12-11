@@ -865,42 +865,59 @@ with tab7:
     st.markdown('<div class="sub-header">Informe de Actividad de Fuentes</div>', unsafe_allow_html=True)
     st.markdown("Monitoriza la salud de tus fuentes RSS con métricas de actividad en tiempo real.")
     
+    
     col_analizar, col_espacio = st.columns([1,3])
     with col_analizar:
         btn_check_feeds = st.button("🔄 Analizar Estado de Feeds", type="primary", use_container_width=True)
 
-    if btn_check_feeds:
-        with st.spinner("Conectando con servidores RSS y calculando estadísticas..."):
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            feeds_path = os.path.join(base_dir, 'feeds.txt')
-            if os.path.exists(feeds_path):
-                try:
-                    df = analizar_frecuencia_fuentes(feeds_path)
-                    
-                    # Métricas Globales
-                    total_fuentes = len(df)
-                    fuentes_activas = len(df[df['Estado'].isin(["🟢 Muy Activo", "🟡 Activo"])])
-                    
-                    m1, m2 = st.columns(2)
-                    m1.metric("Total Fuentes", total_fuentes)
-                    m2.metric("Fuentes Activas (30d)", fuentes_activas, delta=f"{round(fuentes_activas/total_fuentes*100)}%")
-                    
-                    st.dataframe(
-                        df, 
-                        column_config={
-                            "Estado": st.column_config.TextColumn("Salud"),
-                            "24h": st.column_config.NumberColumn("Hoy", format="%d"),
-                            "7d": st.column_config.NumberColumn("7 Días", format="%d"),
-                            "30d": st.column_config.NumberColumn("30 Días", format="%d"),
-                            "1 año": st.column_config.NumberColumn("Año", format="%d"),
-                        },
-                        use_container_width=True,
-                        hide_index=True
-                    )
-                except Exception as e:
-                    st.error(f"Error al analizar fuentes: {e}")
-            else:
-                st.error("No se encuentra el archivo feeds.txt")
+    # Lógica de carga: Botón O Caché existe
+    should_load = btn_check_feeds or ('fuentes_analytics_df' in st.session_state and st.session_state['fuentes_analytics_df'] is not None)
+
+    if should_load:
+        # Si fue por botón, o si no hay caché (aunque la lógica de should_load ya cubre parte, forzamos recarga si es botón)
+        if btn_check_feeds:
+            with st.spinner("Conectando con servidores RSS y calculando estadísticas..."):
+                base_dir = os.path.dirname(os.path.abspath(__file__))
+                feeds_path = os.path.join(base_dir, 'feeds.txt')
+                if os.path.exists(feeds_path):
+                    try:
+                        df = analizar_frecuencia_fuentes(feeds_path)
+                        st.session_state['fuentes_analytics_df'] = df
+                    except Exception as e:
+                        st.error(f"Error al analizar fuentes: {e}")
+                        df = None
+                else:
+                    st.error("No se encuentra el archivo feeds.txt")
+                    df = None
+        else:
+            # Recuperar de caché
+            df = st.session_state['fuentes_analytics_df']
+
+        # Renderizar si tenemos datos
+        if df is not None:
+            try:
+                # Métricas Globales
+                total_fuentes = len(df)
+                fuentes_activas = len(df[df['Estado'].isin(["🟢 Muy Activo", "🟡 Activo"])])
+                
+                m1, m2 = st.columns(2)
+                m1.metric("Total Fuentes", total_fuentes)
+                m2.metric("Fuentes Activas (30d)", fuentes_activas, delta=f"{round(fuentes_activas/total_fuentes*100)}%")
+                
+                st.dataframe(
+                    df, 
+                    column_config={
+                        "Estado": st.column_config.TextColumn("Salud"),
+                        "24h": st.column_config.NumberColumn("Hoy", format="%d"),
+                        "7d": st.column_config.NumberColumn("7 Días", format="%d"),
+                        "30d": st.column_config.NumberColumn("30 Días", format="%d"),
+                        "1 año": st.column_config.NumberColumn("Año", format="%d"),
+                    },
+                    use_container_width=True,
+                    hide_index=True
+                )
+            except Exception as e:
+                 st.error(f"Error renderizando tabla: {e}")
 
 # Footer
 st.markdown("---")
