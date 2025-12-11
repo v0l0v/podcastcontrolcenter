@@ -2822,9 +2822,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         if audio_parrafo:
                             audio_cronica += audio_parrafo
                             # Si NO es el último párrafo, añadimos la cortinilla
+                            # MODIFICADO: No añadir cortinilla después del primer párrafo (intro)
                             if i < len(parrafos) - 1:
-                                audio_cronica += agregar_transicion()
-                                audio_cronica += AudioSegment.silent(duration=600) # Pequeña pausa tras la cortinilla
+                                if i == 0:
+                                    # Después del intro, solo pequeña pausa para respirar
+                                    print("      🤫 Silencio breve tras intro de bloque (sin cortinilla)...")
+                                    audio_cronica += AudioSegment.silent(duration=800) 
+                                else:
+                                    # Entre noticias normales, sí ponemos cortinilla
+                                    audio_cronica += agregar_transicion()
+                                    audio_cronica += AudioSegment.silent(duration=600)
                 else:
                     # Fallback: Si solo hay 1 párrafo, lo hacemos todo junto
                     audio_cronica = sintetizar_ssml_a_audio(f"<speak>{html.escape(cronica_unificada_texto)}</speak>")
