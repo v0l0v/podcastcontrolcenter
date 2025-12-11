@@ -212,7 +212,7 @@ except Exception as e:
 # =================================================================================
 # UTILIDADES LLM (IMPORTADO)
 # =================================================================================
-from src.llm_utils import generar_texto_con_gemini
+from src.llm_utils import generar_texto_con_gemini, retry_on_failure
 
 
 # =================================================================================
