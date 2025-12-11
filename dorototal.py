@@ -341,6 +341,21 @@ def masterizar_a_lufs(audio_segment: AudioSegment, target_lufs: float = TARGET_L
         meter = pyln.Meter(audio_segment.frame_rate)
         loudness = meter.integrated_loudness(audio_data)
         audio_normalized = pyln.normalize.loudness(audio_data, loudness, target_lufs)
+        
+        # --- PEAK LIMITER (Seguridad anti-distorsión) ---
+        # Verificar si algún pico se pasa de 0 dB (1.0) tras normalizar a LUFS
+        max_peak = np.max(np.abs(audio_normalized))
+        limit_threshold = 1.0 # 0 dBFS
+        
+        # Si se pasa, reducimos proporcionalmente todo para que el pico máximo sea -1.0 dB (aprox 0.89)
+        # Esto altera un poco los LUFS, pero evita el "chisporroteo" por clipping digital.
+        target_peak_linear = 0.9  # -1.0 dBFS aprox de seguridad
+        
+        if max_peak > target_peak_linear:
+            normalization_factor = target_peak_linear / max_peak
+            audio_normalized = audio_normalized * normalization_factor
+            print(f"      🛡️ Limiter activado: Reduciendo ganancia en {(20 * np.log10(normalization_factor)):.2f} dB para evitar clipping.")
+
         if audio_segment.sample_width == 2:
             audio_int = (audio_normalized * 32767).astype(np.int16)
         else:
