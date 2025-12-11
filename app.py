@@ -9,13 +9,16 @@ import threading
 import time
 import shutil
 import datetime
-import random
+
 import pandas as pd
 # import matplotlib
 # matplotlib.use('Agg') # Configurar backend no interactivo para servidor
 # import matplotlib.pyplot as plt
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
+from src.llm_utils import generar_texto_con_gemini
+from mcmcn_prompts import PromptsCreativos
+
 
 # Configuración de la página
 st.set_page_config(
@@ -754,29 +757,8 @@ with tab5:
 with tab6:
     st.markdown('<div class="sub-header">Historial de Podcasts</div>', unsafe_allow_html=True)
     
-    col_hist_header, col_hist_actions = st.columns([3, 1])
-    with col_hist_header:
-        st.info("Aquí podrás consultar, descargar y gestionar los episodios anteriores.")
-    with col_hist_actions:
-        if st.button("🛠️ Generar Datos Prueba", help="Crea 3 podcasts ficticios para probar la interfaz"):
-            try:
-                base_audio = "audio_assets/cortinilla_cta.mp3"
-                if not os.path.exists(base_audio):
-                    st.error(f"No se encuentra {base_audio} para usar como base.")
-                else:
-                    for i in range(3):
-                        # Fecha ficticia aleatoria en los últimos 30 días
-                        days_ago = random.randint(1, 30)
-                        fake_date = datetime.datetime.now() - datetime.timedelta(days=days_ago)
-                        folder_name = f"podcast_apg_{fake_date.strftime('%Y-%m-%d_%H-%M')}_TEST_{i}"
-                        
-                        os.makedirs(folder_name, exist_ok=True)
-                        shutil.copy(base_audio, os.path.join(folder_name, f"podcast_test_{i}.mp3"))
-                    st.success("Datos de prueba generados.")
-                    time.sleep(1)
-                    st.rerun()
-            except Exception as e:
-                st.error(f"Error generando datos: {e}")
+    st.info("Aquí podrás consultar, descargar y gestionar los episodios anteriores.")
+
 
     # Listar todos los podcasts disponibles
     import glob
@@ -795,6 +777,7 @@ with tab6:
                     
                     mp3s = glob.glob(os.path.join(p_dir, "*.mp3"))
                     htmls = glob.glob(os.path.join(p_dir, "*.html"))
+                    json_path = os.path.join(p_dir, "transcript.json")
                     
                     with col_info:
                         if mp3s:
@@ -802,6 +785,21 @@ with tab6:
                             st.caption(f"Archivo: {os.path.basename(mp3s[0])}")
                         else:
                             st.warning("Carpeta vacía o sin MP3.")
+                        
+                        # Social Pack Result Display
+                        if f'social_result_{p_dir}' in st.session_state:
+                            st.markdown("### 📱 Social Pack Generado")
+                            social_data = st.session_state[f'social_result_{p_dir}']
+                            
+                            subtab1, subtab2 = st.tabs(["Facebook", "Instagram"])
+                            with subtab1:
+                                st.text_area("Post Facebook", value=social_data.get('facebook_post', ''), height=250, key=f"fb_area_{p_dir}")
+                            with subtab2:
+                                st.text_area("Caption Instagram", value=social_data.get('instagram_caption', ''), height=250, key=f"ig_area_{p_dir}")
+                            
+                            if st.button("❌ Cerrar Pack", key=f"close_sp_{p_dir}"):
+                                del st.session_state[f'social_result_{p_dir}']
+                                st.rerun()
 
                     with col_actions:
                         if mp3s:
@@ -824,6 +822,31 @@ with tab6:
                                     key=f"dl_html_{p_dir}",
                                     use_container_width=True
                                 )
+                        
+                        # Botón Social Pack
+                        if os.path.exists(json_path):
+                            if st.button("📱 Social Pack", key=f"btn_sp_{p_dir}", use_container_width=True):
+                                with st.spinner("Generando contenidos con IA..."):
+                                    try:
+                                        with open(json_path, 'r', encoding='utf-8') as f:
+                                            transcript = json.load(f)
+                                        
+                                        # Combinar texto de noticias
+                                        full_text = "\n".join([item['content'] for item in transcript if item.get('type') in ['block', 'news', 'intro']])
+                                        
+                                        # Generar con IA
+                                        prompt = PromptsCreativos.generar_social_pack(full_text)
+                                        resp_json = generar_texto_con_gemini(prompt)
+                                        
+                                        # Limpiar y parsear
+                                        clean_json = resp_json.replace("```json", "").replace("```", "").strip()
+                                        social_dict = json.loads(clean_json)
+                                        
+                                        st.session_state[f'social_result_{p_dir}'] = social_dict
+                                        st.rerun()
+                                        
+                                    except Exception as e:
+                                        st.error(f"Error: {e}")
                         
                         st.markdown("---")
                         if st.button("🗑️ Eliminar", key=f"del_{p_dir}", type="secondary", use_container_width=True):

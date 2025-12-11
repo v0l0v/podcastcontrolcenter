@@ -396,6 +396,39 @@ class PromptsCreativos:
         """
 
     @staticmethod
+    def generar_social_pack(resumen_noticias: str) -> str:
+        """
+        Genera contenido para redes sociales (Facebook e Instagram) basado en el resumen de noticias.
+        Devuelve un JSON con los textos.
+        """
+        return f"""
+        Eres un Social Media Manager experto en comunicar noticias locales con un tono cercano y atractivo.
+        
+        TAREA:
+        Basándote en el siguiente resumen de las noticias del podcast de hoy, genera un pack de contenidos para redes sociales.
+        
+        RESUMEN DEL PODCAST:
+        ---
+        {resumen_noticias}
+        ---
+
+        OBJETIVOS:
+        1. **Facebook:** Un post informativo pero coloquial, que invite a escuchar el episodio completo. Usa emojis moderados. Divide en párrafos claros.
+        2. **Instagram (Feed/Caption):** Un texto visual, con hashtags relevantes, frases cortas y mucho "gancho".
+        
+        FORMATO DE SALIDA (JSON ÚNICAMENTE):
+        {{
+            "facebook_post": "Texto del post para Facebook...",
+            "instagram_caption": "Texto para el caption de Instagram..."
+        }}
+        
+        REGLAS:
+        - No inventes noticias que no estén en el resumen.
+        - Tono: Profesional pero cercano (estilo 'Dorotea').
+        - Incluye llamadas a la acción (CTA) para escuchar el podcast.
+        """
+
+    @staticmethod
     def enriquecimiento_creativo_tema(tema: str, resumenes_json: str) -> str:
         """
         Genera el contenido creativo para un bloque temático ya definido.

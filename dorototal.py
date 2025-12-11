@@ -210,62 +210,10 @@ except Exception as e:
     sys.exit(1)
 
 # =================================================================================
-# DECORADOR DE REINTENTOS PARA LAS LLAMADAS A API - MOVIDO ARRIBA
+# UTILIDADES LLM (IMPORTADO)
 # =================================================================================
-def retry_on_failure(retries=3, delay=5, backoff=2):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            current_delay = delay
-            for i in range(1, retries + 1):
-                try:
-                    return func(*args, **kwargs)
-                except Exception as e:
-                    print(f"      ⚠️ Fallo en '{func.__name__}' (Intento {i}/{retries}): {e}")
-                    if i == retries:
-                        print(f"      ❌ Se acabaron los reintentos para '{func.__name__}'. La función falló definitivamente.")
-                        return None
-                    sleep_time = current_delay + random.uniform(0, 1)
-                    print(f"      ⏳ Esperando {sleep_time:.2f} segundos antes de reintentar...")
-                    time.sleep(sleep_time)
-                    current_delay *= backoff
-            return None
-        return wrapper
-    return decorator
+from src.llm_utils import generar_texto_con_gemini
 
-# =================================================================================
-# INICIALIZACIÓN DE GEMINI (SDK NUEVO O VIEJO) - CORREGIDO
-# =================================================================================
-USE_NEW_SDK = False
-try:
-    from google.cloud import generativelanguage as glm
-    model = glm.GenerativeModel("gemini-2.5-flash-lite")
-    USE_NEW_SDK = True
-    print("✅ Usando SDK nuevo de Gemini (google-cloud-generativelanguage).")
-except ImportError:
-    try:
-        from vertexai.generative_models import GenerativeModel
-        model = GenerativeModel("gemini-2.5-flash-lite")
-        USE_NEW_SDK = False
-        print("⚠️ Usando SDK viejo de VertexAI (deprecado en 2026).")
-    except ImportError:
-        print("❌ No se pudo importar ningún SDK de Gemini")
-        sys.exit(1)
-
-# --- Wrapper unificado ---
-@retry_on_failure(retries=3, delay=5, backoff=2)
-def generar_texto_con_gemini(prompt: str) -> str:
-    try:
-        if USE_NEW_SDK:
-            response = model.generate_content(prompt)
-            if response and response.candidates:
-                return response.candidates[0].content.parts[0].text.strip()
-            return ""
-        else:
-            response = model.generate_content(prompt)
-            return response.text.strip() if response.text else ""
-    except Exception as e:
-        print(f"❌ Error en generación Gemini: {e}")
-        return ""
 
 # =================================================================================
 # UTILIDADES DE TEXTO: NORMALIZACIÓN, TOKENS, N-GRAMS, SIMILITUD
@@ -2257,7 +2205,18 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
     </div>
     """
     
+    # Guardar transcripción en JSON para usos futuros (Social Pack, etc)
+    json_filename = f"transcript.json"
+    json_filepath = os.path.join(output_dir, json_filename)
+    try:
+        with open(json_filepath, 'w', encoding='utf-8') as f:
+            json.dump(transcript_data, f, indent=4, ensure_ascii=False)
+        print(f"✅ Transcripción JSON guardada en: {json_filepath}")
+    except Exception as e:
+        print(f"❌ Error al guardar transcripción JSON: {e}")
+
     filename = f"podcast_summary_{timestamp}.html"
+
     filepath = os.path.join(output_dir, filename)
     
     try:
