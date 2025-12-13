@@ -75,7 +75,8 @@ def parse_guion(guion_text: str) -> list:
             continue
 
         # Detectar etiquetas de sonido [TAG]
-        tag_match = re.match(r'^\[([A-Z0-9_]+)(?::\s*(.*))?\]$', line)
+        # Regex más permisiva: acepta espacios antes/después y dentro.
+        tag_match = re.match(r'^\s*\[([A-Z0-9_]+)(?::\s*(.*))?\]\s*$', line)
         if tag_match:
             # Si había texto acumulado, guardarlo como segmento de habla
             if buffer_text:
@@ -89,14 +90,19 @@ def parse_guion(guion_text: str) -> list:
             continue
 
         # Detectar narrador (DOROTEA:)
-        speaker_match = re.match(r'^([A-ZÁÉÍÓÚÑ]+):$', line)
+        # Permisivo con espacios al final
+        speaker_match = re.match(r'^\s*([A-ZÁÉÍÓÚÑ]+)\s*:\s*$', line)
         if speaker_match:
             # Solo informativo por ahora, no cambia la voz
             continue
             
         # Saltarse anotaciones de dirección (Texto entre paréntesis)
-        if line.startswith("(") and line.endswith(")"):
-            continue
+        # Permisivo con lo que haya después del cierre (puntos, espacios)
+        if line.strip().startswith("(") and ")" in line:
+             # Verificacion simple: si empieza por ( y tiene ) al final (ignorando puntuacion final)
+             clean_line = line.strip().rstrip(".,; ")
+             if clean_line.endswith(")"):
+                continue
 
         buffer_text.append(line)
 
