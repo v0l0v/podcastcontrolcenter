@@ -17,6 +17,7 @@ import pandas as pd
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
 from src.llm_utils import generar_texto_con_gemini
+from src.audio_processor import generar_episodio_especial
 from mcmcn_prompts import PromptsCreativos
 
 
@@ -429,7 +430,8 @@ with st.sidebar:
 
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes"])
+# Pestañas principales
+tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "🎭 Episodios Especiales"])
 
 with tab_rev:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -918,6 +920,78 @@ with tab7:
                 )
             except Exception as e:
                  st.error(f"Error renderizando tabla: {e}")
+
+
+with tab8:
+    st.markdown('<div class="sub-header">🎭 Productor de Episodios Especiales</div>', unsafe_allow_html=True)
+    st.info("Crea mini-episodios o anuncios especiales pegando aquí tu guion.")
+
+    col_script, col_info = st.columns([2, 1])
+
+    with col_info:
+        st.markdown("### 📝 Formato del Guion")
+        st.markdown("""
+        - **Diálogo:** `NOMBRE: Texto...`
+        - **Sonidos:** `[NOMBRE_DEL_AUDIO]`
+        - **Comentarios:** `(Texto descriptivo)` son ignorados.
+        
+        **Audios Disponibles:**
+        - `[CORTINILLA_SINTONIA_INICIO]` (Intro)
+        - `[CORTINILLA_CIERRE]` (Outro)
+        - `[CORTINILLA_TRANSICION_TECNOLOGICA]`
+        - `[EFECTO_SONORO]`
+        """)
+        
+        # Cargar ejemplo automáticamente si existe
+        default_script = ""
+        if os.path.exists("guion_especial_micomicona.txt"):
+            try:
+                with open("guion_especial_micomicona.txt", "r", encoding="utf-8") as f:
+                    default_script = f.read()
+            except: pass
+            
+        if st.button("Cargar Guion de Ejemplo (Dorotea)"):
+             st.session_state['script_input'] = default_script
+             st.rerun()
+
+    with col_script:
+        guion_input = st.text_area(
+            "Editor de Guion", 
+            value=st.session_state.get('script_input', ""),
+            height=500,
+            key='script_main_area'
+        )
+
+    if st.button("🎙️ GENERAR EPISODIO ESPECIAL", type="primary"):
+        if not guion_input.strip():
+            st.error("El guion está vacío.")
+        else:
+            with st.spinner("Produciendo episodio especial... Esto puede tardar unos minutos."):
+                timestamp = int(time.time())
+                output_filename = f"especial_{timestamp}.mp3"
+                output_path = os.path.join(os.getcwd(), output_filename)
+                
+                try:
+                    # Llamar al procesador
+                    result_path = generar_episodio_especial(guion_input, output_path)
+                    
+                    if os.path.exists(result_path):
+                        st.success(f"✅ Episodio generado: {output_filename}")
+                        st.audio(result_path)
+                        
+                        # Botón descarga
+                        with open(result_path, "rb") as file:
+                            st.download_button(
+                                label="⬇️ Descargar MP3",
+                                data=file,
+                                file_name=output_filename,
+                                mime="audio/mp3"
+                            )
+                    else:
+                        st.error("Error: No se generó el archivo de salida.")
+                        
+                except Exception as e:
+                    st.error(f"Error durante la producción: {e}")
 
 # Footer
 st.markdown("---")
