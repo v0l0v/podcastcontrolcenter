@@ -62,8 +62,9 @@ def parse_guion(guion_text: str) -> list:
     
     SOUND_MAP = {
         "CORTINILLA_SINTONIA_INICIO": "inicio.mp3",
-        "CORTINILLA_TRANSICION_CORTA": "cortinilla_cta.mp3",
+        "CORTINILLA_TRANSICION_CORTA": "bip002.mp3",
         "CORTINILLA_SINTONIA_CIERRE": "cierre.mp3",
+
     }
 
     current_speaker = None
