@@ -97,12 +97,18 @@ def parse_guion(guion_text: str) -> list:
             continue
             
         # Saltarse anotaciones de dirección (Texto entre paréntesis)
-        # Permisivo con lo que haya después del cierre (puntos, espacios)
-        if line.strip().startswith("(") and ")" in line:
-             # Verificacion simple: si empieza por ( y tiene ) al final (ignorando puntuacion final)
-             clean_line = line.strip().rstrip(".,; ")
-             if clean_line.endswith(")"):
-                continue
+        # Regex: Empieza por (, tiene algo, termina por ) y puede tener cualquier basura después.
+        # Esto cubre casos como "(Risas)." o "(Música) ..." 
+        # Evita falsos positivos como "(1) Primero..." si nos aseguramos que cierra cerca del final?
+        # Para direcciones de guion, solemos asumir que TODA la línea es la dirección.
+        if re.match(r'^\s*\(.+\)[^a-zA-Z0-9]*$', line):
+            # Si la línea entera es un paréntesis (ignorando puntuación final), lo saltamos.
+            continue
+        
+        # Fallback simple: si empieza y acaba con parentesis (tras limpiar)
+        clean_line = line.strip().rstrip(".,; ")
+        if clean_line.startswith("(") and clean_line.endswith(")"):
+            continue
 
         buffer_text.append(line)
 
