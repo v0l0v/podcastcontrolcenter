@@ -9,6 +9,7 @@ import threading
 import time
 import shutil
 import datetime
+import random
 
 import pandas as pd
 # import matplotlib
@@ -1105,36 +1106,68 @@ with tab7:
                                 with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
                                     noticias_cache = json.load(f)
                                 
-                                # Convertir cache a un map {fuente: [titulos]} para búsqueda rápida
-                                noticias_por_fuente = {}
-                                for n in noticias_cache:
-                                    s = n.get('sitio', '').strip()
-                                    t = n.get('titulo', '')
-                                    if s:
-                                        if s not in noticias_por_fuente: noticias_por_fuente[s] = []
-                                        noticias_por_fuente[s].append(t)
-                                
-                                # Cruzar con top 3
-                                copia_nombres = nombres_top_3[:] # Copia para iterar
-                                for nombre_top in copia_nombres:
-                                    # Búsqueda aproximada
-                                    encontrado = False
-                                    for fuente_cache in noticias_por_fuente:
-                                        # Match laxo (ignorando mayusc/minusc para robustez)
-                                        if nombre_top.lower() in fuente_cache.lower() or fuente_cache.lower() in nombre_top.lower():
-                                            # Match!
-                                            titulos = noticias_por_fuente[fuente_cache]
-                                            if titulos:
-                                                tit_noticia = titulos[0]
-                                                # Obtener datos fila
-                                                row_data = top_3[top_3['Fuente'] == nombre_top].iloc[0]
-                                                analisis_str += f"- {nombre_top}: {row_data['7d']} noticias. Destacada (Cache): '{tit_noticia}'\n"
-                                                if nombre_top in nombres_top_3:
-                                                    nombres_top_3.remove(nombre_top)
-                                                encontrado = True
-                                                break
                             except Exception as e:
                                 print(f"⚠️ Error leyendo caché para informe: {e}")
+                        
+                        # (RE-INSERTADO) Construir mapa de noticias para cruzar despues
+                        noticias_por_fuente = {}
+                        if 'noticias_cache' in locals():
+                            for n in noticias_cache:
+                                s = n.get('sitio', '').strip()
+                                # Guardamos objeto completo para tener 'resumen' y 'titulo'
+                                if s:
+                                    if s not in noticias_por_fuente: noticias_por_fuente[s] = []
+                                    noticias_por_fuente[s].append(n)
+
+                        # HELPER: Formateo de rangos vago y natural (ALEATORIO)
+                        def formatear_rango_cantidad(n):
+                            try:
+                                n = int(n)
+                            except: return "algunas noticias"
+                            
+                            opciones = []
+                            if n >= 20: 
+                                opciones = ["un verdadero aluvión de noticias", "han llegado a la veintena de publicaciones"]
+                            elif n > 10: 
+                                opciones = ["una gran cantidad de actividad", "más de 10 noticias"]
+                            elif n >= 5: 
+                                opciones = ["bastantes novedades interesantes", "entre 5 y 10 noticias"]
+                            elif n >= 1: 
+                                opciones = ["algunas noticias destacadas", "entre 1 y 4 noticias"]
+                            else:
+                                return "ninguna noticia nueva"
+                            
+                            return random.choice(opciones)
+
+                        # RE-PROCESAR EL STRING DE ANÁLISIS CON LOS DATOS DE CACHÉ ENRIQUECIDOS
+                        # Reiniciamos analisis_str para construirlo bien con los rangos y el contenido
+                        analisis_str = "" 
+                        
+                        # 1. TOP 3 (Con contenido del caché)
+                        # Recuperamos el Top 3 original del DF
+                        for idx, row in top_3.iterrows():
+                            nombre = row['Fuente']
+                            count = row['7d']
+                            rango_txt = formatear_rango_cantidad(count)
+                            
+                            # Buscar contenido en caché
+                            contenido_extra = ""
+                            if 'noticias_por_fuente' in locals():
+                                # Buscamos keys que coincidan
+                                for fuente_cache, lista_news_objs in noticias_por_fuente.items():
+                                    if nombre.lower() in fuente_cache.lower() or fuente_cache.lower() in nombre.lower():
+                                        # Encotrado! Concatenamos sus resumenes para que la IA reflexione
+                                        # Limitamos a 3 para no saturar token limits si hay muchas
+                                        top_news_content = [f"'{n.get('titulo','')}' - {n.get('resumen','')[:200]}..." for n in lista_news_objs[:3]]
+                                        contenido_extra = " | ".join(top_news_content)
+                                        break
+                            
+                            detalles = f"Temas tratados: {contenido_extra}" if contenido_extra else "Sin detalles disponibles."
+                            analisis_str += f"- {nombre}: Publicó {rango_txt}. {detalles}\n"
+
+                        # 2. GLOBAL Y MENCIONES (Solo nombres)
+                        # ... (Se mantiene, pero verificamos que no quedan restos de la lógica anterior)
+
 
                         # 2. FALLBACK A LÓGICA ANTIGUA (Re-parsear feeds) para los que falten
                         if nombres_top_3 and os.path.exists(feeds_filepath_local):

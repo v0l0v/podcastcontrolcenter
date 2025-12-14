@@ -455,19 +455,22 @@ class PromptsCreativos:
            - Saludo cordial y presentación del "Informe Semanal de Actividad de los GAL".
         
         2. **Cuerpo (El Análisis DETALLADO):**
-           - **Reconocimiento a los Más Activos (Top Semanal):** Cita a los 3 GAL más activos de la semana. **OBLIGATORIO:** Para cada uno, menciona y comenta brevemente SU NOTICIA DESTACADA (titular real). Pon en valor su trabajo con entusiasmo. Extiéndete en los detalles de estas noticias.
+           - **Reconocimiento a los Más Activos (Top Semanal):** 
+             - Cita a los 3 GAL más activos de la semana. 
+             - **REGLA DE CANTIDAD:** Evita decir el número exacto (ej: "7 noticias"). Usa la expresión que se te facilita en el input (ya sea un rango como "entre 5 y 10" o una frase como "bastantes novedades"), o parafraséala a tu gusto. Lo importante es que suene fluido.
+             - **REFLEXIÓN PROFUNDA (OBLIGATORIO):** Tienes los temas clave de sus noticias en el apartado "Temas tratados" (extraídos del caché). ÚSALOS. No te limites a leer el titular. Reflexiona sobre la importancia de esos proyectos para la comarca. Extiéndete en el análisis de SU CONTENIDO.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Resumen Global:** Analiza objetivamente los datos del "RESUMEN GLOBAL" (semáforo).
+           - **Resumen Global:** Analiza el "RESUMEN GLOBAL" usando también expresiones de cantidad cualitativas.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Menciones de Honor (Actividad Mensual):** Tienes una lista de "MENCIONES DE HONOR". Son GAL que han estado activos este mes. **OBLIGATORIO:** Aquí SOLO cita sus nombres (y número de noticias) ágilmente para agradecer su constancia. **NO menciones noticias específicas en esta sección, solo los nombres.**
+           - **Menciones de Honor (Actividad Mensual):** Cita ágilmente sus nombres. Sin noticias específicas aquí. Solo agradecer su constancia.
         
         3. **Cierre:**
-           - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. "Lo que no se cuenta, no existe".
+           - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. Basándote en el contenido que has analizado hoy.
            - Despedida motivadora.
            - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]`
         
         REGLAS DE TONO:
-        - **PROFESIONAL Y AGRADECIDO:** Elimina cualquier rastro de humor sarcástico, "salseo" o bromas.
+        - **PROFESIONAL Y REFLEXIVO:** Tu análisis debe basarse en el CONTENIDO REAL de las noticias (disponible en el input). Demuestra que has leído lo que publican.
         - **ESTILO DOROTEA:** Mantén tu personalidad habitual: cercana, clara, empática y rigurosa.
         - **VOCABULARIO:** Usa siempre el término "Grupos de Acción Local" o "GAL".
         
