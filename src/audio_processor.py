@@ -47,10 +47,12 @@ def generar_audio_base_tts(texto_ssml: str, client: texttospeech.TextToSpeechCli
     )
     return response.audio_content
 
+from xml.sax.saxutils import escape
+
 def text_to_ssml(text: str) -> str:
     """Envuelve texto plano en SSML básico si no lo tiene."""
     if not text.strip().startswith("<speak>"):
-        return f"<speak>{text}</speak>"
+        return f"<speak>{escape(text)}</speak>"
     return text
 
 def parse_guion(guion_text: str) -> list:
