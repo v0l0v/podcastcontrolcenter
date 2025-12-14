@@ -945,17 +945,32 @@ with tab8:
         - `[CORTINILLA_TRANSICION_CORTA]`
         """)
         
-        # Cargar ejemplo automáticamente si existe
-        default_script = ""
-        if os.path.exists("guion_especial_micomicona.txt"):
-            try:
-                with open("guion_especial_micomicona.txt", "r", encoding="utf-8") as f:
-                    default_script = f.read()
-            except: pass
+        # Selector de archivos TXT para cargar
+        st.markdown("---")
+        st.markdown("### 📂 Cargar Guion desde Archivo")
+        
+        gui_files = [f for f in os.listdir('.') if f.endswith('.txt')]
+        
+        if gui_files:
+            start_index = 0
+            # Intentar seleccionar el último usado o uno por defecto
+            if "guion_especial_micomicona2.txt" in gui_files:
+                 start_index = gui_files.index("guion_especial_micomicona2.txt")
+                 
+            script_file_to_load = st.selectbox("Selecciona un archivo:", gui_files, index=start_index)
             
-        if st.button("Cargar Guion de Ejemplo (Dorotea)"):
-             st.session_state['script_input'] = default_script
-             st.rerun()
+            if st.button("📥 Cargar Contenido del Archivo"):
+                try:
+                    with open(script_file_to_load, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    st.session_state['script_input'] = content
+                    st.toast(f"Guion cargado desde {script_file_to_load}")
+                    time.sleep(0.5)
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error leyendo archivo: {e}")
+        else:
+            st.warning("No se encontraron archivos .txt en el directorio.")
 
     with col_script:
         guion_input = st.text_area(
