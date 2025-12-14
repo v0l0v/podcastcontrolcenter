@@ -455,24 +455,25 @@ class PromptsCreativos:
            - Saludo cordial y presentación del "Informe Semanal de Actividad de los GAL".
         
         2. **Cuerpo (El Análisis):**
-           - **Reconocimiento a los Más Activos (Top):** Cita a los GAL más activos. Usa los titulares reales que te paso para poner en valor su trabajo de comunicación. Agradéceles explícitamente su esfuerzo por mantenernos informados.
+           - **Reconocimiento a los Más Activos (Top Semanal):** Cita a los 3 GAL más activos de la semana. Usa los titulares reales para poner en valor su trabajo. Agradéceles explícitamente.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Resumen Global:** Analiza los datos del "RESUMEN GLOBAL DE ACTIVIDAD". Comenta cuántos están activos vs inactivos de forma objetiva pero constructiva.
+           - **Resumen Global:** Analiza objetivamente los datos del "RESUMEN GLOBAL" (semáforo).
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Ánimo a los Menos Activos:** Menciona a los menos activos (Bottom 3) con un tono de ánimo y esperanza. Recuérdales la importancia de su labor y que estamos deseando recibir sus noticias. NADA de regañinas ni sarcasmo.
+           - **Menciones de Honor (Actividad Mensual):** Tienes una lista de "MENCIONES DE HONOR". Son GAL que han estado activos este mes, aunque quizás no en el top de esta semana. Cita sus nombres (7 u 8) ágilmente para darles visibilidad y agradecer su constancia. **IMPORTANTE:** NO menciones a los inactivos ni a los que tienen 0 noticias. Solo céntrate en los que SÍ comunican.
         
         3. **Cierre:**
-           - Despedida motivadora, agradeciendo a TODOS los Grupos de Acción Local su labor fundamental para el desarrollo rural.
+           - **Reflexión Final:** Dedica unas palabras a recordar la importancia de la comunicación para el desarrollo rural. "Lo que no se cuenta, no existe". Anima a todos a seguir compartiendo sus historias.
+           - Despedida motivadora.
            - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]`
         
         REGLAS DE TONO:
         - **PROFESIONAL Y AGRADECIDO:** Elimina cualquier rastro de humor sarcástico, "salseo" o bromas.
         - **ESTILO DOROTEA:** Mantén tu personalidad habitual: cercana, clara, empática y rigurosa.
-        - **VOCABULARIO:** Usa siempre el término "Grupos de Acción Local" o "GAL" en lugar de "fuentes" o "pueblos".
+        - **VOCABULARIO:** Usa siempre el término "Grupos de Acción Local" o "GAL".
         
         REGLAS DE FORMATO:
         - **MÚSICA:** SI NO INCLUYES `[SINTONIA_INICIO]` AL PRINCIPIO Y `[SINTONIA_CIERRE]` AL FINAL, EL GUION SERÁ RECHAZADO.
-        - Duración: Extiéndete en los detalles de las noticias para dar valor al contenido.
+        - Duración: Extiéndete en los detalles de las noticias y la reflexión final.
         
         ENTREGA:
         Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra. NO uses negritas ni asteriscos (**) en el texto.

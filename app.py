@@ -1138,9 +1138,21 @@ with tab7:
                         analisis_str += f"- Tranquilos (1-4 noticias): {count_mod} fuentes.\n"
                         analisis_str += f"- Inactivos (0 noticias): {count_zero} fuentes.\n"
 
-                        analisis_str += "\nFUENTES MENOS ACTIVAS (ÚLTIMA SEMANA):\n"
-                        for _, row in bottom_3.iterrows():
-                            analisis_str += f"- {row['Fuente']}: {row['7d']} noticias.\n"
+                        # --- CAMBIO DE LÓGICA: En lugar de los peores, buscamos MENCIONES HONORÍFICAS MENSUALES (30d) ---
+                        # Filtramos los que tienen actividad mensual > 0, excluyendo ya los top 3 de la semana
+                        df_active_month = df_sorted[~df_sorted['Fuente'].isin(nombres_top_3) & (df_sorted['30d'] > 0)]
+                        
+                        # Seleccionamos 8 aleatorios si hay suficientes, o todos los que haya
+                        import random
+                        if len(df_active_month) > 8:
+                             honor_roll = df_active_month.sample(8)
+                        else:
+                             honor_roll = df_active_month
+                        
+                        analisis_str += "\nMENCIONES DE HONOR (ACTIVIDAD MENSUAL DESTACADA):\n"
+                        analisis_str += "Estos GAL han publicado noticias en el último mes y merecen reconocimiento:\n"
+                        for _, row in honor_roll.iterrows():
+                             analisis_str += f"- {row['Fuente']}: {row['30d']} noticias (30 días).\n"
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
