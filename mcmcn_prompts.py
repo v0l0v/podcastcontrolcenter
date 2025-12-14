@@ -143,7 +143,7 @@ Crear un guion de resumen optimizado para formato audio, respetando reglas estri
 
 ### ENTREGA
 Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
-**REGLA FINAL INQUEBRANTABLE:** El resultado debe ser texto puro. NO INCLUYAS NUNCA, bajo ninguna circunstancia, anotaciones de producción como '(Música...)' o '[SFX]', o cualquier texto entre paréntesis o corchetes.
+**REGLA FINAL INQUEBRANTABLE:** El resultado debe ser texto puro. NO INCLUYAS NUNCA, bajo ninguna circunstancia, anotaciones de producción como '(Música...)' o '[SFX]', o cualquier texto entre paréntesis o corchetes. NO uses negritas ni asteriscos de formato markdown (**).
 """
 
     @staticmethod
@@ -468,7 +468,7 @@ class PromptsCreativos:
         - Tono: Simpático, sarcástico pero amable.
         
         ENTREGA:
-        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra.
+        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra. NO uses negritas ni asteriscos (**) en el texto.
         """
 
     @staticmethod
@@ -531,7 +531,7 @@ ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión tempora
 📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
 {instruccion_contexto}
 
-ENTREGA: Párrafo de locución listo para ser leído al aire, sin ningún tipo de formato de marcado.
+ENTREGA: Párrafo de locución listo para ser leído al aire, sin ningún tipo de formato de marcado. NO uses asteriscos (**).
 """
 
     @staticmethod

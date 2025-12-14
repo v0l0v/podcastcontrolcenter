@@ -796,8 +796,8 @@ def limpiar_artefactos_ia(texto: str) -> str:
     # 2.2. Eliminar símbolos extraños que a veces aparecen.
     texto_limpio = texto_limpio.replace('¿?¿?¿?', '')
 
-    # 3. Conservar contenido de markdown pero quitar los asteriscos de formato.
-    texto_limpio = re.sub(r'\*{1,2}([^*]+?)\*{1,2}', r'\1', texto_limpio)
+    # 3. Eliminar completamente cualquier asterisco (para evitar que el TTS diga "asterisco").
+    texto_limpio = texto_limpio.replace('*', '')
 
     # 4. Eliminar etiquetas de sección que la IA pueda generar, como "RESUMEN:"
     texto_limpio = re.sub(r'^[A-ZÁÉÍÓÚ\s]+:$', '', texto_limpio, flags=re.MULTILINE)
