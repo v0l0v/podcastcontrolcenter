@@ -3063,6 +3063,7 @@ if __name__ == "__main__":
     parser.add_argument("--preview", action="store_true", help="Solo generar archivo de previsión de noticias, sin audios.")
     parser.add_argument("--only-special", action="store_true", help="Solo procesar episodios especiales (EE_*) sin generar el podcast diario.")
     parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
+    parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
     args = parser.parse_args()
 
     # Cargar configuración para obtener el archivo de feeds
@@ -3087,7 +3088,12 @@ if __name__ == "__main__":
     # Busca archivos que empiecen por EE_ y genera episodios independientes.
     if not args.preview and not args.skip_special: # Solo generar si no estamos en preview ni se ha pedido saltar
         print("\n🔎 Buscando guiones de Episodios Especiales automáticos (EE_*.txt)...")
-        ee_files = glob.glob("EE_*.txt")
+        
+        if args.file_list:
+             ee_files = args.file_list
+             print(f"  -> Usando lista manual de archivos: {ee_files}")
+        else:
+             ee_files = glob.glob("EE_*.txt")
         
         if ee_files:
             print(f"  -> Se han encontrado {len(ee_files)} guiones especiales.")

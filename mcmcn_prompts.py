@@ -439,25 +439,30 @@ class PromptsCreativos:
         CONTEXTO:
         Hemos analizado qué fuentes han publicado más noticias Y qué fuentes han estado más calladas durante LA ÚLTIMA SEMANA.
         
-        DATOS DEL ANÁLISIS (TOP 3 y BOTTOM 3):
+        DATOS DEL ANÁLISIS (TOP 3 y BOTTOM 3, incluyendo titulares recientes):
         ---
         {datos_analisis}
         ---
         
         OBJETIVO:
-        Redactar un guion breve y simpático (aprox. 150-200 palabras) donde:
-        1. Agradezcas con EFUSIVIDAD a los que más han publicado (Top). Haz alguna broma amable sobre lo mucho que trabajan (ej: "¿Duermen en este ayuntamiento?", "¡Qué ritmo llevan!"). Recuérdales algun tema que hayan tratado si aparece en los datos.
-        2. Des un "tirón de orejas" CARIÑOSO y HUMORÍSTICO a los que menos han publicado o no han publicado nada (Bottom). Anímalos a enviarnos noticias. (ej: "A ver si despertamos...", "Os echamos de menos...").
-        3. Mantengas siempre un tono respetuoso, constructivo y de comunidad. Somos todos un equipo.
+        Redactar un guion humorístico y completo (MÍNIMO 5 MINUTOS de lectura, aprox 700-800 palabras) donde:
+        
+        1. **Inicio:** Usa OBLIGATORIAMENTE la etiqueta `[SINTONIA_INICIO]` al principio. Saluda con energía.
+        2. **Cuerpo (El Análisis):**
+           - Agradece con EFUSIVIDAD a los que más han publicado (Top). Haz bromas amables sobre su ritmo de trabajo.
+           - **IMPORTANTE:** Menciona explícitamente 1 o 2 titulares concretos de estas fuentes activas (están en los datos) para demostrar que los leemos. (Ej: "¡Gracias a X por contarnos lo de... !").
+           - Usa la etiqueta `[CORTINILLA]` para separar bloques si cambias mucho de tema o pasas a los "menos activos".
+           - Da un "tirón de orejas" CARIÑOSO y HUMORÍSTICO a los que menos han publicado (Bottom). Anímalos.
+        3. **Cierre:** Despedida animosa y etiqueta `[SINTONIA_CIERRE]` al final.
         
         REGLAS:
-        - Estilo conversacional, directo al oyente.
-        - NO uses estructuras de lista rígidas (Primero, Segundo...). Hazlo fluido.
-        - NO inventes datos. Usa solo las fuentes proporcionadas.
-        - Termina con una despedida animosa.
+        - Duración: Extiéndete en los comentarios, sé charlatana y simpática.
+        - Estilo: Conversacional, directo al oyente.
+        - Estructura: Fluida, no leas una lista.
+        - **MUSICA:** Es CRÍTICO incluir `[SINTONIA_INICIO]`, `[CORTINILLA]` (opcional, si pega) y `[SINTONIA_CIERRE]`.
         
         ENTREGA:
-        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas.
+        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra.
         """
 
     @staticmethod

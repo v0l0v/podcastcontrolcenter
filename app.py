@@ -282,24 +282,60 @@ with st.sidebar:
     mode_skip_special = "Sin Especiales" in selected_mode_label
     
     if mode_only_special:
-        st.info("ℹ️ Este modo buscará archivos `EE_*.txt` en la carpeta raíz y generará sus audios independientemente, SIN procesar noticias.")
-        if st.button("🚀 GENERAR SOLO EPISODIOS ESPECIALES", type="primary"):
-            with st.spinner("Procesando episodios especiales..."):
-                try:
-                    process = subprocess.run(
-                        ["python3", "dorototal.py", "--only-special"],
-                        capture_output=True,
-                        text=True,
-                        cwd=os.getcwd()
-                    )
-                    if process.returncode == 0:
-                        st.success("✅ Proceso completado.")
-                        st.code(process.stdout)
-                    else:
-                        st.error("Error en el proceso.")
-                        st.code(process.stderr)
-                except Exception as e:
-                    st.error(f"Error ejecución: {e}")
+        st.info("ℹ️ Modifica o selecciona los guiones especiales antes de generar el audio.")
+        
+        # Buscar archivos .txt que empiecen por EE_
+        ee_scripts = sorted(glob.glob("EE_*.txt"))
+        
+        selected_scripts = []
+        
+        if not ee_scripts:
+            st.warning("No se han encontrado guiones (EE_*.txt).")
+        else:
+            st.markdown("##### 📜 Guiones disponibles:")
+            for script in ee_scripts:
+                col_sel, col_del = st.columns([4, 1])
+                with col_sel:
+                    # Checkbox marcado por defecto
+                    if st.checkbox(f"{script}", value=True, key=f"sel_{script}"):
+                        selected_scripts.append(script)
+                with col_del:
+                    if st.button("🗑️", key=f"del_script_{script}", help="Eliminar guion"):
+                        try:
+                            os.remove(script)
+                            st.toast(f"Borrado: {script}")
+                            time.sleep(0.5)
+                            st.rerun()
+                        except Exception as e:
+                            st.error("Error")
+
+            st.divider()
+            
+            # Botón de generar solo si hay seleccionados
+            btn_disabled = len(selected_scripts) == 0
+            
+            if st.button("🚀 GENERAR SELECCIONADOS", type="primary", disabled=btn_disabled):
+                with st.spinner(f"Procesando {len(selected_scripts)} episodios..."):
+                    try:
+                        cmd = ["python3", "dorototal.py", "--only-special", "--file-list"] + selected_scripts
+                        
+                        process = subprocess.run(
+                            cmd,
+                            capture_output=True,
+                            text=True,
+                            cwd=os.getcwd()
+                        )
+                        if process.returncode == 0:
+                            st.success("✅ Proceso completado.")
+                            st.code(process.stdout)
+                            # Recargar para actualizar (quizas se movieron a .processed)
+                            time.sleep(2)
+                            st.rerun()
+                        else:
+                            st.error("Error en el proceso.")
+                            st.code(process.stderr)
+                    except Exception as e:
+                        st.error(f"Error ejecución: {e}")
         
     st.divider()
 
@@ -1022,10 +1058,73 @@ with tab7:
                         if bottom_3.empty:
                              bottom_3 = df_sorted.tail(3) # Si todos tienen algo, los ultimos
                         
-                        # Construir string de análisis
+                        # Construir string de análisis y EXTRAER INFO REAL
                         analisis_str = "TOP 3 FUENTES MÁS ACTIVAS (ÚLTIMA SEMANA):\n"
-                        for _, row in top_3.iterrows():
-                            analisis_str += f"- {row['Fuente']}: {row['7d']} noticias.\n"
+                        
+                        import feedparser # Aseguramos import aquí o arriba
+                        
+                        # Buscamos la URL original en el archivo feeds.txt para poder parsearlo
+                        # El DF solo tiene el Nombre (Titulo). Es un poco ineficiente pero necesario si el DF no guarda la URL.
+                        # Mejor si src.analytics devolviera tambien la URL.
+                        # ASUMIMOS QUE df TIENE NOMBRE PERO NO URL. 
+                        # VAMOS A LEER FEEDS.TXT Y MAPEAR RAPIDO.
+                        base_dir = os.path.dirname(os.path.abspath(__file__))
+                        feeds_filepath_local = os.path.join(base_dir, 'feeds.txt')
+                        mapa_nombre_url = {}
+                        if os.path.exists(feeds_filepath_local):
+                            with open(feeds_filepath_local, 'r') as f:
+                                for line in f:
+                                    line = line.strip()
+                                    if line and not line.startswith('#'):
+                                         # Parseamos ligero para sacar titulo y mapear
+                                         try:
+                                             fd = feedparser.parse(line)
+                                             tit = fd.feed.get('title', line) # Aproximacion
+                                             # Normalizar titulos seria ideal
+                                             # Para simplificar, iteramos sobre los top3 y buscamos match 'parecido' o usamos lo que src.analytics haya usado.
+                                             # src.analytics devuelve el título del feed.
+                                         except: pass
+                        
+                        # ESTRATEGIA: src.analytics NO devuelve URL. Es un fallo de diseño previo, pero work around:
+                        # Re-instanciar src.analytics.analizar_frecuencia_fuentes devuelve DF.
+                        # Modificaremos src.analytics es mejor opcion? NO, usuario pidio tocar app.py y dorototal.
+                        # Haremos un best-effort re-leyendo feeds.txt y buscando coincidencias.
+                        
+                        # O MEJOR: modificar src.analytics rapido para incluir URL oculta? No, keep simple.
+                        # Vamos a iterar feeds.txt y si el titulo coincide con uno del Top 3, sacamos noticias.
+                        
+                        urls_top_3 = []
+                        nombres_top_3 = top_3['Fuente'].tolist()
+                        
+                        if os.path.exists(feeds_filepath_local):
+                             with open(feeds_filepath_local, 'r') as f:
+                                urls_candidatas = [l.strip() for l in f if l.strip() and not l.startswith('#')]
+                                
+                             for url in urls_candidatas:
+                                 try:
+                                     fd = feedparser.parse(url)
+                                     tit = fd.feed.get('title', url)
+                                     # Comprobamos si este titulo esta en nuestro top 3
+                                     # OJO: src.analytics hace encoding fix. Hacemos igual?
+                                     # Simplemente si contain o exact match.
+                                     
+                                     for nombre_top in nombres_top_3:
+                                         if nombre_top in tit or tit in nombre_top: # Aproximación laxa
+                                             # Es uno de los top!
+                                             # Sacamos 1 noticia reciente
+                                             if fd.entries:
+                                                 entry = fd.entries[0]
+                                                 tit_noticia = entry.get('title', 'Sin titulo')
+                                                 analisis_str += f"- {nombre_top}: {row['7d']} noticias. Destacada: '{tit_noticia}'\n"
+                                                 # Lo sacamos de la lista para no repetir
+                                                 nombres_top_3.remove(nombre_top)
+                                                 break 
+                                 except: pass
+                        
+                        # Si quedó alguno sin matchear (por encoding o lo que sea), lo ponemos simple
+                        for nombre_restante in nombres_top_3:
+                             row_data = top_3[top_3['Fuente'] == nombre_restante].iloc[0]
+                             analisis_str += f"- {nombre_restante}: {row_data['7d']} noticias.\n"
                         
                         analisis_str += "\nFUENTES MENOS ACTIVAS (ÚLTIMA SEMANA):\n"
                         for _, row in bottom_3.iterrows():
