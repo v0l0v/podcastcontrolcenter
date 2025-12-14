@@ -1142,17 +1142,19 @@ with tab7:
                         # Filtramos los que tienen actividad mensual > 0, excluyendo ya los top 3 de la semana
                         df_active_month = df_sorted[~df_sorted['Fuente'].isin(nombres_top_3) & (df_sorted['30d'] > 0)]
                         
-                        # Seleccionamos 8 aleatorios si hay suficientes, o todos los que haya
-                        import random
+                        # Ordenamos por actividad de 30 días descendente para sacar LOS QUE MÁS han publicado
+                        df_active_month = df_active_month.sort_values(by='30d', ascending=False)
+
+                        # Seleccionamos los 8 primeros (los más activos del resto)
                         if len(df_active_month) > 8:
-                             honor_roll = df_active_month.sample(8)
+                             honor_roll = df_active_month.head(8)
                         else:
                              honor_roll = df_active_month
                         
                         analisis_str += "\nMENCIONES DE HONOR (ACTIVIDAD MENSUAL DESTACADA):\n"
-                        analisis_str += "Estos GAL han publicado noticias en el último mes y merecen reconocimiento:\n"
+                        analisis_str += "Estos GAL han publicado muchas noticias en el último mes y merecen reconocimiento:\n"
                         for _, row in honor_roll.iterrows():
-                             analisis_str += f"- {row['Fuente']}: {row['30d']} noticias (30 días).\n"
+                             analisis_str += f"- {row['Fuente']}: {row['30d']} noticias (últimos 30 días).\n"
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
