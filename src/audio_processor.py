@@ -75,9 +75,11 @@ def parse_guion(guion_text: str) -> list:
     
     SOUND_MAP = {
         "CORTINILLA_SINTONIA_INICIO": "inicio.mp3",
+        "SINTONIA_INICIO": "inicio.mp3",
         "CORTINILLA_TRANSICION_CORTA": "bip002.mp3",
         "CORTINILLA_TRANSICIÓN_CORTA": "bip002.mp3", # Alias con tilde
         "CORTINILLA_SINTONIA_CIERRE": "cierre.mp3",
+        "SINTONIA_CIERRE": "cierre.mp3",
         "CORTINILLA_CIERRE": "cierre.mp3", # Alias
     }
 

@@ -3105,10 +3105,15 @@ if __name__ == "__main__":
                         guion_content = f.read()
                     
                     if guion_content.strip():
-                        # Generar nombre de salida: EE_nombre_timestamp.mp3
-                        base_name = os.path.splitext(script_file)[0]
-                        timestamp_ee = int(time.time())
-                        output_ee = f"{base_name}_{timestamp_ee}.mp3"
+                        # Generar nombre de salida:
+                        if "EE_analisis_semanal" in script_file:
+                             # Si ya tiene formato (probablemente desde app.py), usar el mismo nombre pero con .mp3
+                             output_ee = os.path.splitext(script_file)[0] + ".mp3"
+                        else:
+                             # Formato genérico para otros especiales
+                             base_name = os.path.splitext(script_file)[0]
+                             timestamp_ee = int(time.time())
+                             output_ee = f"{base_name}_{timestamp_ee}.mp3"
                         
                         # Usar ruta absoluta para evitar ambigüedades
                         output_path_ee_abs = os.path.abspath(output_ee)
