@@ -1149,7 +1149,7 @@ with tab7:
                         # 3. Limpiar y Guardar
                         clean_script = guion_generado.replace("```txt", "").replace("```", "").strip()
                         
-                        timestamp_str = datetime.now().strftime("%d-%m-%y_%H-%M")
+                        timestamp_str = datetime.datetime.now().strftime("%d-%m-%y_%H-%M")
                         filename = f"EE_analisis_semanal - {timestamp_str}.txt"
                         
                         with open(filename, "w", encoding="utf-8") as f:
