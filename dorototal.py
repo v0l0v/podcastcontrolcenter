@@ -213,6 +213,7 @@ except Exception as e:
 # UTILIDADES LLM (IMPORTADO)
 # =================================================================================
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure
+from src.audio_processor import generar_episodio_especial
 
 
 # =================================================================================
@@ -3076,3 +3077,47 @@ if __name__ == "__main__":
     else:
         print(f"🚀 Modo: Generación automática estándar usando {archivo_feeds}")
         procesar_feeds_google(archivo_feeds, min_items=20)
+
+    # ---------------------------------------------------------
+    # AUTOMATIZACIÓN DE EPISODIOS ESPECIALES (EE_*.txt)
+    # ---------------------------------------------------------
+    # Busca archivos que empiecen por EE_ y genera episodios independientes.
+    if not args.preview: # Solo generar si no estamos en modo preview
+        print("\n🔎 Buscando guiones de Episodios Especiales automáticos (EE_*.txt)...")
+        ee_files = glob.glob("EE_*.txt")
+        
+        if ee_files:
+            print(f"  -> Se han encontrado {len(ee_files)} guiones especiales.")
+            for script_file in ee_files:
+                print(f"  🎙️  Procesando: {script_file}")
+                
+                try:
+                    with open(script_file, 'r', encoding='utf-8') as f:
+                        guion_content = f.read()
+                    
+                    if guion_content.strip():
+                        # Generar nombre de salida: EE_nombre_timestamp.mp3
+                        base_name = os.path.splitext(script_file)[0]
+                        timestamp_ee = int(time.time())
+                        output_ee = f"{base_name}_{timestamp_ee}.mp3"
+                        
+                        # Usar ruta absoluta para evitar ambigüedades
+                        output_path_ee_abs = os.path.abspath(output_ee)
+                        
+                        result_path = generar_episodio_especial(guion_content, output_path_ee_abs)
+                        
+                        if os.path.exists(result_path):
+                            print(f"     ✅ Episodio especial generado: {output_ee}")
+                            # Renombrar procesado
+                            processed_name = f"{script_file}.processed"
+                            os.rename(script_file, processed_name)
+                            print(f"     -> Archivo renombrado a: {processed_name}")
+                        else:
+                            print(f"     ❌ Error: No se generó el archivo de audio para {script_file}")
+                    else:
+                        print(f"     ⚠️ El archivo {script_file} está vacío.")
+                        
+                except Exception as e:
+                    print(f"     ❌ Error procesando {script_file}: {e}")
+        else:
+            print("  -> No se encontraron guiones especiales (EE_*.txt).")
