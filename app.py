@@ -935,15 +935,14 @@ with tab8:
 
         st.markdown("### 📝 Formato del Guion")
         st.markdown("""
-        - **Diálogo:** `NOMBRE: Texto...`
-        - **Sonidos:** `[NOMBRE_DEL_AUDIO]`
-        - **Comentarios:** `(Texto descriptivo)` son ignorados.
+        - **Texto simple:** Lo que escribas será leído por la voz activa.
+        - **Sonidos:** `[NOMBRE_DEL_AUDIO]` inserta el mp3 correspondiente.
+        - **Notas:** `(Texto entre paréntesis)` son ignoradas por la IA.
         
         **Audios Disponibles:**
         - `[CORTINILLA_SINTONIA_INICIO]` (Intro)
         - `[CORTINILLA_CIERRE]` (Outro)
-        - `[CORTINILLA_TRANSICION_TECNOLOGICA]`
-        - `[EFECTO_SONORO]`
+        - `[CORTINILLA_TRANSICION_CORTA]`
         """)
         
         # Cargar ejemplo automáticamente si existe
