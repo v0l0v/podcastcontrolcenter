@@ -963,7 +963,11 @@ with tab8:
                 try:
                     with open(script_file_to_load, "r", encoding="utf-8") as f:
                         content = f.read()
+                    
+                    # Actualizar tanto la variable auxiliar como el widget key
                     st.session_state['script_input'] = content
+                    st.session_state['script_main_area'] = content
+                    
                     st.toast(f"Guion cargado desde {script_file_to_load}")
                     time.sleep(0.5)
                     st.rerun()
