@@ -3061,14 +3061,17 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Script de generación de podcast Micomicona")
     parser.add_argument("--preview", action="store_true", help="Solo generar archivo de previsión de noticias, sin audios.")
-    parser.add_argument("--from-json", type=str, help="Ruta a un archivo JSON con noticias seleccionadas para procesar.")
+    parser.add_argument("--only-special", action="store_true", help="Solo procesar episodios especiales (EE_*) sin generar el podcast diario.")
+    parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
     args = parser.parse_args()
 
     # Cargar configuración para obtener el archivo de feeds
     config_app = cargar_configuracion()
     archivo_feeds = config_app.get('generation_config', {}).get('feeds_file', 'feeds.txt')
     
-    if args.from_json:
+    if args.only_special:
+        print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
+    elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
         procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json)
     elif args.preview:
@@ -3082,7 +3085,7 @@ if __name__ == "__main__":
     # AUTOMATIZACIÓN DE EPISODIOS ESPECIALES (EE_*.txt)
     # ---------------------------------------------------------
     # Busca archivos que empiecen por EE_ y genera episodios independientes.
-    if not args.preview: # Solo generar si no estamos en modo preview
+    if not args.preview and not args.skip_special: # Solo generar si no estamos en preview ni se ha pedido saltar
         print("\n🔎 Buscando guiones de Episodios Especiales automáticos (EE_*.txt)...")
         ee_files = glob.glob("EE_*.txt")
         

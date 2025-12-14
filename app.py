@@ -17,7 +17,7 @@ import pandas as pd
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
 from src.llm_utils import generar_texto_con_gemini
-from src.audio_processor import generar_episodio_especial
+
 from mcmcn_prompts import PromptsCreativos
 
 
@@ -273,79 +273,111 @@ with st.sidebar:
     if 'config_check' not in st.session_state:
         st.session_state['config_check'] = False
 
-    st.markdown("#### 1️⃣ Configuración")
-    st.caption("Antes de analizar, asegúrate de que en la pestaña [LÓGICA DE NOTICIAS] los Límites de Selección son correctos.Si los modificas, guardalos presionando el boton al final de la pantalla [GUARDAR LÓGICA DE NOTICIAS]")
+    # Estado 0: Selección de Modo
+    st.markdown("#### 0️⃣ Modo de Operación")
+    mode_options = ["Completo (Podcast + Especiales)", "Solo Podcast (Sin Especiales)", "Solo Episodios Especiales"]
+    selected_mode_label = st.radio("Selecciona qué deseas generar:", mode_options, index=0, key="gen_mode_selector")
     
-    config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config')
-    st.session_state['config_check'] = config_checked
-
-    # Estado 2: Análisis (Solo si check marcado)
-    st.markdown("#### 2️⃣ Análisis de Fuentes")
-    btn_analizar_disabled = not config_checked
+    mode_only_special = "Solo Episodios Especiales" in selected_mode_label
+    mode_skip_special = "Sin Especiales" in selected_mode_label
     
-    if st.button("🔎 ANALIZAR NOTICIAS", type="secondary", disabled=btn_analizar_disabled):
-        with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA..."):
-            try:
-                if os.path.exists("prevision_noticias_resumidas.json"):
-                    os.remove("prevision_noticias_resumidas.json")
-                if os.path.exists("seleccion_usuario.json"):
-                    os.remove("seleccion_usuario.json")
-                    
-                # Resetear confirmación al re-analizar
-                st.session_state['news_confirmed'] = False
-
-                process = subprocess.run(
-                    ["python3", "dorototal.py", "--preview"],
-                    capture_output=True,
-                    text=True,
-                    cwd=os.getcwd()
-                )
-                
-                if process.returncode == 0:
-                    st.success("✅ Análisis completado. Ve al panel principal para editar.")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error(f"Error analizando noticias:\n{process.stderr}")
-            except Exception as e:
-                st.error(f"Error ejecución: {e}")
-
-    # Lógica de Selección Manual (Edición)
-    manual_selection_mode = False
-    selected_news_to_process = []
-    
-    if os.path.exists("prevision_noticias_resumidas.json"):
-        st.markdown("#### 3️⃣ Revisión y Confirmación")
+    if mode_only_special:
+        st.info("ℹ️ Este modo buscará archivos `EE_*.txt` en la carpeta raíz y generará sus audios independientemente, SIN procesar noticias.")
+        if st.button("🚀 GENERAR SOLO EPISODIOS ESPECIALES", type="primary"):
+            with st.spinner("Procesando episodios especiales..."):
+                try:
+                    process = subprocess.run(
+                        ["python3", "dorototal.py", "--only-special"],
+                        capture_output=True,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    if process.returncode == 0:
+                        st.success("✅ Proceso completado.")
+                        st.code(process.stdout)
+                    else:
+                        st.error("Error en el proceso.")
+                        st.code(process.stderr)
+                except Exception as e:
+                    st.error(f"Error ejecución: {e}")
         
-        # Cargar datos para el formulario principal (que se muestra en el sidebar también para feedback visual)
-        try:
-            with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                news_candidates = json.load(f)
-                
-            manual_selection_mode = True
-            st.info(f"Tienes {len(news_candidates)} noticias pendientes de revisión en el panel central.")
-            
-            # --- FORMULARIO DE EDICIÓN (PANEL CENTRAL REVISADO) ---
-            # Mostramos el formulario en un expander AQUI en el sidebar NO, debe ir en el main, 
-            # pero necesitamos la lógica de confirmación aquí.
-            # Para simplificar y seguir la petición del usuario: La edición se hace abajo (main), 
-            # pero el botón de CONFIRMAR lo ponemos aquí como paso del wizard.
-            
-            # Botón de confirmación explícita
-            if 'news_confirmed' not in st.session_state:
-                st.session_state['news_confirmed'] = False
-                
-            if st.button("✅ NOTICIAS REVISADAS Y CONFIRMADAS", type="secondary", disabled=False):
-                st.session_state['news_confirmed'] = True
-                st.success("¡Perfecto! Ahora puedes generar el podcast.")
-            
-            if st.session_state['news_confirmed']:
-                st.caption("✅ Selección confirmada.")
-            else:
-                st.warning("⚠️ Debes editar (si quieres) y luego pulsar confirmar arriba.")
+    st.divider()
 
-        except Exception as e:
-            st.error("Error leyendo archivo de preview.")
+    # Si es solo especiales, ocultamos el resto del wizard
+    if not mode_only_special:
+        st.markdown("#### 1️⃣ Configuración")
+        st.caption("Antes de analizar, asegúrate de que en la pestaña [LÓGICA DE NOTICIAS] los Límites de Selección son correctos.Si los modificas, guardalos presionando el boton al final de la pantalla [GUARDAR LÓGICA DE NOTICIAS]")
+        
+        config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config')
+        st.session_state['config_check'] = config_checked
+
+        # Estado 2: Análisis (Solo si check marcado)
+        st.markdown("#### 2️⃣ Análisis de Fuentes")
+        btn_analizar_disabled = not config_checked
+        
+        if st.button("🔎 ANALIZAR NOTICIAS", type="secondary", disabled=btn_analizar_disabled):
+            with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA..."):
+                try:
+                    if os.path.exists("prevision_noticias_resumidas.json"):
+                        os.remove("prevision_noticias_resumidas.json")
+                    if os.path.exists("seleccion_usuario.json"):
+                        os.remove("seleccion_usuario.json")
+                        
+                    # Resetear confirmación al re-analizar
+                    st.session_state['news_confirmed'] = False
+
+                    process = subprocess.run(
+                        ["python3", "dorototal.py", "--preview"],
+                        capture_output=True,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    
+                    if process.returncode == 0:
+                        st.success("✅ Análisis completado. Ve al panel principal para editar.")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error(f"Error analizando noticias:\n{process.stderr}")
+                except Exception as e:
+                    st.error(f"Error ejecución: {e}")
+
+        # Lógica de Selección Manual (Edición)
+        manual_selection_mode = False
+        selected_news_to_process = []
+        
+        if os.path.exists("prevision_noticias_resumidas.json"):
+            st.markdown("#### 3️⃣ Revisión y Confirmación")
+            
+            # Cargar datos para el formulario principal (que se muestra en el sidebar también para feedback visual)
+            try:
+                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                    news_candidates = json.load(f)
+                    
+                manual_selection_mode = True
+                st.info(f"Tienes {len(news_candidates)} noticias pendientes de revisión en el panel central.")
+                
+                # --- FORMULARIO DE EDICIÓN (PANEL CENTRAL REVISADO) ---
+                # Mostramos el formulario en un expander AQUI en el sidebar NO, debe ir en el main, 
+                # pero necesitamos la lógica de confirmación aquí.
+                # Para simplificar y seguir la petición del usuario: La edición se hace abajo (main), 
+                # pero el botón de CONFIRMAR lo ponemos aquí como paso del wizard.
+                
+                # Botón de confirmación explícita
+                if 'news_confirmed' not in st.session_state:
+                    st.session_state['news_confirmed'] = False
+                    
+                if st.button("✅ NOTICIAS REVISADAS Y CONFIRMADAS", type="secondary", disabled=False):
+                    st.session_state['news_confirmed'] = True
+                    st.success("¡Perfecto! Ahora puedes generar el podcast.")
+                
+                if st.session_state['news_confirmed']:
+                    st.caption("✅ Selección confirmada.")
+                else:
+                    st.warning("⚠️ Debes editar (si quieres) y luego pulsar confirmar arriba.")
+
+            except Exception as e:
+                st.error("Error leyendo archivo de preview.")
 
     # Estado 4: Generación
     st.markdown("#### 4️⃣ Generación Final")
@@ -392,6 +424,10 @@ with st.sidebar:
                 
                 cmd = ["python3", "dorototal.py", "--from-json", "seleccion_usuario.json"]
                 
+                # Lógica para saltar especiales si el usuario lo pidió
+                if mode_skip_special:
+                    cmd.append("--skip-special")
+
                 process = subprocess.Popen(
                     cmd,
                     stdout=subprocess.PIPE,
@@ -862,6 +898,53 @@ with tab6:
 
     except Exception as e:
         st.error(f"Error leyendo historial: {e}")
+
+    st.markdown("---")
+    st.markdown('<div class="sub-header">🎭 Historial de Episodios Especiales</div>', unsafe_allow_html=True)
+    
+    try:
+        ee_files = sorted(glob.glob("EE_*.mp3"), key=os.path.getctime, reverse=True)
+        
+        if not ee_files:
+            st.info("No hay episodios especiales generados.")
+        else:
+            for ee_file in ee_files:
+                # Nombre limpio
+                display_name_ee = os.path.basename(ee_file)
+                
+                with st.expander(f"📢 {display_name_ee}", expanded=False):
+                    col_ee_info, col_ee_actions = st.columns([3, 1])
+                    
+                    with col_ee_info:
+                        st.audio(ee_file)
+                        st.caption(f"Archivo: {display_name_ee}")
+                        
+                    with col_ee_actions:
+                         with open(ee_file, "rb") as f:
+                                st.download_button(
+                                    label="⬇️ MP3",
+                                    data=f,
+                                    file_name=display_name_ee,
+                                    key=f"dl_ee_{ee_file}",
+                                    use_container_width=True
+                                )
+                         
+                         if st.button("🗑️ Eliminar", key=f"del_ee_{ee_file}", type="secondary", use_container_width=True):
+                            try:
+                                os.remove(ee_file)
+                                # Buscar si existe también el .txt.processed y borrarlo para limpiar
+                                txt_processed = ee_file.split("_1")[0] + ".txt.processed" # Aproximacion simple, mejor regex si fuera critico
+                                # Intentamos buscar el original basado en nombre
+                                # EE_nombre_timestamp.mp3 -> EE_nombre.txt.processed
+                                # Esto es dificil deducir exacto sin timestamp. Borramos solo mp3 por seguridad.
+                                
+                                st.toast(f"Eliminado: {display_name_ee}")
+                                time.sleep(1)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error eliminando: {e}")
+    except Exception as e:
+        st.error(f"Error leyendo especiales: {e}")
 
 with tab7:
     st.markdown('<div class="sub-header">Informe de Actividad de Fuentes</div>', unsafe_allow_html=True)
