@@ -431,7 +431,7 @@ with st.sidebar:
 # Pestañas principales
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "🎭 Episodios Especiales"])
+tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes"])
 
 with tab_rev:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -922,98 +922,7 @@ with tab7:
                  st.error(f"Error renderizando tabla: {e}")
 
 
-with tab8:
-    st.markdown('<div class="sub-header">🎭 Productor de Episodios Especiales</div>', unsafe_allow_html=True)
-    st.info("Crea mini-episodios o anuncios especiales pegando aquí tu guion.")
 
-    col_script, col_info = st.columns([2, 1])
-
-    with col_info:
-        # Mostrar voz activa para evitar confusiones
-        current_voice = config.get('audio_config', {}).get('voice_name', 'Desconocida')
-        st.info(f"🎙️ Voz activa: **{current_voice}**\n\n(Puedes cambiarla en la pestaña 'Audio y Voz')")
-
-        st.markdown("### 📝 Formato del Guion")
-        st.markdown("""
-        - **Texto simple:** Lo que escribas será leído por la voz activa.
-        - **Sonidos:** `[NOMBRE_DEL_AUDIO]` inserta el mp3 correspondiente.
-        - **Notas:** `(Texto entre paréntesis)` son ignoradas por la IA.
-        
-        **Audios Disponibles:**
-        - `[CORTINILLA_SINTONIA_INICIO]` (Intro)
-        - `[CORTINILLA_CIERRE]` (Outro)
-        - `[CORTINILLA_TRANSICION_CORTA]`
-        """)
-        
-        # Selector de archivos TXT para cargar
-        st.markdown("---")
-        st.markdown("### 📂 Cargar Guion desde Archivo")
-        
-        gui_files = [f for f in os.listdir('.') if f.endswith('.txt')]
-        
-        if gui_files:
-            start_index = 0
-            # Intentar seleccionar el último usado o uno por defecto
-            if "guion_especial_micomicona2.txt" in gui_files:
-                 start_index = gui_files.index("guion_especial_micomicona2.txt")
-                 
-            script_file_to_load = st.selectbox("Selecciona un archivo:", gui_files, index=start_index)
-            
-            if st.button("📥 Cargar Contenido del Archivo"):
-                try:
-                    with open(script_file_to_load, "r", encoding="utf-8") as f:
-                        content = f.read()
-                    
-                    # Actualizar tanto la variable auxiliar como el widget key
-                    st.session_state['script_input'] = content
-                    st.session_state['script_main_area'] = content
-                    
-                    st.toast(f"Guion cargado desde {script_file_to_load}")
-                    time.sleep(0.5)
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Error leyendo archivo: {e}")
-        else:
-            st.warning("No se encontraron archivos .txt en el directorio.")
-
-    with col_script:
-        guion_input = st.text_area(
-            "Editor de Guion", 
-            value=st.session_state.get('script_input', ""),
-            height=500,
-            key='script_main_area'
-        )
-
-    if st.button("🎙️ GENERAR EPISODIO ESPECIAL", type="primary"):
-        if not guion_input.strip():
-            st.error("El guion está vacío.")
-        else:
-            with st.spinner("Produciendo episodio especial... Esto puede tardar unos minutos."):
-                timestamp = int(time.time())
-                output_filename = f"especial_{timestamp}.mp3"
-                output_path = os.path.join(os.getcwd(), output_filename)
-                
-                try:
-                    # Llamar al procesador
-                    result_path = generar_episodio_especial(guion_input, output_path)
-                    
-                    if os.path.exists(result_path):
-                        st.success(f"✅ Episodio generado: {output_filename}")
-                        st.audio(result_path)
-                        
-                        # Botón descarga
-                        with open(result_path, "rb") as file:
-                            st.download_button(
-                                label="⬇️ Descargar MP3",
-                                data=file,
-                                file_name=output_filename,
-                                mime="audio/mp3"
-                            )
-                    else:
-                        st.error("Error: No se generó el archivo de salida.")
-                        
-                except Exception as e:
-                    st.error(f"Error durante la producción: {e}")
 
 # Footer
 st.markdown("---")
