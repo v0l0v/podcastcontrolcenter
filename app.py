@@ -1096,7 +1096,48 @@ with tab7:
                         urls_top_3 = []
                         nombres_top_3 = top_3['Fuente'].tolist()
                         
-                        if os.path.exists(feeds_filepath_local):
+                        # ESTRATEGIA MEJORADA: 
+                        # 1. Intentar buscar en el CACHÉ DE PREVISIÓN (prevision_noticias_resumidas.json)
+                        # Esto es lo que el usuario pidió ("teniendo en cuenta el archivo cache").
+                        
+                        if os.path.exists("prevision_noticias_resumidas.json"):
+                            try:
+                                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                                    noticias_cache = json.load(f)
+                                
+                                # Convertir cache a un map {fuente: [titulos]} para búsqueda rápida
+                                noticias_por_fuente = {}
+                                for n in noticias_cache:
+                                    s = n.get('sitio', '').strip()
+                                    t = n.get('titulo', '')
+                                    if s:
+                                        if s not in noticias_por_fuente: noticias_por_fuente[s] = []
+                                        noticias_por_fuente[s].append(t)
+                                
+                                # Cruzar con top 3
+                                copia_nombres = nombres_top_3[:] # Copia para iterar
+                                for nombre_top in copia_nombres:
+                                    # Búsqueda aproximada
+                                    encontrado = False
+                                    for fuente_cache in noticias_por_fuente:
+                                        # Match laxo (ignorando mayusc/minusc para robustez)
+                                        if nombre_top.lower() in fuente_cache.lower() or fuente_cache.lower() in nombre_top.lower():
+                                            # Match!
+                                            titulos = noticias_por_fuente[fuente_cache]
+                                            if titulos:
+                                                tit_noticia = titulos[0]
+                                                # Obtener datos fila
+                                                row_data = top_3[top_3['Fuente'] == nombre_top].iloc[0]
+                                                analisis_str += f"- {nombre_top}: {row_data['7d']} noticias. Destacada (Cache): '{tit_noticia}'\n"
+                                                if nombre_top in nombres_top_3:
+                                                    nombres_top_3.remove(nombre_top)
+                                                encontrado = True
+                                                break
+                            except Exception as e:
+                                print(f"⚠️ Error leyendo caché para informe: {e}")
+
+                        # 2. FALLBACK A LÓGICA ANTIGUA (Re-parsear feeds) para los que falten
+                        if nombres_top_3 and os.path.exists(feeds_filepath_local):
                              with open(feeds_filepath_local, 'r') as f:
                                 urls_candidatas = [l.strip() for l in f if l.strip() and not l.startswith('#')]
                                 
@@ -1104,19 +1145,16 @@ with tab7:
                                  try:
                                      fd = feedparser.parse(url)
                                      tit = fd.feed.get('title', url)
-                                     # Comprobamos si este titulo esta en nuestro top 3
-                                     # OJO: src.analytics hace encoding fix. Hacemos igual?
-                                     # Simplemente si contain o exact match.
                                      
                                      for nombre_top in nombres_top_3:
-                                         if nombre_top in tit or tit in nombre_top: # Aproximación laxa
+                                         if nombre_top in tit or tit in nombre_top: 
                                              # Es uno de los top!
-                                             # Sacamos 1 noticia reciente
                                              if fd.entries:
                                                  entry = fd.entries[0]
                                                  tit_noticia = entry.get('title', 'Sin titulo')
-                                                 analisis_str += f"- {nombre_top}: {row['7d']} noticias. Destacada: '{tit_noticia}'\n"
-                                                 # Lo sacamos de la lista para no repetir
+                                                 # FIX: 'row' no estaba definido, usamos row_data
+                                                 row_data = top_3[top_3['Fuente'] == nombre_top].iloc[0]
+                                                 analisis_str += f"- {nombre_top}: {row_data['7d']} noticias. Destacada: '{tit_noticia}'\n"
                                                  nombres_top_3.remove(nombre_top)
                                                  break 
                                  except: pass

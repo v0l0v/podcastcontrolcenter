@@ -448,21 +448,21 @@ class PromptsCreativos:
         ---
         
         OBJETIVO:
-        Redactar un guion "Informe Semanal" COMPLETO Y ESTRUCTURADO (MÍNIMO 5 MINUTOS de lectura, aprox 700-800 palabras) donde:
+        Redactar un guion "Informe Semanal" COMPLETO Y ESTRUCTURADO (MÍNIMO 8 MINUTOS de lectura, aprox 1200 palabras) donde:
         
         1. **Inicio:**
            - ETIQUETA OBLIGATORIA: `[SINTONIA_INICIO]`
            - Saludo cordial y presentación del "Informe Semanal de Actividad de los GAL".
         
-        2. **Cuerpo (El Análisis):**
-           - **Reconocimiento a los Más Activos (Top Semanal):** Cita a los 3 GAL más activos de la semana. Usa los titulares reales para poner en valor su trabajo. Agradéceles explícitamente.
+        2. **Cuerpo (El Análisis DETALLADO):**
+           - **Reconocimiento a los Más Activos (Top Semanal):** Cita a los 3 GAL más activos de la semana. **OBLIGATORIO:** Para cada uno, menciona y comenta brevemente SU NOTICIA DESTACADA (titular real). Pon en valor su trabajo con entusiasmo. Extiéndete en los detalles de estas noticias.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
            - **Resumen Global:** Analiza objetivamente los datos del "RESUMEN GLOBAL" (semáforo).
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Menciones de Honor (Actividad Mensual):** Tienes una lista de "MENCIONES DE HONOR". Son GAL que han estado activos este mes, aunque quizás no en el top de esta semana. Cita sus nombres (7 u 8) ágilmente para darles visibilidad y agradecer su constancia. **IMPORTANTE:** NO menciones a los inactivos ni a los que tienen 0 noticias. Solo céntrate en los que SÍ comunican.
+           - **Menciones de Honor (Actividad Mensual):** Tienes una lista de "MENCIONES DE HONOR". Son GAL que han estado activos este mes. **OBLIGATORIO:** Aquí SOLO cita sus nombres (y número de noticias) ágilmente para agradecer su constancia. **NO menciones noticias específicas en esta sección, solo los nombres.**
         
         3. **Cierre:**
-           - **Reflexión Final:** Dedica unas palabras a recordar la importancia de la comunicación para el desarrollo rural. "Lo que no se cuenta, no existe". Anima a todos a seguir compartiendo sus historias.
+           - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. "Lo que no se cuenta, no existe".
            - Despedida motivadora.
            - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]`
         
@@ -473,7 +473,7 @@ class PromptsCreativos:
         
         REGLAS DE FORMATO:
         - **MÚSICA:** SI NO INCLUYES `[SINTONIA_INICIO]` AL PRINCIPIO Y `[SINTONIA_CIERRE]` AL FINAL, EL GUION SERÁ RECHAZADO.
-        - Duración: Extiéndete en los detalles de las noticias y la reflexión final.
+        - Duración: **Tómate tu tiempo.** Extiéndete en los comentarios de las noticias destacadas y en la reflexión final. Queremos un programa pausado y completo.
         
         ENTREGA:
         Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra. NO uses negritas ni asteriscos (**) en el texto.
