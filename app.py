@@ -929,6 +929,10 @@ with tab8:
     col_script, col_info = st.columns([2, 1])
 
     with col_info:
+        # Mostrar voz activa para evitar confusiones
+        current_voice = config.get('audio_config', {}).get('voice_name', 'Desconocida')
+        st.info(f"🎙️ Voz activa: **{current_voice}**\n\n(Puedes cambiarla en la pestaña 'Audio y Voz')")
+
         st.markdown("### 📝 Formato del Guion")
         st.markdown("""
         - **Diálogo:** `NOMBRE: Texto...`

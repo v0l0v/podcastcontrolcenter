@@ -19,17 +19,28 @@ def cargar_configuracion():
             return json.load(f)
     return {}
 
-CONFIG = cargar_configuracion()
-AUDIO_CONFIG = CONFIG.get('audio_config', {})
-VOICE_NAME = AUDIO_CONFIG.get('voice_name', "es-ES-Studio-C")
-VOICE_PARAMS = {"language_code": "es-ES", "name": VOICE_NAME}
-AUDIO_ENCODING = texttospeech.AudioEncoding.MP3
+# Eliminar constantes globales que cachean la configuración
+# CONFIG = cargar_configuracion()
+# AUDIO_CONFIG = CONFIG.get('audio_config', {})
+# VOICE_NAME = AUDIO_CONFIG.get('voice_name', "es-ES-Studio-C")
+# VOICE_PARAMS = {"language_code": "es-ES", "name": VOICE_NAME}
+# AUDIO_ENCODING = texttospeech.AudioEncoding.MP3
+
+def get_voice_params():
+    """Carga la configuración actual de voz."""
+    config = cargar_configuracion()
+    audio_config = config.get('audio_config', {})
+    voice_name = audio_config.get('voice_name', "es-ES-Chirp3-HD-Sulafat")
+    return {"language_code": "es-ES", "name": voice_name}
 
 def generar_audio_base_tts(texto_ssml: str, client: texttospeech.TextToSpeechClient) -> bytes:
     """Genera audio crudo desde SSML usando GCP TTS."""
     synthesis_input = texttospeech.SynthesisInput(ssml=texto_ssml)
-    voice = texttospeech.VoiceSelectionParams(**VOICE_PARAMS)
-    audio_config = texttospeech.AudioConfig(audio_encoding=AUDIO_ENCODING)
+    
+    # Cargar parámetros frescos
+    voice_params = get_voice_params()
+    voice = texttospeech.VoiceSelectionParams(**voice_params)
+    audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
 
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice, audio_config=audio_config
