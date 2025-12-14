@@ -162,13 +162,69 @@ def generar_episodio_especial(guion_text: str, output_path: str):
     except Exception as e:
         return f"Error iniciando cliente TTS: {str(e)}"
 
-    segments = parse_guion(guion_text)
+    # chunk_text logic
+    def chunk_text(text: str, max_chars=4000) -> list:
+        if len(text) <= max_chars:
+            return [text]
+        
+        chunks = []
+        current_chunk = []
+        current_len = 0
+        
+        # Split by paragraphs first to preserve flow
+        paragraphs = text.split('\n')
+        
+        for para in paragraphs:
+            # If a single paragraph is huge (unlikely but possible), split by sentences
+            if len(para) > max_chars:
+                # Simple sentence split (can be improved)
+                sentences = re.split(r'(?<=[.!?])\s+', para)
+                for sent in sentences:
+                    if len(sent) > max_chars:
+                         # Hard chop if sentence is inexplicably long
+                         for i in range(0, len(sent), max_chars):
+                             chunks.append(sent[i:i+max_chars])
+                    else:
+                        if current_len + len(sent) + 1 > max_chars:
+                            chunks.append("\n".join(current_chunk))
+                            current_chunk = [sent]
+                            current_len = len(sent)
+                        else:
+                            current_chunk.append(sent)
+                            current_len += len(sent) + 1
+            else:
+                 if current_len + len(para) + 1 > max_chars:
+                     chunks.append("\n".join(current_chunk))
+                     current_chunk = [para]
+                     current_len = len(para)
+                 else:
+                     current_chunk.append(para)
+                     current_len += len(para) + 1
+        
+        if current_chunk:
+            chunks.append("\n".join(current_chunk))
+            
+        return chunks
+
+    original_segments = parse_guion(guion_text)
+    
+    # Pre-process segments to split long speech
+    final_segments = []
+    for seg in original_segments:
+        if seg['type'] == 'speech':
+            text_chunks = chunk_text(seg['content'])
+            for chunk in text_chunks:
+                if chunk.strip():
+                    final_segments.append({'type': 'speech', 'content': chunk})
+        else:
+            final_segments.append(seg)
+
     final_audio = AudioSegment.empty()
     
     temp_dir = os.path.join(BASE_DIR, 'temp_audio')
     os.makedirs(temp_dir, exist_ok=True)
 
-    for i, seg in enumerate(segments):
+    for i, seg in enumerate(final_segments):
         if seg['type'] == 'speech':
             # Generar voz
             ssml = text_to_ssml(seg['content'])
@@ -181,7 +237,7 @@ def generar_episodio_especial(guion_text: str, output_path: str):
                 speech_segment = AudioSegment.from_mp3(temp_file)
                 final_audio += speech_segment
             except Exception as e:
-                print(f"Error generando segmento {i}: {e}")
+                print(f"Error generando segmento {i} (len={len(seg['content'])}): {e}")
                 # Si falla, añadir silencio o continuar
                 final_audio += AudioSegment.silent(duration=1000)
 
@@ -199,3 +255,4 @@ def generar_episodio_especial(guion_text: str, output_path: str):
     # Exportar
     final_audio.export(output_path, format="mp3")
     return output_path
+
