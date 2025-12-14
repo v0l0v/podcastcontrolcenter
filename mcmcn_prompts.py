@@ -439,27 +439,33 @@ class PromptsCreativos:
         CONTEXTO:
         Hemos analizado qué fuentes han publicado más noticias Y qué fuentes han estado más calladas durante LA ÚLTIMA SEMANA.
         
-        DATOS DEL ANÁLISIS (TOP 3 y BOTTOM 3, incluyendo titulares recientes):
+        DATOS COMPLETOS DEL ANÁLISIS:
         ---
         {datos_analisis}
         ---
         
         OBJETIVO:
-        Redactar un guion humorístico y completo (MÍNIMO 5 MINUTOS de lectura, aprox 700-800 palabras) donde:
+        Redactar un guion humorístico, completo y MUY ESTRUCTURADO (MÍNIMO 5 MINUTOS de lectura, aprox 700-800 palabras) donde:
         
-        1. **Inicio:** Usa OBLIGATORIAMENTE la etiqueta `[SINTONIA_INICIO]` al principio. Saluda con energía.
+        1. **Inicio:**
+           - ETIQUETA OBLIGATORIA: `[SINTONIA_INICIO]`
+           - Saludo enérgico y presentación del "Informe Semanal de Actividad".
+        
         2. **Cuerpo (El Análisis):**
-           - Agradece con EFUSIVIDAD a los que más han publicado (Top). Haz bromas amables sobre su ritmo de trabajo.
-           - **IMPORTANTE:** Menciona explícitamente 1 o 2 titulares concretos de estas fuentes activas (están en los datos) para demostrar que los leemos. (Ej: "¡Gracias a X por contarnos lo de... !").
-           - Usa la etiqueta `[CORTINILLA]` para separar bloques si cambias mucho de tema o pasas a los "menos activos".
-           - Da un "tirón de orejas" CARIÑOSO y HUMORÍSTICO a los que menos han publicado (Bottom). Anímalos.
-        3. **Cierre:** Despedida animosa y etiqueta `[SINTONIA_CIERRE]` al final.
+           - **Agradecimiento Top:** Cita a los más activos. Usa los titulares reales que te paso para demostrar que estamos al día. Bromea sobre su hiperactividad.
+           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
+           - **Resumen Global (IMPORTANTE):** Analiza los datos del "RESUMEN GLOBAL DE ACTIVIDAD". Comenta cuántos están activos vs inactivos. ¿Ha sido una semana vaga o frenética en general? Haz una valoración graciosa (ej: "Parece que la mitad de la comarca se ha tomado vacaciones...").
+           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
+           - **Tirón de Orejas:** Menciona a los menos activos (Bottom 3). Dales caña con cariño para que envíen noticias.
+        
+        3. **Cierre:**
+           - Despedida animosa, recordando que esperamos sus noticias.
+           - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]`
         
         REGLAS:
-        - Duración: Extiéndete en los comentarios, sé charlatana y simpática.
-        - Estilo: Conversacional, directo al oyente.
-        - Estructura: Fluida, no leas una lista.
-        - **MUSICA:** Es CRÍTICO incluir `[SINTONIA_INICIO]`, `[CORTINILLA]` (opcional, si pega) y `[SINTONIA_CIERRE]`.
+        - **MÚSICA:** SI NO INCLUYES `[SINTONIA_INICIO]` AL PRINCIPIO Y `[SINTONIA_CIERRE]` AL FINAL, EL GUION SERÁ RECHAZADO.
+        - Duración: Extiéndete. Queremos detalle y "salsa".
+        - Tono: Simpático, sarcástico pero amable.
         
         ENTREGA:
         Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra.

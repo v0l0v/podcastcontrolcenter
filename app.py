@@ -1126,6 +1126,18 @@ with tab7:
                              row_data = top_3[top_3['Fuente'] == nombre_restante].iloc[0]
                              analisis_str += f"- {nombre_restante}: {row_data['7d']} noticias.\n"
                         
+                        # CALCULO DE ESTADISTICAS GLOBALES (BINS)
+                        count_hyper = len(df_sorted[df_sorted['7d'] > 10])
+                        count_high = len(df_sorted[(df_sorted['7d'] >= 5) & (df_sorted['7d'] <= 10)])
+                        count_mod = len(df_sorted[(df_sorted['7d'] >= 1) & (df_sorted['7d'] < 5)])
+                        count_zero = len(df_sorted[df_sorted['7d'] == 0])
+                        
+                        analisis_str += "\nRESUMEN GLOBAL DE ACTIVIDAD (SEMÁFORO):\n"
+                        analisis_str += f"- Muy Activos (>10 noticias): {count_hyper} fuentes.\n"
+                        analisis_str += f"- Activos (5-10 noticias): {count_high} fuentes.\n"
+                        analisis_str += f"- Tranquilos (1-4 noticias): {count_mod} fuentes.\n"
+                        analisis_str += f"- Inactivos (0 noticias): {count_zero} fuentes.\n"
+
                         analisis_str += "\nFUENTES MENOS ACTIVAS (ÚLTIMA SEMANA):\n"
                         for _, row in bottom_3.iterrows():
                             analisis_str += f"- {row['Fuente']}: {row['7d']} noticias.\n"
