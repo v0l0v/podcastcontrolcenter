@@ -379,88 +379,88 @@ with st.sidebar:
             except Exception as e:
                 st.error("Error leyendo archivo de preview.")
 
-    # Estado 4: Generación
-    st.markdown("#### 4️⃣ Generación Final")
-    
-    # Solo activo si estamos en modo manual Y confirmado
-    can_generate = False
-    btn_type = "secondary"
-    btn_text = "GENERAR PODCAST (Espera...)"
-    
-    if manual_selection_mode:
-        if st.session_state.get('news_confirmed', False):
-            can_generate = True
-            btn_type = "primary"
-            btn_text = "🎙️ ¡VAMOS A GENERAR EL PODCAST!"
+        # Estado 4: Generación
+        st.markdown("#### 4️⃣ Generación Final")
+        
+        # Solo activo si estamos en modo manual Y confirmado
+        can_generate = False
+        btn_type = "secondary"
+        btn_text = "GENERAR PODCAST (Espera...)"
+        
+        if manual_selection_mode:
+            if st.session_state.get('news_confirmed', False):
+                can_generate = True
+                btn_type = "primary"
+                btn_text = "🎙️ ¡VAMOS A GENERAR EL PODCAST!"
+            else:
+                btn_text = "Confirma las noticias primero"
         else:
-            btn_text = "Confirma las noticias primero"
-    else:
-        # Caso sin preview (no debería pasar con este flujo, pero fallback)
-        if config_checked: 
-             # Si no hay preview json, quizás quieran generar directo sin editar (legacy)
-             # Pero el usuario pidió guiado. Forzamos análisis primero.
-             btn_text = "Analiza las noticias primero (Paso 2)"
+            # Caso sin preview (no debería pasar con este flujo, pero fallback)
+            if config_checked: 
+                 # Si no hay preview json, quizás quieran generar directo sin editar (legacy)
+                 # Pero el usuario pidió guiado. Forzamos análisis primero.
+                 btn_text = "Analiza las noticias primero (Paso 2)"
 
-    if st.button(btn_text, type=btn_type, disabled=not can_generate):
-        with st.spinner("Generando audios, montando bloques y finalizando podcast..."):
-            try:
-                # Recopilar la selección FINAL desde el session_state si se guardó en el formulario principal
-                # OJO: La edición real ocurre en el MAIN loop.
-                # Necesitamos que el formulario principal actualice 'noticias_editadas_finales'
-                # Y que usemos eso aquí.
-                
-                # Leemos la selección del state o del archivo original si no se tocó nada
-                final_news = st.session_state.get('noticias_editadas_finales', [])
-                
-                # Si está vacío, puede ser que no hayan tocado nada y confirmado directo.
-                # En ese caso cargamos el json original de preview
-                if not final_news and os.path.exists("prevision_noticias_resumidas.json"):
-                     with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                        final_news = json.load(f)
-
-                # Guardar selección final para el script
-                with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
-                    json.dump(final_news, f, ensure_ascii=False, indent=4)
-                
-                cmd = ["python3", "dorototal.py", "--from-json", "seleccion_usuario.json"]
-                
-                # Lógica para saltar especiales si el usuario lo pidió
-                if mode_skip_special:
-                    cmd.append("--skip-special")
-
-                process = subprocess.Popen(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    cwd=os.getcwd()
-                )
-                
-                # Logs
-                log_placeholder = st.empty()
-                logs = []
-                while True:
-                    output = process.stdout.readline()
-                    if output == '' and process.poll() is not None:
-                        break
-                    if output:
-                        logs.append(output.strip())
-                        log_placeholder.code("\n".join(logs[-15:]))
-                
-                if process.poll() == 0:
-                    st.success("¡Podcast generado con éxito!")
-                    st.balloons()
-                    # Resetear
-                    if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
-                    if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
-                    st.session_state['news_confirmed'] = False # Reset
-                    time.sleep(2)
-                    st.rerun()
-                else:
-                    st.error(f"Error generación:\n{process.stderr.read()}")
+        if st.button(btn_text, type=btn_type, disabled=not can_generate):
+            with st.spinner("Generando audios, montando bloques y finalizando podcast..."):
+                try:
+                    # Recopilar la selección FINAL desde el session_state si se guardó en el formulario principal
+                    # OJO: La edición real ocurre en el MAIN loop.
+                    # Necesitamos que el formulario principal actualice 'noticias_editadas_finales'
+                    # Y que usemos eso aquí.
                     
-            except Exception as e:
-                st.error(f"Error script: {e}")
+                    # Leemos la selección del state o del archivo original si no se tocó nada
+                    final_news = st.session_state.get('noticias_editadas_finales', [])
+                    
+                    # Si está vacío, puede ser que no hayan tocado nada y confirmado directo.
+                    # En ese caso cargamos el json original de preview
+                    if not final_news and os.path.exists("prevision_noticias_resumidas.json"):
+                         with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                            final_news = json.load(f)
+
+                    # Guardar selección final para el script
+                    with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
+                        json.dump(final_news, f, ensure_ascii=False, indent=4)
+                    
+                    cmd = ["python3", "dorototal.py", "--from-json", "seleccion_usuario.json"]
+                    
+                    # Lógica para saltar especiales si el usuario lo pidió
+                    if mode_skip_special:
+                        cmd.append("--skip-special")
+
+                    process = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    
+                    # Logs
+                    log_placeholder = st.empty()
+                    logs = []
+                    while True:
+                        output = process.stdout.readline()
+                        if output == '' and process.poll() is not None:
+                            break
+                        if output:
+                            logs.append(output.strip())
+                            log_placeholder.code("\n".join(logs[-15:]))
+                    
+                    if process.poll() == 0:
+                        st.success("¡Podcast generado con éxito!")
+                        st.balloons()
+                        # Resetear
+                        if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
+                        if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
+                        st.session_state['news_confirmed'] = False # Reset
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        st.error(f"Error generación:\n{process.stderr.read()}")
+                        
+                except Exception as e:
+                    st.error(f"Error script: {e}")
 
 
 
