@@ -126,6 +126,20 @@ def parse_guion(guion_text: str) -> list:
         if clean_line.startswith("(") and clean_line.endswith(")"):
             continue
 
+        # Limpieza robusta de la línea
+        # 1. Eliminar asteriscos (bold/italic markdown)
+        line = line.replace('*', '')
+        
+        # 2. Eliminar prefijos de hablante inline (ej: "DOROTEA: Hola") si se coló
+        # Solo si está al principio de la línea
+        line = re.sub(r'^[A-ZÁÉÍÓÚÑ]+\s*:\s*', '', line)
+        
+        # 3. Eliminar caracteres extraños
+        line = line.replace('`', '').replace('#', '')
+        
+        if not line.strip():
+             continue
+
         buffer_text.append(line)
 
     if buffer_text:
