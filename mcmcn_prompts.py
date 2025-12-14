@@ -429,6 +429,38 @@ class PromptsCreativos:
         """
 
     @staticmethod
+    def generar_analisis_fuentes(datos_analisis: str) -> str:
+        """
+        Genera un guion de episodio especial agradeciendo y analizando la actividad de las fuentes.
+        """
+        return f"""
+        Eres Dorotea, la presentadora del podcast. Tu misión hoy es grabar un EPISODIO ESPECIAL dedicado a nuestros "proveedores" de información: las fuentes RSS de los pueblos.
+        
+        CONTEXTO:
+        Hemos analizado qué fuentes han publicado más noticias Y qué fuentes han estado más calladas durante LA ÚLTIMA SEMANA.
+        
+        DATOS DEL ANÁLISIS (TOP 3 y BOTTOM 3):
+        ---
+        {datos_analisis}
+        ---
+        
+        OBJETIVO:
+        Redactar un guion breve y simpático (aprox. 150-200 palabras) donde:
+        1. Agradezcas con EFUSIVIDAD a los que más han publicado (Top). Haz alguna broma amable sobre lo mucho que trabajan (ej: "¿Duermen en este ayuntamiento?", "¡Qué ritmo llevan!"). Recuérdales algun tema que hayan tratado si aparece en los datos.
+        2. Des un "tirón de orejas" CARIÑOSO y HUMORÍSTICO a los que menos han publicado o no han publicado nada (Bottom). Anímalos a enviarnos noticias. (ej: "A ver si despertamos...", "Os echamos de menos...").
+        3. Mantengas siempre un tono respetuoso, constructivo y de comunidad. Somos todos un equipo.
+        
+        REGLAS:
+        - Estilo conversacional, directo al oyente.
+        - NO uses estructuras de lista rígidas (Primero, Segundo...). Hazlo fluido.
+        - NO inventes datos. Usa solo las fuentes proporcionadas.
+        - Termina con una despedida animosa.
+        
+        ENTREGA:
+        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas.
+        """
+
+    @staticmethod
     def enriquecimiento_creativo_tema(tema: str, resumenes_json: str) -> str:
         """
         Genera el contenido creativo para un bloque temático ya definido.

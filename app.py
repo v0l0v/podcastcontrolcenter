@@ -1004,6 +1004,56 @@ with tab7:
             except Exception as e:
                  st.error(f"Error renderizando tabla: {e}")
 
+        # === GENERACIÓN DE EPISODIO ESPECIAL DE ANÁLISIS ===
+        st.markdown("---")
+        st.markdown("### 🎙️ Episodio Especial: Informe Semanal")
+        st.info("Genera un guion humorístico analizando quién ha trabajado más y quién menos esta semana.")
+        
+        if st.button("📝 Redactar Guion de Agradecimiento (Semanal)", type="primary"):
+            if df is not None and not df.empty:
+                with st.spinner("Analizando datos y redactando con gracia..."):
+                    try:
+                        # 1. Preparar datos (Enfasis en '7d' como pidió el usuario)
+                        # Ordenar por 7 días
+                        df_sorted = df.sort_values(by="7d", ascending=False)
+                        
+                        top_3 = df_sorted.head(3)
+                        bottom_3 = df_sorted[df_sorted['7d'] == 0].head(3) # Los que tienen 0 esta semana
+                        if bottom_3.empty:
+                             bottom_3 = df_sorted.tail(3) # Si todos tienen algo, los ultimos
+                        
+                        # Construir string de análisis
+                        analisis_str = "TOP 3 FUENTES MÁS ACTIVAS (ÚLTIMA SEMANA):\n"
+                        for _, row in top_3.iterrows():
+                            analisis_str += f"- {row['Nombre']}: {row['7d']} noticias.\n"
+                        
+                        analisis_str += "\nFUENTES MENOS ACTIVAS (ÚLTIMA SEMANA):\n"
+                        for _, row in bottom_3.iterrows():
+                            analisis_str += f"- {row['Nombre']}: {row['7d']} noticias.\n"
+                            
+                        # 2. Llamar a la IA
+                        prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
+                        guion_generado = generar_texto_con_gemini(prompt)
+                        
+                        # 3. Limpiar y Guardar
+                        clean_script = guion_generado.replace("```txt", "").replace("```", "").strip()
+                        
+                        timestamp = int(time.time())
+                        filename = f"EE_analisis_semanal_{timestamp}.txt"
+                        
+                        with open(filename, "w", encoding="utf-8") as f:
+                            f.write(clean_script)
+                            
+                        st.success(f"✅ ¡Guion generado con éxito! ({filename})")
+                        st.balloons()
+                        st.write("Puedes revisarlo en la pestaña de 'Episodios Especiales' (automático) o abrirlo aquí:")
+                        st.text_area("Previsualización:", value=clean_script, height=300)
+                        
+                    except Exception as e:
+                        st.error(f"Error generando guion: {e}")
+            else:
+                st.warning("Primero debes analizar el estado de los feeds (botón arriba).")
+
 
 
 
