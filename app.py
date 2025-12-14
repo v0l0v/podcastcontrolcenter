@@ -1025,11 +1025,11 @@ with tab7:
                         # Construir string de análisis
                         analisis_str = "TOP 3 FUENTES MÁS ACTIVAS (ÚLTIMA SEMANA):\n"
                         for _, row in top_3.iterrows():
-                            analisis_str += f"- {row['Nombre']}: {row['7d']} noticias.\n"
+                            analisis_str += f"- {row['Fuente']}: {row['7d']} noticias.\n"
                         
                         analisis_str += "\nFUENTES MENOS ACTIVAS (ÚLTIMA SEMANA):\n"
                         for _, row in bottom_3.iterrows():
-                            analisis_str += f"- {row['Nombre']}: {row['7d']} noticias.\n"
+                            analisis_str += f"- {row['Fuente']}: {row['7d']} noticias.\n"
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
