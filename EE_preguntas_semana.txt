@@ -5,51 +5,51 @@
 [CORTINILLA_TRANSICION_CORTA]
 
 Lunes, 08-12-2025
-Autor: Lucía Navarro Texto: ¡Feliz lunes festivo! Aprovechando el día libre he intentado registrarme en la plataforma Micomicona, pero no me queda claro si es necesario validar el correo para acceder a todo el contenido. ¡Gracias!
+Lucía Navarro ¡Feliz lunes festivo! Aprovechando el día libre he intentado registrarme en la plataforma Micomicona, pero no me queda claro si es necesario validar el correo para acceder a todo el contenido. ¡Gracias!
 
-Respuesta: ¡Hola, Lucía! Qué buena manera de aprovechar el día de la Inmaculada. Te explico rápidamente: para navegar y leer los titulares no hace falta nada, pero si quieres comentar o guardar tus artículos favoritos en Micomicona, sí necesitas validar el correo. Es un paso de seguridad muy sencillo: revisa tu bandeja de entrada (o la de spam, por si acaso), haz clic en el enlace que te hemos enviado y... ¡listo! Ya serás parte oficial de nuestra comunidad digital.
+¡Hola, Lucía! Qué buena manera de aprovechar el día de la Inmaculada. Te explico rápidamente: para navegar y leer los titulares no hace falta nada, pero si quieres comentar o guardar tus artículos favoritos en Micomicona, sí necesitas validar el correo. Es un paso de seguridad muy sencillo: revisa tu bandeja de entrada (o la de spam, por si acaso), haz clic en el enlace que te hemos enviado y... ¡listo! Ya serás parte oficial de nuestra comunidad digital.
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Martes, 09-12-2025
-Autor: José Fernández Texto: Buenos días. Estoy explorando el nuevo "Mapa de Recursos" de Micomicona. ¿Cómo hacéis para que la información de los pueblos más pequeños esté tan actualizada? Me parece increíble.
+José Fernández Buenos días. Estoy explorando el nuevo "Mapa de Recursos" de Micomicona. ¿Cómo hacéis para que la información de los pueblos más pequeños esté tan actualizada? Me parece increíble.
 
-Respuesta: ¡Gracias, José! Esa es la joya de la corona del proyecto. El secreto del "Mapa de Recursos" es la colaboración. Micomicona funciona con una red de corresponsales locales y datos abiertos. Además, los propios usuarios podéis sugerir cambios si veis que un comercio ha cerrado o ha cambiado de horario. Nosotros lo verificamos en menos de 24 horas y actualizamos el mapa. Así conseguimos que la información rural esté viva y sea útil de verdad.
+¡Gracias, José! Esa es la joya de la corona del proyecto. El secreto del "Mapa de Recursos" es la colaboración. Micomicona funciona con una red de corresponsales locales y datos abiertos. Además, los propios usuarios podéis sugerir cambios si veis que un comercio ha cerrado o ha cambiado de horario. Nosotros lo verificamos en menos de 24 horas y actualizamos el mapa. Así conseguimos que la información rural esté viva y sea útil de verdad.
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Miércoles, 10-12-2025
-Autor: Isabel Gil Texto: Hola equipo. Una duda sobre el servicio de alertas. Me llegan avisos de toda la región, pero solo me interesa mi comarca. ¿Se puede filtrar la información en la app?
+Isabel Gil Hola equipo. Una duda sobre el servicio de alertas. Me llegan avisos de toda la región, pero solo me interesa mi comarca. ¿Se puede filtrar la información en la app?
 
-Respuesta: ¡Por supuesto, Isabel! La personalización es clave en Micomicona para no saturarte. Mira, entra en tu perfil, busca el apartado de "Preferencias" y allí verás una opción llamada "Mi Zona". Puedes seleccionar tu comarca específica o incluso un radio de kilómetros desde tu ubicación. Guarda los cambios y, a partir de ahora, solo recibirás notificaciones de lo que realmente te pilla cerca. ¡Queremos ser útiles, no molestos!
+¡Por supuesto, Isabel! La personalización es clave en Micomicona para no saturarte. Mira, entra en tu perfil, busca el apartado de "Preferencias" y allí verás una opción llamada "Mi Zona". Puedes seleccionar tu comarca específica o incluso un radio de kilómetros desde tu ubicación. Guarda los cambios y, a partir de ahora, solo recibirás notificaciones de lo que realmente te pilla cerca. ¡Queremos ser útiles, no molestos!
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Jueves, 11-12-2025
-Autor: Francisco Gómez Texto: Enhorabuena por el proyecto. Mi pregunta es sobre el "Archivo Histórico". ¿Puedo subir fotos antiguas de mi pueblo para que no se pierdan, o solo aceptáis documentos escritos?
+Francisco Gómez Enhorabuena por el proyecto. Mi pregunta es sobre el "Archivo Histórico". ¿Puedo subir fotos antiguas de mi pueblo para que no se pierdan, o solo aceptáis documentos escritos?
 
-Respuesta: ¡Qué gran iniciativa, Francisco! Sí, rotundamente sí. Micomicona no es solo actualidad, es memoria. Puedes subir fotografías escaneadas directamente desde la sección "Colabora" > "Subir Archivo". Solo te pediremos que nos indiques el año aproximado y el lugar. Nuestro equipo de documentación las etiqueta para que cualquiera pueda buscarlas en el futuro. Esas fotos son patrimonio de todos, así que gracias por querer compartirlas.
+¡Qué gran iniciativa, Francisco! Sí, rotundamente sí. Micomicona no es solo actualidad, es memoria. Puedes subir fotografías escaneadas directamente desde la sección "Colabora" > "Subir Archivo". Solo te pediremos que nos indiques el año aproximado y el lugar. Nuestro equipo de documentación las etiqueta para que cualquiera pueda buscarlas en el futuro. Esas fotos son patrimonio de todos, así que gracias por querer compartirlas.
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Viernes, 12-12-2025
-Autor: Ana Marín Texto: ¡Viernes por fin! Chicos, me encanta la sección de "Mercado Rural" de Micomicona. He contactado con dos productores esta semana. ¿Tenéis pensado añadir pasarela de pago directa en la web?
+Ana Marín ¡Viernes por fin! Chicos, me encanta la sección de "Mercado Rural" de Micomicona. He contactado con dos productores esta semana. ¿Tenéis pensado añadir pasarela de pago directa en la web?
 
-Respuesta: ¡Hola Ana, qué alegría que te sirva! Esa es una pregunta que nos hacéis mucho. De momento, Micomicona actúa solo como conector; queremos que el trato sea directo entre tú y el productor, sin comisiones nuestras de por medio. Creemos que eso fomenta una relación más humana y justa. Así que, por ahora, el contacto y el pago lo acordáis vosotros, nosotros solo ponemos el puente para que os encontréis.
+¡Hola Ana, qué alegría que te sirva! Esa es una pregunta que nos hacéis mucho. De momento, Micomicona actúa solo como conector; queremos que el trato sea directo entre tú y el productor, sin comisiones nuestras de por medio. Creemos que eso fomenta una relación más humana y justa. Así que, por ahora, el contacto y el pago lo acordáis vosotros, nosotros solo ponemos el puente para que os encontréis.
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Sábado, 13-12-2025
-Autor: Javier López Texto: Os escucho mientras trabajo en el campo. Una consulta técnica: en algunas zonas de la sierra pierdo cobertura. ¿La aplicación de Micomicona tiene modo "offline" para leer las noticias descargadas?
+Javier López Os escucho mientras trabajo en el campo. Una consulta técnica: en algunas zonas de la sierra pierdo cobertura. ¿La aplicación de Micomicona tiene modo "offline" para leer las noticias descargadas?
 
-Respuesta: Muy buena pregunta, Javier, vital para nuestro entorno. La respuesta es sí. La app de Micomicona está diseñada para el mundo rural real. Cada mañana, cuando tienes conexión, la app hace una "precarga" ligera de los textos del día. Si luego estás en la sierra y se va la cobertura, podrás seguir leyendo lo que ya se bajó. Las fotos quizás no carguen, pero la información esencial la tendrás siempre en tu bolsillo.
+Muy buena pregunta, Javier, vital para nuestro entorno. La respuesta es sí. La app de Micomicona está diseñada para el mundo rural real. Cada mañana, cuando tienes conexión, la app hace una "precarga" ligera de los textos del día. Si luego estás en la sierra y se va la cobertura, podrás seguir leyendo lo que ya se bajó. Las fotos quizás no carguen, pero la información esencial la tendrás siempre en tu bolsillo.
 
 [CORTINILLA_TRANSICIÓN_CORTA]
 
 Domingo, 14-12-2025
-Autor: María Torres Texto: Feliz domingo. Solo quería agradeceros el servicio de "Agenda Cultural". Gracias a Micomicona, este fin de semana hemos llenado el teatro del pueblo con gente de las villas vecinas. ¡Funciona!
+María Torres Feliz domingo. Solo quería agradeceros el servicio de "Agenda Cultural". Gracias a Micomicona, este fin de semana hemos llenado el teatro del pueblo con gente de las villas vecinas. ¡Funciona!
 
-Respuesta: ¡María, mensajes como el tuyo son nuestra gasolina! Nos alegra muchísimo. Ese es precisamente el objetivo de la Agenda de Micomicona: romper el aislamiento. A veces hay planazos al lado de casa y no nos enteramos. Recordad a todos los oyentes que si organizáis algo en vuestro pueblo, subir el evento a la agenda es totalmente gratuito y tardáis menos de un minuto. ¡Gracias por usar la herramienta y por mantener viva la cultura!
+¡María, mensajes como el tuyo son nuestra gasolina! Nos alegra muchísimo. Ese es precisamente el objetivo de la Agenda de Micomicona: romper el aislamiento. A veces hay planazos al lado de casa y no nos enteramos. Recordad a todos los oyentes que si organizáis algo en vuestro pueblo, subir el evento a la agenda es totalmente gratuito y tardáis menos de un minuto. ¡Gracias por usar la herramienta y por mantener viva la cultura!
 
 [CORTINILLA_TRANSICION_CORTA]
 
