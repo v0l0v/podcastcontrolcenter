@@ -319,3 +319,26 @@ ZONAS_GENERICAS = {
 }
 
 MUNICIPIO_A_PROVINCIA.update(ZONAS_GENERICAS)
+
+# --- Generación automática de MUNICIPIO_A_GAL ---
+MUNICIPIO_A_GAL = {}
+
+for provincia, comarcas in DATOS_REGIONALES.items():
+    for comarca_bruta, municipios in comarcas.items():
+        # Limpiar nombre de GAL (quitar paréntesis explicativos si se desea, 
+        # pero para 'contexto geográfico' suelen aportar valor.
+        # Ejemplo: "SACAM (Sierra de Alcaraz...)" -> Lo dejamos completo para info.
+        # O si preferimos corto: nombre_gal = comarca_bruta.split('(')[0].strip()
+        # El usuario pidió "no redundante", pero el nombre completo es útil.
+        
+        # Guardamos tal cual viene en la clave.
+        nombre_gal = comarca_bruta
+        
+        for municipio in municipios:
+            MUNICIPIO_A_GAL[municipio] = nombre_gal
+
+# Añadir capitales de provincia con un GAL genérico si no están
+capitales = ["Albacete", "Ciudad Real", "Cuenca", "Guadalajara", "Toledo"]
+for cap in capitales:
+    if cap not in MUNICIPIO_A_GAL:
+        MUNICIPIO_A_GAL[cap] = f"Comarca de {cap}"

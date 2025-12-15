@@ -60,6 +60,7 @@ except Exception:
 # --- MÓDULOS PERSONALIZADOS ---
 # Asegúrate de tener un archivo mcmcn_prompts.py con los prompts necesarios.
 import mcmcn_prompts
+from datos_geograficos import MUNICIPIO_A_PROVINCIA, MUNICIPIO_A_GAL
 
 # --------------------- CONFIGURACIÓN GENERAL Y AUDIO ----------------------------
 
@@ -113,64 +114,8 @@ SPANISH_STOPWORDS = {
     'estaré','estarás','estará','estaremos','estaréis','estarán'
 }
 
-# Diccionario ampliado para mapear localidades a provincias.
-# Es crucial para el filtrado por provincia. Se puede seguir ampliando.
-MUNICIPIO_A_PROVINCIA = {
-    # Albacete
-    "Albacete": "Albacete", "Hellín": "Albacete", "Villarrobledo": "Albacete",
-    "Almansa": "Albacete", "La Roda": "Albacete", "Caudete": "Albacete",
-    "Tobarra": "Albacete", "Tarazona de la Mancha": "Albacete", "Madrigueras": "Albacete",
-    "Chinchilla de Monte-Aragón": "Albacete", "Yeste": "Albacete", "Elche de la Sierra": "Albacete",
-    "Munera": "Albacete", "Pozo Cañada": "Albacete", "Alcaraz": "Albacete",
-
-    # Ciudad Real
-    "Ciudad Real": "Ciudad Real", "Puertollano": "Ciudad Real", "Tomelloso": "Ciudad Real",
-    "Alcázar de San Juan": "Ciudad Real", "Valdepeñas": "Ciudad Real", "Manzanares": "Ciudad Real",
-    "Daimiel": "Ciudad Real", "La Solana": "Ciudad Real", "Campo de Criptana": "Ciudad Real",
-    "Miguelturra": "Ciudad Real", "Socuéllamos": "Ciudad Real", "Bolaños de Calatrava": "Ciudad Real",
-    "Villarrubia de los Ojos": "Ciudad Real", "Herencia": "Ciudad Real", "Almagro": "Ciudad Real",
-    "Malagón": "Ciudad Real", "Pedro Muñoz": "Ciudad Real", "Argamasilla de Alba": "Ciudad Real",
-    "Almodóvar del Campo": "Ciudad Real", "Moral de Calatrava": "Ciudad Real",
-    "Villanueva de los Infantes": "Ciudad Real",
-
-    # Cuenca
-    "Cuenca": "Cuenca", "Tarancón": "Cuenca", "Quintanar del Rey": "Cuenca",
-    "San Clemente": "Cuenca", "Las Pedroñeras": "Cuenca", "Mota del Cuervo": "Cuenca",
-    "Iniesta": "Cuenca", "Horcajo de Santiago": "Cuenca", "Casasimarro": "Cuenca",
-    "Villamayor de Santiago": "Cuenca", "El Provencio": "Cuenca", "Motilla del Palancar": "Cuenca",
-    "Honrubia": "Cuenca", "Las Mesas": "Cuenca", "Huete": "Cuenca", "Belmonte": "Cuenca",
-    "Villanueva de la Jara": "Cuenca", "Priego": "Cuenca", "Landete": "Cuenca",
-    "Carboneras de Guadazaón": "Cuenca", "Beteta": "Cuenca",
-
-    # Guadalajara
-    "Guadalajara": "Guadalajara", "Azuqueca de Henares": "Guadalajara", "Alovera": "Guadalajara",
-    "El Casar": "Guadalajara", "Cabanillas del Campo": "Guadalajara", "Marchamalo": "Guadalajara",
-    "Villanueva de la Torre": "Guadalajara", "Torrejón del Rey": "Guadalajara", "Sigüenza": "Guadalajara",
-    "Molina de Aragón": "Guadalajara", "Yebes": "Guadalajara", "Chiloeches": "Guadalajara",
-    "Mondéjar": "Guadalajara", "Pioz": "Guadalajara", "Brihuega": "Guadalajara",
-    "Jadraque": "Guadalajara", "Cifuentes": "Guadalajara", "Pastrana": "Guadalajara",
-
-    # Toledo
-    "Toledo": "Toledo", "Talavera de la Reina": "Toledo", "Illescas": "Toledo",
-    "Seseña": "Toledo", "Torrijos": "Toledo", "Ocaña": "Toledo", "Fuensalida": "Toledo",
-    "Yuncos": "Toledo", "Quintanar de la Orden": "Toledo", "Sonseca": "Toledo",
-    "Bargas": "Toledo", "Madridejos": "Toledo", "Consuegra": "Toledo", "Mora": "Toledo",
-    "Villacañas": "Toledo", "La Puebla de Montalbán": "Toledo", "Olías del Rey": "Toledo",
-    "Argés": "Toledo", "Esquivias": "Toledo", "Casarrubios del Monte": "Toledo",
-    "Yepes": "Toledo", "Corral de Almaguer": "Toledo", "El Toboso": "Toledo",
-    "Tembleque": "Toledo", "La Guardia": "Toledo",
-
-    # Comarcas o zonas genéricas
-    "Castilla-La Mancha": "Castilla-La Mancha",
-    "Castilla la Mancha": "Castilla-La Mancha",
-    "La Mancha": "Castilla-La Mancha",
-    "Sierra de Alcaraz": "Albacete",
-    "Campos de Montiel": "Ciudad Real",
-    "La Alcarria": "Guadalajara", # También parte en Cuenca
-    "Serranía de Cuenca": "Cuenca",
-    "La Sagra": "Toledo"
-    # (Aquí iría el diccionario completo de dorotea.py, lo omito por brevedad)
-}
+# Diccionario importado de datos_geograficos.py
+# MUNICIPIO_A_PROVINCIA ya está disponible globalmente.
 
 
 def obtener_provincia(localidad: str) -> str:
@@ -187,6 +132,32 @@ def obtener_provincia(localidad: str) -> str:
             return value
             
     return "Desconocida"
+
+def obtener_info_gal(municipio: str, nombre_fuente: str = "") -> str:
+    """
+    Devuelve el nombre del GAL si el municipio pertenece a uno.
+    Devuelve cadena vacía si:
+    - El municipio no tiene GAL asignado.
+    - El nombre del GAL ya aparece en el nombre de la fuente (para evitar redundancia).
+    """
+    if not municipio: return ""
+    
+    gal = MUNICIPIO_A_GAL.get(municipio)
+    if not gal or "Comarca de" in gal: # Ignorar los genéricos de capitales si se prefiere
+        return ""
+        
+    # Chequeo de redundancia
+    # Normalizamos para comparar
+    gal_norm = normalize_text_for_similarity(gal)
+    fuente_norm = normalize_text_for_similarity(nombre_fuente)
+    
+    # Si el nombre del GAL es muy similar o está contenido en la fuente, no lo devolvemos
+    if gal_norm in fuente_norm or fuente_norm in gal_norm:
+        # Check adicional: si la fuente es MUY corta ("ADIMAN") y el GAL es largo ("ADIMAN (Manchuela...)")
+        # igual es redundante.
+        return ""
+        
+    return gal
 # ==========================================
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -900,8 +871,21 @@ def es_noticia_valida(texto: str) -> bool:
     return respuesta.upper() == 'INFORMATIVO'
 
 def resumir_noticia_con_google(texto: str, idioma_destino: str, fuente_original: str = "") -> str:
+    # Intentar extraer localidad para enriquecer contexto
+    localidad = extraer_localidad_con_ia(texto)
+    gal_info = obtener_info_gal(localidad, fuente_original)
+    
+    contexto_extra = ""
+    if localidad and localidad != "Desconocida":
+        contexto_extra = f"Localidad: {localidad}."
+        if gal_info:
+            contexto_extra += f" Zona/Comarca: {gal_info}."
+    
+    # Inyectamos este contexto al principio del texto para que el modelo lo tenga en cuenta
+    texto_con_contexto = f"[{contexto_extra}] {texto}" if contexto_extra else texto
+
     prompt = mcmcn_prompts.PromptsAnalisis.resumen_noticia(
-        texto=texto,
+        texto=texto_con_contexto,
         idioma_destino=idioma_destino,
         fuente_original=fuente_original
     )
