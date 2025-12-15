@@ -1,51 +1,23 @@
 
 import os
 import re
-from google.cloud import texttospeech
 import json
 import logging
 from pydub import AudioSegment
-
+import logging
+from pydub import AudioSegment
+from src.core.text_processing import limpiar_markdown_audio
+from src.config.settings import VOICE_NAME
+from src.engine.audio import sintetizar_ssml_a_audio
 
 # Obtener rutas absolutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CONFIG_PATH = os.path.join(BASE_DIR, 'podcast_config.json')
 AUDIO_ASSETS_DIR = os.path.join(BASE_DIR, 'audio_assets')
 
-# Cargar configuración
-def cargar_configuracion():
-    if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+# (Eliminada función cargar_configuracion redundante)
+# (Eliminada función get_voice_params redundante)
+# (Eliminada función generar_audio_base_tts redundante)
 
-# Eliminar constantes globales que cachean la configuración
-# CONFIG = cargar_configuracion()
-# AUDIO_CONFIG = CONFIG.get('audio_config', {})
-# VOICE_NAME = AUDIO_CONFIG.get('voice_name', "es-ES-Studio-C")
-# VOICE_PARAMS = {"language_code": "es-ES", "name": VOICE_NAME}
-# AUDIO_ENCODING = texttospeech.AudioEncoding.MP3
-
-def get_voice_params():
-    """Carga la configuración actual de voz."""
-    config = cargar_configuracion()
-    audio_config = config.get('audio_config', {})
-    voice_name = audio_config.get('voice_name', "es-ES-Chirp3-HD-Sulafat")
-    return {"language_code": "es-ES", "name": voice_name}
-
-def generar_audio_base_tts(texto_ssml: str, client: texttospeech.TextToSpeechClient) -> bytes:
-    """Genera audio crudo desde SSML usando GCP TTS."""
-    synthesis_input = texttospeech.SynthesisInput(ssml=texto_ssml)
-    
-    # Cargar parámetros frescos
-    voice_params = get_voice_params()
-    voice = texttospeech.VoiceSelectionParams(**voice_params)
-    audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
-
-    response = client.synthesize_speech(
-        input=synthesis_input, voice=voice, audio_config=audio_config
-    )
-    return response.audio_content
 
 from xml.sax.saxutils import escape
 
@@ -155,12 +127,11 @@ def generar_episodio_especial(guion_text: str, output_path: str):
     3. Carga y mezcla efectos de sonido.
     4. Exporta el archivo final.
     """
-    # Inicializar cliente TTS
-    # Nota: Asume credenciales en entorno, configurar en app.py si es necesario
-    try:
-         client = texttospeech.TextToSpeechClient()
-    except Exception as e:
-        return f"Error iniciando cliente TTS: {str(e)}"
+    # Inicializar cliente TTS: YA NO ES NECESARIO, LO GESTIONA src.engine.audio
+    # try:
+    #      client = texttospeech.TextToSpeechClient()
+    # except Exception as e:
+    #     return f"Error iniciando cliente TTS: {str(e)}"
 
     # chunk_text logic
     def chunk_text(text: str, max_chars=4000) -> list:
@@ -226,15 +197,14 @@ def generar_episodio_especial(guion_text: str, output_path: str):
 
     for i, seg in enumerate(final_segments):
         if seg['type'] == 'speech':
-            # Generar voz
-            ssml = text_to_ssml(seg['content'])
+            # Limpiar markdown (negritas, cursivas) antes de generar
+            texto_limpio = limpiar_markdown_audio(seg['content'])
+            ssml = text_to_ssml(texto_limpio)
             try:
-                raw_audio = generar_audio_base_tts(ssml, client)
-                temp_file = os.path.join(temp_dir, f"seg_{i}.mp3")
-                with open(temp_file, "wb") as f:
-                    f.write(raw_audio)
+                # Usar el motor centralizado que ya devuelve un AudioSegment con la configuración correcta
+                speech_segment = sintetizar_ssml_a_audio(ssml, voz=VOICE_NAME)
                 
-                speech_segment = AudioSegment.from_mp3(temp_file)
+                # (Opcional) Normalizar volumen aquí si no lo hace el motor (el motor ya lo hace)
                 final_audio += speech_segment
             except Exception as e:
                 print(f"Error generando segmento {i} (len={len(seg['content'])}): {e}")
