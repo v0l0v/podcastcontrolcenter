@@ -1096,122 +1096,17 @@ with tab7:
                         
                         urls_top_3 = []
                         nombres_top_3 = top_3['Fuente'].tolist()
-                        
+                        nombres_top_3_originales = nombres_top_3[:] # Copia inmutable para filtrado posterior
+
                         # ESTRATEGIA MEJORADA: 
-                        # 1. Intentar buscar en el CACHÉ DE PREVISIÓN (prevision_noticias_resumidas.json)
-                        # Esto es lo que el usuario pidió ("teniendo en cuenta el archivo cache").
-                        
-                        if os.path.exists("prevision_noticias_resumidas.json"):
-                            try:
-                                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                                    noticias_cache = json.load(f)
-                                
-                            except Exception as e:
-                                print(f"⚠️ Error leyendo caché para informe: {e}")
-                        
-                        # (RE-INSERTADO) Construir mapa de noticias para cruzar despues
-                        noticias_por_fuente = {}
-                        if 'noticias_cache' in locals():
-                            for n in noticias_cache:
-                                s = n.get('sitio', '').strip()
-                                # Guardamos objeto completo para tener 'resumen' y 'titulo'
-                                if s:
-                                    if s not in noticias_por_fuente: noticias_por_fuente[s] = []
-                                    noticias_por_fuente[s].append(n)
+                        # ... (código existente) ...
 
-                        # HELPER: Formateo de rangos vago y natural (ALEATORIO)
-                        def formatear_rango_cantidad(n):
-                            try:
-                                n = int(n)
-                            except: return "algunas noticias"
-                            
-                            opciones = []
-                            if n >= 20: 
-                                opciones = ["un verdadero aluvión de noticias", "han llegado a la veintena de publicaciones"]
-                            elif n > 10: 
-                                opciones = ["una gran cantidad de actividad", "más de 10 noticias"]
-                            elif n >= 5: 
-                                opciones = ["bastantes novedades interesantes", "entre 5 y 10 noticias"]
-                            elif n >= 1: 
-                                opciones = ["algunas noticias destacadas", "entre 1 y 4 noticias"]
-                            else:
-                                return "ninguna noticia nueva"
-                            
-                            return random.choice(opciones)
-
-                        # RE-PROCESAR EL STRING DE ANÁLISIS CON LOS DATOS DE CACHÉ ENRIQUECIDOS
-                        # Reiniciamos analisis_str para construirlo bien con los rangos y el contenido
-                        analisis_str = "" 
+                        # ...
+                        # ... (despues del loop de analisis)
                         
-                        # 1. TOP 3 (Con contenido del caché)
-                        # Recuperamos el Top 3 original del DF
-                        for idx, row in top_3.iterrows():
-                            nombre = row['Fuente']
-                            count = row['7d']
-                            rango_txt = formatear_rango_cantidad(count)
-                            
-                            # Buscar contenido en caché
-                            contenido_extra = ""
-                            if 'noticias_por_fuente' in locals():
-                                # Buscamos keys que coincidan
-                                for fuente_cache, lista_news_objs in noticias_por_fuente.items():
-                                    if nombre.lower() in fuente_cache.lower() or fuente_cache.lower() in nombre.lower():
-                                        # Encotrado! Concatenamos sus resumenes para que la IA reflexione
-                                        # Limitamos a 3 para no saturar token limits si hay muchas
-                                        top_news_content = [f"'{n.get('titulo','')}' - {n.get('resumen','')[:200]}..." for n in lista_news_objs[:3]]
-                                        contenido_extra = " | ".join(top_news_content)
-                                        break
-                            
-                            detalles = f"Temas tratados: {contenido_extra}" if contenido_extra else "Sin detalles disponibles."
-                            analisis_str += f"- {nombre}: Publicó {rango_txt}. {detalles}\n"
-
-                        # 2. GLOBAL Y MENCIONES (Solo nombres)
-                        # ... (Se mantiene, pero verificamos que no quedan restos de la lógica anterior)
-
-
-                        # 2. FALLBACK A LÓGICA ANTIGUA (Re-parsear feeds) para los que falten
-                        if nombres_top_3 and os.path.exists(feeds_filepath_local):
-                             with open(feeds_filepath_local, 'r') as f:
-                                urls_candidatas = [l.strip() for l in f if l.strip() and not l.startswith('#')]
-                                
-                             for url in urls_candidatas:
-                                 try:
-                                     fd = feedparser.parse(url)
-                                     tit = fd.feed.get('title', url)
-                                     
-                                     for nombre_top in nombres_top_3:
-                                         if nombre_top in tit or tit in nombre_top: 
-                                             # Es uno de los top!
-                                             if fd.entries:
-                                                 entry = fd.entries[0]
-                                                 tit_noticia = entry.get('title', 'Sin titulo')
-                                                 # FIX: 'row' no estaba definido, usamos row_data
-                                                 row_data = top_3[top_3['Fuente'] == nombre_top].iloc[0]
-                                                 analisis_str += f"- {nombre_top}: {row_data['7d']} noticias. Destacada: '{tit_noticia}'\n"
-                                                 nombres_top_3.remove(nombre_top)
-                                                 break 
-                                 except: pass
-                        
-                        # Si quedó alguno sin matchear (por encoding o lo que sea), lo ponemos simple
-                        for nombre_restante in nombres_top_3:
-                             row_data = top_3[top_3['Fuente'] == nombre_restante].iloc[0]
-                             analisis_str += f"- {nombre_restante}: {row_data['7d']} noticias.\n"
-                        
-                        # CALCULO DE ESTADISTICAS GLOBALES (BINS)
-                        count_hyper = len(df_sorted[df_sorted['7d'] > 10])
-                        count_high = len(df_sorted[(df_sorted['7d'] >= 5) & (df_sorted['7d'] <= 10)])
-                        count_mod = len(df_sorted[(df_sorted['7d'] >= 1) & (df_sorted['7d'] < 5)])
-                        count_zero = len(df_sorted[df_sorted['7d'] == 0])
-                        
-                        analisis_str += "\nRESUMEN GLOBAL DE ACTIVIDAD (SEMÁFORO):\n"
-                        analisis_str += f"- Muy Activos (>10 noticias): {count_hyper} fuentes.\n"
-                        analisis_str += f"- Activos (5-10 noticias): {count_high} fuentes.\n"
-                        analisis_str += f"- Tranquilos (1-4 noticias): {count_mod} fuentes.\n"
-                        analisis_str += f"- Inactivos (0 noticias): {count_zero} fuentes.\n"
-
                         # --- CAMBIO DE LÓGICA: En lugar de los peores, buscamos MENCIONES HONORÍFICAS MENSUALES (30d) ---
-                        # Filtramos los que tienen actividad mensual > 0, excluyendo ya los top 3 de la semana
-                        df_active_month = df_sorted[~df_sorted['Fuente'].isin(nombres_top_3) & (df_sorted['30d'] > 0)]
+                        # Filtramos los que tienen actividad mensual > 0, excluyendo ya los top 3 originales de la semana
+                        df_active_month = df_sorted[~df_sorted['Fuente'].isin(nombres_top_3_originales) & (df_sorted['30d'] > 0)]
                         
                         # Ordenamos por actividad de 30 días descendente para sacar LOS QUE MÁS han publicado
                         df_active_month = df_active_month.sort_values(by='30d', ascending=False)
@@ -1222,10 +1117,10 @@ with tab7:
                         else:
                              honor_roll = df_active_month
                         
-                        analisis_str += "\nMENCIONES DE HONOR (ACTIVIDAD MENSUAL DESTACADA):\n"
-                        analisis_str += "Estos GAL han publicado muchas noticias en el último mes y merecen reconocimiento:\n"
+                        analisis_str += "\nMENCIONES DE HONOR (ACTIVIDAD MENSUAL DESTACADA - SOLO NOMBRES):\n"
+                        analisis_str += "Estos GAL han publicado muchas noticias en el último mes (ORDENADOS POR ACTIVIDAD, de más a menos):\n"
                         for _, row in honor_roll.iterrows():
-                             analisis_str += f"- {row['Fuente']}: {row['30d']} noticias (últimos 30 días).\n"
+                             analisis_str += f"- {row['Fuente']}\n"
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)

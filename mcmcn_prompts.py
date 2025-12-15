@@ -460,23 +460,27 @@ class PromptsCreativos:
              - **REGLA DE CANTIDAD:** Evita decir el número exacto (ej: "7 noticias"). Usa la expresión que se te facilita en el input (ya sea un rango como "entre 5 y 10" o una frase como "bastantes novedades"), o parafraséala a tu gusto. Lo importante es que suene fluido.
              - **REFLEXIÓN PROFUNDA (OBLIGATORIO):** Tienes los temas clave de sus noticias en el apartado "Temas tratados" (extraídos del caché). ÚSALOS. No te limites a leer el titular. Reflexiona sobre la importancia de esos proyectos para la comarca. Extiéndete en el análisis de SU CONTENIDO.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
+           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
            - **Resumen Global:** Analiza el "RESUMEN GLOBAL" usando también expresiones de cantidad cualitativas.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Menciones de Honor (Actividad Mensual):** Cita ágilmente sus nombres. Sin noticias específicas aquí. Solo agradecer su constancia.
+           - **Menciones de Honor (Actividad Mensual):** 
+             - **REGLA ESTRICTA:** Aquí NO digas cifras, ni rangos, ni clasifiques por orden. 
+             - **SOLO NOMBRES INTEGRADOS:** Menciónalos de forma fluida y ágil en el discurso (ej: "También agradecemos la constancia de [Nombre], [Nombre] y [Nombre]..."). 
+             - NO uses listas de viñetas narradas. Hazlo sonar como un agradecimiento natural a quienes sostienen la actividad del mes.
         
         3. **Cierre:**
            - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. Basándote en el contenido que has analizado hoy.
            - Despedida motivadora.
-           - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]`
+           - **REGLA FINAL ABSOLUTA:** El guion DEBE terminar con la etiqueta `[SINTONIA_CIERRE]`. **No escribas NADA después de esta etiqueta.**
         
         REGLAS DE TONO:
-        - **PROFESIONAL Y REFLEXIVO:** Tu análisis debe basarse en el CONTENIDO REAL de las noticias (disponible en el input). Demuestra que has leído lo que publican.
-        - **ESTILO DOROTEA:** Mantén tu personalidad habitual: cercana, clara, empática y rigurosa.
+        - **PROFESIONAL Y REFLEXIVO:** Tu análisis debe basarse en el CONTENIDO REAL de las noticias.
+        - **ESTILO DOROTEA:** Sobria, culta, con la socarronería justa y mucha humanidad (recordando a Cuerda y Pavón).
         - **VOCABULARIO:** Usa siempre el término "Grupos de Acción Local" o "GAL".
         
         REGLAS DE FORMATO:
-        - **MÚSICA:** SI NO INCLUYES `[SINTONIA_INICIO]` AL PRINCIPIO Y `[SINTONIA_CIERRE]` AL FINAL, EL GUION SERÁ RECHAZADO.
-        - Duración: **Tómate tu tiempo.** Extiéndete en los comentarios de las noticias destacadas y en la reflexión final. Queremos un programa pausado y completo.
+        - **IMPORTANTE:** `[SINTONIA_CIERRE]` va SIEMPRE AL FINAL DEL DOCUMENTO.
+        - Duración: **Tómate tu tiempo (+8 min).** Extiéndete en los comentarios de las noticias destacadas y en la reflexión final.
         
         ENTREGA:
         Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra. NO uses negritas ni asteriscos (**) en el texto.
