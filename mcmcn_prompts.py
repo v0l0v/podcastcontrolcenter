@@ -460,11 +460,13 @@ class PromptsCreativos:
            - **Estilo:** Reconocimiento y entusiasmo.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
 
-        3. **BLOQUE 2: La Constancia Mensual (Top 6-9 '30d'):**
-           - **Quiénes:** Selecciona entre 6 y 9 grupos con mayor actividad en la columna '30d' (ordenados de más a menos).
+        3. **BLOQUE 2: La Constancia Mensual (Top '30d'):**
+           - **Fuente de Datos:** IGNORA la tabla general de 7 días. Usa EXCLUSIVAMENTE la lista "RANKING MENSUAL" (30 días) del final del input.
+           - **Quiénes:** Selecciona **7 u 8 grupos** de esa lista, tomándolos estrictamente en ORDEN DESCENDENTE.
            - **Contenido:** Cita sus nombres.
-           - **Conexión:** Si alguno de ellos ya salió en el Bloque 1 (el podio semanal), haz una mención especial de reconocimiento ("y repetimos mención a...", "doble enhorabuena a...").
-           - **Estilo:** Adorna brevemente la mención (ej: "siempre al pie del cañón", "motor de la comarca") pero SIN leer titulares. Solo nombres y elogios breves y variados.
+           - **Detalle:** Nombra **algunos** de los proyectos de **alguno** de ellos (no hace falta de todos, solo los más interesantes según los titulares facilitados).
+           - **Conexión:** Si alguno ya salió en el Bloque 1, haz mención especial.
+           - **Estilo:** Descendente y fluido.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
 
         4. **BLOQUE 3: Los que suman en silencio (Sin Actividad):**

@@ -1161,7 +1161,60 @@ with tab7:
                             analisis_str += "(No se pudieron recuperar titulares detallados, improvisa basándote en que son muy activos)\n"
 
                         # =========================================================================================
-                            
+
+                        # =========================================================================================
+                        # DATOS ADICIONALES PARA BLOQUE 2: RANKING MENSUAL (30d)
+                        # =========================================================================================
+                        # Para facilitar que la IA elija "de manera descendente" sin equivocarse,
+                        # le damos ya la tabla ordenada por 30d.
+                        df_30d = df.sort_values(by="30d", ascending=False).head(15)
+                        
+                        analisis_str += "\n\n--- RANKING MENSUAL DETALLADO (Para Bloque 2) ---\n"
+                        analisis_str += "Aquí tienes los candidatos para el Bloque 2 (Top 30 días), con sus titulares recientes para que puedas resumir su actividad:\n"
+                        
+                        # Recuperar titulares para estos 15 también
+                        top_30d_names = df_30d['Fuente'].tolist()
+                        
+                        try:
+                            found_count_30d = 0
+                            # Reutilizamos lógica de lectura (ineficiente leer dos veces, pero seguro)
+                            if os.path.exists(feeds_path_local):
+                                with open(feeds_path_local, 'r', encoding='utf-8') as f:
+                                    for line in f:
+                                        url = line.strip()
+                                        if not url or url.startswith('#'): continue
+                                        
+                                        try:
+                                            # Chequeo rápido de string antes de parsear para ganar velocidad
+                                            # Si la url no tiene pinta de ser de ninguno de los nombres, saltar? dificil saber.
+                                            # Parseamos
+                                            d_feed = feedparser.parse(url)
+                                            feed_title = d_feed.feed.get('title', 'Unknown')
+                                            
+                                            matched_name = None
+                                            for name in top_30d_names:
+                                                if name in feed_title or feed_title in name:
+                                                    matched_name = name
+                                                    break
+                                            
+                                            if matched_name:
+                                                # Sacamos 2 titulares recientes
+                                                entries = d_feed.entries[:2]
+                                                if entries:
+                                                    analisis_str += f"\n- {matched_name} ({df_30d[df_30d['Fuente']==matched_name]['30d'].values[0]} noticias/mes):\n"
+                                                    for e in entries:
+                                                        analisis_str += f"  Hashtags/Temas: {e.get('title', 'Sin titulo')}\n"
+                                                found_count_30d += 1
+                                                
+                                            if found_count_30d >= len(top_30d_names): break 
+                                        except: continue
+                        except Exception as ex_30d:
+                            print(f"Error titulares mensuales: {ex_30d}")
+                            # Fallback a tabla simple si falla
+                            analisis_str += df_30d[['Fuente', '30d']].to_string(index=False)
+
+                        # =========================================================================================
+
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
                         guion_generado = generar_texto_con_gemini(prompt)
