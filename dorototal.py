@@ -39,6 +39,7 @@ from src.core.text_processing import (
 from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure
+from src.audio_processor import generar_episodio_especial
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -2197,27 +2198,27 @@ if __name__ == "__main__":
                         guion_content = f.read()
                     
                     if guion_content.strip():
+                        # Generar carpeta de salida compatible con el historial (podcast_apg_...)
+                        timestamp_folder = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        output_dir = f"podcast_apg_ESPECIAL_{timestamp_folder}"
+                        os.makedirs(output_dir, exist_ok=True)
+                        print(f"     📁 Carpeta destino: {output_dir}")
+
                         # Generar nombre de salida:
-                        if "EE_analisis_semanal" in script_file:
-                             # Si ya tiene formato (probablemente desde app.py), usar el mismo nombre pero con .mp3
-                             output_ee = os.path.splitext(script_file)[0] + ".mp3"
-                        else:
-                             # Formato genérico para otros especiales
-                             base_name = os.path.splitext(script_file)[0]
-                             timestamp_ee = int(time.time())
-                             output_ee = f"{base_name}_{timestamp_ee}.mp3"
+                        base_name = os.path.splitext(script_file)[0]
+                        output_ee = os.path.join(output_dir, f"{base_name}.mp3")
                         
-                        # Usar ruta absoluta para evitar ambigüedades
+                        # Usar ruta absoluta
                         output_path_ee_abs = os.path.abspath(output_ee)
                         
                         result_path = generar_episodio_especial(guion_content, output_path_ee_abs)
                         
                         if os.path.exists(result_path):
                             print(f"     ✅ Episodio especial generado: {output_ee}")
-                            # Renombrar procesado
-                            processed_name = f"{script_file}.processed"
+                            # Mover también el guion original procesado a la carpeta
+                            processed_name = os.path.join(output_dir, f"{script_file}.processed")
                             os.rename(script_file, processed_name)
-                            print(f"     -> Archivo renombrado a: {processed_name}")
+                            print(f"     -> Archivo procesado movido a: {processed_name}")
                         else:
                             print(f"     ❌ Error: No se generó el archivo de audio para {script_file}")
                     else:
