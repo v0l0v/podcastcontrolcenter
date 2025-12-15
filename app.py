@@ -1054,6 +1054,33 @@ with tab7:
         st.markdown("### 🎙️ Episodio Especial: Informe Semanal")
         st.info("Genera un guion humorístico analizando quién ha trabajado más y quién menos esta semana.")
         
+        # --- AUTO-LOAD: Cargar último análisis generado si existe ---
+        bg_script_content = ""
+        last_analysis_file = None
+        
+        try:
+             # Buscar archivos que coincidan con el patrón
+             base_dir_search = os.path.dirname(os.path.abspath(__file__))
+             candidates = [f for f in os.listdir(base_dir_search) if f.startswith("EE_analisis_semanal") and f.endswith(".txt")]
+             
+             if candidates:
+                 # Ordenar por fecha de modificación (más reciente primero)
+                 candidates.sort(key=lambda x: os.path.getmtime(os.path.join(base_dir_search, x)), reverse=True)
+                 last_analysis_file = candidates[0]
+                 
+                 # Leer contenido
+                 with open(os.path.join(base_dir_search, last_analysis_file), 'r', encoding='utf-8') as f:
+                     bg_script_content = f.read()
+        except Exception as e:
+            print(f"Error auto-cargando análisis: {e}")
+
+        # Mostrar previo si existe
+        if bg_script_content:
+             st.success(f"📂 Último guion cargado automáticamente: {last_analysis_file}")
+             st.text_area("Previsualización (Último generado):", value=bg_script_content, height=300, key="txt_weekly_auto")
+        
+        # -----------------------------------------------------------
+        
         if st.button("📝 Redactar Guion de Agradecimiento (Semanal)", type="primary"):
             if df is not None and not df.empty:
                 with st.spinner("Analizando datos y redactando con gracia..."):
