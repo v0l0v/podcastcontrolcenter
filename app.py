@@ -1111,9 +1111,9 @@ with tab7:
                         # Ordenamos por actividad de 30 días descendente para sacar LOS QUE MÁS han publicado
                         df_active_month = df_active_month.sort_values(by='30d', ascending=False)
 
-                        # Seleccionamos los 8 primeros (los más activos del resto)
-                        if len(df_active_month) > 8:
-                             honor_roll = df_active_month.head(8)
+                        # Seleccionamos los 10 primeros (los más activos del resto)
+                        if len(df_active_month) > 10:
+                             honor_roll = df_active_month.head(10)
                         else:
                              honor_roll = df_active_month
                         

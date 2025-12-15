@@ -464,9 +464,9 @@ class PromptsCreativos:
            - **Resumen Global:** Analiza el "RESUMEN GLOBAL" usando también expresiones de cantidad cualitativas.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
            - **Menciones de Honor (Actividad Mensual):** 
-             - **REGLA ESTRICTA:** Aquí NO digas cifras, ni rangos, ni clasifiques por orden. 
-             - **SOLO NOMBRES INTEGRADOS:** Menciónalos de forma fluida y ágil en el discurso (ej: "También agradecemos la constancia de [Nombre], [Nombre] y [Nombre]..."). 
-             - NO uses listas de viñetas narradas. Hazlo sonar como un agradecimiento natural a quienes sostienen la actividad del mes.
+             - **REGLA ESTRICTA:** NO digas cifras exactas.
+             - **ORDEN OBLIGATORIO:** Menciónalos EN EL MISMO ORDEN en que aparecen en la lista (de más a menos activos).
+             - **SOLO NOMBRES INTEGRADOS:** Menciónalos de forma fluida (ej: "Agradecemos especialmente a [A], seguido de [B], [C]... y también a [D]..."). Haz que la narración refleje sutilmente ese orden de importancia/actividad, pero sin dar datos numéricos.
         
         3. **Cierre:**
            - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. Basándote en el contenido que has analizado hoy.
