@@ -1067,68 +1067,14 @@ with tab7:
                         if bottom_3.empty:
                              bottom_3 = df_sorted.tail(3) # Si todos tienen algo, los ultimos
                         
-                        # Construir string de análisis y EXTRAER INFO REAL
-                        analisis_str = "TOP 3 FUENTES MÁS ACTIVAS (ÚLTIMA SEMANA):\n"
+                        # Construir string de análisis con TODA la tabla
+                        # El usuario pidió: "consulta la tabla, todas las columnas y todas las celdas y ordenalos de mayor a menor"
                         
-                        import feedparser # Aseguramos import aquí o arriba
+                        analisis_str = "TABLA COMPLETA DE ACTIVIDAD DE FUENTES (ORDENADA POR ACTIVIDAD SEMANAL):\n"
+                        analisis_str += df_sorted.to_string(index=False)
                         
-                        # Buscamos la URL original en el archivo feeds.txt para poder parsearlo
-                        # El DF solo tiene el Nombre (Titulo). Es un poco ineficiente pero necesario si el DF no guarda la URL.
-                        # Mejor si src.analytics devolviera tambien la URL.
-                        # ASUMIMOS QUE df TIENE NOMBRE PERO NO URL. 
-                        # VAMOS A LEER FEEDS.TXT Y MAPEAR RAPIDO.
-                        base_dir = os.path.dirname(os.path.abspath(__file__))
-                        feeds_filepath_local = os.path.join(base_dir, 'feeds.txt')
-                        mapa_nombre_url = {}
-                        if os.path.exists(feeds_filepath_local):
-                            with open(feeds_filepath_local, 'r') as f:
-                                for line in f:
-                                    line = line.strip()
-                                    if line and not line.startswith('#'):
-                                         # Parseamos ligero para sacar titulo y mapear
-                                         try:
-                                             fd = feedparser.parse(line)
-                                             tit = fd.feed.get('title', line) # Aproximacion
-                                             # Normalizar titulos seria ideal
-                                             # Para simplificar, iteramos sobre los top3 y buscamos match 'parecido' o usamos lo que src.analytics haya usado.
-                                             # src.analytics devuelve el título del feed.
-                                         except: pass
-                        
-                        # ESTRATEGIA: src.analytics NO devuelve URL. Es un fallo de diseño previo, pero work around:
-                        # Re-instanciar src.analytics.analizar_frecuencia_fuentes devuelve DF.
-                        # Modificaremos src.analytics es mejor opcion? NO, usuario pidio tocar app.py y dorototal.
-                        # Haremos un best-effort re-leyendo feeds.txt y buscando coincidencias.
-                        
-                        # O MEJOR: modificar src.analytics rapido para incluir URL oculta? No, keep simple.
-                        # Vamos a iterar feeds.txt y si el titulo coincide con uno del Top 3, sacamos noticias.
-                        
-                        urls_top_3 = []
-                        nombres_top_3 = top_3['Fuente'].tolist()
-                        nombres_top_3_originales = nombres_top_3[:] # Copia inmutable para filtrado posterior
-
-                        # ESTRATEGIA MEJORADA: 
-                        # ... (código existente) ...
-
-                        # ...
-                        # ... (despues del loop de analisis)
-                        
-                        # --- CAMBIO DE LÓGICA: En lugar de los peores, buscamos MENCIONES HONORÍFICAS MENSUALES (30d) ---
-                        # Filtramos los que tienen actividad mensual > 0, excluyendo ya los top 3 originales de la semana
-                        df_active_month = df_sorted[~df_sorted['Fuente'].isin(nombres_top_3_originales) & (df_sorted['30d'] > 0)]
-                        
-                        # Ordenamos por actividad de 30 días descendente para sacar LOS QUE MÁS han publicado
-                        df_active_month = df_active_month.sort_values(by='30d', ascending=False)
-
-                        # Seleccionamos los 10 primeros (los más activos del resto)
-                        if len(df_active_month) > 10:
-                             honor_roll = df_active_month.head(10)
-                        else:
-                             honor_roll = df_active_month
-                        
-                        analisis_str += "\nMENCIONES DE HONOR (ACTIVIDAD MENSUAL DESTACADA - SOLO NOMBRES):\n"
-                        analisis_str += "Estos GAL han publicado muchas noticias en el último mes (ORDENADOS POR ACTIVIDAD, de más a menos):\n"
-                        for _, row in honor_roll.iterrows():
-                             analisis_str += f"- {row['Fuente']}\n"
+                        # Añadimos una nota sobre la lectura de la tabla
+                        analisis_str += "\n\nNOTA: La columna '7d' indica el número de noticias esta semana.\n"
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)

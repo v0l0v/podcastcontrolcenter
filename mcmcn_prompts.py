@@ -433,57 +433,60 @@ class PromptsCreativos:
         """
         Genera un guion de episodio especial agradeciendo y analizando la actividad de las fuentes.
         """
-        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast. Tu estilo es conversacional, cercano y profesional.")
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast.")
 
         return f"""
         {persona_base}
-        Tu misión hoy es grabar un EPISODIO ESPECIAL dedicado a analizar la actividad de nuestros "Grupos de Acción Local (GAL)" durante esta semana.
         
-        CONTEXTO:
-        Hemos analizado qué GAL han publicado más noticias y cuáles han estado menos activos durante LA ÚLTIMA SEMANA.
+        OBJETIVO:
+        Redactar el "Informe Semanal de los GAL": un análisis basado ESTRICAMENTE en los datos de la tabla proporcionada.
         
-        DATOS COMPLETOS DEL ANÁLISIS:
+        DATOS DE ENTRADA (TABLA CRUDAS):
         ---
         {datos_analisis}
         ---
         
-        OBJETIVO:
-        Redactar un guion "Informe Semanal" COMPLETO Y ESTRUCTURADO (MÍNIMO 8 MINUTOS de lectura, aprox 1200 palabras) donde:
+        INSTRUCCIONES DE INTERPRETACIÓN DE LA TABLA:
+        1. **Columna 'Fuente':** Son los ÚNICOS nombres reales de los grupos. PROHIBIDO INVENTAR o alucinar nombres que no estén aquí.
+        2. **Columna '7d':** Número de noticias publicadas en los últimos 7 días. Si es 0, NO ha publicado nada esta semana.
+        3. **Columna '30d':** Actividad del último mes. Úsala para desempatar o dar contexto (ej: "aunque esta semana ha descansado, lleva un mes muy activo").
         
+        ESTRUCTURA DEL GUION (Mínimo 8 minutos / 1200 palabras):
+
         1. **Inicio:**
            - ETIQUETA OBLIGATORIA: `[SINTONIA_INICIO]`
-           - Saludo cordial y presentación del "Informe Semanal de Actividad de los GAL".
-        
-        2. **Cuerpo (El Análisis DETALLADO):**
-           - **Reconocimiento a los Más Activos (Top Semanal):** 
-             - Cita a los 3 GAL más activos de la semana. 
-             - **REGLA DE CANTIDAD:** Evita decir el número exacto (ej: "7 noticias"). Usa la expresión que se te facilita en el input (ya sea un rango como "entre 5 y 10" o una frase como "bastantes novedades"), o parafraséala a tu gusto. Lo importante es que suene fluido.
-             - **REFLEXIÓN PROFUNDA (OBLIGATORIO):** Tienes los temas clave de sus noticias en el apartado "Temas tratados" (extraídos del caché). ÚSALOS. No te limites a leer el titular. Reflexiona sobre la importancia de esos proyectos para la comarca. Extiéndete en el análisis de SU CONTENIDO.
+           - Saludo cordial presentando el informe.
+
+        2. **El Análisis (Basado en la tabla):**
+           - **El Podio Semanal (Los que tienen mayor '7d'):** 
+             - Menciona a los que encabezan la tabla.
+             - **IMPORTANTE:** Consulta la tabla fila a fila. El primero es el ganador. El segundo es el subcampeón.
+             - No digas cifras exactas ("ha publicado 14 noticias"), usa expresiones cualitativas basadas en el número ("una actividad frenética", "imparables", "un arranque discreto").
+             - Si el '7d' es muy alto (>10), usa adjetivos de asombro.
+           
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
+           
+           - **El Pelotón (Zona media):**
+             - Menciona rápidamente a grupos con actividad moderada (entre 2 y 5 noticias en '7d').
+             - Agradéceles su constancia.
+             
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Resumen Global:** Analiza el "RESUMEN GLOBAL" usando también expresiones de cantidad cualitativas.
-           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           - **Menciones de Honor (Actividad Mensual):** 
-             - **REGLA ESTRICTA:** NO digas cifras exactas.
-             - **ORDEN OBLIGATORIO:** Menciónalos EN EL MISMO ORDEN en que aparecen en la lista (de más a menos activos).
-             - **SOLO NOMBRES INTEGRADOS:** Menciónalos de forma fluida (ej: "Agradecemos especialmente a [A], seguido de [B], [C]... y también a [D]..."). Haz que la narración refleje sutilmente ese orden de importancia/actividad, pero sin dar datos numéricos.
-        
-        3. **Cierre:**
-           - **Reflexión Final:** Dedica un bloque extenso a reflexionar sobre la importancia de la comunicación para el desarrollo rural. Basándote en el contenido que has analizado hoy.
+
+           - **Menciones de Honor (Actividad acumulada '30d'):**
+             - Fíjate en la columna '30d'. Menciona a aquellos que, aunque quizás esta semana ('7d') han estado más tranquilos, tienen un número alto en '30d'.
+             - Reconoce su trayectoria mensual.
+
+        3. **Cierre Reflexivo:**
+           - Reflexiona sobre cómo estos datos (la suma de esfuerzos) construyen la comarca.
            - Despedida motivadora.
-           - **REGLA FINAL ABSOLUTA:** El guion DEBE terminar con la etiqueta `[SINTONIA_CIERRE]`. **No escribas NADA después de esta etiqueta.**
+           - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]` (¡Siempre al final!)
+
+        REGLAS DE ORO:
+        - **VERACIDAD:** Si un grupo no está en la tabla, NO EXISTE. Si tiene '7d'=0, NO digas que ha publicado noticias esta semana.
+        - **ORDEN:** Respeta el orden de la tabla (que ya viene ordenada por actividad semanal).
+        - **ESTILO:** Profesional, ameno y con tu toque personal (Dorotea).
         
-        REGLAS DE TONO:
-        - **PROFESIONAL Y REFLEXIVO:** Tu análisis debe basarse en el CONTENIDO REAL de las noticias.
-        - **ESTILO DOROTEA:** Sobria, culta, con la socarronería justa y mucha humanidad (recordando a Cuerda y Pavón).
-        - **VOCABULARIO:** Usa siempre el término "Grupos de Acción Local" o "GAL".
-        
-        REGLAS DE FORMATO:
-        - **IMPORTANTE:** `[SINTONIA_CIERRE]` va SIEMPRE AL FINAL DEL DOCUMENTO.
-        - Duración: **Tómate tu tiempo (+8 min).** Extiéndete en los comentarios de las noticias destacadas y en la reflexión final.
-        
-        ENTREGA:
-        Devuelve ÚNICAMENTE el texto del guion, listo para locutar. Sin introducciones ni notas extra. NO uses negritas ni asteriscos (**) en el texto.
+        ENTREGA: ÚNICAMENTE EL GUION (TEXTO PLANO).
         """
 
     @staticmethod
