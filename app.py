@@ -18,8 +18,6 @@ import pandas as pd
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
 from src.llm_utils import generar_texto_con_gemini
-# --- Importación de datos geo ---
-from datos_geograficos import MUNICIPIO_A_PROVINCIA, MUNICIPIO_A_GAL
 
 from mcmcn_prompts import PromptsCreativos
 
@@ -1027,36 +1025,6 @@ with tab7:
         # Renderizar si tenemos datos
         if df is not None:
             try:
-                # --- ENRIQUECIMIENTO CON DATOS GEO (GAL/PROVINCIA) ---
-                # Como el análisis es asíncrono y devuelve un DF pelado, enriquecemos aquí al vuelo.
-                # Heurística: Si "Ayuntamiento de X" -> buscar X. Si "Web X" -> buscar X.
-                
-                def inferir_gal(nombre_fuente):
-                    # Limpiamos prefijos comunes para buscar
-                    nombre_clean = nombre_fuente.lower().replace("ayuntamiento de ", "").replace("ayto ", "").replace("web ", "").strip()
-                    # Capitalizamos cada palabra para match exacto
-                    nombre_clean = nombre_clean.title()
-                    
-                    # Intentos directos
-                    if nombre_clean in MUNICIPIO_A_GAL:
-                        return MUNICIPIO_A_GAL[nombre_clean]
-                    
-                    # Búsqueda substring
-                    for muni, gal in MUNICIPIO_A_GAL.items():
-                        if muni.lower() in nombre_fuente.lower(): # Si el nombre original contiene el municipio
-                            return gal
-                    return "---"
-
-                # Aplicar solo si no existe ya
-                if 'GAL/Zona' not in df.columns:
-                    df['GAL/Zona'] = df['Fuente'].apply(inferir_gal)
-
-                # Reordenamos columnas para que GAL salga al principio junto a Fuente
-                cols = ['Fuente', 'GAL/Zona', 'Estado', '24h', '7d', '30d', '1 año']
-                # Filtrar solo las que existen
-                cols = [c for c in cols if c in df.columns]
-                df = df[cols]
-                
                 # Métricas Globales
                 total_fuentes = len(df)
                 fuentes_activas = len(df[df['Estado'].isin(["🟢 Muy Activo", "🟡 Activo"])])
