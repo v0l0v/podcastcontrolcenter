@@ -1,4 +1,5 @@
 import streamlit as st
+import sys
 import json
 import os
 from dotenv import load_dotenv
@@ -318,7 +319,7 @@ with st.sidebar:
             if st.button("🚀 GENERAR SELECCIONADOS", type="primary", disabled=btn_disabled):
                 with st.spinner(f"Procesando {len(selected_scripts)} episodios..."):
                     try:
-                        cmd = ["python3", "dorototal.py", "--only-special", "--file-list"] + selected_scripts
+                        cmd = [sys.executable, "dorototal.py", "--only-special", "--file-list"] + selected_scripts
                         
                         process = subprocess.run(
                             cmd,
@@ -364,7 +365,7 @@ with st.sidebar:
                     st.session_state['news_confirmed'] = False
 
                     process = subprocess.run(
-                        ["python3", "dorototal.py", "--preview"],
+                        [sys.executable, "dorototal.py", "--preview"],
                         capture_output=True,
                         text=True,
                         cwd=os.getcwd()
@@ -459,7 +460,7 @@ with st.sidebar:
                     with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
                         json.dump(final_news, f, ensure_ascii=False, indent=4)
                     
-                    cmd = ["python3", "dorototal.py", "--from-json", "seleccion_usuario.json"]
+                    cmd = [sys.executable, "dorototal.py", "--from-json", "seleccion_usuario.json"]
                     
                     # Lógica para saltar especiales si el usuario lo pidió
                     if mode_skip_special:
