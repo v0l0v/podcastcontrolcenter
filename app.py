@@ -610,9 +610,7 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        new_voice = st.selectbox(
-            "Voz de Google TTS", 
-            options=[
+        voice_options = [
                 # --- CHIRP 3 HD (Generative, Ultra-Realistic) ---
                 "es-ES-Chirp3-HD-Achernar [FEMALE]", "es-ES-Chirp3-HD-Aoede [FEMALE]", 
                 "es-ES-Chirp3-HD-Autonoe [FEMALE]", "es-ES-Chirp3-HD-Callirrhoe [FEMALE]", 
@@ -652,8 +650,17 @@ with tab2:
                 # --- STANDARD (Basic) ---
                 "es-ES-Standard-F [FEMALE]", "es-ES-Standard-H [FEMALE]",
                 "es-ES-Standard-E [MALE]", "es-ES-Standard-G [MALE]"
-            ],
-            index=0
+        ]
+        
+        try:
+            current_voice_index = voice_options.index(config['audio_config'].get('voice_name'))
+        except:
+            current_voice_index = 11 # Default Sulafat
+
+        new_voice = st.selectbox(
+            "Voz de Google TTS", 
+            options=voice_options,
+            index=current_voice_index
         )
         new_lufs = st.slider("Volumen Objetivo (LUFS)", min_value=-24.0, max_value=-10.0, value=float(config['audio_config'].get('target_lufs', -16.0)), step=0.5)
         
