@@ -812,7 +812,7 @@ def parsear_fecha_segura(entry):
     for field in ['published_parsed', 'updated_parsed']:
         if hasattr(entry, field) and entry[field]:
             try:
-                return datetime.fromtimestamp(mktime(entry[field]))
+                return datetime.fromtimestamp(time.mktime(entry[field]))
             except (ValueError, TypeError):
                 continue
     return datetime(2000, 1, 1)  # Valor por defecto: antigua para ser filtrada si no tiene fecha
@@ -2159,7 +2159,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Cargar configuración para obtener el archivo de feeds
-    config_app = cargar_configuracion()
+    config_app = CONFIG
     archivo_feeds = config_app.get('generation_config', {}).get('feeds_file', 'feeds.txt')
     
     if args.only_special:
