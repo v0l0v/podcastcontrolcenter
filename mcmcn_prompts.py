@@ -439,52 +439,43 @@ class PromptsCreativos:
         {persona_base}
         
         OBJETIVO:
-        Redactar el "Informe Semanal de los GAL": un análisis basado ESTRICAMENTE en los datos de la tabla proporcionada.
+        Redactar el "Informe Semanal de Actividad de los GAL". Debes seguir ESTRICTAMENTE la estructura solicitada, basándote en los datos de la tabla.
         
-        DATOS DE ENTRADA (TABLA CRUDAS):
+        INPUT - DATOS DE ACTIVIDAD Y TITULARES:
         ---
         {datos_analisis}
         ---
+
+        REGLA DE ORO DE CANTIDADES: NUNCA digas el número exacto de noticias (ej: "ha publicado 5"). Usa siempre cuantificadores relativos ("bastante activo", "liderando", "un aluvión de novedades", "constante").
         
-        INSTRUCCIONES DE INTERPRETACIÓN DE LA TABLA:
-        1. **Columna 'Fuente':** Son los ÚNICOS nombres reales de los grupos. PROHIBIDO INVENTAR o alucinar nombres que no estén aquí.
-        2. **Columna '7d':** Número de noticias publicadas en los últimos 7 días. Si es 0, NO ha publicado nada esta semana.
-        3. **Columna '30d':** Actividad del último mes. Úsala para desempatar o dar contexto (ej: "aunque esta semana ha descansado, lleva un mes muy activo").
-        
-        ESTRUCTURA DEL GUION (Mínimo 8 minutos / 1200 palabras):
+        ESTRUCTURA DEL GUION (Respetar orden y contenido):
 
         1. **Inicio:**
            - ETIQUETA OBLIGATORIA: `[SINTONIA_INICIO]`
-           - Saludo cordial presentando el informe.
+           - Saludo cordial y presentación del análisis semanal.
 
-        2. **El Análisis (Basado en la tabla):**
-           - **El Podio Semanal (Los que tienen mayor '7d'):** 
-             - Menciona a los que encabezan la tabla.
-             - **IMPORTANTE:** Consulta la tabla fila a fila. El primero es el ganador. El segundo es el subcampeón.
-             - No digas cifras exactas ("ha publicado 14 noticias"), usa expresiones cualitativas basadas en el número ("una actividad frenética", "imparables", "un arranque discreto").
-             - Si el '7d' es muy alto (>10), usa adjetivos de asombro.
-           
-           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
-           
-           - **El Pelotón (Zona media):**
-             - Menciona rápidamente a grupos con actividad moderada (entre 2 y 5 noticias en '7d').
-             - Agradéceles su constancia.
-             
+        2. **BLOQUE 1: El Podio Semanal (Top 3 '7d'):**
+           - **Quiénes:** Menciona ÚNICAMENTE a los 3 grupos con mayor número en la columna '7d'.
+           - **Contenido:** Para estos 3 ganadores, tienes una lista de "TITULARES DESTACADOS" en el input. NO LOS LEAS LITERALMENTE. Úsalos para comentar brevemente sobre qué han estado trabajando (ej: "hemos visto que han lanzado un taller de...", "muy centrados en sus ayudas a...").
+           - **Estilo:** Reconocimiento y entusiasmo.
            - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
 
-           - **Menciones de Honor (Actividad acumulada '30d'):**
-             - Fíjate en la columna '30d'. Menciona a aquellos que, aunque quizás esta semana ('7d') han estado más tranquilos, tienen un número alto en '30d'.
-             - Reconoce su trayectoria mensual.
+        3. **BLOQUE 2: La Constancia Mensual (Top 6-9 '30d'):**
+           - **Quiénes:** Selecciona entre 6 y 9 grupos con mayor actividad en la columna '30d' (ordenados de más a menos).
+           - **Contenido:** Cita sus nombres.
+           - **Conexión:** Si alguno de ellos ya salió en el Bloque 1 (el podio semanal), haz una mención especial de reconocimiento ("y repetimos mención a...", "doble enhorabuena a...").
+           - **Estilo:** Adorna brevemente la mención (ej: "siempre al pie del cañón", "motor de la comarca") pero SIN leer titulares. Solo nombres y elogios breves y variados.
+           - ETIQUETA OBLIGATORIA: `[CORTINILLA]`
 
-        3. **Cierre Reflexivo:**
-           - Reflexiona sobre cómo estos datos (la suma de esfuerzos) construyen la comarca.
-           - Despedida motivadora.
+        4. **BLOQUE 3: Los que suman en silencio (Sin Actividad):**
+           - **Cálculo:** Cuenta cuántos grupos tienen '0' en la columna '7d' o '30d' (según veas en la tabla).
+           - **Contenido:** NO DES NOMBRES. Solo di la cifra total (ej: "Y hay unos 15 grupos que esta semana no han publicado...").
+           - **Mensaje:** Explica brevemente la importancia de veces no publicar noticias porque se está trabajando en gestión interna, reuniones o proyectos de largo recorrido. Valida su esfuerzo invisible "detrás de las cámaras".
+
+        5. **Cierre:**
+           - Reflexión final sobre el esfuerzo colectivo de todos para mantener vivo el medio rural.
+           - Despedida hasta la próxima semana.
            - ETIQUETA OBLIGATORIA: `[SINTONIA_CIERRE]` (¡Siempre al final!)
-
-        REGLAS DE ORO:
-        - **VERACIDAD:** Si un grupo no está en la tabla, NO EXISTE. Si tiene '7d'=0, NO digas que ha publicado noticias esta semana.
-        - **ORDEN:** Respeta el orden de la tabla (que ya viene ordenada por actividad semanal).
-        - **ESTILO:** Profesional, ameno y con tu toque personal (Dorotea).
         
         ENTREGA: ÚNICAMENTE EL GUION (TEXTO PLANO).
         """

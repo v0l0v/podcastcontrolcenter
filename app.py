@@ -1075,6 +1075,65 @@ with tab7:
                         
                         # Añadimos una nota sobre la lectura de la tabla
                         analisis_str += "\n\nNOTA: La columna '7d' indica el número de noticias esta semana.\n"
+
+                        # =========================================================================================
+                        # OBTENCIÓN DE TITULARES PARA EL TOP 3 (Bloque 1)
+                        # =========================================================================================
+                        # El usuario quiere que citemos "uno o dos titulares" de los ganadores.
+                        # Como el DF no tiene los titulares, recorremos feeds.txt buscando los feeds de estos Top 3
+                        # y extraemos sus ultimas 2 noticias.
+                        
+                        import feedparser
+                        
+                        top_3_names = top_3['Fuente'].tolist()
+                        analisis_str += "\n\n--- DETALLE DE TITULARES DE LOS GANADORES (TOP 3) ---\n"
+                        analisis_str += "Usa estos titulares solo como inspiración para mencionar su actividad, NO LOS LEAS LITERALMENTE:\n"
+
+                        try:
+                            found_count = 0
+                            # Volvemos a leer feeds.txt para buscar las URLs de estos nombres
+                            base_dir = os.path.dirname(os.path.abspath(__file__))
+                            feeds_path_local = os.path.join(base_dir, 'feeds.txt')
+                            
+                            if os.path.exists(feeds_path_local):
+                                with open(feeds_path_local, 'r', encoding='utf-8') as f:
+                                    for line in f:
+                                        url = line.strip()
+                                        if not url or url.startswith('#'): continue
+                                        
+                                        # Parseamos para ver el titulo
+                                        # (Para optimizar, podriamos tener un mapa previo, pero esto es 'on demand')
+                                        try:
+                                            d_feed = feedparser.parse(url)
+                                            feed_title = d_feed.feed.get('title', 'Unknown')
+                                            
+                                            # Chequeo simple de coincidencia (src.analytics usa el titulo tal cual)
+                                            # Intentamos ver si el nombre del feed esta en nuestro top_3_names
+                                            # OJO: src.analytics hace limpieza de encoding. Puede haber ligeras diferencias.
+                                            # Hacemos match "in"
+                                            
+                                            matched_name = None
+                                            for name in top_3_names:
+                                                if name in feed_title or feed_title in name: # Coincidencia laxa
+                                                    matched_name = name
+                                                    break
+                                            
+                                            if matched_name:
+                                                entries = d_feed.entries[:2] # Solo las 2 ultimas
+                                                if entries:
+                                                    analisis_str += f"\n- {matched_name}:\n"
+                                                    for e in entries:
+                                                        analisis_str += f"  * {e.get('title', 'Sin titulo')}\n"
+                                                found_count += 1
+                                                
+                                            if found_count >= 3: break # Ya encontramos los 3
+                                            
+                                        except: continue
+                        except Exception as ex_feeds:
+                            print(f"Error recuperando titulares: {ex_feeds}")
+                            analisis_str += "(No se pudieron recuperar titulares detallados, improvisa basándote en que son muy activos)\n"
+
+                        # =========================================================================================
                             
                         # 2. Llamar a la IA
                         prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
