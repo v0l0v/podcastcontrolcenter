@@ -12,7 +12,8 @@ from src.core.text_processing import (
     limpiar_markdown_audio, 
     corregir_palabras_deletreadas_tts, 
     corregir_numeros_con_puntos_tts, 
-    convertir_ssml_a_texto_plano
+    convertir_ssml_a_texto_plano,
+    corregir_mayusculas_tts
 )
 from src.llm_utils import retry_on_failure
 
@@ -103,6 +104,7 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
     ssml_corregido = preprocesar_texto_para_tts(ssml)
     ssml_corregido = limpiar_markdown_audio(ssml_corregido)
     ssml_corregido = corregir_palabras_deletreadas_tts(ssml_corregido)
+    ssml_corregido = corregir_mayusculas_tts(ssml_corregido)
     ssml_corregido = corregir_numeros_con_puntos_tts(ssml_corregido)
     
     if ssml_corregido != ssml:

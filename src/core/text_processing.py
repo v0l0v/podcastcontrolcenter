@@ -326,6 +326,70 @@ def corregir_palabras_deletreadas_tts(texto: str) -> str:
         texto_procesado = corregir_parentesis(texto_procesado)
         return texto_procesado
 
+def corregir_mayusculas_tts(texto: str) -> str:
+    """
+    Convierte palabras en MAYÚSCULAS (>1 letra) a formato Título (o minúsculas)
+    para evitar que el TTS las deletree (ej. 'HOLA' -> 'Hola').
+    Ignora números romanos si posible (aunque el regex de palabras suele excluirlos si son complejos, 
+    cuidado con 'IV', 'XI', etc que son letras. 
+    Pero 'LA' -> 'La' es deseable. 'UE' -> 'Ue' (quizás no, pero el usuario pidió conversión).
+    
+    El usuario pidió explícitamente: "palabras en MAYUSCULAS, ¿puedes convertirlas en minusculas".
+    Usaremos Title Case para que quede mejor tras punto, etc.
+    """
+    # Exclusión de números romanos comunes simples para evitar 'X' -> 'x' si fuera el caso, 
+    # pero el usuario quiere evitar deletreo. 
+    # Un número romano como 'II' el TTS lo lee "dos" si está bien contexto, o "i i".
+    # Si lo pasamos a "Ii", lo leerá "Ii".
+    # Vamos a ser agresivos con la petición del usuario: TODO MAYÚSCULAS -> Title Case.
+    
+    # Pattern: Palabras de 2 o más letras mayúsculas, permitiendo vocales con tilde.
+    # \b asegura límite de palabra.
+    pattern = r'\b[A-ZÁÉÍÓÚÑ]{2,}\b'
+    
+    is_ssml = texto.strip().startswith('<speak>')
+
+    def replacer(match):
+        word = match.group(0)
+        # Excepción posible: Siglas muy comunes que SI queremos deletrear?
+        # El usuario dijo "evitar el deletreo de estas". Así que convertimos todo.
+        return word.capitalize()
+
+    if is_ssml:
+        # Si es SSML, ten cuidado de no romper tags <tag ATRr="VAL">
+        # Mejor procesar solo el contenido de texto si es complejo, 
+        # pero aquí asumimos que el texto entrante ya está más o menos limpio o 
+        # que las mayúsculas en tags no matchean \b[A-Z]{2,}\b fácilmente (atributos suelen ser minúscula).
+        # Sin embargo, '<prosody RATE="...">' RATE es mayúscula? No, suele ser 'rate'.
+        # Para seguridad, extraemos contenido de <speak> si existe.
+        content_match = re.search(r"<speak>(.*)</speak>", texto, re.DOTALL)
+        if content_match:
+            content = content_match.group(1)
+            # Cuidado con tags internos. Lo ideal es no tocar lo que está dentro de <...>.
+            # Una forma simple es split por tags y solo tocar texto fuera.
+            # O usar un regex que ignore tags.
+            
+            # Estrategia: reemplazar solo si no estamos dentro de un tag.
+            # Esto es complejo con regex simple.
+            # Alternativa: usar la función existente 'limpiar_artefactos' o similar? No.
+            
+            # Vamos a usar una función auxiliar que trocea por tags.
+            parts = re.split(r'(<[^>]+>)', content)
+            processed_parts = []
+            for part in parts:
+                if part.startswith('<') and part.endswith('>'):
+                    processed_parts.append(part)
+                else:
+                    processed_parts.append(re.sub(pattern, replacer, part))
+            
+            new_content = "".join(processed_parts)
+            return f"<speak>{new_content}</speak>"
+        else:
+            # Fallback si no parsea bien speak
+            return re.sub(pattern, replacer, texto)
+    else:
+        return re.sub(pattern, replacer, texto)
+
 def corregir_numeros_con_puntos_tts(texto: str) -> str:
     is_ssml = texto.strip().startswith('<speak>')
     pattern_dots = r'(?<![a-zA-Z])\b\d{1,3}(?:\.\d{3})+\b'
