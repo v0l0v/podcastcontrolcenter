@@ -420,6 +420,38 @@ def corregir_numeros_con_puntos_tts(texto: str) -> str:
         texto = re.sub(pattern_plain, replacer, texto)
         return texto
 
+def corregir_decimales_con_coma_tts(texto: str) -> str:
+    """
+    Reemplaza números con decimales separados por coma (ej: 1,05) 
+    para que se lean "uno coma cero cinco" en lugar de "uno cerocinco".
+    """
+    is_ssml = texto.strip().startswith('<speak>')
+    # Pattern: dígitos, coma, dígitos (al menos uno)
+    # \d+,\d+
+    # Cuidado con listas "1, 2, 3" -> tiene espacio. pattern exige \d,\d
+    pattern = r'(?<!\d)(\d+),(\d+)(?!\d)' 
+
+    def replacer(match):
+        entero = match.group(1)
+        decimal = match.group(2)
+        # Opcional: convertir números a palabras si se desea
+        # Pero "1 coma 05" suele leerse bien por TTS estándar si ponemos " coma ".
+        return f"{entero} coma {decimal}"
+
+    if is_ssml:
+        content_match = re.search(r"<speak>(.*)</speak>", texto, re.DOTALL)
+        if content_match:
+            content = content_match.group(1)
+            # Reemplazo simple en el texto dentro de speak
+            # Podría afectar atributos con comas si los hubiera, pero es raro en atributos numéricos simples.
+            # Riesgo bajo para '1,05'. 
+            content = re.sub(pattern, replacer, content)
+            return f"<speak>{content}</speak>"
+        else:
+            return texto
+    else:
+        return re.sub(pattern, replacer, texto)
+
 def limpiar_artefactos_ia(texto: str) -> str:
     texto_limpio = re.sub(
         r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica)[^)]*?\)\s*',

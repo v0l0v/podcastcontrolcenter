@@ -13,7 +13,8 @@ from src.core.text_processing import (
     corregir_palabras_deletreadas_tts, 
     corregir_numeros_con_puntos_tts, 
     convertir_ssml_a_texto_plano,
-    corregir_mayusculas_tts
+    corregir_mayusculas_tts,
+    corregir_decimales_con_coma_tts
 )
 from src.llm_utils import retry_on_failure
 
@@ -106,6 +107,7 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
     ssml_corregido = corregir_palabras_deletreadas_tts(ssml_corregido)
     ssml_corregido = corregir_mayusculas_tts(ssml_corregido)
     ssml_corregido = corregir_numeros_con_puntos_tts(ssml_corregido)
+    ssml_corregido = corregir_decimales_con_coma_tts(ssml_corregido)
     
     if ssml_corregido != ssml:
         # print(f"      ✅ Texto preprocesado para pronunciación.") # Verbose off? 
