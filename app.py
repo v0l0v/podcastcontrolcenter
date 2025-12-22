@@ -604,6 +604,8 @@ with tab1:
         
         guardar_config(config)
         st.success("✅ Configuración general actualizada.")
+        time.sleep(0.5)
+        st.rerun()
 
 with tab2:
     st.markdown('<div class="sub-header">Ajustes de Audio</div>', unsafe_allow_html=True)
@@ -676,6 +678,8 @@ with tab2:
         config['audio_config']['min_words_for_audio'] = new_min_words
         guardar_config(config)
         st.success("✅ Ajustes de audio actualizados.")
+        time.sleep(0.5)
+        st.rerun()
 
 with tab3:
     st.markdown('<div class="sub-header">Diccionario de Pronunciación</div>', unsafe_allow_html=True)
@@ -718,6 +722,8 @@ with tab3:
         config['pronunciation']['siglas'] = parse_dict_text(new_siglas_str)
         guardar_config(config)
         st.success("✅ Diccionarios de pronunciación actualizados.")
+        time.sleep(0.5)
+        st.rerun()
 
 with tab4:
     st.markdown('<div class="sub-header">Editor de Personalidad y Prompts</div>', unsafe_allow_html=True)
@@ -788,6 +794,8 @@ with tab4:
         
         guardar_config(config)
         st.success("✅ ¡Personalidad de Dorotea actualizada!")
+        time.sleep(0.5)
+        st.rerun()
 
 
 
@@ -836,6 +844,8 @@ with tab5:
         
         guardar_config(config)
         st.success("✅ Lógica de noticias actualizada.")
+        time.sleep(0.5)
+        st.rerun()
 
 with tab6:
     st.markdown('<div class="sub-header">Historial de Podcasts</div>', unsafe_allow_html=True)
@@ -1008,7 +1018,10 @@ with tab7:
         if btn_check_feeds:
             with st.spinner("Conectando con servidores RSS y calculando estadísticas..."):
                 base_dir = os.path.dirname(os.path.abspath(__file__))
-                feeds_path = os.path.join(base_dir, 'feeds.txt')
+                # FIXED: Usar el archivo configurado, no 'feeds.txt' hardcoded
+                feeds_file_conf = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+                feeds_path = os.path.join(base_dir, feeds_file_conf)
+                
                 if os.path.exists(feeds_path):
                     try:
                         df = analizar_frecuencia_fuentes(feeds_path)
@@ -1017,7 +1030,7 @@ with tab7:
                         st.error(f"Error al analizar fuentes: {e}")
                         df = None
                 else:
-                    st.error("No se encuentra el archivo feeds.txt")
+                    st.error(f"No se encuentra el archivo {feeds_file_conf}")
                     df = None
         else:
             # Recuperar de caché
@@ -1118,9 +1131,10 @@ with tab7:
 
                         try:
                             found_count = 0
-                            # Volvemos a leer feeds.txt para buscar las URLs de estos nombres
+                            # Volvemos a leer el archivo de feeds configurado para buscar las URLs de estos nombres
                             base_dir = os.path.dirname(os.path.abspath(__file__))
-                            feeds_path_local = os.path.join(base_dir, 'feeds.txt')
+                            feeds_file_conf = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+                            feeds_path_local = os.path.join(base_dir, feeds_file_conf)
                             
                             if os.path.exists(feeds_path_local):
                                 with open(feeds_path_local, 'r', encoding='utf-8') as f:
