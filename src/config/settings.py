@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- CONSTANTES ---
+# --- CONSTANTES ---
 AUDIO_CACHE_DIR = 'audio_cache'
 
 # --- CARGA DE CONFIGURACIÓN EXTERNA ---
@@ -22,6 +23,20 @@ def cargar_configuracion():
 CONFIG = cargar_configuracion()
 AUDIO_CONFIG = CONFIG.get('audio_config', {})
 GEN_CONFIG = CONFIG.get('generation_config', {})
+DIR_CONFIG = CONFIG.get('directories', {})
+
+# --- DIRECTORIOS CONFIGURABLES ---
+# Se resuelven relativos a la raíz del proyecto si son relativos
+BASE_PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+def _resolve_path(path):
+    if os.path.isabs(path):
+        return path
+    return os.path.join(BASE_PROJECT_DIR, path)
+
+CTA_TEXTS_DIR = _resolve_path(DIR_CONFIG.get('ctas', 'cta_texts'))
+AUDIO_ASSETS_DIR = _resolve_path(DIR_CONFIG.get('audio_assets', 'audio_assets'))
+
 
 VOICE_TARGET_PEAK_DBFS = AUDIO_CONFIG.get('voice_target_peak_dbfs', -1.5)
 TARGET_LUFS = AUDIO_CONFIG.get('target_lufs', -16.0)

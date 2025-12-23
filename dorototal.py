@@ -26,7 +26,7 @@ from src.config.settings import (
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
     DEDUP_SIMILARITY_THRESHOLD, NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
     MAX_DYNAMIC_KEYPHRASES, MIN_WORDS_FOR_AUDIO, AUDIENCE_QUESTIONS_FILE, 
-    AUDIO_CACHE_DIR, SPANISH_STOPWORDS
+    AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR
 )
 from src.core.text_processing import (
     strip_accents, reparar_codificacion, normalize_text_for_similarity, tokens, 
@@ -1346,7 +1346,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         output_dir = f"podcast_apg_{timestamp}"
         
         # Verificar y crear directorios necesarios
-        required_dirs = ["audio_assets", "cta_texts", "audio_cache", output_dir]
+        required_dirs = [AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, AUDIO_CACHE_DIR, output_dir]
         for dir_path in required_dirs:
             os.makedirs(dir_path, exist_ok=True)
             if not os.path.exists(dir_path):
@@ -1661,14 +1661,14 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         print(f"\n--- Obteniendo textos de CTA para el {dia_semana_str} ---")
         
-        cta_texts_dir = "cta_texts"
+        cta_texts_dir = CTA_TEXTS_DIR
         cta_inicio_text = _get_cta_text("inicio", dia_semana_str, cta_texts_dir)
         cta_intermedio_text = _get_cta_text("intermedio", dia_semana_str, cta_texts_dir)
         cta_cierre_text = _get_cta_text("cierre", dia_semana_str, cta_texts_dir)
         
         segmentos_audio = []
         transcript_data = [] # <-- Inicializar lista para transcripción
-        audio_assets_dir = "audio_assets"
+        audio_assets_dir = AUDIO_ASSETS_DIR
 
         # --- Cargar la cortinilla para los CTAs ---
         cortinilla_cta_audio = None
@@ -1829,7 +1829,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
         
         # 3. Añadir la sintonía de inicio ANTES del monólogo.
-        ruta_sintonia_inicio = os.path.join("audio_assets", "inicio.mp3")
+        ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
         if os.path.exists(ruta_sintonia_inicio):
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_inicio))
         
@@ -2087,7 +2087,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     segmentos_audio.append(despedida_audio_fallback)
 
         # 4. Añadir la sintonía de cierre DESPUÉS del monólogo.
-        ruta_sintonia_cierre = os.path.join("audio_assets", "cierre.mp3")
+        ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
         if os.path.exists(ruta_sintonia_cierre):
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_cierre))
         

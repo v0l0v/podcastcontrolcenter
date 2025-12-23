@@ -13,6 +13,10 @@
         "silence_threshold_dbfs": -50,
         "min_words_for_audio": 33
     },
+    "directories": {
+        "ctas": "cta_texts",
+        "audio_assets": "audio_assets"
+    },
     "generation_config": {
         "dedup_similarity_threshold": 0.9,
         "min_news_per_block": 2,

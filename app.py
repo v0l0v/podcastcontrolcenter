@@ -592,6 +592,11 @@ with tab1:
             options=sorted(list(set(txt_files))),
             index=txt_files.index(current_feeds_file) if current_feeds_file in txt_files else 0
         )
+        
+        st.markdown("---")
+        st.markdown("**Directorios de Recursos**")
+        new_ctas_dir = st.text_input("Carpeta de CTAs", value=config.get('directories', {}).get('ctas', 'cta_texts'))
+        new_audio_assets_dir = st.text_input("Carpeta de Audio Assets", value=config.get('directories', {}).get('audio_assets', 'audio_assets'))
 
     if st.button("Guardar Cambios Generales"):
         config['podcast_info']['presentadora'] = new_presentadora
@@ -602,6 +607,10 @@ with tab1:
         if 'generation_config' not in config: config['generation_config'] = {}
         config['generation_config']['feeds_file'] = new_feeds_file
         
+        if 'directories' not in config: config['directories'] = {}
+        config['directories']['ctas'] = new_ctas_dir
+        config['directories']['audio_assets'] = new_audio_assets_dir
+
         guardar_config(config)
         st.success("✅ Configuración general actualizada.")
         time.sleep(0.5)
