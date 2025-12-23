@@ -505,7 +505,7 @@ with st.sidebar:
 # Pestañas principales
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes"])
+tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab_ctas = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📢 CTAs"])
 
 with tab_rev:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -1261,6 +1261,58 @@ with tab7:
             else:
                 st.warning("Primero debes analizar el estado de los feeds (botón arriba).")
 
+with tab_ctas:
+    st.markdown('<div class="sub-header">Editor de CTAs</div>', unsafe_allow_html=True)
+    
+    # 1. Obtener directorio desde config (o usar default)
+    ctas_dir = config.get('directories', {}).get('ctas', 'cta_texts')
+    
+    # Resolver ruta absoluta si es relativa
+    if not os.path.isabs(ctas_dir):
+        ctas_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), ctas_dir)
+        
+    if not os.path.exists(ctas_dir):
+        st.error(f"❌ El directorio configurado no existe: `{ctas_dir}`")
+    else:
+        # 2. Listar archivos .txt
+        try:
+            files = sorted([f for f in os.listdir(ctas_dir) if f.endswith(".txt")])
+            
+            if not files:
+                st.warning(f"No hay archivos .txt en `{ctas_dir}`")
+            else:
+                col_sel, col_info = st.columns([1, 2])
+                
+                with col_sel:
+                    selected_file = st.selectbox("Selecciona un archivo para editar:", files)
+                    
+                path_file = os.path.join(ctas_dir, selected_file)
+                
+                # 3. Leer contenido
+                try:
+                    with open(path_file, "r", encoding="utf-8") as f:
+                        current_content = f.read()
+                        
+                    # 4. Mostrar editor
+                    st.markdown(f"**Editando:** `{selected_file}`")
+                    new_content = st.text_area("Contenido del CTA:", value=current_content, height=300, key=f"editor_{selected_file}")
+                    
+                    # 5. Guardar
+                    if st.button("💾 Guardar Cambios en CTA", type="primary"):
+                        try:
+                            with open(path_file, "w", encoding="utf-8") as f:
+                                f.write(new_content)
+                            st.success(f"✅ Archivo `{selected_file}` guardado correctamente.")
+                            time.sleep(1)
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error guardando archivo: {e}")
+                            
+                except Exception as e:
+                    st.error(f"Error leyendo archivo: {e}")
+                    
+        except Exception as e:
+            st.error(f"Error listando directorio: {e}")
 
 
 
