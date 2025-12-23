@@ -584,9 +584,8 @@ with tab1:
         st.markdown("**Directorios de Recursos**")
         
         # Selector de archivo de feeds
-        txt_files = [f for f in os.listdir('.') if f.endswith('.txt')]
-        if 'feeds.txt' not in txt_files and os.path.exists('feeds.txt'):
-            txt_files.append('feeds.txt')
+        # Selector de archivo de feeds
+        txt_files = [f for f in os.listdir('.') if f.endswith('.txt') and f.startswith('feeds_')]
         
         current_feeds_file = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
         if current_feeds_file not in txt_files:
