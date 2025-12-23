@@ -578,6 +578,11 @@ with tab1:
         new_email = st.text_input("Email de Contacto", value=config['podcast_info'].get('email_contacto', ''))
         new_email_alias = st.text_input("Alias de Email (para leer)", value=config['podcast_info'].get('email_alias_ssml', ''))
         
+
+        
+        st.markdown("---")
+        st.markdown("**Directorios de Recursos**")
+        
         # Selector de archivo de feeds
         txt_files = [f for f in os.listdir('.') if f.endswith('.txt')]
         if 'feeds.txt' not in txt_files and os.path.exists('feeds.txt'):
@@ -592,9 +597,6 @@ with tab1:
             options=sorted(list(set(txt_files))),
             index=txt_files.index(current_feeds_file) if current_feeds_file in txt_files else 0
         )
-        
-        st.markdown("---")
-        st.markdown("**Directorios de Recursos**")
         new_ctas_dir = st.text_input("Carpeta de CTAs", value=config.get('directories', {}).get('ctas', 'cta_texts'))
         new_audio_assets_dir = st.text_input("Carpeta de Audio Assets", value=config.get('directories', {}).get('audio_assets', 'audio_assets'))
 
