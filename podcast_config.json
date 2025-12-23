@@ -14,7 +14,7 @@
         "min_words_for_audio": 33
     },
     "directories": {
-        "ctas": "cta_texts",
+        "ctas": "ctas_castillalamancha",
         "audio_assets": "audio_assets"
     },
     "generation_config": {
