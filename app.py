@@ -597,7 +597,22 @@ with tab1:
             options=sorted(list(set(txt_files))),
             index=txt_files.index(current_feeds_file) if current_feeds_file in txt_files else 0
         )
-        new_ctas_dir = st.text_input("Carpeta de CTAs", value=config.get('directories', {}).get('ctas', 'cta_texts'))
+        # Escanear directorios de CTAs (que empiecen por ctas_)
+        cta_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d.startswith('ctas_')]
+        current_cta = config.get('directories', {}).get('ctas', 'ctas_castillalamancha')
+        
+        # Asegurar que el actual esté en la lista aunque no empiece por ctas_ (soporte legacy)
+        if current_cta not in cta_dirs and os.path.isdir(current_cta):
+            cta_dirs.append(current_cta)
+        elif current_cta not in cta_dirs:
+            # Si no existe, al menos mostrarlo para que se vea que está configurado
+             cta_dirs.append(current_cta)
+
+        new_ctas_dir = st.selectbox(
+            "Carpeta de CTAs", 
+            options=sorted(list(set(cta_dirs))),
+            index=cta_dirs.index(current_cta) if current_cta in cta_dirs else 0
+        )
         new_audio_assets_dir = st.text_input("Carpeta de Audio Assets", value=config.get('directories', {}).get('audio_assets', 'audio_assets'))
 
     if st.button("Guardar Cambios Generales"):
