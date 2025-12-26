@@ -28,4 +28,6 @@ https://rss.app/feeds/WaSQqIAi7SRpNN6G.xml
 https://rss.app/feeds/p5hDntLk0fdMAECl.xml
 https://rss.app/feeds/_JIxR0ecb3NDrDROZ.xml
 https://rss.app/feeds/_65VwDoGubVq3sYYW.xml
-
+https://rss.app/feeds/rs7bhu66fskfLSdz.xml
+https://rss.app/feeds/xQwS9d8teF6zSlfk.xml
+https://rss.app/feeds/LlBdkEqvpdbgyCw5.xml
