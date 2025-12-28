@@ -7,7 +7,6 @@ https://rss.app/feeds/8FeWXz8PghV8HFxI.xml
 https://rss.app/feeds/mDQuvoIMzcZjfQcm.xml
 https://rss.app/feeds/54yTCGGyOMGbdSgO.xml
 https://rss.app/feeds/5LrPxphUyYqzdccb.xml
-https://rss.app/feeds/isQf3IY7IdDqJgEM.xml
 https://rss.app/feeds/1iKtqVRtM6WnNFMN.xml
 https://rss.app/feeds/cVA0VcRztLrfgRoM.xml
 https://rss.app/feeds/f4juRhi4mbUQoWak.xml
@@ -26,8 +25,7 @@ https://rss.app/feeds/C7zUsadhVG0uem6R.xml
 https://rss.app/feeds/RF6J188jJezvJy3D.xml
 https://rss.app/feeds/WaSQqIAi7SRpNN6G.xml
 https://rss.app/feeds/p5hDntLk0fdMAECl.xml
-https://rss.app/feeds/_JIxR0ecb3NDrDROZ.xml
-https://rss.app/feeds/_65VwDoGubVq3sYYW.xml
 https://rss.app/feeds/rs7bhu66fskfLSdz.xml
 https://rss.app/feeds/xQwS9d8teF6zSlfk.xml
 https://rss.app/feeds/LlBdkEqvpdbgyCw5.xml
+https://rss.app/feeds/isQf3IY7IdDqJgEM.xml
