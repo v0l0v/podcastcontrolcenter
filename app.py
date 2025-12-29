@@ -544,7 +544,10 @@ with tab_rev:
                          with col_content:
                              # Campos editables
                              new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}")
-                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=150, key=f"main_res_{i}")
+                             # Calcular altura dinámica aproximada (mínimo 200px)
+                             num_lines = max(4, len(resumen_original) // 60) # aprox 60 caracteres por línea
+                             dynamic_height = max(200, num_lines * 25)
+                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=dynamic_height, key=f"main_res_{i}")
                              st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
                          
                          if incluir:
