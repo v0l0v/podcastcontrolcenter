@@ -143,7 +143,10 @@ Crear un guion de resumen optimizado para formato audio, respetando reglas estri
 
 ### ENTREGA
 Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
-**REGLA FINAL INQUEBRANTABLE:** El resultado debe ser texto puro. NO INCLUYAS NUNCA, bajo ninguna circunstancia, anotaciones de producción como '(Música...)' o '[SFX]', o cualquier texto entre paréntesis o corchetes. NO uses negritas ni asteriscos de formato markdown (**).
+**REGLAS DE ORO:**
+1. **INFORMACIÓN SAGRADA:** Es OBLIGATORIO incluir nombres de personas (autores, premiados, etc.), títulos de obras (libros, películas) y lugares específicos mencionados. NO generalices (ej: NO digas "un autor", di "Pedro Martín-Romo").
+2. **FORMATO PLANO:** El resultado debe ser texto puro. NO INCLUYAS NUNCA markdown (ni negritas **, ni cursivas _), ni anotaciones de producción. Eliminamos cualquier asterisco de la respuesta.
+3. **NO** incluyas texto entre paréntesis o corchetes.
 """
 
     @staticmethod
@@ -213,6 +216,8 @@ ESPECIFICACIONES:
 - Estilo: Claro, directo y envolvente. Aunque sea para podcast, debe ser rico en detalles.
 - Enfoque: Extrae la información clave, el contexto, el propósito y el impacto de la noticia. Explica el "porqué" detrás de los hechos.
 - Evita tecnicismos, pero no simplifiques en exceso la información.
+- **PRECISIÓN OBLIGATORIA:** Si la noticia menciona nombres propios de personas, títulos de libros/obras o nombres de eventos específicos, DEBES INCLUIRLOS. No digas "un escritor presentó su novela", di "el escritor [Nombre] presentó su novela '[Título]'".
+- **CERO MARKDOWN:** No uses negritas (**texto**) ni ningún otro formato. Texto plano puro.
 {instruccion_fuente}
 
 TEXTO ORIGINAL:
@@ -542,7 +547,7 @@ ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión tempora
 📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
 {instruccion_contexto}
 
-ENTREGA: Párrafo de locución listo para ser leído al aire, sin ningún tipo de formato de marcado. NO uses asteriscos (**).
+ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO. Prohibido usar asteriscos (**), guiones bajos (_) o cualquier formato markdown. Si hay nombres propios o títulos, RESPÉTALOS.
 """
 
     @staticmethod
