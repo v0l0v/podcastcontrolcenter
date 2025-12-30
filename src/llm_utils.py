@@ -54,20 +54,25 @@ if os.getenv("GOOGLE_API_KEY"):
 if model is None:
     try:
         # Suprimir advertencia de deprecación de Vertex AI SDK hasta junio 2026
+        # Usamos simplefilter para asegurar que ignoramos todo lo relacionado con este bloque
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=UserWarning, message=".*deprecated.*")
-            from vertexai.generative_models import GenerativeModel
-            import vertexai
-        
-            gcp_project_id = os.getenv('GCP_PROJECT_ID')
-            gcp_location = os.getenv('GCP_LOCATION', 'us-central1')
+            warnings.filterwarnings("ignore", category=UserWarning)
+            try:
+                from vertexai.generative_models import GenerativeModel
+                import vertexai
             
-            if gcp_project_id:
-                vertexai.init(project=gcp_project_id, location=gcp_location)
-                model = GenerativeModel("gemini-2.5-flash-lite")
-                print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
-            else:
-                print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
+                gcp_project_id = os.getenv('GCP_PROJECT_ID')
+                gcp_location = os.getenv('GCP_LOCATION', 'us-central1')
+                
+                if gcp_project_id:
+                    vertexai.init(project=gcp_project_id, location=gcp_location)
+                    model = GenerativeModel("gemini-2.5-flash-lite")
+                    print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
+                else:
+                    print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
+            except Exception as e:
+                 print(f"❌ [llm_utils] Error crítico inicializando Vertex AI: {e}")
+                 model = None
             
     except ImportError:
         print("❌ [llm_utils] No se pudo importar ningún SDK de Gemini (ni generativeai ni vertexai).")
