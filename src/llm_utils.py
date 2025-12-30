@@ -59,15 +59,15 @@ if model is None:
             from vertexai.generative_models import GenerativeModel
             import vertexai
         
-        gcp_project_id = os.getenv('GCP_PROJECT_ID')
-        gcp_location = os.getenv('GCP_LOCATION', 'us-central1')
-        
-        if gcp_project_id:
-            vertexai.init(project=gcp_project_id, location=gcp_location)
-            model = GenerativeModel("gemini-2.5-flash-lite")
-            print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
-        else:
-            print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
+            gcp_project_id = os.getenv('GCP_PROJECT_ID')
+            gcp_location = os.getenv('GCP_LOCATION', 'us-central1')
+            
+            if gcp_project_id:
+                vertexai.init(project=gcp_project_id, location=gcp_location)
+                model = GenerativeModel("gemini-2.5-flash-lite")
+                print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
+            else:
+                print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
             
     except ImportError:
         print("❌ [llm_utils] No se pudo importar ningún SDK de Gemini (ni generativeai ni vertexai).")
