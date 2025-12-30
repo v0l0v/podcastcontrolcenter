@@ -12,3 +12,4 @@ streamlit
 wordcloud
 matplotlib
 python-dotenv
+google-generativeai
