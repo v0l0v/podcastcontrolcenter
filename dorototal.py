@@ -1996,15 +1996,92 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 segmentos_audio.append(audio_noticia)
                 segmentos_audio.append(agregar_transicion(sentimiento_noticia))
 
-        # --- FASE 2.5: Procesando sección de la audiencia ---
-        print("\n--- FASE 2.5: Procesando sección de la audiencia ---")
-        # mensaje_del_dia ya se obtuvo al inicio de la FASE 2
+        # --- FASE 2.5: Procesando sección de la audiencia (MIRRA - TRAMA DE VOCES REALES) ---
+        print("\n--- FASE 2.5: Procesando sección Mirra (Voces de la Audiencia) ---")
 
-        if mensaje_del_dia:
-            autor = mensaje_del_dia.get('autor', 'un oyente')
-            texto_mensaje = mensaje_del_dia.get('texto', '')
+        # 1. Buscar audios en buzon_entrada
+        buzon_dir = "buzon_entrada"
+        if not os.path.exists(buzon_dir): os.makedirs(buzon_dir, exist_ok=True)
+        
+        archivos_audio = glob.glob(os.path.join(buzon_dir, "*"))
+        # Extensiones válidas
+        archivos_audio = [f for f in archivos_audio if f.lower().endswith(('.mp3', '.ogg', '.wav', '.m4a'))]
+        
+        # Priorizar el mensaje del día si existe (lógica antigua como fallback)
+        mensaje_texto_del_dia = leer_pregunta_del_dia()
+
+        if archivos_audio:
+            # Seleccionar el primer audio encontrado (o el más reciente)
+            # Para simplificar, cogemos el primero por ahora.
+            audio_seleccionado = archivos_audio[0]
+            print(f"  🎤 Audio de audiencia detectado: {audio_seleccionado}")
             
-            print(f"  -> Generando segmento integrado para el mensaje de: {autor}")
+            # Intentar extraer metadatos del nombre del archivo: YYYYMMDD_Nombre_Lugar.mp3
+            nombre_archivo = os.path.basename(audio_seleccionado)
+            partes_nombre = nombre_archivo.replace('.', '_').split('_')
+            
+            nombre_oyente = "un vecino"
+            localidad = "nuestra región"
+            
+            # Heurística simple para sacar nombre y lugar si el formato ayuda
+            if len(partes_nombre) >= 3:
+                nombre_oyente = partes_nombre[1]
+                localidad = partes_nombre[2]
+            
+            print(f"    👤 Oyente estimado: {nombre_oyente} desde {localidad}")
+            
+            # 2. Transcribir con Gemini para entender contexto
+            print("    🧠 Escuchando y transcribiendo audio con Gemini (esto puede tardar)...")
+            from src.llm_utils import transcribir_audio_gemini
+            transcripcion_gemini = transcribir_audio_gemini(audio_seleccionado, prompt_contexto="Transcribe el contenido y resume brevemente la intención o sentimiento.")
+            
+            if transcripcion_gemini:
+                print(f"    📝 Contexto extraído: {transcripcion_gemini[:100]}...")
+                
+                # 3. Generar Intro (Dorotea)
+                prompt_intro = mcmcn_prompts.PromptsCreativos.mirra_intro(nombre_oyente, localidad, transcripcion_gemini)
+                texto_intro = generar_texto_con_gemini(prompt_intro)
+                audio_intro = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_intro))}</speak>")
+                
+                # 4. Procesar audio real (Normalizar volumen si es posible, o cargar raw)
+                try:
+                    audio_real = AudioSegment.from_file(audio_seleccionado)
+                    # Normalizar un poco si está muy bajo o muy alto (target -18 LUFS aprox o simple peak)
+                    # Simple peak normalization a -3dB
+                    audio_real = audio_real.normalize(headroom=3.0)
+                except Exception as e:
+                    print(f"    ❌ Error cargando audio real: {e}")
+                    audio_real = None
+
+                # 5. Generar Reacción (Dorotea)
+                prompt_reaccion = mcmcn_prompts.PromptsCreativos.mirra_reaccion(nombre_oyente, transcripcion_gemini)
+                texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
+                audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
+
+                # 6. Ensamblar secuencia MIRRA
+                if audio_intro and audio_real and audio_reaccion:
+                    print("    ✅ Secuencia Mirra ensamblada con éxito.")
+                    
+                    segmentos_audio.append(agregar_transicion()) # Transición entrada
+                    segmentos_audio.append(audio_intro)
+                    
+                    # Pequeño efecto de "llamada" o "audio ambiente" antes del real?
+                    # De momento raw
+                    segmentos_audio.append(audio_real)
+                    
+                    segmentos_audio.append(audio_reaccion)
+                    segmentos_audio.append(agregar_transicion()) # Transición salida
+                    
+                    transcript_data.append({'type': 'audience', 'content': f"Audio de {nombre_oyente}: {transcripcion_gemini} <br> [Reacción Dorotea]: {texto_reaccion}"})
+                else:
+                    print("    ⚠️ Fallo en alguno de los pasos de audio Mirra. Saltando.")
+
+        elif mensaje_texto_del_dia:
+            # FALLBACK: Lógica antigua de mensajes de texto
+            autor = mensaje_texto_del_dia.get('autor', 'un oyente')
+            texto_mensaje = mensaje_texto_del_dia.get('texto', '')
+            
+            print(f"  -> Generando segmento texto (fallback) para: {autor}")
 
             # 1. Llamamos al NUEVO prompt unificado que genera TODO el segmento, pasando el sentimiento general
             prompt_segmento = mcmcn_prompts.PromptsCreativos.generar_segmento_audiencia_integrado(
@@ -2017,19 +2094,19 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # 2. Limpiamos y sintetizamos el segmento completo en un único paso
                 segmento_limpio = limpiar_artefactos_ia(texto_segmento_completo)
                 print(f"      ✅ Segmento de audiencia generado: '{segmento_limpio[:90]}...'")
-                transcript_data.append({'type': 'audience', 'content': segmento_limpio}) # <-- Capturar audiencia
                 
                 segmento_ssml = f"<speak>{html.escape(segmento_limpio)}</speak>"
                 segmento_audio = sintetizar_ssml_a_audio(segmento_ssml)
                 
                 if segmento_audio:
-                    # 3. Añadimos el audio del segmento y una transición DESPUÉS
-                    segmentos_audio.append(segmento_audio)
+                    # 3. Transición + Audio + Transición
                     segmentos_audio.append(agregar_transicion())
+                    segmentos_audio.append(segmento_audio)
+                    # Quitamos la transición final aquí porque ya vendrá la de cierre del podcast
             else:
-                print("      ⚠️ No se pudo generar el segmento de la audiencia.")
+                print("      ⚠️ No se pudo generar el segmento de la audiencia (texto).")
         else:
-            print("  -> No hay mensaje de la audiencia programado para hoy.")
+            print("  -> No hay audios en buzon_entrada ni mensajes de texto programados.")
 
 
         print("\n--- FASE 3: Generando cierre del podcast ---")

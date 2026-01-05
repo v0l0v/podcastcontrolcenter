@@ -1,0 +1,10 @@
+[
+    {
+        "sitio": "Test News",
+        "texto": "Esta es una noticia de prueba para verificar el sistema detalladamente. Estamos probando la integración de la funcionalidad Mirra, que permite añadir audios de la audiencia. Para que esta noticia sea aceptada por el sistema, debe tener una longitud mínima de palabras, así que estamos extendiendo este texto artificialmente. La comarca se prepara para recibir esta nueva mejora tecnológica que conectará a los vecinos de una forma más humana y directa.",
+        "fecha": "2024-01-05T12:00:00",
+        "hash": "test12345",
+        "titulo": "Noticia de Prueba Extendida para Validación",
+        "link": "http://example.com"
+    }
+]

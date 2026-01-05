@@ -94,3 +94,47 @@ def generar_texto_con_gemini(prompt: str) -> str:
         # Fallback para estructuras antiguas o errores de bloqueos
         print(f"❌ Error en generación Gemini: {e}")
         return ""
+
+@retry_on_failure(retries=2, delay=2)
+def transcribir_audio_gemini(audio_path: str, prompt_contexto: str = "") -> str:
+    """
+    Sube un archivo de audio a Gemini y obtiene una transcripciÃ³n/anÃ¡lisis.
+    Soporta tanto AI Studio (google.generativeai) como Vertex AI.
+    """
+    if model is None:
+        return ""
+        
+    if not os.path.exists(audio_path):
+        print(f"❌ Archivo de audio no encontrado: {audio_path}")
+        return ""
+
+    try:
+        # Leer bytes del audio
+        with open(audio_path, 'rb') as f:
+            audio_data = f.read()
+            
+        mime_type = "audio/mp3" # Asumimos mp3 por defecto, ojalÃ¡ baste
+        if audio_path.lower().endswith(".ogg"): mime_type = "audio/ogg"
+        if audio_path.lower().endswith(".wav"): mime_type = "audio/wav"
+        if audio_path.lower().endswith(".m4a"): mime_type = "audio/mp4" # m4a suele mapear a audio/mp4 en estos modelos
+
+        prompt_base = "Analiza este audio. " + prompt_contexto
+
+        # A) DetecciÃ³n de SDK: Vertex AI
+        if 'vertexai' in sys.modules and hasattr(sys.modules['vertexai'], 'init'):
+             from vertexai.generative_models import Part
+             audio_part = Part.from_data(data=audio_data, mime_type=mime_type)
+             response = model.generate_content([audio_part, prompt_base])
+             return response.text.strip() if response else ""
+
+        # B) DetecciÃ³n de SDK: Google AI Studio
+        elif 'google.generativeai' in sys.modules:
+            # En AI Studio moderno se puede pasar el dict con 'data' (bytes) y 'mime_type'
+            # Ojo: Requiere versiones recientes de la librerÃ­a.
+            blob = {'mime_type': mime_type, 'data': audio_data}
+            response = model.generate_content([prompt_base, blob])
+            return response.text.strip() if response else ""
+            
+    except Exception as e:
+        print(f"❌ Error transcribiendo audio con Gemini: {e}")
+        return ""

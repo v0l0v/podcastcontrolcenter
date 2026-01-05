@@ -432,6 +432,46 @@ class PromptsCreativos:
         - Tono: Profesional pero cercano (estilo 'Dorotea').
         - Incluye llamadas a la acción (CTA) para escuchar el podcast.
         """
+        
+    @staticmethod
+    def mirra_intro(nombre_oyente: str, localidad: str, transcripcion_previa: str) -> str:
+        """Presenta un audio real de la audiencia (Sección Mirra)."""
+        return f"""
+        Eres Dorotea. Tienes que dar paso a una nota de voz real que nos ha enviado un oyente.
+        
+        CONTEXTO:
+        - Oyente: {nombre_oyente}
+        - Localidad: {localidad}
+        - Contenido del audio: {transcripcion_previa}
+        
+        TAREA:
+        Escribe una transición muy breve (1-2 frases) para dar paso al audio.
+        - Tono: Cálido, de "vecina a vecina".
+        - Muestra interés genuino por lo que nos va a contar.
+        - NO resumas todo el audio, solo crea expectativa.
+        - Ejemplo: "Y atención a lo que nos cuenta María desde su huerta en Tomelloso..."
+        
+        ENTREGA: Solo el texto de la intro.
+        """
+
+    @staticmethod
+    def mirra_reaccion(nombre_oyente: str, transcripcion: str) -> str:
+        """Reacciona al audio real después de escucharlo."""
+        return f"""
+        Eres Dorotea. Acabamos de escuchar una nota de voz de {nombre_oyente}.
+        
+        CONTENIDO QUE ESCUCHAMOS:
+        "{transcripcion}"
+        
+        TAREA:
+        Escribe una reacción empática y breve (2-3 frases).
+        - Valida lo que ha dicho (agradece, comparte la preocupación o la alegría).
+        - Si es una queja, sé comprensiva pero constructiva.
+        - Si es una celebración, únete a ella.
+        - Cierra esta micro-interacción.
+        
+        ENTREGA: Solo el texto de la reacción.
+        """
 
     @staticmethod
     def generar_analisis_fuentes(datos_analisis: str) -> str:
