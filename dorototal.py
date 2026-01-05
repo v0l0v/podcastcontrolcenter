@@ -2062,7 +2062,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 if audio_intro and audio_real and audio_reaccion:
                     print("    ✅ Secuencia Mirra ensamblada con éxito.")
                     
-                    segmentos_audio.append(agregar_transicion()) # Transición entrada
+                    # Eliminada transición de entrada redundante
                     segmentos_audio.append(audio_intro)
                     
                     # Pequeño efecto de "llamada" o "audio ambiente" antes del real?
