@@ -2011,70 +2011,80 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         mensaje_texto_del_dia = leer_pregunta_del_dia()
 
         if archivos_audio:
-            # Seleccionar el primer audio encontrado (o el más reciente)
-            # Para simplificar, cogemos el primero por ahora.
-            audio_seleccionado = archivos_audio[0]
-            print(f"  🎤 Audio de audiencia detectado: {audio_seleccionado}")
-            
-            # Intentar extraer metadatos del nombre del archivo: YYYYMMDD_Nombre_Lugar.mp3
-            nombre_archivo = os.path.basename(audio_seleccionado)
-            partes_nombre = nombre_archivo.replace('.', '_').split('_')
-            
-            nombre_oyente = "un vecino"
-            localidad = "nuestra región"
-            
-            # Heurística simple para sacar nombre y lugar si el formato ayuda
-            if len(partes_nombre) >= 3:
-                nombre_oyente = partes_nombre[1]
-                localidad = partes_nombre[2]
-            
-            print(f"    👤 Oyente estimado: {nombre_oyente} desde {localidad}")
-            
-            # 2. Transcribir con Gemini para entender contexto
-            print("    🧠 Escuchando y transcribiendo audio con Gemini (esto puede tardar)...")
-            from src.llm_utils import transcribir_audio_gemini
-            transcripcion_gemini = transcribir_audio_gemini(audio_seleccionado, prompt_contexto="Transcribe el contenido y resume brevemente la intención o sentimiento.")
-            
-            if transcripcion_gemini:
-                print(f"    📝 Contexto extraído: {transcripcion_gemini[:100]}...")
-                
-                # 3. Generar Intro (Dorotea)
-                prompt_intro = mcmcn_prompts.PromptsCreativos.mirra_intro(nombre_oyente, localidad, transcripcion_gemini)
-                texto_intro = generar_texto_con_gemini(prompt_intro)
-                audio_intro = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_intro))}</speak>")
-                
-                # 4. Procesar audio real (Normalizar volumen si es posible, o cargar raw)
-                try:
-                    audio_real = AudioSegment.from_file(audio_seleccionado)
-                    # Normalizar un poco si está muy bajo o muy alto (target -18 LUFS aprox o simple peak)
-                    # Simple peak normalization a -3dB
-                    audio_real = audio_real.normalize(headroom=3.0)
-                except Exception as e:
-                    print(f"    ❌ Error cargando audio real: {e}")
-                    audio_real = None
+            # Seleccionar hasta 3 audios para no saturar
+            audios_a_procesar = archivos_audio[:3]
+            print(f"  🎤 Se han detectado {len(archivos_audio)} audios. Se procesarán los {len(audios_a_procesar)} primeros.")
 
-                # 5. Generar Reacción (Dorotea)
-                prompt_reaccion = mcmcn_prompts.PromptsCreativos.mirra_reaccion(nombre_oyente, transcripcion_gemini)
-                texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
-                audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
+            for i, audio_seleccionado in enumerate(audios_a_procesar):
+                print(f"\n    --- Procesando Audio {i+1}/{len(audios_a_procesar)}: {os.path.basename(audio_seleccionado)} ---")
+                
+                # Intentar extraer metadatos del nombre del archivo: YYYYMMDD_Nombre_Lugar.mp3
+                nombre_archivo = os.path.basename(audio_seleccionado)
+                partes_nombre = nombre_archivo.replace('.', '_').split('_')
+                
+                nombre_oyente = "un vecino"
+                localidad = "nuestra región"
+                
+                # Heurística simple para sacar nombre y lugar si el formato ayuda
+                if len(partes_nombre) >= 3:
+                    nombre_oyente = partes_nombre[1]
+                    localidad = partes_nombre[2]
+                
+                print(f"    👤 Oyente estimado: {nombre_oyente} desde {localidad}")
+                
+                # 2. Transcribir con Gemini para entender contexto
+                print("    🧠 Escuchando y transcribiendo audio con Gemini (esto puede tardar)...")
+                from src.llm_utils import transcribir_audio_gemini
+                transcripcion_gemini = transcribir_audio_gemini(audio_seleccionado, prompt_contexto="Transcribe el contenido y resume brevemente la intención o sentimiento.")
+                
+                if transcripcion_gemini:
+                    print(f"    📝 Contexto extraído: {transcripcion_gemini[:100]}...")
+                    
+                    # 3. Generar Intro (Dorotea)
+                    # Variar ligeramente el prompt o la intro si es el 2º o 3º audio podría ser ideal, 
+                    # pero por ahora usamos la misma estructura solicitada "mismo proceso".
+                    prompt_intro = mcmcn_prompts.PromptsCreativos.mirra_intro(nombre_oyente, localidad, transcripcion_gemini)
+                    texto_intro = generar_texto_con_gemini(prompt_intro)
+                    if texto_intro:
+                        audio_intro = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_intro))}</speak>")
+                    else:
+                        audio_intro = None
+                    
+                    # 4. Procesar audio real (Normalizar volumen)
+                    try:
+                        audio_real = AudioSegment.from_file(audio_seleccionado)
+                        # Normalizar (peak normalization a -3dB o target LUFS si tuviéramos la función a mano aquí)
+                        audio_real = audio_real.normalize(headroom=3.0)
+                    except Exception as e:
+                        print(f"    ❌ Error cargando audio real: {e}")
+                        audio_real = None
 
-                # 6. Ensamblar secuencia MIRRA
-                if audio_intro and audio_real and audio_reaccion:
-                    print("    ✅ Secuencia Mirra ensamblada con éxito.")
-                    
-                    # Eliminada transición de entrada redundante
-                    segmentos_audio.append(audio_intro)
-                    
-                    # Pequeño efecto de "llamada" o "audio ambiente" antes del real?
-                    # De momento raw
-                    segmentos_audio.append(audio_real)
-                    
-                    segmentos_audio.append(audio_reaccion)
-                    segmentos_audio.append(agregar_transicion()) # Transición salida
-                    
-                    transcript_data.append({'type': 'audience', 'content': f"Audio de {nombre_oyente}: {transcripcion_gemini} <br> [Reacción Dorotea]: {texto_reaccion}"})
+                    # 5. Generar Reacción (Dorotea)
+                    prompt_reaccion = mcmcn_prompts.PromptsCreativos.mirra_reaccion(nombre_oyente, transcripcion_gemini)
+                    texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
+                    if texto_reaccion:
+                        audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
+                    else:
+                        audio_reaccion = None
+
+                    # 6. Ensamblar secuencia MIRRA para este audio
+                    if audio_intro and audio_real and audio_reaccion:
+                        print(f"    ✅ Secuencia Mirra para audio {i+1} ensamblada.")
+                        
+                        segmentos_audio.append(audio_intro)
+                        segmentos_audio.append(audio_real)
+                        segmentos_audio.append(audio_reaccion)
+                        
+                        # Añadimos transición SOLO si NO es el último audio del bloque 
+                        # o si quieres separar cada intervención claramente.
+                        # El usuario pidió "mismo proceso", el proceso original tenía transición final.
+                        segmentos_audio.append(agregar_transicion()) 
+                        
+                        transcript_data.append({'type': 'audience', 'content': f"Audio {i+1} ({nombre_oyente}): {transcripcion_gemini} <br> [Reacción]: {texto_reaccion}"})
+                    else:
+                        print("    ⚠️ Fallo en alguno de los pasos de audio Mirra. Saltando este archivo.")
                 else:
-                    print("    ⚠️ Fallo en alguno de los pasos de audio Mirra. Saltando.")
+                    print("    ⚠️ No se pudo transcribir el audio. Saltando.")
 
         elif mensaje_texto_del_dia:
             # FALLBACK: Lógica antigua de mensajes de texto
