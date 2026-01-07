@@ -363,6 +363,17 @@ with st.sidebar:
                         
                     # Resetear confirmación al re-analizar
                     st.session_state['news_confirmed'] = False
+                    
+                    # --- CRÍTICO: Limpiar el estado de los widgets de edición (index-based) ---
+                    # Si no lo hacemos, Streamlit recuerda el valor anterior ("Ayudas...") aunque
+                    # la nueva noticia sea distinta ("Irene..."), mezclando títulos/resúmenes.
+                    keys_to_clear = [k for k in st.session_state.keys() if k.startswith("main_")]
+                    for k in keys_to_clear:
+                        del st.session_state[k]
+                    
+                    # También limpiar la selección final guardada
+                    if 'noticias_editadas_finales' in st.session_state:
+                         del st.session_state['noticias_editadas_finales']
 
                     process = subprocess.run(
                         [sys.executable, "dorototal.py", "--preview"],

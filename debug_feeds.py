@@ -2,6 +2,7 @@ import feedparser
 from datetime import datetime, timedelta
 import time
 import sys
+import html
 
 # Functions from dorototal.py for consistency
 def parsear_fecha_segura(entry):
@@ -25,32 +26,39 @@ def check_feeds(feed_file, hours=48):
     now = datetime.now()
     limit = now - timedelta(hours=hours)
     
-    total_items = 0
-    recent_items = 0
+    recent_items_total = 0
     
-    # Check first 5 feeds
-    for url in urls[:5]:
+    for url in urls:
         print(f"\nChecking: {url}")
         try:
             feed = feedparser.parse(url)
-            print(f"  Title: {feed.feed.get('title', 'Unknown')}")
+            print(f"  Feed Title: {feed.feed.get('title', 'Unknown').replace(' on Facebook', '')}")
             print(f"  Entries: {len(feed.entries)}")
             
             count = 0
-            for entry in feed.entries:
+            # Check first 3 items of each feed
+            for i, entry in enumerate(feed.entries[:3]):
                 dt = parsear_fecha_segura(entry)
-                print(f"    - {dt} | {entry.get('title', 'No title')[:40]}...")
+                title = entry.get('title', 'No title').strip()
+                summary = entry.get('summary', entry.get('description', '')).strip()
+                # Simple cleanup for display
+                summary_clean = html.unescape(summary).replace('\n', ' ')[:80]
+                
+                print(f"    Item {i+1}:")
+                print(f"       Date : {dt}")
+                print(f"       Title: {title[:80]}...")
+                print(f"       Desc : {summary_clean}...")
+                
                 if dt > limit:
                     count += 1
             
             print(f"  => Recent items (> {hours}h): {count}")
-            recent_items += count
-            total_items += len(feed.entries)
+            recent_items_total += count
             
         except Exception as e:
             print(f"  Error: {e}")
 
-    print(f"\nTotal recent items in checked feeds: {recent_items}")
+    print(f"\nTotal recent items in checked feeds: {recent_items_total}")
 
 if __name__ == "__main__":
-    check_feeds("feeds_castillalamancha.txt", 36)
+    check_feeds("feeds_castillalamancha.txt", 48)
