@@ -66,7 +66,7 @@ if model is None:
                 
                 if gcp_project_id:
                     vertexai.init(project=gcp_project_id, location=gcp_location)
-                    model = GenerativeModel("gemini-2.5-flash-lite")
+                    model = GenerativeModel("gemini-3-pro-preview")
                     print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
                 else:
                     print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
