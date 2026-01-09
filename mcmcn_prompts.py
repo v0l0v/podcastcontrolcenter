@@ -575,13 +575,12 @@ class PromptsCreativos:
 
 MATERIAL DE TRABAJO:
 - Fuente(s): {fuentes}
-- Fecha de la Noticia: {fecha_noticia_str}
 - Contenido: {resumen}
 
 CONTEXTO TEMPORAL:
 - La fecha de hoy es: {fecha_actual_str}
 
-ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión temporal es CRÍTICA. Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") si es relevante para el contexto. **NO utilices expresiones relativas como "hoy", "ayer" o "mañana"**. **NO intentes adivinar el día de la semana** (ej: no digas "el lunes 15", di solo "el 15"). La "fecha de hoy" es solo para tu referencia contextual.
+ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** **IGNORA COMPLETAMENTE LA FECHA DE PUBLICACIÓN DE LA NOTICIA.** A menudo es metadato técnico y no la fecha del evento. Si el texto del resumen no menciona explícitamente una fecha de evento (ej: "el próximo sábado"), NO LA INVENTES ni uses la fecha de hoy. Ante la duda, usa términos genéricos como "recientemente" o "en los últimos días". **NO utilices expresiones relativas como "hoy", "ayer" o "mañana"**.
 📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
 📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
 📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
