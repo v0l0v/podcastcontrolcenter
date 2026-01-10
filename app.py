@@ -583,6 +583,77 @@ with tab_rev:
                  if update_selection:
                      st.session_state['noticias_editadas_finales'] = edited_news_list_main
                      st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
+        
+        st.markdown("---")
+        st.markdown("### 📜 Previsualización del Guion")
+        st.caption("Genera el texto completo (Intro, Noticias, Despedida) tal como lo leerá Dorotea.")
+        
+        if st.button("🎭 GENERAR PREVISUALIZACIÓN DEL GUION", type="secondary"):
+            with st.spinner("Redactando guion completo con IA..."):
+                try:
+                    # Determinar qué noticias usar (Editadas > Originales)
+                    news_for_script = st.session_state.get('noticias_editadas_finales', [])
+                    if not news_for_script:
+                         news_for_script = news_candidates
+                    
+                    # Guardar temporalmente
+                    temp_script_input = "temp_script_input.json"
+                    with open(temp_script_input, "w", encoding="utf-8") as f:
+                        json.dump(news_for_script, f, ensure_ascii=False, indent=4)
+                        
+                    # Ejecutar dorototal.py con flag --full-script
+                    cmd = [sys.executable, "dorototal.py", "--from-json", temp_script_input, "--full-script"]
+                    
+                    # Comprobar si hay opción de saltar especiales (aunque aquí no afecta mucho al guion diario)
+                    # Pero dorototal lee argumentos, mejor ser consistente.
+                    
+                    process = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    
+                    if process.returncode == 0:
+                        # Leer el resultado
+                        if os.path.exists("prevision_guion_completo.json"):
+                            with open("prevision_guion_completo.json", "r", encoding="utf-8") as f:
+                                script_data = json.load(f)
+                            
+                            st.success("✅ Guion generado correctamente.")
+                            
+                            # Mostrar INTRO
+                            with st.expander("🎙️ INTRODUCCIÓN", expanded=True):
+                                st.markdown(f"*{script_data.get('intro', '')}*")
+                                
+                            # Mostrar NOTICIAS
+                            with st.expander("📰 CUERPO DEL NOTICIERO", expanded=True):
+                                for item in script_data.get('noticias', []):
+                                    titulo = item.get('titulo', 'Noticia')
+                                    contenido = item.get('contenido', '')
+                                    if item.get('es_bloque'):
+                                        st.markdown(f"**🔷 BLOQUE: {titulo}**")
+                                    else:
+                                        st.markdown(f"**🔸 NOTICIA: {titulo}**")
+                                    st.markdown(f"{contenido}")
+                                    st.markdown("---")
+                                    
+                            # Mostrar OUTRO
+                            with st.expander("👋 DESPEDIDA", expanded=True):
+                                st.markdown(f"*{script_data.get('outro', '')}*")
+                                
+                            # Limpiar temp
+                            if os.path.exists(temp_script_input): os.remove(temp_script_input)
+                        else:
+                            st.error("No se generó el archivo de guion (prevision_guion_completo.json).")
+                            st.code(process.stdout)
+                            st.code(process.stderr)
+                    else:
+                        st.error("Error al generar el guion.")
+                        st.code(process.stderr)
+                        
+                except Exception as e:
+                    st.error(f"Excepción: {e}")
     else:
         st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
 

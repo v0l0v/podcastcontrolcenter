@@ -1340,7 +1340,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, solo_guion: bool = False):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -1551,8 +1551,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     texto_limpio = limpiar_artefactos_ia(resumen)
                     texto_limpio = reemplazar_urls_por_mencion(texto_limpio)
 
-                    # Si estamos en PREVIEW, guardamos el objeto parcial y CONTINUAMOS (Saltar TTS)
-                    if solo_preview:
+                    # Si estamos en PREVIEW (y no es guion completo), guardamos el objeto parcial y CONTINUAMOS
+                    if solo_preview and not solo_guion:
                          nueva_noticia_procesada = {
                             'fuente': fuente_final,
                             'resumen': texto_limpio, # Guardamos el limpio ya
@@ -1586,8 +1586,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
                     # === GENERACIÓN DE AUDIO (TTS) ===
                     sitio_print = noticia.get('sitio', 'Fuente desconocida')
-                    print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
-                    audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+                    audio_segment = None
+                    if not solo_guion:
+                        print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
+                        audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+                    else:
+                        print(f"      📝 (Modo Guion) Saltando TTS para: {sitio_print[:30]}...")
 
                     if audio_segment:
                         audio_segment.export(audio_file_path, format="mp3")
@@ -1609,8 +1613,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             print("No se pudieron generar resúmenes válidos. Abortando.")
             sys.exit(0)
 
-        # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR ---
-        if solo_preview:
+        # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR (Solo si NO es guion completo) ---
+        if solo_preview and not solo_guion:
             print("👀 MODO PREVIEW ACTIVADO: Guardando noticias resumidas y saliendo...")
             archivo_preview = "prevision_noticias_resumidas.json"
             
@@ -1668,6 +1672,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         segmentos_audio = []
         transcript_data = [] # <-- Inicializar lista para transcripción
+        script_full_data = {'intro': '', 'noticias': [], 'outro': ''} # <-- Para el modo guion
         audio_assets_dir = AUDIO_ASSETS_DIR
 
         # --- Cargar la cortinilla para los CTAs ---
@@ -1838,10 +1843,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             texto_limpio = limpiar_artefactos_ia(texto_monologo_inicio)
             print(f"      ✅ Monólogo de inicio generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'intro', 'content': texto_limpio})
-            
-            # Lógica para insertar cortinilla si existe el marcador
-            if "[CORTINILLA]" in texto_limpio:
-                print("      ✂️ Marcador [CORTINILLA] detectado. Dividiendo audio...")
+            script_full_data['intro'] = texto_limpio
+
+            # Si es solo guion, saltamos el resto del procesamiento de audio de esta sección
+            if solo_guion:
+                print("      📝 (Modo Guion) Intro generada, saltando audio...")
+            else:
+                # Lógica para insertar cortinilla si existe el marcador
+                if "[CORTINILLA]" in texto_limpio:
+                    print("      ✂️ Marcador [CORTINILLA] detectado. Dividiendo audio...")
                 partes = texto_limpio.split("[CORTINILLA]")
                 
                 # Parte 1: Saludo + Resumen
@@ -1867,7 +1877,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         else:
             # Fallback por si la IA falla.
             print("      ⚠️ Fallo en la generación del monólogo. Usando saludo estático.")
-            if saludo_base:
+            if saludo_base and not solo_guion:
                 saludo_audio_fallback = sintetizar_ssml_a_audio(saludo_base)
                 if saludo_audio_fallback:
                     segmentos_audio.append(saludo_audio_fallback)
@@ -1919,6 +1929,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     'content': cronica_unificada_texto
                 }) # <-- Capturar bloque
                 
+                script_full_data['noticias'].append({
+                    'titulo': bloque.get('descripcion_tema', 'Bloque Temático'),
+                    'contenido': cronica_unificada_texto,
+                    'es_bloque': True
+                })
+
+                if solo_guion:
+                     print("      📝 (Modo Guion) Bloque procesado, saltando audio...")
+                     continue
+
                 # --- MODIFICACIÓN: Insertar cortinillas entre noticias del bloque ---
                 audio_cronica = AudioSegment.empty()
                 # Separamos por párrafos (que la IA ha generado con doble salto de línea)
@@ -1985,6 +2005,20 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         # 2. Procesar noticias individuales restantes
         for noticia in noticias_individuales:
+            if solo_guion:
+                 # En modo guion, si ya tenemos el texto, lo usamos. Si no, deberíamos generarlo (texto_noticia).
+                 # _generar_y_cachear_audio_noticia genera audio y texto.
+                 # Haremos una llamada 'mock' o modificaremos _generar...
+                 # Simplificación: Llamamos a _generar_audio_noticia DIRECTAMENTE para obtener texto
+                 _, texto_noticia = _generar_audio_noticia(noticia, fecha_actual_str)
+                 if texto_noticia:
+                     script_full_data['noticias'].append({
+                        'titulo': noticia.get('fuente', 'Noticia Individual'),
+                        'contenido': texto_noticia,
+                        'es_bloque': False
+                     })
+                 continue
+
             audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str) # <-- Unpack tuple
             if audio_noticia:
                 transcript_data.append({
@@ -2162,16 +2196,33 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             texto_limpio = limpiar_artefactos_ia(texto_monologo_cierre)
             print(f"      ✅ Monólogo final generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'outro', 'content': texto_limpio}) # <-- Capturar cierre
-            monologo_cierre_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
-            if monologo_cierre_audio:
-                segmentos_audio.append(monologo_cierre_audio)
+            script_full_data['outro'] = texto_limpio
+            
+            if not solo_guion:
+                monologo_cierre_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+                if monologo_cierre_audio:
+                    segmentos_audio.append(monologo_cierre_audio)
         else:
             # Fallback por si la IA falla.
             print("      ⚠️ Fallo en la generación del monólogo. Usando despedida estática.")
-            if despedida_base:
+            if despedida_base and not solo_guion:
                 despedida_audio_fallback = sintetizar_ssml_a_audio(despedida_base)
                 if despedida_audio_fallback:
                     segmentos_audio.append(despedida_audio_fallback)
+
+
+        # --- MODO GUION: Guardar y Salir ---
+        if solo_guion:
+            archivo_guion = "prevision_guion_completo.json"
+            with open(archivo_guion, 'w', encoding='utf-8') as f:
+                json.dump(script_full_data, f, indent=4, ensure_ascii=False)
+            print(f"✅ Guion completo (texto) guardado en: {archivo_guion}")
+            try:
+                os.rmdir(output_dir)
+            except:
+                pass
+            return # <--- SALIR
+        # -----------------------------------
 
         # 4. Añadir la sintonía de cierre DESPUÉS del monólogo.
         ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
@@ -2241,6 +2292,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Script de generación de podcast Micomicona")
     parser.add_argument("--preview", action="store_true", help="Solo generar archivo de previsión de noticias, sin audios.")
+    parser.add_argument("--full-script", action="store_true", help="Generar guion completo (Intro+News+Outro) sin audio.")
     parser.add_argument("--only-special", action="store_true", help="Solo procesar episodios especiales (EE_*) sin generar el podcast diario.")
     parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
     parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
@@ -2255,7 +2307,7 @@ if __name__ == "__main__":
         print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
     elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
-        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json)
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, solo_guion=args.full_script)
     elif args.preview:
         print(f"🔮 Modo: Preview de noticias (sin audio)")
         procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True)
