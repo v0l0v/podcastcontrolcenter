@@ -44,8 +44,8 @@ if os.getenv("GOOGLE_API_KEY"):
     try:
         import google.generativeai as genai
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        model = genai.GenerativeModel("gemini-2.5-flash-lite")
-        print("✅ [llm_utils] Usando SDK Google Generative AI (AI Studio).")
+        model = genai.GenerativeModel("gemini-2.5-pro")
+        print("✅ [llm_utils] Usando SDK Google Generative AI (AI Studio) - Modelo PRO.")
     except ImportError:
         print("❌ [llm_utils] GOOGLE_API_KEY encontrada, pero 'google-generativeai' no está instalado.")
 
@@ -66,8 +66,8 @@ if model is None:
                 
                 if gcp_project_id:
                     vertexai.init(project=gcp_project_id, location=gcp_location)
-                    model = GenerativeModel("gemini-2.5-flash-lite")
-                    print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
+                    model = GenerativeModel("gemini-2.5-pro")
+                    print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada) - Modelo PRO.")
                 else:
                     print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
             except Exception as e:
