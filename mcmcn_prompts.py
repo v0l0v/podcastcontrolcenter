@@ -40,6 +40,17 @@ class ConfiguracionPodcast:
     EMAIL_ALIAS_SSML = PODCAST_INFO.get('email_alias_ssml', "contacto arroba micomicona punto com")
     REGION = PODCAST_INFO.get('region', "Castilla la Mancha")
     PAUSA_ESTANDAR = PODCAST_INFO.get('pausa_estandar', "600ms")
+    
+    # Extraer reglas de pronunciación para el prompt
+    PRONUNCIATION_CONFIG = CONFIG.get('pronunciation', {}).get('correcciones', {})
+    SIGLAS_CONFIG = CONFIG.get('pronunciation', {}).get('siglas', {})
+    
+    @classmethod
+    def obtener_guia_pronunciacion(cls) -> str:
+        ejemplos = []
+        for orig, corr in list(cls.PRONUNCIATION_CONFIG.items())[:5]: # Solo unos pocos ejemplos
+             ejemplos.append(f"- '{orig}' escríbelo como '{corr}'")
+        return "\n".join(ejemplos)
 
 # =================================================================================
 # SECCIÓN 1: PLANTILLAS DE GUION (SSML TEMPLATES)
@@ -586,6 +597,11 @@ ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** **IGNORA COMPLETAMENT
 📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
 📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
 📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
+📻 **GUÍA DE PRONUNCIACIÓN Y LECTURA (IMPORTANTE):**
+   - Escribe el guion pensando en que será LEÍDO por una voz sintética. Facilitale el trabajo.
+   - **Siglas y Acrónimos:** Si una sigla se puede leer como palabra, escríbela así (ej: escribe "Céder" en vez de "CEDER", "Recamder" en vez de "RECAMDER").
+   - **Deletreo:** Si son siglas impronunciables, sepáralas o escríbelas como suenan (ej: "P-P" o "u-ge-té").
+   - **Cifras:** Escribe los números redondos preferiblemente en letras si ayuda a la fluidez ("dos millones" mejor que "2.000.000").
 {instruccion_contexto}
 
 ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO. Prohibido usar asteriscos (**), guiones bajos (_) o cualquier formato markdown. Si hay nombres propios o títulos, RESPÉTALOS.
