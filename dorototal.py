@@ -684,7 +684,7 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 # NUEVA FUNCIÓN REFRACTORIZADA PARA GESTIONAR AUDIO Y CTAs
 # =================================================================================
 
-def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
+def _generar_audio_noticia(datos: dict, fecha_actual_str: str, solo_texto: bool = False) -> tuple[AudioSegment | None, str]:
     """Genera un segmento de audio para una noticia individual. Devuelve (audio, texto)."""
     
     texto_narracion = "" 
@@ -719,6 +719,9 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
         return AudioSegment.silent(duration=100), ""
     
     texto_narracion = limpiar_artefactos_ia(texto_narracion)
+    
+    if solo_texto:
+        return None, texto_narracion
     
     # --- GENERACIÓN ESTÁNDAR ---
     # Escapar el texto ANTES de añadir las etiquetas SSML
@@ -1595,10 +1598,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
                     if audio_segment:
                         audio_segment.export(audio_file_path, format="mp3")
+                    
+                    if audio_segment or solo_guion:
                         nueva_noticia_procesada = {
                             'fuente': fuente_final,
                             'resumen': resumen, # Original o editado
-                            'fecha': noticia['fecha'].strftime("%Y-%m-%d"),
+                            'fecha': noticia.get('fecha', datetime.now()).strftime("%Y-%m-%d") if isinstance(noticia.get('fecha'), datetime) else noticia.get('fecha', datetime.now().strftime("%Y-%m-%d")),
                             'id': noticia_hash,
                             'audio_path': audio_file_path,
                             'es_breve': es_noticia_breve,
@@ -1869,11 +1874,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     audio_p2 = sintetizar_ssml_a_audio(f"<speak>{html.escape(partes[1].strip())}</speak>")
                     if audio_p2:
                         segmentos_audio.append(audio_p2)
-            else:
-                # Comportamiento normal si no hay marcador
-                monologo_inicio_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
-                if monologo_inicio_audio:
-                    segmentos_audio.append(monologo_inicio_audio)
+                else:
+                    # Comportamiento normal si no hay marcador
+                    monologo_inicio_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+                    if monologo_inicio_audio:
+                        segmentos_audio.append(monologo_inicio_audio)
         else:
             # Fallback por si la IA falla.
             print("      ⚠️ Fallo en la generación del monólogo. Usando saludo estático.")
@@ -2009,8 +2014,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                  # En modo guion, si ya tenemos el texto, lo usamos. Si no, deberíamos generarlo (texto_noticia).
                  # _generar_y_cachear_audio_noticia genera audio y texto.
                  # Haremos una llamada 'mock' o modificaremos _generar...
-                 # Simplificación: Llamamos a _generar_audio_noticia DIRECTAMENTE para obtener texto
-                 _, texto_noticia = _generar_audio_noticia(noticia, fecha_actual_str)
+                 # Simplificación: Llamamos a _generar_audio_noticia DIRECTAMENTE para obtener texto (saltando TTS con nuevo flag)
+                 _, texto_noticia = _generar_audio_noticia(noticia, fecha_actual_str, solo_texto=True)
                  if texto_noticia:
                      script_full_data['noticias'].append({
                         'titulo': noticia.get('fuente', 'Noticia Individual'),
