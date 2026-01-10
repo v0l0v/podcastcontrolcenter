@@ -274,6 +274,10 @@ with st.sidebar:
     # Estado 1: Confirmación de Configuración
     if 'config_check' not in st.session_state:
         st.session_state['config_check'] = False
+    
+    # Init generation_id for widget keys reset
+    if 'generation_id' not in st.session_state:
+        st.session_state['generation_id'] = 0
 
     # Estado 0: Selección de Modo
     st.markdown("#### 0️⃣ Modo de Operación")
@@ -374,6 +378,9 @@ with st.sidebar:
                     # También limpiar la selección final guardada
                     if 'noticias_editadas_finales' in st.session_state:
                          del st.session_state['noticias_editadas_finales']
+                    
+                    # Increment generation_id to force widgets reset
+                    st.session_state['generation_id'] += 1
 
                     process = subprocess.run(
                         [sys.executable, "dorototal.py", "--preview"],
@@ -550,15 +557,15 @@ with tab_rev:
                          
                          with col_check:
                              # Checkbox de inclusión
-                             incluir = st.checkbox("Incluir", value=True, key=f"main_chk_{i}")
+                             incluir = st.checkbox("Incluir", value=True, key=f"main_chk_{i}_{st.session_state['generation_id']}")
                          
                          with col_content:
                              # Campos editables
-                             new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}")
+                             new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}_{st.session_state['generation_id']}")
                              # Calcular altura dinámica aproximada (mínimo 200px)
                              num_lines = max(4, len(resumen_original) // 60) # aprox 60 caracteres por línea
                              dynamic_height = max(200, num_lines * 25)
-                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=dynamic_height, key=f"main_res_{i}")
+                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=dynamic_height, key=f"main_res_{i}_{st.session_state['generation_id']}")
                              st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
                          
                          if incluir:
