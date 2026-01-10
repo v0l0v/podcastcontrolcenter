@@ -33,6 +33,16 @@ cache_noticias.json
 .DS_Store
 *.swp
 
+
+
 # Logs y temporales
 *.log
 tmp/
+
+# Scripts de depuración y verificación
+debug_*
+check_missing_news.py
+
+# Scripts de depuración y verificación
+debug_*
+check_missing_news.py
