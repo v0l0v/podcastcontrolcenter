@@ -20,6 +20,8 @@ class TipoDia(Enum):
 
 import json
 import os
+import re
+from src.core.text_processing import convertir_ssml_a_texto_plano
 
 def cargar_configuracion():
     config_path = os.path.join(os.path.dirname(__file__), 'podcast_config.json')
@@ -700,11 +702,13 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 
         instruccion_saludo = ""
         if texto_base_saludo:
+            # Limpiar SSML para que la IA solo vea el texto semántico
+            saludo_limpio = convertir_ssml_a_texto_plano(texto_base_saludo)
             instruccion_saludo = f"""
         1.  **Saludo y Bienvenida (REINTERPRETACIÓN):**
             - Tienes un guion base para el saludo de hoy:
             ---
-            "{texto_base_saludo}"
+            "{saludo_limpio}"
             ---
             - **TU TAREA:** No leas este texto literalmente. Úsalo como guía semántica.
             - Reinterprétalo con tu propio estilo (cercano, profesional, IA).
@@ -718,11 +722,12 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 
         instruccion_cta = ""
         if texto_cta:
+            cta_limpio = convertir_ssml_a_texto_plano(texto_cta)
             instruccion_cta = f"""
         4.  **Integración del Mensaje Clave (CTA):**
             - **INSTRUCCIÓN TÉCNICA:** Justo antes de empezar con el mensaje, escribe exactamente: `[CORTINILLA]`.
             - A continuación, integra el mensaje de forma natural. No lo leas literalmente, adáptalo a tu estilo.
-            - Mensaje a integrar: "{texto_cta}"
+            - Mensaje a integrar: "{cta_limpio}"
         """
 
         instruccion_gancho = ""
@@ -771,9 +776,10 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         """
         instruccion_cta = ""
         if texto_cta:
+            cta_limpio = convertir_ssml_a_texto_plano(texto_cta)
             instruccion_cta = f"""
         2.  **Integración del Mensaje Clave (CTA):** Antes de la despedida final, integra de forma natural el siguiente mensaje. Adáptalo a tu estilo, no lo leas literalmente.
-            - Mensaje a integrar: "{texto_cta}"
+            - Mensaje a integrar: "{cta_limpio}"
         """
 
         instruccion_resolucion = ""
@@ -787,11 +793,12 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 
         instruccion_despedida = ""
         if texto_base_despedida:
+            despedida_limpia = convertir_ssml_a_texto_plano(texto_base_despedida)
             instruccion_despedida = f"""
         4.  **Despedida Final (REINTERPRETACIÓN):**
             - Tienes un guion base para la despedida de hoy:
             ---
-            "{texto_base_despedida}"
+            "{despedida_limpia}"
             ---
             - **TU TAREA:** No leas este texto literalmente. Úsalo como guía semántica.
             - Reinterprétalo con tu propio estilo (cercano, reflexivo).
@@ -804,9 +811,10 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 
         instruccion_firma = ""
         if texto_firma:
+            firma_limpia = convertir_ssml_a_texto_plano(texto_firma)
             instruccion_firma = f"""
         5.  **Firma Final (REINTERPRETACIÓN OBLIGATORIA):**
-            - Tienes una frase base para cerrar el programa: "{texto_firma}"
+            - Tienes una frase base para cerrar el programa: "{firma_limpia}"
             - **TU TAREA:** No la leas literalmente. Úsalo como guía semántica.
             - Reinterprétala con tu propio estilo para que suene natural como última frase, pero manteniendo el significado original.
             """
