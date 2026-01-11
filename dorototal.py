@@ -1343,7 +1343,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, solo_guion: bool = False):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, solo_guion: bool = False, reuse_script_path: str = None):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -1678,6 +1678,28 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         segmentos_audio = []
         transcript_data = [] # <-- Inicializar lista para transcripción
         script_full_data = {'intro': '', 'noticias': [], 'outro': ''} # <-- Para el modo guion
+        
+        # --- Lógica de REUSO DE GUION (WYSIWYG) ---
+        texto_intro_reusado = None
+        texto_outro_reusado = None
+        
+        if reuse_script_path:
+            if os.path.exists(reuse_script_path):
+                try:
+                    print(f"♻️ Reutilizando guion predefinido desde: {reuse_script_path}")
+                    with open(reuse_script_path, 'r', encoding='utf-8') as f:
+                        script_loaded = json.load(f)
+                        texto_intro_reusado = script_loaded.get('intro')
+                        texto_outro_reusado = script_loaded.get('outro')
+                        # Nota: Las noticias ya vienen en 'resumenes_finales' (que vienen de la selección del usuario o RSS),
+                        # así que confiamos en que coinciden. El usuario es responsable de no cambiar la selección
+                        # después de generar el preview si quiere consistencia total.
+                except Exception as e:
+                    print(f"⚠️ Error al cargar guion para reuso: {e}. Se generará uno nuevo.")
+            else:
+                 print(f"⚠️ El archivo de guion para reusar no existe: {reuse_script_path}")
+        # ------------------------------------------
+
         audio_assets_dir = AUDIO_ASSETS_DIR
 
         # --- Cargar la cortinilla para los CTAs ---
@@ -1827,16 +1849,19 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         saludo_base = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_SALUDO_POR_DIA)
         
         # 2. Generar MONÓLOGO UNIFICADO (Saludo reinterpretado + Sumario)
-        print("      🧠 Generando monólogo de inicio unificado (reinterpretado)...")
-        prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
-            contenido_noticias=contenido_completo_texto,
-            texto_cta=cta_inicio_text,
-            texto_base_saludo=saludo_base,
-            # dato_curioso_gancho=dato_curioso_gancho, # Reactivar si se usa
-            sentimiento_general=sentimiento_general
-        )
-        
-        texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
+        if texto_intro_reusado:
+            print("      ♻️ Usando introducción congelada del preview (WYSIWYG)...")
+            texto_monologo_inicio = texto_intro_reusado
+        else:
+            print("      🧠 Generando monólogo de inicio unificado (reinterpretado)...")
+            prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
+                contenido_noticias=contenido_completo_texto,
+                texto_cta=cta_inicio_text,
+                texto_base_saludo=saludo_base,
+                # dato_curioso_gancho=dato_curioso_gancho, # Reactivar si se usa
+                sentimiento_general=sentimiento_general
+            )
+            texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
         
         # 3. Añadir la sintonía de inicio ANTES del monólogo.
         ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
@@ -2177,24 +2202,28 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         firma_base = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_FIRMA_FINAL_POR_DIA)
 
         # 3. Llamar al nuevo prompt unificado que genera todo el monólogo de cierre.
-        # SELECCIONAMOS 3 temas/noticias ALEATORIOS para dar variedad y brevedad.
-        if len(contexto_cierre) > 3:
-            contexto_seleccionado = random.sample(contexto_cierre, 3)
+        if texto_outro_reusado:
+            print("      ♻️ Usando despedida congelada del preview (WYSIWYG)...")
+            texto_monologo_cierre = texto_outro_reusado
         else:
-            contexto_seleccionado = contexto_cierre
+            # SELECCIONAMOS 3 temas/noticias ALEATORIOS para dar variedad y brevedad.
+            if len(contexto_cierre) > 3:
+                contexto_seleccionado = random.sample(contexto_cierre, 3)
+            else:
+                contexto_seleccionado = contexto_cierre
+                
+            contexto_cierre_str = "\n".join(contexto_seleccionado) 
             
-        contexto_cierre_str = "\n".join(contexto_seleccionado) 
-        
-        prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
-            contexto=contexto_cierre_str,
-            texto_cta=cta_cierre_text,
-            texto_base_despedida=despedida_base,
-            texto_firma=firma_base,
-            # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
-            sentimiento_general=sentimiento_general
-        )
-        
-        texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado)
+            prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
+                contexto=contexto_cierre_str,
+                texto_cta=cta_cierre_text,
+                texto_base_despedida=despedida_base,
+                texto_firma=firma_base,
+                # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
+                sentimiento_general=sentimiento_general
+            )
+            
+            texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado)
         
         # 4. Limpiar, sintetizar y añadir el monólogo de cierre.
         if texto_monologo_cierre:
@@ -2298,6 +2327,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script de generación de podcast Micomicona")
     parser.add_argument("--preview", action="store_true", help="Solo generar archivo de previsión de noticias, sin audios.")
     parser.add_argument("--full-script", action="store_true", help="Generar guion completo (Intro+News+Outro) sin audio.")
+    parser.add_argument("--reuse-script", type=str, help="Ruta al archivo JSON de guion para reutilizar Intro/Outro (WYSIWYG).")
     parser.add_argument("--only-special", action="store_true", help="Solo procesar episodios especiales (EE_*) sin generar el podcast diario.")
     parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
     parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
@@ -2312,7 +2342,7 @@ if __name__ == "__main__":
         print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
     elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
-        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, solo_guion=args.full_script)
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, solo_guion=args.full_script, reuse_script_path=args.reuse_script)
     elif args.preview:
         print(f"🔮 Modo: Preview de noticias (sin audio)")
         procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True)

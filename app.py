@@ -483,6 +483,11 @@ with st.sidebar:
                     # Lógica para saltar especiales si el usuario lo pidió
                     if mode_skip_special:
                         cmd.append("--skip-special")
+                        
+                    # Lógica de WYSIWYG: Si hay un guion completo previsualizado, lo usamos
+                    script_preview_file = "prevision_guion_completo.json"
+                    if os.path.exists(script_preview_file):
+                         cmd.extend(["--reuse-script", script_preview_file])
 
                     process = subprocess.Popen(
                         cmd,
@@ -509,6 +514,7 @@ with st.sidebar:
                         # Resetear
                         if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
                         if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
+                        if os.path.exists(script_preview_file): os.remove(script_preview_file)
                         st.session_state['news_confirmed'] = False # Reset
                         time.sleep(2)
                         st.rerun()
@@ -615,45 +621,67 @@ with tab_rev:
                     )
                     
                     if process.returncode == 0:
-                        # Leer el resultado
-                        if os.path.exists("prevision_guion_completo.json"):
-                            with open("prevision_guion_completo.json", "r", encoding="utf-8") as f:
-                                script_data = json.load(f)
-                            
-                            st.success("✅ Guion generado correctamente.")
-                            
-                            # Mostrar INTRO
-                            with st.expander("🎙️ INTRODUCCIÓN", expanded=True):
-                                st.markdown(f"*{script_data.get('intro', '')}*")
-                                
-                            # Mostrar NOTICIAS
-                            with st.expander("📰 CUERPO DEL NOTICIERO", expanded=True):
-                                for item in script_data.get('noticias', []):
-                                    titulo = item.get('titulo', 'Noticia')
-                                    contenido = item.get('contenido', '')
-                                    if item.get('es_bloque'):
-                                        st.markdown(f"**🔷 BLOQUE: {titulo}**")
-                                    else:
-                                        st.markdown(f"**🔸 NOTICIA: {titulo}**")
-                                    st.markdown(f"{contenido}")
-                                    st.markdown("---")
-                                    
-                            # Mostrar OUTRO
-                            with st.expander("👋 DESPEDIDA", expanded=True):
-                                st.markdown(f"*{script_data.get('outro', '')}*")
-                                
-                            # Limpiar temp
-                            if os.path.exists(temp_script_input): os.remove(temp_script_input)
-                        else:
-                            st.error("No se generó el archivo de guion (prevision_guion_completo.json).")
-                            st.code(process.stdout)
-                            st.code(process.stderr)
+                        st.success("✅ Guion generado correctamente.")
+                        # Limpiar temp
+                        if os.path.exists(temp_script_input): os.remove(temp_script_input)
+                        st.session_state['generation_id'] += 1
+                        time.sleep(1)
+                        st.rerun()
                     else:
                         st.error("Error al generar el guion.")
                         st.code(process.stderr)
                         
                 except Exception as e:
                     st.error(f"Excepción: {e}")
+
+        # --- MOSTRAR GUION SI EXISTE (FUERA DEL BOTÓN PARA PERSISTENCIA) ---
+        if os.path.exists("prevision_guion_completo.json"):
+            try:
+                with open("prevision_guion_completo.json", "r", encoding="utf-8") as f:
+                    script_data = json.load(f)
+
+                st.markdown("#### 📝 Editor de Guion")
+                st.info("Edita la introducción y despedida si deseas. Dorotea leerá lo que escribas aquí.")
+
+                # ID único para evitar conflictos de widgets
+                gen_id = st.session_state.get('generation_id', 0)
+
+                # Mostrar INTRO EDITABLE
+                with st.expander("🎙️ INTRODUCCIÓN (Editable)", expanded=True):
+                    intro_text = script_data.get('intro', '')
+                    new_intro = st.text_area("Texto de Introducción", value=intro_text, key=f"intro_edit_{gen_id}", height=200)
+
+                # Mostrar NOTICIAS (SOLO LECTURA - Se editan arriba)
+                with st.expander("📰 CUERPO DEL NOTICIERO (Solo Lectura - Edita arriba)", expanded=False):
+                    for item in script_data.get('noticias', []):
+                        titulo = item.get('titulo', 'Noticia')
+                        contenido = item.get('contenido', '')
+                        if item.get('es_bloque'):
+                            st.markdown(f"**🔷 BLOQUE: {titulo}**")
+                        else:
+                            st.markdown(f"**🔸 NOTICIA: {titulo}**")
+                        st.markdown(f"{contenido}")
+                        st.markdown("---")
+
+                # Mostrar OUTRO EDITABLE
+                with st.expander("👋 DESPEDIDA (Editable)", expanded=True):
+                    outro_text = script_data.get('outro', '')
+                    new_outro = st.text_area("Texto de Despedida", value=outro_text, key=f"outro_edit_{gen_id}", height=150)
+
+                # BOTÓN DE GUARDAR
+                if st.button("💾 CONFIRMAR CAMBIOS EN EL GUION", type="primary"):
+                    script_data['intro'] = new_intro
+                    script_data['outro'] = new_outro
+                    
+                    with open("prevision_guion_completo.json", "w", encoding="utf-8") as f:
+                        json.dump(script_data, f, ensure_ascii=False, indent=4)
+                    
+                    st.success("✅ Guion actualizado. Se usará este texto para la grabación.")
+                    time.sleep(1)
+                    st.rerun()
+
+            except Exception as e:
+                st.error(f"Error cargando guion: {e}")
     else:
         st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
 
