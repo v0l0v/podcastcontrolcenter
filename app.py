@@ -651,17 +651,31 @@ with tab_rev:
                     intro_text = script_data.get('intro', '')
                     new_intro = st.text_area("Texto de Introducción", value=intro_text, key=f"intro_edit_{gen_id}", height=200)
 
-                # Mostrar NOTICIAS (SOLO LECTURA - Se editan arriba)
-                with st.expander("📰 CUERPO DEL NOTICIERO (Solo Lectura - Edita arriba)", expanded=False):
-                    for item in script_data.get('noticias', []):
+                # Mostrar NOTICIAS (EDITABLE)
+                edited_news_script = []
+                with st.expander("📰 CUERPO DEL NOTICIERO (Editable)", expanded=False):
+                    st.info("Aquí puedes retocar CÓMO Dorotea cuenta las noticias. El orden debe mantenerse.")
+                    for i, item in enumerate(script_data.get('noticias', [])):
                         titulo = item.get('titulo', 'Noticia')
                         contenido = item.get('contenido', '')
-                        if item.get('es_bloque'):
-                            st.markdown(f"**🔷 BLOQUE: {titulo}**")
-                        else:
-                            st.markdown(f"**🔸 NOTICIA: {titulo}**")
-                        st.markdown(f"{contenido}")
+                        es_bloque = item.get('es_bloque', False)
+                        
+                        prefix = "🔷 BLOQUE" if es_bloque else "🔸 NOTICIA"
+                        st.markdown(f"**{prefix}: {titulo}**")
+                        
+                        # Text Area para el cuerpo de la noticia
+                        new_content = st.text_area(
+                            f"Guion para: {titulo}",
+                            value=contenido,
+                            key=f"news_script_edit_{i}_{gen_id}",
+                            height=max(150, len(contenido)//2)
+                        )
                         st.markdown("---")
+                        
+                        # Guardamos el item actualizado en una lista temporal
+                        item_updated = item.copy()
+                        item_updated['contenido'] = new_content
+                        edited_news_script.append(item_updated)
 
                 # Mostrar OUTRO EDITABLE
                 with st.expander("👋 DESPEDIDA (Editable)", expanded=True):
@@ -672,11 +686,12 @@ with tab_rev:
                 if st.button("💾 CONFIRMAR CAMBIOS EN EL GUION", type="primary"):
                     script_data['intro'] = new_intro
                     script_data['outro'] = new_outro
+                    script_data['noticias'] = edited_news_script # <-- Guardamos las noticias editadas
                     
                     with open("prevision_guion_completo.json", "w", encoding="utf-8") as f:
                         json.dump(script_data, f, ensure_ascii=False, indent=4)
                     
-                    st.success("✅ Guion actualizado. Se usará este texto para la grabación.")
+                    st.success("✅ Guion actualizado. Se usará este texto EXACTO para la grabación.")
                     time.sleep(1)
                     st.rerun()
 

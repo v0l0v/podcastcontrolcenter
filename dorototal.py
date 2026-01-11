@@ -1698,6 +1698,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     print(f"⚠️ Error al cargar guion para reuso: {e}. Se generará uno nuevo.")
             else:
                  print(f"⚠️ El archivo de guion para reusar no existe: {reuse_script_path}")
+        
+        # Lista de noticias reusadas y puntero
+        noticias_reusadas_lista = []
+        indice_noticias_reusadas = 0
+        if texto_intro_reusado and script_loaded:
+             noticias_reusadas_lista = script_loaded.get('noticias', [])
+        # ------------------------------------------
         # ------------------------------------------
 
         audio_assets_dir = AUDIO_ASSETS_DIR
@@ -1949,8 +1956,23 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             # Guardamos el número de noticias procesadas ANTES de empezar el bloque
             noticias_antes_del_bloque = noticias_procesadas
             
-            # Generar narración unificada
-            cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
+            # Generar narración unificada (o reusar)
+            cronica_unificada_texto = ""
+            
+            # REUSO WYSIWYG
+            if noticias_reusadas_lista and indice_noticias_reusadas < len(noticias_reusadas_lista):
+                noticia_reusada = noticias_reusadas_lista[indice_noticias_reusadas]
+                # Verificación simple: asumimos orden. Idealmente comparar IDs/Titulos pero confiamos en el flujo.
+                # Como es un bloque, esperamos que el item reusado sea marcado como bloque
+                if noticia_reusada.get('es_bloque', False):
+                    print(f"      ♻️ Reusando texto de bloque editado: '{noticia_reusada.get('titulo')}'")
+                    cronica_unificada_texto = noticia_reusada.get('contenido', "")
+                    indice_noticias_reusadas += 1
+                else:
+                    print("      ⚠️ Desincronización en orden de reuso (esperaba bloque). Generando nuevo.")
+            
+            if not cronica_unificada_texto:
+                 cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
             
             if cronica_unificada_texto:
                 transcript_data.append({
@@ -2048,6 +2070,29 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         'es_bloque': False
                      })
                  continue
+            
+            # REUSO WYSIWYG
+            texto_noticia_reusado = None
+            if noticias_reusadas_lista and indice_noticias_reusadas < len(noticias_reusadas_lista):
+                noticia_reusada = noticias_reusadas_lista[indice_noticias_reusadas]
+                if not noticia_reusada.get('es_bloque', False):
+                     print(f"      ♻️ Reusando texto de noticia editada: '{noticia_reusada.get('titulo')}'")
+                     texto_noticia_reusado = noticia_reusada.get('contenido', "")
+                     indice_noticias_reusadas += 1
+                else:
+                     print("      ⚠️ Desincronización en orden de reuso (esperaba noticia individual). Ignorando reuso.")
+
+            if texto_noticia_reusado:
+                # Si tenemos texto reusado, generamos audio directamente de ese texto
+                # Saltamos la generación con LLM y vamos directo a síntesis
+                print(f"      🎙️  Generando audio desde texto EDITADO/REUSADO...")
+                audio_noticia = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_noticia_reusado)}</speak>")
+                
+                # Para añadirlo al script que estamos generando (si hiciera falta)
+                texto_noticia = texto_noticia_reusado 
+            else:
+                 # Generación normal
+                 audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str)
 
             audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str) # <-- Unpack tuple
             if audio_noticia:
