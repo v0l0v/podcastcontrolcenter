@@ -1551,13 +1551,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                 
                                 prompt_vision = """
                                 Eres los ojos de un periodista. Analiza esta imagen (cartel, foto o gráfico) y extrae DATOS CLAVE que complementen el texto:
-                                1. FECHAS COMPLETAS: Busca explícitamente el AÑO (2024, 2025, 2026...). Si pone "Sábado 17", deduce el mes si aparece.
+                                1. FECHAS COMPLETAS Y PRECISAS:
+                                   - Busca explícitamente el AÑO.
+                                   - **VERIFICACIÓN DE NOTARIO:** Si lees "Sábado 17", COMPRUEBA si corresponde al mes que crees. (Ej: En 2026, el 17 de Enero es Sábado, pero el 17 de Febrero es Martes).
+                                   - Si el evento es una festividad conocida (San Antón, Navidad, San Juan...), **USA EL MES CORRECTO** (San Antón es SIEMPRE Enero). No alucines Febrero si es Enero.
                                 2. PRECIOS: ¿Hay coste? ¿Inscripción de X euros? ¿Es gratis?
                                 3. ORGANIZADOR REAL: Busca logos y nombres. ¿Es el Ayuntamiento de X? ¿Una Asociación? (Diferéncialo del medio que publica).
                                 4. UBICACIÓN EXACTA: Lugar del evento.
                                 5. DETALLES DE INTERÉS: Regalos, sorteos, requisitos.
                                 
-                                Resumen visual conciso con estos datos.
+                                Resumen visual conciso enfocándote en la precisión de la fecha.
                                 """
                                 analisis_visual = generar_texto_multimodal_con_gemini(prompt_vision, image_data=img_data)
                                 

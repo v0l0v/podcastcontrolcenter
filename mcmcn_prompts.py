@@ -160,6 +160,7 @@ Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
 1. **INFORMACIÓN SAGRADA:** Es OBLIGATORIO incluir nombres de personas (autores, premiados, etc.), títulos de obras (libros, películas) y lugares específicos mencionados. NO generalices (ej: NO digas "un autor", di "Pedro Martín-Romo").
 2. **FORMATO PLANO:** El resultado debe ser texto puro. NO INCLUYAS NUNCA markdown (ni negritas **, ni cursivas _), ni anotaciones de producción. Eliminamos cualquier asterisco de la respuesta.
 3. **NO** incluyas texto entre paréntesis o corchetes.
+4. **VERIFICACIÓN LÓGICA DE FECHAS:** Si el texto o la imagen mencionan una festividad (San Antón, Navidad, etc.), **ASEGÚRATE de que el mes sea correcto** (San Antón es Enero). Si el día de la semana mencionado (ej: "Sábado 17") no coincide con el mes en el calendario actual, **CORRIGE EL MES** basándote en la festividad o en la coherencia día/semana. NO repitas ciegamente una fecha errónea.
 """
 
     @staticmethod
