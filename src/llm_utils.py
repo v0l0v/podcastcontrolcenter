@@ -138,3 +138,35 @@ def transcribir_audio_gemini(audio_path: str, prompt_contexto: str = "") -> str:
     except Exception as e:
         print(f"❌ Error transcribiendo audio con Gemini: {e}")
         return ""
+
+@retry_on_failure(retries=2, delay=2)
+def generar_texto_multimodal_con_gemini(prompt: str, image_data: bytes = None) -> str:
+    """
+    Genera texto a partir de un prompt y una imagen en bytes.
+    Soporta AI Studio y Vertex AI.
+    """
+    if model is None:
+        return ""
+
+    try:
+        content = [prompt]
+        
+        if image_data:
+            # 1. Vertex AI SDK
+            if 'vertexai' in sys.modules and hasattr(sys.modules['vertexai'], 'init'):
+                from vertexai.generative_models import Part
+                # Asumimos vision capability. Intentamos inferir mime o default jpeg
+                image_part = Part.from_data(data=image_data, mime_type="image/jpeg") 
+                content.append(image_part)
+            
+            # 2. Google Generative AI (AI Studio)
+            elif 'google.generativeai' in sys.modules:
+                blob = {'mime_type': 'image/jpeg', 'data': image_data}
+                content.append(blob)
+        
+        response = model.generate_content(content)
+        return response.text.strip() if response else ""
+
+    except Exception as e:
+        print(f"❌ Error análisis multimodal Gemini: {e}")
+        return ""

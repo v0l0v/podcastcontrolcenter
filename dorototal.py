@@ -39,9 +39,10 @@ from src.core.text_processing import (
 )
 from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
-from src.llm_utils import generar_texto_con_gemini, retry_on_failure
 from src.audio_processor import generar_episodio_especial
+from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
 import mcmcn_prompts 
+import requests 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
 # Los clientes se manejan en los módulos (src.engine.audio, src.llm_utils).
@@ -1418,13 +1419,30 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         noticia_hash = stable_text_hash(contenido)
                         texto_crudo = limpiar_html(contenido)
 
+                        # --- EXTRAER IMAGEN (Lógica restaurada) ---
+                        imagen_url = None
+                        # 1. Buscar en media_content (estándar RSS moderno/WordPress)
+                        if hasattr(entry, 'media_content') and entry.media_content:
+                            for media in entry.media_content:
+                                tipo = media.get('type', '')
+                                if 'image' in tipo or 'jpeg' in tipo or 'png' in tipo:
+                                    imagen_url = media.get('url')
+                                    break
+                        # 2. Buscar en links (enclosures)
+                        if not imagen_url and hasattr(entry, 'links'):
+                            for link in entry.links:
+                                if link.get('rel') == 'enclosure' and ('image' in link.get('type', '') or 'jpeg' in link.get('type', '')):
+                                    imagen_url = link.get('href')
+                                    break
+                                    
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 
                             'texto': texto_crudo, 
                             'fecha': fecha_pub, 
                             'hash': noticia_hash,
                             'titulo': titulo_reparado,
-                            'link': entry.get('link', '')
+                            'link': entry.get('link', ''),
+                            'imagen_url': imagen_url
                         })
                 except Exception as e:
                     print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
@@ -1509,6 +1527,35 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # CASO 2: GENERAR RESUMEN CON IA (Automático)
                 else:
                     print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
+                    
+                    # === FASE 0: ANÁLISIS MULTIMODAL (VISIÓN) ===
+                    if noticia.get('imagen_url'):
+                        print(f"      🖼️ Imagen detectada: {noticia['imagen_url']}")
+                        try:
+                            # Descargar imagen en memoria
+                            img_response = requests.get(noticia['imagen_url'], timeout=10)
+                            if img_response.status_code == 200:
+                                img_data = img_response.content
+                                
+                                prompt_vision = """
+                                Eres los ojos de un periodista. Analiza esta imagen (cartel, foto o gráfico) y extrae DATOS CLAVE que complementen el texto:
+                                1. FECHAS COMPLETAS: Busca explícitamente el AÑO (2024, 2025, 2026...). Si pone "Sábado 17", deduce el mes si aparece.
+                                2. PRECIOS: ¿Hay coste? ¿Inscripción de X euros? ¿Es gratis?
+                                3. ORGANIZADOR REAL: Busca logos y nombres. ¿Es el Ayuntamiento de X? ¿Una Asociación? (Diferéncialo del medio que publica).
+                                4. UBICACIÓN EXACTA: Lugar del evento.
+                                5. DETALLES DE INTERÉS: Regalos, sorteos, requisitos.
+                                
+                                Resumen visual conciso con estos datos.
+                                """
+                                analisis_visual = generar_texto_multimodal_con_gemini(prompt_vision, image_data=img_data)
+                                
+                                if analisis_visual:
+                                    print(f"      👁️ Vision AI: {analisis_visual[:100]}...")
+                                    # Inyectar al texto crudo para que las fases siguientes lo vean
+                                    texto_crudo += f"\n\n[DATOS VISUALES DEL CARTEL/FOTO: {analisis_visual}]"
+                                    
+                        except Exception as e:
+                            print(f"      ⚠️ Error procesando imagen: {e}")
                     
                     # === FASE 1: Entidades (solo si no es manual) ===
                     print("      -> Fase 1/3: Extrayendo entidades clave con IA...")

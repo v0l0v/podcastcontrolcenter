@@ -62,7 +62,7 @@ fecha: 16-11-2025
 autor: Pedro Vidal
 texto: Escuchar las historias de nuestros agricultores y ganaderos en vuestra voz es un verdadero lujo. Gracias por darles el protagonismo que merecen.
 ---
-fecha: 17-11-2025
+fecha: 17-01-2026
 autor: Cristina Alonso
 texto: Se acaba la semana y no puedo dejar de felicitaros por el trabajo bien hecho. Cada día os superáis. ¡Buen fin de semana!
 ---

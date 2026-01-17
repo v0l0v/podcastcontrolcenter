@@ -130,7 +130,7 @@ class PromptsAnalisis:
         """
         instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- OBLIGATORIO: Menciona explícitamente en el guion que la noticia proviene de '{fuente_original}'. Usa fórmulas variadas como 'nos informan desde...', 'según...', 'en... han comunicado'."
+            instruccion_fuente = f"- FUENTE: El sistema indica '{fuente_original}'. SIEMPRE verifica si el texto menciona un ORGANIZADOR o FUENTE REAL distinta (ej: 'Ayuntamiento de...', 'Asociación X'). En ese caso, CITA A LA ENTIDAD REAL en lugar del publicador."
 
         instruccion_entidades = ""
         if entidades_clave:
@@ -216,7 +216,7 @@ ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
         
         instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- En el resumen, incorpora de forma natural que la noticia proviene de '{fuente_original}' o está relacionada con este organismo."
+            instruccion_fuente = f"- Menciona la fuente. Sugerencia: '{fuente_original}', pero si el texto cita a un organizador específico (Ayuntamiento, Club...), cítalo a él."
         
         return f"""Eres un/a profesional de la edición de guiones para un podcast rural. Tu estilo es cercano, claro y humano. Queremos que cada resumen suene como una historia interesante, no como un simple despacho de noticias.
 
