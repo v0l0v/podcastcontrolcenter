@@ -468,6 +468,8 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list) -> dict:
             if len(ids_noticias_unicas) < MIN_NEWS_PER_BLOCK:
                 continue
 
+            # NOTA: Pasamos TODAS las noticias del tema al prompt de enriquecimiento.
+            # No importa si son muchas, solo queremos la descripción y la transición.
             lista_resumenes = [noticias_por_id[nid]["resumen"] for nid in ids_noticias_unicas if nid in noticias_por_id]
             resumenes_json = json.dumps(lista_resumenes, indent=2, ensure_ascii=False)
 
@@ -609,26 +611,36 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
     # Ordenar noticias por fecha, por si acaso
     noticias_ordenadas = sorted(noticias, key=lambda x: x.get('fecha', '0000-00-00'), reverse=True)
 
-    # 1. Preparar la lista de resúmenes y fuentes
-    resumenes_para_prompt = []
-    fuentes = []
-    for i, n in enumerate(noticias_ordenadas):
-        resumenes_para_prompt.append(f"Noticia {i+1} (Fuente: {n.get('fuente', 'desconocida')}): \"{n.get('resumen', '')}\"")
-        fuentes.append(n.get('fuente', ''))
+    MAX_BATCH_SIZE = 5
+    partes_cronica = []
     
-    lista_de_noticias_str = "\n".join(resumenes_para_prompt)
+    # Dividir las noticias en lotes manejables para la IA
+    batches = [noticias_ordenadas[i:i + MAX_BATCH_SIZE] for i in range(0, len(noticias_ordenadas), MAX_BATCH_SIZE)]
     
-    # Limpiar y obtener fuentes únicas
-    fuentes_unicas = sorted(list(set(f for f in fuentes if f)))
+    print(f"      📚 Generando crónica por partes (Total batches: {len(batches)})...")
 
-    # 2. Calcular longitud deseada
-    num_noticias = len(noticias)
-    # Lógica de longitud: base de 70 palabras, +40 por cada noticia.
-    # Esto da un buen balance para que no sea ni muy corto ni excesivamente largo.
-    longitud_deseada = 70 + (num_noticias * 40)
+    for i, batch in enumerate(batches):
+        es_primer_batch = (i == 0)
+        
+        # 1. Preparar la lista de resúmenes para este batch
+        resumenes_para_prompt = []
+        fuentes_batch = []
+        for j, n in enumerate(batch):
+            idx_global = (i * MAX_BATCH_SIZE) + j + 1
+            resumenes_para_prompt.append(f"Noticia {idx_global} (Fuente: {n.get('fuente', 'desconocida')}): \"{n.get('resumen', '')}\"")
+            fuentes_batch.append(n.get('fuente', ''))
+        
+        lista_de_noticias_str = "\n".join(resumenes_para_prompt)
+        
+        # 2. Calcular longitud deseada para este batch
+        num_noticias_batch = len(batch)
+        longitud_deseada = 70 + (num_noticias_batch * 40)
+        
+        # 3. Ajustar la transición para batches sucesivos
+        transicion_batch = transicion if es_primer_batch else "Continuando con más novedades sobre este mismo tema..."
 
-    # 3. Construir el prompt para la IA
-    prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
+        # 4. Construir el prompt
+        prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
 
 **Tema principal:** "{tema}"
 
@@ -639,45 +651,45 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 
 **Instrucciones para tu crónica:**
 
-1.  **SÍNTESIS EDITORIAL, NO UNA LISTA:** Tu tarea principal es actuar como un editor. Identifica la información clave y los datos únicos de cada noticia. **Elimina activamente la información redundante y las frases repetidas** entre las distintas fuentes.
-2.  **CONSTRUYE UNA ÚNICA HISTORIA:** No leas las noticias una por una. Fusiona los datos relevantes en una sola narración cohesionada. Usa el evento más importante como hilo conductor y enriquécelo con detalles complementarios de las otras noticias.
-3.  **LONGITUD PROPORCIONAL Y NATURAL:** La crónica debe sonar completa y natural. Al combinar {num_noticias} noticias, el texto final debería tener una longitud aproximada de **{longitud_deseada} palabras**.
+1.  **SÍNTESIS EDITORIAL:** Tu tarea es actuar como un editor. Identifica la información clave de CADA noticia. **Elimina la información repetida**, pero **ASEGURA QUE CADA NOTICIA DISTINTA SEA MENCIONADA**.
+2.  **COHESIÓN NARRATIVA:** Busca un hilo conductor si es posible, pero si las noticias tratan de eventos diferentes, **NO LAS FUSIONES INCOHERENTEMENTE**. En su lugar, narra una tras otra usando transiciones fluidas (ej: "Por otro lado...", "Además, en otra localidad..."). Lo importante es que el oyente reciba toda la información relevante de la lista.
+3.  **LONGITUD PROPORCIONAL Y NATURAL:** La crónica debe sonar completa y natural. Al combinar {num_noticias_batch} noticias, el texto final debería tener una longitud aproximada de **{longitud_deseada} palabras**.
 4.  **CITACIÓN EXPLÍCITA DE FUENTES:**
     - Es **OBLIGATORIO** mencionar las fuentes originales de cada noticia integrada. El oyente debe saber quién lo dice.
     - Úsalas como parte de la narración: "Según informa el Ayuntamiento de X...", "La Asociación Y ha comunicado que...", "Desde Z nos cuentan que...".
-    - Si son muchas fuentes (más de 3 o 4), intenta agruparlas pero **mencionando los nombres clave** (ej: "Municipios como A, B y C han lanzado...").
-    - SOLO usa generalizaciones ("varios ayuntamientos") si nombrarlos todos rompiera totalmente el ritmo, pero prioriza siempre la atribución específica.
 5.  **REGLA DE ORO SOBRE FECHAS:**
-    - **PROHIBIDO** usar términos relativos como "hoy", "mañana", "ayer", "este lunes", "el próximo viernes". El podcast puede escucharse cualquier día.
-    - **PROHIBIDO** intentar adivinar qué día de la semana cae una fecha (ej: NO digas "el lunes 25", di solo "el 25 de noviembre"). A menudo te equivocas con los días de la semana.
+    - **PROHIBIDO** usar términos relativos como "hoy", "mañana", "ayer".
     - **USA SIEMPRE FECHAS ABSOLUTAS:** Di "el 25 de noviembre", "el 3 de diciembre".
-    - Si la fecha no es relevante o es confusa, omítela o usa términos genéricos como "recientemente" o "próximamente".
 
 **Importante:** La crónica debe empezar directamente con la frase de transición que te proporciono. No añadas introducciones adicionales.
 
 **ESTRUCTURA VISUAL OBLIGATORIA:**
-- Aunque la narración debe sonar fluida y conectada, **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
+- **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
 - Usa un salto de línea doble entre cada noticia.
-- Esto es vital para que podamos insertar una pequeña cortinilla musical entre ellas.
 
 **Frase de transición de entrada (úsala para empezar):**
-"{transicion}"
+"{transicion_batch}"
 
 **CRÓNICA DE RADIO:**
 """
 
-    # 4. Generar el texto con Gemini
-    cronica_generada = generar_texto_con_gemini(prompt)
+        # 5. Generar el texto con Gemini
+        cronica_parcial = generar_texto_con_gemini(prompt)
+        
+        if cronica_parcial:
+            partes_cronica.append(cronica_parcial)
+        else:
+             print(f"      ⚠️ Fallo en generación de batch {i+1}. Usando fallback simple.")
+             fallback_text = f"{transicion_batch} " + " ".join([n.get('resumen', '') for n in batch])
+             partes_cronica.append(fallback_text)
 
-    # 5. Fallback por si la IA falla
-    if not cronica_generada:
-        print("      ⚠️ Fallo en la generación de crónica consolidada. Usando concatenación simple como fallback.")
-        resumenes_fallback = ' '.join([n.get('resumen', '') for n in noticias_ordenadas])
-        fuentes_fallback = ", ".join(fuentes_unicas)
-        return f"{transicion}. {resumenes_fallback}. Esta información proviene de {fuentes_fallback}."
-
-    # La IA ya debería incluir la transición, así que devolvemos el texto tal cual.
-    return cronica_generada
+    # 6. Unir todas las partes
+    cronica_total = "\n\n".join(partes_cronica)
+    
+    if not cronica_total:
+         return "" # No debería pasar gracias al fallback
+         
+    return cronica_total
 
 # (Función normalizar_voz_a_pico eliminada por falta de uso)
 
@@ -2140,8 +2152,6 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             else:
                  # Generación normal
                  audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str)
-
-            audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str) # <-- Unpack tuple
             if audio_noticia:
                 transcript_data.append({
                     'type': 'news',
