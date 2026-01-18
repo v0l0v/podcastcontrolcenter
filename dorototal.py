@@ -608,26 +608,36 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
     # Ordenar noticias por fecha, por si acaso
     noticias_ordenadas = sorted(noticias, key=lambda x: x.get('fecha', '0000-00-00'), reverse=True)
 
-    # 1. Preparar la lista de resúmenes y fuentes
-    resumenes_para_prompt = []
-    fuentes = []
-    for i, n in enumerate(noticias_ordenadas):
-        resumenes_para_prompt.append(f"Noticia {i+1} (Fuente: {n.get('fuente', 'desconocida')}): \"{n.get('resumen', '')}\"")
-        fuentes.append(n.get('fuente', ''))
+    MAX_BATCH_SIZE = 5
+    partes_cronica = []
     
-    lista_de_noticias_str = "\n".join(resumenes_para_prompt)
+    # Dividir las noticias en lotes manejables para la IA
+    batches = [noticias_ordenadas[i:i + MAX_BATCH_SIZE] for i in range(0, len(noticias_ordenadas), MAX_BATCH_SIZE)]
     
-    # Limpiar y obtener fuentes únicas
-    fuentes_unicas = sorted(list(set(f for f in fuentes if f)))
+    print(f"      📚 Generando crónica por partes (Total batches: {len(batches)})...")
 
-    # 2. Calcular longitud deseada
-    num_noticias = len(noticias)
-    # Lógica de longitud: base de 70 palabras, +40 por cada noticia.
-    # Esto da un buen balance para que no sea ni muy corto ni excesivamente largo.
-    longitud_deseada = 70 + (num_noticias * 40)
+    for i, batch in enumerate(batches):
+        es_primer_batch = (i == 0)
+        
+        # 1. Preparar la lista de resúmenes para este batch
+        resumenes_para_prompt = []
+        fuentes_batch = []
+        for j, n in enumerate(batch):
+            idx_global = (i * MAX_BATCH_SIZE) + j + 1
+            resumenes_para_prompt.append(f"Noticia {idx_global} (Fuente: {n.get('fuente', 'desconocida')}): \"{n.get('resumen', '')}\"")
+            fuentes_batch.append(n.get('fuente', ''))
+        
+        lista_de_noticias_str = "\n".join(resumenes_para_prompt)
+        
+        # 2. Calcular longitud deseada para este batch
+        num_noticias_batch = len(batch)
+        longitud_deseada = 70 + (num_noticias_batch * 40)
+        
+        # 3. Ajustar la transición para batches sucesivos
+        transicion_batch = transicion if es_primer_batch else "Continuando con más novedades sobre este mismo tema..."
 
-    # 3. Construir el prompt para la IA
-    prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
+        # 4. Construir el prompt
+        prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
 
 **Tema principal:** "{tema}"
 
@@ -638,45 +648,45 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 
 **Instrucciones para tu crónica:**
 
-1.  **SÍNTESIS EDITORIAL, NO UNA LISTA:** Tu tarea principal es actuar como un editor. Identifica la información clave y los datos únicos de cada noticia. **Elimina activamente la información redundante y las frases repetidas** entre las distintas fuentes.
-2.  **CONSTRUYE UNA ÚNICA HISTORIA:** No leas las noticias una por una. Fusiona los datos relevantes en una sola narración cohesionada. Usa el evento más importante como hilo conductor y enriquécelo con detalles complementarios de las otras noticias.
-3.  **LONGITUD PROPORCIONAL Y NATURAL:** La crónica debe sonar completa y natural. Al combinar {num_noticias} noticias, el texto final debería tener una longitud aproximada de **{longitud_deseada} palabras**.
+1.  **SÍNTESIS EDITORIAL:** Tu tarea es actuar como un editor. Identifica la información clave de CADA noticia. **Elimina la información repetida**, pero **ASEGURA QUE CADA NOTICIA DISTINTA SEA MENCIONADA**.
+2.  **COHESIÓN NARRATIVA:** Busca un hilo conductor si es posible, pero si las noticias tratan de eventos diferentes, **NO LAS FUSIONES INCOHERENTEMENTE**. En su lugar, narra una tras otra usando transiciones fluidas (ej: "Por otro lado...", "Además, en otra localidad..."). Lo importante es que el oyente reciba toda la información relevante de la lista.
+3.  **LONGITUD PROPORCIONAL Y NATURAL:** La crónica debe sonar completa y natural. Al combinar {num_noticias_batch} noticias, el texto final debería tener una longitud aproximada de **{longitud_deseada} palabras**.
 4.  **CITACIÓN EXPLÍCITA DE FUENTES:**
     - Es **OBLIGATORIO** mencionar las fuentes originales de cada noticia integrada. El oyente debe saber quién lo dice.
     - Úsalas como parte de la narración: "Según informa el Ayuntamiento de X...", "La Asociación Y ha comunicado que...", "Desde Z nos cuentan que...".
-    - Si son muchas fuentes (más de 3 o 4), intenta agruparlas pero **mencionando los nombres clave** (ej: "Municipios como A, B y C han lanzado...").
-    - SOLO usa generalizaciones ("varios ayuntamientos") si nombrarlos todos rompiera totalmente el ritmo, pero prioriza siempre la atribución específica.
 5.  **REGLA DE ORO SOBRE FECHAS:**
-    - **PROHIBIDO** usar términos relativos como "hoy", "mañana", "ayer", "este lunes", "el próximo viernes". El podcast puede escucharse cualquier día.
-    - **PROHIBIDO** intentar adivinar qué día de la semana cae una fecha (ej: NO digas "el lunes 25", di solo "el 25 de noviembre"). A menudo te equivocas con los días de la semana.
+    - **PROHIBIDO** usar términos relativos como "hoy", "mañana", "ayer".
     - **USA SIEMPRE FECHAS ABSOLUTAS:** Di "el 25 de noviembre", "el 3 de diciembre".
-    - Si la fecha no es relevante o es confusa, omítela o usa términos genéricos como "recientemente" o "próximamente".
 
 **Importante:** La crónica debe empezar directamente con la frase de transición que te proporciono. No añadas introducciones adicionales.
 
 **ESTRUCTURA VISUAL OBLIGATORIA:**
-- Aunque la narración debe sonar fluida y conectada, **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
+- **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
 - Usa un salto de línea doble entre cada noticia.
-- Esto es vital para que podamos insertar una pequeña cortinilla musical entre ellas.
 
 **Frase de transición de entrada (úsala para empezar):**
-"{transicion}"
+"{transicion_batch}"
 
 **CRÓNICA DE RADIO:**
 """
 
-    # 4. Generar el texto con Gemini
-    cronica_generada = generar_texto_con_gemini(prompt)
+        # 5. Generar el texto con Gemini
+        cronica_parcial = generar_texto_con_gemini(prompt)
+        
+        if cronica_parcial:
+            partes_cronica.append(cronica_parcial)
+        else:
+             print(f"      ⚠️ Fallo en generación de batch {i+1}. Usando fallback simple.")
+             fallback_text = f"{transicion_batch} " + " ".join([n.get('resumen', '') for n in batch])
+             partes_cronica.append(fallback_text)
 
-    # 5. Fallback por si la IA falla
-    if not cronica_generada:
-        print("      ⚠️ Fallo en la generación de crónica consolidada. Usando concatenación simple como fallback.")
-        resumenes_fallback = ' '.join([n.get('resumen', '') for n in noticias_ordenadas])
-        fuentes_fallback = ", ".join(fuentes_unicas)
-        return f"{transicion}. {resumenes_fallback}. Esta información proviene de {fuentes_fallback}."
-
-    # La IA ya debería incluir la transición, así que devolvemos el texto tal cual.
-    return cronica_generada
+    # 6. Unir todas las partes
+    cronica_total = "\n\n".join(partes_cronica)
+    
+    if not cronica_total:
+         return "" # No debería pasar gracias al fallback
+         
+    return cronica_total
 
 # (Función normalizar_voz_a_pico eliminada por falta de uso)
 
@@ -1415,6 +1425,31 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         noticia_hash = stable_text_hash(contenido)
                         texto_crudo = limpiar_html(contenido)
 
+                        # --- EXTRAER IMAGEN (Lógica restaurada) ---
+                        imagen_url = None
+                        # 1. Buscar en media_content (estándar RSS moderno/WordPress)
+                        if hasattr(entry, 'media_content') and entry.media_content:
+                            for media in entry.media_content:
+                                tipo = media.get('type', '')
+                                if 'image' in tipo or 'jpeg' in tipo or 'png' in tipo:
+                                    imagen_url = media.get('url')
+                                    break
+                        # 2. Buscar en links (enclosures)
+                        if not imagen_url and hasattr(entry, 'links'):
+                            for link in entry.links:
+                                if link.get('rel') == 'enclosure' and ('image' in link.get('type', '') or 'jpeg' in link.get('type', '')):
+                                    imagen_url = link.get('href')
+                                    break
+                        
+                        # 3. Buscar etiquetas <img> en el HTML del contenido (Fallback)
+                        if not imagen_url:
+                            try:
+                                soup = BeautifulSoup(contenido, 'html.parser')
+                                img_tag = soup.find('img')
+                                if img_tag and img_tag.get('src'):
+                                    imagen_url = img_tag.get('src')
+                            except Exception:
+                                pass # Si falla el parsing, ignoramos
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 
                             'texto': texto_crudo, 
@@ -1507,7 +1542,37 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 else:
                     print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
                     
-                    # === FASE 1: Entidades (solo si no es manual) ===
+                    # === FASE 0: ANÁLISIS MULTIMODAL (VISIÓN) ===
+                    if noticia.get('imagen_url'):
+                        print(f"      🖼️ Imagen detectada: {noticia['imagen_url']}")
+                        try:
+                            # Descargar imagen en memoria
+                            img_response = requests.get(noticia['imagen_url'], timeout=10)
+                            if img_response.status_code == 200:
+                                img_data = img_response.content
+                                
+                                prompt_vision = """
+                                Eres los ojos de un periodista. Analiza esta imagen (cartel, foto o gráfico) y extrae DATOS CLAVE que complementen el texto:
+                                1. FECHAS COMPLETAS Y PRECISAS:
+                                   - Busca explícitamente el AÑO.
+                                   - **VERIFICACIÓN DE NOTARIO:** Si lees "Sábado 17", COMPRUEBA si corresponde al mes que crees. (Ej: En 2026, el 17 de Enero es Sábado, pero el 17 de Febrero es Martes).
+                                   - Si el evento es una festividad conocida (San Antón, Navidad, San Juan...), **USA EL MES CORRECTO** (San Antón es SIEMPRE Enero). No alucines Febrero si es Enero.
+                                2. PRECIOS: ¿Hay coste? ¿Inscripción de X euros? ¿Es gratis?
+                                3. ORGANIZADOR REAL: Busca logos y nombres. ¿Es el Ayuntamiento de X? ¿Una Asociación? (Diferéncialo del medio que publica).
+                                4. UBICACIÓN EXACTA: Lugar del evento.
+                                5. DETALLES DE INTERÉS: Regalos, sorteos, requisitos.
+                                
+                                Resumen visual conciso enfocándote en la precisión de la fecha.
+                                """
+                                analisis_visual = generar_texto_multimodal_con_gemini(prompt_vision, image_data=img_data)
+                                
+                                if analisis_visual:
+                                    print(f"      👁️ Vision AI: {analisis_visual[:100]}...")
+                                    # Inyectar al texto crudo para que las fases siguientes lo vean
+                                    texto_crudo += f"\n\n[DATOS VISUALES DEL CARTEL/FOTO: {analisis_visual}]"
+                                    
+                        except Exception as e:
+                            print(f"      ⚠️ Error procesando imagen: {e}")
                     print("      -> Fase 1/3: Extrayendo entidades clave con IA...")
                     prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
                     respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
