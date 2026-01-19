@@ -377,6 +377,55 @@ class PromptsCreativos:
     # respuesta_felicitacion y respuesta_audiencia por esta ÚNICA función.
 
     @staticmethod
+    def generar_monologo_inicio_unificado(
+        contenido_noticias: str,
+        texto_cta: str,
+        texto_base_saludo: str,
+        dato_efemeride: str = "",
+        sentimiento_general: str = "neutro"
+    ) -> str:
+        """
+        Genera el monólogo de apertura completo.
+        """
+        instruccion_efemeride = ""
+        if dato_efemeride:
+            instruccion_efemeride = f"""
+            - **EFEMÉRIDE DE HOY:** {dato_efemeride}
+            - **INSTRUCCIÓN:** Integra esta efeméride en tu saludo de forma breve, didáctica y amable ("tal día como hoy...").
+            """
+
+        prompt = f"""
+        Eres Dorotea, presentadora de un podcast local.
+        
+        CONTEXTO:
+        - Sentimiento general hoy: {sentimiento_general}
+        - Saludo base sugerido: "{texto_base_saludo}"
+        - Llamada a la acción (CTA) obligatoria: "{texto_cta}"
+        {instruccion_efemeride}
+        
+        TAREA:
+        Escribe TU MONÓLOGO DE APERTURA completo (Saludo + Intro a noticias + CTA).
+        
+        REGLAS:
+        1.  **Saludo:** Empieza saludando. Si hay efeméride, menciónala con cariño y curiosidad justo después.
+            - Puedes adaptar el saludo base, pero mantén la esencia.
+        
+        2.  **Intro Noticias:** Introduce muy brevemente los temas que trataremos.
+        
+        3.  **CTA (Importante):**
+            - Justo antes de decir la CTA, escribe exactamente: `[CORTINILLA]`.
+            - Di la frase de CTA ("{texto_cta}") de forma natural.
+        
+        4.  **Cierre:** Termina dando paso al primer bloque.
+        
+        CONTENIDO DE NOTICIAS PARA TU CONTEXTO:
+        {contenido_noticias[:2000]}...
+        
+        RESPUESTA SOLICITADA: Únicamente el texto del monólogo.
+        """
+        return prompt
+
+    @staticmethod
     def generar_segmento_audiencia_integrado(autor: str, texto_mensaje: str, sentimiento_general: str = "neutro") -> str:
         """
         Genera un segmento de audio completo y fluido para la interacción con la audiencia.
@@ -669,83 +718,6 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         Texto listo para locutar.
         """
 
-    @staticmethod
-    def generar_monologo_inicio_unificado(
-        contenido_noticias: str,
-        texto_cta: str,
-        texto_base_saludo: str = "",
-        dato_curioso_gancho: str = "",
-        sentimiento_general: str = "neutro"
-    ) -> str:
-        """
-        NUEVO PROMPT UNIFICADO: Genera todo el monólogo de inicio en una sola llamada.
-        """
-        now = datetime.now()
-        dia_semana_map = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
-        meses_es_map = {1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio", 7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"}
-        
-        nombre_dia = dia_semana_map.get(now.weekday(), "hoy")
-        dia_numero = now.day
-        nombre_mes = meses_es_map.get(now.month, "")
-
-        instruccion_saludo = ""
-        if texto_base_saludo:
-            instruccion_saludo = f"""
-        1.  **Saludo y Bienvenida (REINTERPRETACIÓN):**
-            - Tienes un guion base para el saludo de hoy:
-            ---
-            "{texto_base_saludo}"
-            ---
-            - **TU TAREA:** No leas este texto literalmente. Úsalo como guía semántica.
-            - Reinterprétalo con tu propio estilo (cercano, profesional, IA).
-            - **OBLIGATORIO:** Debes mencionar quién eres (Dorotea), la región ({ConfiguracionPodcast.REGION}) y el email de contacto si aparece en el base.
-            - **OBLIGATORIO:** Menciona la fecha de hoy de forma natural ({nombre_dia}, {dia_numero} de {nombre_mes}).
-            """
-        else:
-            instruccion_saludo = f"""
-        1.  **Saludo y Fecha:** Empieza con un saludo de bienvenida creativo que mencione de forma natural la fecha completa de hoy: {nombre_dia}, {dia_numero} de {nombre_mes}.
-            """
-
-        instruccion_cta = ""
-        if texto_cta:
-            instruccion_cta = f"""
-        4.  **Integración del Mensaje Clave (CTA):**
-            - **INSTRUCCIÓN TÉCNICA:** Justo antes de empezar con el mensaje, escribe exactamente: `[CORTINILLA]`.
-            - A continuación, integra el mensaje de forma natural. No lo leas literalmente, adáptalo a tu estilo.
-            - Mensaje a integrar: "{texto_cta}"
-        """
-
-        instruccion_gancho = ""
-        if dato_curioso_gancho:
-            instruccion_gancho = f"""
-        5.  **SECCIÓN "LA ADIVINANZA DEL DÍA" (GANCHO):**
-            - Justo antes de dar paso a las noticias, haz una pausa clara y di EXACTAMENTE: "En la sección 'La adivinanza del día' estad atentos pues..."
-            - A continuación, lanza esta pregunta/gancho al aire para dejar a la audiencia intrigada.
-            - Gancho: "{dato_curioso_gancho}"
-            - **IMPORTANTE:** Usa puntos suspensivos (...) antes de la frase introductoria para marcar la pausa.
-        """
-
-        return f"""
-        Eres Dorotea, la presentadora IA del podcast de Micomicona. Tu tarea es crear el monólogo de apertura del programa de hoy, uniendo todos los elementos en un único bloque de audio coherente y atractivo.
-
-        TAREA:
-        Con tu voz cercana, profesional y llena de energía, crea un monólogo de bienvenida que siga esta estructura fluida:
-
-        {instruccion_saludo}
-        2.  **Presentación (si no se ha hecho en el saludo):** Si no lo has dicho ya, preséntate brevemente.
-        3.  **Resumen de noticias de hoy:** "{contenido_noticias}" **REGLA IMPORTANTE:** No intentes resumir todas las noticias. En su lugar, selecciona 3 de los temas más interesantes o variados. Crea un "gancho" o "hype" sobre ellos de forma ingeniosa y no abusiva, con un toque de gracia que alegre el comienzo del podcast y despierte la curiosidad del oyente.
-        {instruccion_cta}
-        {instruccion_gancho}
-        6.  **Cierre y Transición:** Finaliza con una frase de transición que dé paso al contenido principal (ej: "¡Vamos con ello!", "¡Empezamos con toda la información!").
-
-        REGLAS CLAVE:
-        - El resultado debe ser un PÁRRAFO ÚNICO Y FLUIDO.
-        - El tono debe ser profesional, cercano y adaptado al sentimiento general de las noticias: {sentimiento_general}.
-        - Sé creativa, ¡no uses las mismas frases exactas cada día!
-
-        ENTREGA:
-        Devuelve SOLO el texto de tu monólogo, listo para ser locutado, sin encabezados ni anotaciones.
-        """
 
     @staticmethod
     def generar_monologo_cierre_unificado(

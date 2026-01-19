@@ -41,7 +41,7 @@ from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
-from src.calendar_utils import obtener_festividades_contexto
+from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -1848,11 +1848,17 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         # 2. Generar MONÓLOGO UNIFICADO (Saludo reinterpretado + Sumario)
         print("      🧠 Generando monólogo de inicio unificado (reinterpretado)...")
+        
+        # NUEVO: Obtener efemérides de hoy para enriquecer el saludo
+        efemerides_hoy = obtener_efemerides_hoy()
+        if efemerides_hoy:
+             print(f"      🗓️ Efeméride detectada: {efemerides_hoy[:50]}...")
+             
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             contenido_noticias=contenido_completo_texto,
             texto_cta=cta_inicio_text,
             texto_base_saludo=saludo_base,
-            # dato_curioso_gancho=dato_curioso_gancho, # Reactivar si se usa
+            dato_efemeride=efemerides_hoy,
             sentimiento_general=sentimiento_general
         )
         
