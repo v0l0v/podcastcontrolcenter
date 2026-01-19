@@ -74,7 +74,7 @@ fecha: 19-01-2026
 autor: Raquel Molina
 texto: Un lunes más, enganchada a vuestro resumen semanal. Es la mejor forma de ponerse al día. ¡Gracias por vuestra dedicación!
 ---
-fecha: 20-11-2025
+fecha: 20-01-2026
 autor: Jorge Sáez
 texto: Empezamos la semana con fuerza gracias a vuestro programa. Ponéis sobre la mesa los temas que de verdad importan. ¡Seguid con esa línea!
 ---
