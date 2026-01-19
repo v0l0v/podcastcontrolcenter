@@ -454,11 +454,11 @@ def corregir_decimales_con_coma_tts(texto: str) -> str:
 
 def limpiar_artefactos_ia(texto: str) -> str:
     texto_limpio = re.sub(
-        r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica)[^)]*?\)\s*',
+        r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar)[^)]*?\)\s*',
         ' ', texto, flags=re.IGNORECASE
     )
     texto_limpio = re.sub(
-        r'\s*\[[^\]]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica)[^\]]*?\]\s*',
+        r'\s*\[[^\]]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar)[^\]]*?\]\s*',
         ' ', texto_limpio, flags=re.IGNORECASE
     )
     patron_sin_parentesis = r'\b(lee|leer|lei|leí|leído)\s+con\s+\w+\b'

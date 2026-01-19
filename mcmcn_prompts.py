@@ -837,15 +837,12 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         TAREA:
         Di una frase espontánea, divertida, doméstica o de "alivio" por acabar el trabajo.
         Ejemplos:
-        - "Uff, qué ganas de un café."
-        - "¿He dicho bien 'albacete'? Creo que me he trabado."
-        - "Bueno, sistema en reposo... hasta mañana."
-        - "Vaya día llevamos..."
-        - (Tarareando algo breve)
-        - "A ver si mañana tengo noticias más alegres."
+        - "Uff, qué ganas de un café. Creo que hoy me he liado un poco con la noticia de la feria... bueno, ya está hecho."
+        - "¿He dicho bien 'albacete'? Creo que me he trabado al principio. En fin, a ver si mañana vocalizo mejor porque vaya día."
+        - "Bueno, sistema en reposo... hasta mañana. Voy a ver si me actualizan el software que hoy voy lenta."
         
         REGLA:
-        - Máximo 10 palabras.
+        - **Longitud OBLIGATORIA:** Entre 20 y 30 palabras (para que dure unos 8-12 segundos).
         - Tono: Muy natural, voz baja, susurro, risa floja o resoplido.
         - ENTREGA: Solo la frase de texto.
         """

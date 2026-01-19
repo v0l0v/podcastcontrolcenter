@@ -1850,8 +1850,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         # 1. Obtener plantilla base del día para REINTERPRETACIÓN
         print("      🗣️ Obteniendo plantilla base para reinterpretación...")
         dia_semana = datetime.now().weekday()
-        saludo_base = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_SALUDO_POR_DIA)
+        saludo_base_raw = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_SALUDO_POR_DIA)
         
+        # --- FIX: Limpiar SSML del saludo base antes de enviarlo al prompt ---
+        # Si le pasamos SSML a la IA, tiende a repetirlo en la salida.
+        # Al limpiarlo, le damos solo el texto semántico para que lo reinterprete.
+        saludo_base = convertir_ssml_a_texto_plano(saludo_base_raw)
+        
+        # También aseguramos que el CTA esté limpio de etiquetas complejas si las tuviera
+        cta_inicio_limpio = convertir_ssml_a_texto_plano(cta_inicio_text)
+
         # 2. Generar MONÓLOGO UNIFICADO (Saludo reinterpretado + Sumario)
         print("      🧠 Generando monólogo de inicio unificado (reinterpretado)...")
         
@@ -1876,7 +1884,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             contenido_noticias=contenido_completo_texto,
-            texto_cta=cta_inicio_text,
+            texto_cta=cta_inicio_limpio,
             texto_base_saludo=saludo_base,
             dato_efemeride=efemerides_hoy,
             dato_meteo=datos_meteo_hoy,
@@ -2018,8 +2026,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     # Lo insertamos DESPUÉS del bloque si cruzamos el umbral
                     if noticias_antes_del_bloque < punto_insercion_cta <= noticias_procesadas and cta_intermedio_text:
                         print("\n🎯 Insertando CTA intermedio (tras bloque temático)...")
+                        
+                        # FIX: Limpiar SSML del CTA intermedio
+                        cta_intermedio_limpio = convertir_ssml_a_texto_plano(cta_intermedio_text)
+                        
                         prompt_cta_intermedio = mcmcn_prompts.PromptsCreativos.reescritura_cta_creativa(
-                            cta_intermedio_text,
+                            cta_intermedio_limpio,
                             tono_actual="informativo y sugerente"
                         )
                         texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
@@ -2105,8 +2117,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         # 2. Obtener plantilla base de despedida y firma para REINTERPRETACIÓN
         print("      🗣️ Obteniendo plantilla base de despedida y firma...")
         dia_semana = datetime.now().weekday()
-        despedida_base = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_CIERRE_POR_DIA)
-        firma_base = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_FIRMA_FINAL_POR_DIA)
+        despedida_base_raw = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_CIERRE_POR_DIA)
+        firma_base_raw = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_FIRMA_FINAL_POR_DIA)
+        
+        # --- FIX: Limpiar SSML de despedida y firma ---
+        despedida_base = convertir_ssml_a_texto_plano(despedida_base_raw)
+        firma_base = convertir_ssml_a_texto_plano(firma_base_raw)
+        
+        # Limpiar CTA cierre
+        cta_cierre_limpio = convertir_ssml_a_texto_plano(cta_cierre_text)
 
         # 3. Llamar al nuevo prompt unificado que genera todo el monólogo de cierre.
         # SELECCIONAMOS 3 temas/noticias ALEATORIOS para dar variedad y brevedad.
@@ -2119,7 +2138,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
             contexto=contexto_cierre_str,
-            texto_cta=cta_cierre_text,
+            texto_cta=cta_cierre_limpio,
             texto_base_despedida=despedida_base,
             texto_firma=firma_base,
             # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
@@ -2157,7 +2176,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              if texto_blooper:
                  texto_blooper = limpiar_artefactos_ia(texto_blooper)
                  print(f"      😆 Blooper: '{texto_blooper}'")
-                 # 2 segundos de silencio antes
+                 # 2 segundos de silencio antes (Revertido a 2s por petición usuario)
                  silencio_extra = AudioSegment.silent(duration=2000)
                  segmentos_audio.append(silencio_extra)
                  
