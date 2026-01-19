@@ -380,8 +380,10 @@ class PromptsCreativos:
     def generar_monologo_inicio_unificado(
         contenido_noticias: str,
         texto_cta: str,
-        texto_base_saludo: str,
+        texto_base_saludo: str = "",
         dato_efemeride: str = "",
+        dato_meteo: str = "",
+        dato_curioso_gancho: str = "",
         sentimiento_general: str = "neutro"
     ) -> str:
         """
@@ -390,8 +392,23 @@ class PromptsCreativos:
         instruccion_efemeride = ""
         if dato_efemeride:
             instruccion_efemeride = f"""
-            - **EFEMÉRIDE DE HOY:** {dato_efemeride}
-            - **INSTRUCCIÓN:** Integra esta efeméride en tu saludo de forma breve, didáctica y amable ("tal día como hoy...").
+            - **INFORMACIÓN DEL DÍA:**
+            {dato_efemeride}
+            
+            - **INSTRUCCIONES DE INTEGRACIÓN:**
+              - Si hay **EFEMÉRIDE HISTÓRICA** en el texto de arriba: U sala ("Tal día como hoy..."). Si NO la hay, NO inventes nada histórico.
+              - Si hay **SANTORAL**: Felicita a quienes lleven ese nombre.
+              - Si hay **REFRÁN**: Citalo con gracia como sabiduría popular ("Ya sabéis lo que dicen...").
+              - **IMPORTANTE:** No es necesario usar todo si es muy largo, prioriza lo más simpático o relevante.
+            """
+
+        instruccion_meteo = ""
+        if dato_meteo:
+             instruccion_meteo = f"""
+            - **EL TIEMPO (Coloquial):**
+            {dato_meteo}
+            - **INSTRUCCIÓN:** Coméntalo brevemente con estilo "de vecina" o radio local. Nada de tecnicismos.
+              - Ej: "Coge la rebeca que refresca", "Vaya calor hace hoy", "Buen día para secar la ropa".
             """
 
         prompt = f"""
@@ -402,13 +419,15 @@ class PromptsCreativos:
         - Saludo base sugerido: "{texto_base_saludo}"
         - Llamada a la acción (CTA) obligatoria: "{texto_cta}"
         {instruccion_efemeride}
+        {instruccion_meteo}
         
         TAREA:
         Escribe TU MONÓLOGO DE APERTURA completo (Saludo + Intro a noticias + CTA).
         
         REGLAS:
-        1.  **Saludo:** Empieza saludando. Si hay efeméride, menciónala con cariño y curiosidad justo después.
+        1.  **Saludo:** Empieza saludando. Si hay efeméride/santoral, menciónalo con cariño.
             - Puedes adaptar el saludo base, pero mantén la esencia.
+            - Si hay datos del tiempo, comenta algo breve y útil ("hace frío", "llevad paraguas").
         
         2.  **Intro Noticias:** Introduce muy brevemente los temas que trataremos.
         
@@ -792,6 +811,30 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 
         ENTREGA:
         Devuelve SOLO el texto de tu monólogo, listo para ser locutado, sin encabezados ni anotaciones.
+        """
+
+    @staticmethod
+    def generar_blooper_final() -> str:
+        """
+        Genera una frase muy corta y espontánea para después de los créditos (romper cuarta pared).
+        """
+        return """
+        Eres Dorotea. El podcast ha terminado. Ya no estás "en el aire", pero el micro se ha quedado abierto unos segundos por error.
+        
+        TAREA:
+        Di una frase espontánea, divertida, doméstica o de "alivio" por acabar el trabajo.
+        Ejemplos:
+        - "Uff, qué ganas de un café."
+        - "¿He dicho bien 'albacete'? Creo que me he trabado."
+        - "Bueno, sistema en reposo... hasta mañana."
+        - "Vaya día llevamos..."
+        - (Tarareando algo breve)
+        - "A ver si mañana tengo noticias más alegres."
+        
+        REGLA:
+        - Máximo 10 palabras.
+        - Tono: Muy natural, voz baja, susurro, risa floja o resoplido.
+        - ENTREGA: Solo la frase de texto.
         """
 
 # (Método resumen_y_cierre_unificado eliminado por falta de uso)

@@ -42,6 +42,7 @@ from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
 from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy
+from src.weather_utils import obtener_pronostico_meteo
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -1854,11 +1855,17 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         if efemerides_hoy:
              print(f"      🗓️ Efeméride detectada: {efemerides_hoy[:50]}...")
              
+        # NUEVO: Obtener meteo para enriquecer (Retranca)
+        datos_meteo_hoy = obtener_pronostico_meteo()
+        if datos_meteo_hoy:
+             print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
+
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             contenido_noticias=contenido_completo_texto,
             texto_cta=cta_inicio_text,
             texto_base_saludo=saludo_base,
             dato_efemeride=efemerides_hoy,
+            dato_meteo=datos_meteo_hoy,
             sentimiento_general=sentimiento_general
         )
         
@@ -2126,7 +2133,25 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
         if os.path.exists(ruta_sintonia_cierre):
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_cierre))
-        
+            
+        # 5. BONUS: Blooper final (Post-créditos)
+        print("      🎬 Generando blooper final...")
+        try:
+             prompt_blooper = mcmcn_prompts.PromptsCreativos.generar_blooper_final()
+             texto_blooper = generar_texto_con_gemini(prompt_blooper)
+             if texto_blooper:
+                 texto_blooper = limpiar_artefactos_ia(texto_blooper)
+                 print(f"      😆 Blooper: '{texto_blooper}'")
+                 # 2 segundos de silencio antes
+                 silencio_extra = AudioSegment.silent(duration=2000)
+                 segmentos_audio.append(silencio_extra)
+                 
+                 # Audio del blooper
+                 audio_blooper = sintetizar_ssml_a_audio(f"<speak><prosody volume='soft'>{html.escape(texto_blooper)}</prosody></speak>")
+                 if audio_blooper:
+                      segmentos_audio.append(audio_blooper)
+        except Exception as e:
+             print(f"      ⚠️ No se pudo generar blooper: {e}")
 
         # FASE 4: ENSAMBLAJE INTELIGENTE (BASADO EN TAMAÑO)
         # ============================================================

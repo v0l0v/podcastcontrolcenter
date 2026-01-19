@@ -3,6 +3,7 @@ import datetime
 import holidays
 import json
 import os
+import random
 from src.config.settings import CONFIG
 
 def obtener_festividades_contexto(anio: int = None) -> str:
@@ -109,6 +110,17 @@ def obtener_efemerides_hoy(fecha_dt: datetime.datetime = None) -> str:
             for prov, fiestas in provinciales.items():
                 if dia_mes in fiestas:
                     coincidencias.append(f"FIESTA EN {prov.upper()}: {fiestas[dia_mes]}")
+            
+            # 4. Buscar Santoral
+            if dia_mes in data.get('santoral_destacado', {}):
+                coincidencias.append(f"SANTORAL: {data['santoral_destacado'][dia_mes]}")
+
+            # 5. Refranero (Random del mes)
+            mes_str = fecha_dt.strftime("%m")
+            refranes = data.get('refranero_mensual', {}).get(mes_str, [])
+            if refranes:
+                refran = random.choice(refranes)
+                coincidencias.append(f"REFRÁN DEL MES ({mes_str}): {refran}")
                     
         except Exception as e:
             print(f"Error leyendo efemérides hoy: {e}")

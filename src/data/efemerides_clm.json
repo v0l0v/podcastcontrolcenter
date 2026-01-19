@@ -66,5 +66,102 @@
         "04-12": "1986: Toledo es declarada Ciudad Patrimonio de la Humanidad por la UNESCO.",
         "07-12": "1996: El Casco Antiguo de Cuenca es declarado Patrimonio de la Humanidad por la UNESCO.",
         "13-12": "1474: Isabel la Católica es proclamada reina de Castilla (evento con gran repercusión en la región)."
+    },
+    "santoral_destacado": {
+        "17-01": "San Antón (Patrón de los animales)",
+        "20-01": "San Sebastián",
+        "21-01": "Santa Inés",
+        "22-01": "San Vicente Mártir",
+        "24-01": "San Francisco de Sales",
+        "28-01": "Santo Tomás de Aquino",
+        "31-01": "San Juan Bosco",
+        "02-02": "La Candelaria",
+        "03-02": "San Blas (Abogado de los males de garganta)",
+        "05-02": "Santa Águeda",
+        "14-02": "San Valentín",
+        "19-03": "San José (Día del Padre)",
+        "23-04": "San Jorge",
+        "25-04": "San Marcos",
+        "15-05": "San Isidro Labrador (Patrón de los agricultores)",
+        "13-06": "San Antonio de Padua",
+        "24-06": "San Juan Bautista",
+        "29-06": "San Pedro y San Pablo",
+        "16-07": "Virgen del Carmen",
+        "25-07": "Santiago Apóstol",
+        "26-07": "Santa Ana y San Joaquín (Día de los abuelos)",
+        "10-08": "San Lorenzo",
+        "15-08": "La Asunción",
+        "29-09": "San Miguel Arcángel",
+        "04-10": "San Francisco de Asís",
+        "12-10": "Virgen del Pilar",
+        "15-10": "Santa Teresa de Jesús",
+        "01-11": "Todos los Santos",
+        "22-11": "Santa Cecilia (Patrona de la música)",
+        "04-12": "Santa Bárbara",
+        "06-12": "San Nicolás",
+        "13-12": "Santa Lucía",
+        "28-12": "Santos Inocentes"
+    },
+    "refranero_mensual": {
+        "01": [
+            "En enero, bufanda, capa y sombrero.",
+            "Enero helado, febrero aguado.",
+            "Por San Antón, la gallina pon."
+        ],
+        "02": [
+            "En febrero, el loco, ningún día se parece a otro.",
+            "Por San Blas, la cigüeña verás.",
+            "Febrero el corto, el peor de todos."
+        ],
+        "03": [
+            "Marzo ventoso y abril lluvioso hacen a mayo florido y hermoso.",
+            "En marzo, saca la cabeza el lagarto.",
+            "Sol de marzo, golpe de mazo."
+        ],
+        "04": [
+            "En abril, aguas mil.",
+            "Abril concluido, invierno ido.",
+            "El invierno no ha pasado hasta que abril no ha acabado."
+        ],
+        "05": [
+            "Hasta el cuarenta de mayo no te quites el sayo.",
+            "Mayo hortelano, mucha paja y poco grano.",
+            "Agua de mayo, pan para todo el año."
+        ],
+        "06": [
+            "Junio brillante, año abundante.",
+            "Por San Juan, brevas comerás.",
+            "Cielo de junio, limpio como ninguno."
+        ],
+        "07": [
+            "En julio, beber y sudar, y el fresco en balde buscar.",
+            "Por Santiago, el calor te agobia en el campo y en el lago.",
+            "Julio caliente, quema al más valiente."
+        ],
+        "08": [
+            "Agosto, frío en rostro.",
+            "Quien en agosto duerme, velará en septiembre.",
+            "En agosto, está el secreto de los doce meses completos."
+        ],
+        "09": [
+            "Septiembre, o seca las fuentes o se lleva los puentes.",
+            "Por San Mateo, tanto veo como no veo.",
+            "Septiembre es frutero, alegre y festero."
+        ],
+        "10": [
+            "En octubre, de la sombra huye.",
+            "Octubre vinatero, padre del buen cuero.",
+            "Por San Simón, cada mosca vale un doblón."
+        ],
+        "11": [
+            "Por San Andrés, el vino nuevo, añejo es.",
+            "A primeros de noviembre, tu fuego enciende.",
+            "Noviembre terminado, invierno empezado."
+        ],
+        "12": [
+            "En diciembre, no hay valiente que no tiemble.",
+            "Diciembre tiritando, buen enero y mejor año.",
+            "Nochebuena y Navidad, la brasa de la chimandad."
+        ]
     }
 }
