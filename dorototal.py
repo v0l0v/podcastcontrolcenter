@@ -1427,6 +1427,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                 texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
                                 print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
 
+                        # --- DEFINIR CONTEXTO BASE (Para uso en visión y texto final) ---
+                        texto_contexto = limpiar_html(contenido) + texto_externo
+
                         # --- NUEVO: Multimodalidad (Análisis de imágenes) ---
                         texto_imagen = ""
                         url_imagen = extract_image_url(contenido)
@@ -1435,7 +1438,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                              img_bytes = download_image_as_bytes(url_imagen)
                              if img_bytes:
                                   print("      👁️ Analizando imagen con Gemini Vision...")
-                                  prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_crudo[:500])
+                                  # USA texto_contexto AHORA QUE EXISTE
+                                  prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_contexto[:500])
                                   analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
                                   if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
                                        texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
@@ -1444,7 +1448,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                        print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
 
                         noticia_hash = stable_text_hash(contenido)
-                        texto_crudo = limpiar_html(contenido) + texto_externo + texto_imagen
+                        texto_crudo = texto_contexto + texto_imagen
 
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 
