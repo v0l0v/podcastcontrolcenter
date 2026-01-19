@@ -41,6 +41,7 @@ from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
+from src.calendar_utils import obtener_festividades_contexto
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -109,7 +110,8 @@ def resumir_noticia_con_google(texto: str, idioma_destino: str, fuente_original:
     prompt = mcmcn_prompts.PromptsAnalisis.resumen_noticia(
         texto=texto_con_contexto,
         idioma_destino=idioma_destino,
-        fuente_original=fuente_original
+        fuente_original=fuente_original,
+        contexto_calendario=obtener_festividades_contexto()
     )
     return generar_texto_con_gemini(prompt)
 
@@ -1557,12 +1559,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
                         prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
                     else:
-                        print("      -> Fase 2/3: Generando resumen enriquecido con IA.")
+                        print("      -> Fase 2/3: Generando resumen enriquecido con IA. (Incluye verificación de fechas)")
                         prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
                             texto=texto_crudo,
                             fuente_original=fuente_original,
                             entidades_clave=entidades_clave,
-                            idioma_destino=idioma_destino
+                            idioma_destino=idioma_destino,
+                            contexto_calendario=obtener_festividades_contexto()
                         )
                     
                     resumen = generar_texto_con_gemini(prompt_para_ia)

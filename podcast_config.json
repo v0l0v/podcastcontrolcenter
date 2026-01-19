@@ -23,6 +23,17 @@
         "ngram_n": 3,
         "feeds_file": "feeds_castillalamancha.txt"
     },
+    "festividades": {
+        "San Antón": "17-01",
+        "Reyes Magos": "06-01",
+        "San Isidro": "15-05",
+        "Virgen de Agosto": "15-08",
+        "Todos los Santos": "01-11",
+        "Navidad": "25-12",
+        "Nochevieja": "31-12",
+        "Año Nuevo": "01-01",
+        "Día de Castilla-La Mancha": "31-05"
+    },
     "pronunciation": {
         "correcciones": {
             "RECAMDER": "Recamder",

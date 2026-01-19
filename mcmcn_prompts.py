@@ -110,7 +110,8 @@ class PromptsAnalisis:
         texto: str,
         fuente_original: str,
         entidades_clave: List[str],
-        idioma_destino: str = "español"
+        idioma_destino: str = "español",
+        contexto_calendario: str = ""
     ) -> str:
         """
         Genera un guion de resumen periodístico con control estricto de duración y contenido.
@@ -135,6 +136,8 @@ Crear un guion de resumen optimizado para formato audio, respetando reglas estri
 
 {instruccion_entidades}
 {instruccion_fuente}
+
+{contexto_calendario}
 
 ### TEXTO ORIGINAL A RESUMIR
 ---
@@ -198,7 +201,7 @@ TEXTO ORIGINAL:
 ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
 
     @staticmethod
-    def resumen_noticia(texto: str, idioma_destino: str = "español", fuente_original: str = "") -> str:
+    def resumen_noticia(texto: str, idioma_destino: str = "español", fuente_original: str = "", contexto_calendario: str = "") -> str:
         """Genera un resumen periodístico conciso y atractivo"""
         
         instruccion_fuente = ""
@@ -219,6 +222,8 @@ ESPECIFICACIONES:
 - **PRECISIÓN OBLIGATORIA:** Si la noticia menciona nombres propios de personas, títulos de libros/obras o nombres de eventos específicos, DEBES INCLUIRLOS. No digas "un escritor presentó su novela", di "el escritor [Nombre] presentó su novela '[Título]'".
 - **CERO MARKDOWN:** No uses negritas (**texto**) ni ningún otro formato. Texto plano puro.
 {instruccion_fuente}
+
+{contexto_calendario}
 
 TEXTO ORIGINAL:
 ---
