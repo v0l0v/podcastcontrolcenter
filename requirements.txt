@@ -12,3 +12,5 @@ streamlit
 wordcloud
 matplotlib
 python-dotenv
+requests
+beautifulsoup4

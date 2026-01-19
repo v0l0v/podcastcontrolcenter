@@ -494,7 +494,7 @@ class PromptsCreativos:
         Recibe los resúmenes como una cadena de texto JSON.
         """
         return f"""
-        Eres un/a guionista de podcast experto/a en crear transiciones fluidas y atractivas.
+        Eres un/a guionista de podcast experto/a en crear transiciones fluidas y atractivas para un programa local de {ConfiguracionPodcast.REGION}.
         
         TAREA: Para un bloque de noticias sobre el tema "{tema}", genera una descripción y una transición.
         
@@ -506,6 +506,7 @@ class PromptsCreativos:
         INSTRUCCIONES:
         - `descripcion_tema`: Un texto breve que describa el tema del bloque (ej: "Iniciativas para fomentar el turismo rural.").
         - `transicion_elegante`: Una frase para introducir el bloque de forma natural (ej: "Y hablando de nuestro patrimonio, varias noticias se centran en...").
+        - **CONTEXTO GEOGRÁFICO:** El podcast se emite desde {ConfiguracionPodcast.REGION}. Puedes mencionar otras comunidades (como Andalucía o Extremadura) **SOLO SI** la noticia trata explícitamente sobre ellas o sobre un proyecto compartido. NUNCA uses frases como "nos vamos al campo andaluz" o "actualidad extremeña" para presentar el bloque general, salvo que TODAS las noticias sean de esa región. Si son noticias locales, asume que son de {ConfiguracionPodcast.REGION}.
         - Devuelve ÚNICAMENTE un objeto JSON válido con las claves "descripcion" y "transicion".
 
         FORMATO DE RESPUESTA (SOLO JSON):

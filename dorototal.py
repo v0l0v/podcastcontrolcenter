@@ -41,6 +41,7 @@ from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure
 from src.audio_processor import generar_episodio_especial
+from src.web_scraper import extract_first_external_link, fetch_article_text
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -1412,8 +1413,19 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         contenido = reparar_codificacion(contenido)
                         titulo_reparado = reparar_codificacion(entry.get('title', ''))
 
+                        # --- NUEVO: Intentar seguir encadenamiento de noticias (republicaciones) ---
+                        texto_externo = ""
+                        enlace_externo = extract_first_external_link(contenido)
+                        if enlace_externo:
+                            print(f"      🔗 Detectado enlace externo en noticia: {enlace_externo}")
+                            scraped_text = fetch_article_text(enlace_externo)
+                            if scraped_text:
+                                # Limitamos el texto extraído para no saturar el prompt (ej: 3000 chars)
+                                texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
+                                print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
+
                         noticia_hash = stable_text_hash(contenido)
-                        texto_crudo = limpiar_html(contenido)
+                        texto_crudo = limpiar_html(contenido) + texto_externo
 
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 
