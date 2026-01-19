@@ -14,3 +14,4 @@ matplotlib
 python-dotenv
 requests
 beautifulsoup4
+Pillow

@@ -83,3 +83,46 @@ def fetch_article_text(url, timeout=5):
     except Exception as e:
         print(f"      ⚠️  Failed to scrape {url}: {e}")
         return None
+
+def extract_image_url(html_content):
+    """
+    Extracts the first valid image URL from the HTML content.
+    Prioritizes images that look like actual content (not icons).
+    """
+    if not html_content:
+        return None
+        
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Try finding typical feed image structures
+    img = soup.find('img')
+    if img and img.get('src'):
+        src = img['src']
+        # Basic filter to avoid tiny tracking pixels or icons if possible
+        # (Though difficult without downloading context headers)
+        return src
+        
+    return None
+
+def download_image_as_bytes(url):
+    """
+    Downloads an image and returns the bytes.
+    """
+    if not url:
+        return None
+        
+    print(f"      🖼️  Downloading image: {url[:60]}...")
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        
+        # Verify it's actually an image
+        content_type = response.headers.get('Content-Type', '')
+        if 'image' not in content_type:
+             print(f"      ⚠️  URL is not an image (Content-Type: {content_type})")
+             return None
+             
+        return response.content
+    except Exception as e:
+        print(f"      ⚠️  Failed to download image: {e}")
+        return None

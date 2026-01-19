@@ -39,9 +39,8 @@ from src.core.text_processing import (
 )
 from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
-from src.llm_utils import generar_texto_con_gemini, retry_on_failure
-from src.audio_processor import generar_episodio_especial
-from src.web_scraper import extract_first_external_link, fetch_article_text
+from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
+from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -1424,8 +1423,24 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                 texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
                                 print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
 
+                        # --- NUEVO: Multimodalidad (Análisis de imágenes) ---
+                        texto_imagen = ""
+                        url_imagen = extract_image_url(contenido)
+                        if url_imagen:
+                             print(f"      🖼️ Detectada imagen en la noticia: {url_imagen[:60]}...")
+                             img_bytes = download_image_as_bytes(url_imagen)
+                             if img_bytes:
+                                  print("      👁️ Analizando imagen con Gemini Vision...")
+                                  prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_crudo[:500])
+                                  analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
+                                  if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
+                                       texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
+                                       print(f"      ✅ Datos visuales extraídos: {analisis_img[:100].replace(chr(10), ' ')}...")
+                                  else:
+                                       print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
+
                         noticia_hash = stable_text_hash(contenido)
-                        texto_crudo = limpiar_html(contenido) + texto_externo
+                        texto_crudo = limpiar_html(contenido) + texto_externo + texto_imagen
 
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 

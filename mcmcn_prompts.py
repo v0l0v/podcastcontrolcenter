@@ -333,6 +333,29 @@ TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes
         {texto}
         ---"""
 
+    @staticmethod
+    def analizar_imagen(texto_noticia_asociado: str) -> str:
+        """
+        Prompt para extraer información de carteles o imágenes adjuntas.
+        """
+        return f"""
+        Actúa como un asistente visual que extrae información de imágenes, carteles o flyers de eventos.
+        
+        CONTEXTO: Esta imagen acompaña a una noticia con el siguiente texto:
+        "{texto_noticia_asociado[:500]}..."
+
+        TAREA:
+        Analiza la IMAGEN y extrae cualquier dato relevante que COMPLEMENTE al texto, especialmente:
+        1. FECHAS concretas (Día, Mes, Año).
+        2. HORAS (Inicio, Fin).
+        3. LUGAR exacto (Calle, Edificio, Municipio).
+        4. PRECIOS o ENTRADAS.
+        5. ORGANIZADORES.
+        
+        Tu respuesta se añadirá al resumen de la noticia. No describas la imagen ("veo un cartel azul"), simplemente lista los DATOS FACTUALES encontrados.
+        Si la imagen no tiene texto legible o relevante, responde: "IMAGEN_SIN_DATOS".
+        """
+
 # =================================================================================
 # SECCIÓN 3: PROMPTS DE GENERACIÓN CREATIVA Y GUIONIZACIÓN
 # Instrucciones para la IA donde actúa como guionista, locutora o creativa.

@@ -94,3 +94,46 @@ def generar_texto_con_gemini(prompt: str) -> str:
         # Fallback para estructuras antiguas o errores de bloqueos
         print(f"❌ Error en generación Gemini: {e}")
         return ""
+
+@retry_on_failure(retries=3, delay=5, backoff=2)
+def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_type: str = "image/jpeg") -> str:
+    """
+    Genera texto a partir de una imagen y un prompt usando Gemini Pro Vision (o Flash).
+    """
+    if model is None:
+        print("❌ Error: Modelo no inicializado.")
+        return ""
+        
+    try:
+        from vertexai.generative_models import Part, Image
+
+        # Construir la parte de imagen
+        # Detectamos si estamos usando vertexai o google.generativeai (AI Studio)
+        # Por simplicidad, asumimos que 'model' ya está configurado.
+        
+        # En la versión unificada, intentamos pasar la lista [texto, imagen]
+        # Dependiendo del SDK, la imagen se pasa diferente.
+        
+        # CASO 1: SDK google.generativeai (AI Studio)
+        if 'google.generativeai' in sys.modules and hasattr(sys.modules['google.generativeai'], 'GenerativeModel'):
+             # En este SDK, a menudo se pasa PIL.Image o bytes envueltos
+             # Vamos a intentar pasar un objeto simple compatible
+             try:
+                 import PIL.Image
+                 import io
+                 img = PIL.Image.open(io.BytesIO(image_bytes))
+                 response = model.generate_content([prompt, img])
+                 return response.text.strip() if response and hasattr(response, 'text') else ""
+             except ImportError:
+                 print("⚠️ PIL no instalado, no se puede procesar imagen en AI Studio mode.")
+                 return ""
+
+        # CASO 2: SDK Vertex AI
+        else:
+            image_part = Part.from_data(data=image_bytes, mime_type=mime_type)
+            response = model.generate_content([prompt, image_part])
+            return response.text.strip() if response and hasattr(response, 'text') else ""
+
+    except Exception as e:
+        print(f"❌ Error en generación Multimodal Gemini: {e}")
+        return ""
