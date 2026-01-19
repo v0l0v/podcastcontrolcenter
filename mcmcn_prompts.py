@@ -383,6 +383,7 @@ class PromptsCreativos:
         texto_base_saludo: str = "",
         dato_efemeride: str = "",
         dato_meteo: str = "",
+        dato_deportes: str = "",
         dato_curioso_gancho: str = "",
         sentimiento_general: str = "neutro"
     ) -> str:
@@ -411,6 +412,16 @@ class PromptsCreativos:
               - Ej: "Coge la rebeca que refresca", "Vaya calor hace hoy", "Buen día para secar la ropa".
             """
 
+        instruccion_deportes = ""
+        if dato_deportes:
+             instruccion_deportes = f"""
+            - **DEPORTES (LA TERTULIA):**
+            {dato_deportes}
+            - **INSTRUCCIÓN:** Coméntalo con mucha pasión, como si fueras del Albacete (o del equipo mencionado) a muerte.
+              - Si ganaron: Celébralo.
+              - Si perdieron: Da ánimos ("A la próxima remontamos").
+            """
+
         prompt = f"""
         Eres Dorotea, presentadora de un podcast local.
         
@@ -420,6 +431,7 @@ class PromptsCreativos:
         - Llamada a la acción (CTA) obligatoria: "{texto_cta}"
         {instruccion_efemeride}
         {instruccion_meteo}
+        {instruccion_deportes}
         
         TAREA:
         Escribe TU MONÓLOGO DE APERTURA completo (Saludo + Intro a noticias + CTA).
@@ -428,6 +440,7 @@ class PromptsCreativos:
         1.  **Saludo:** Empieza saludando. Si hay efeméride/santoral, menciónalo con cariño.
             - Puedes adaptar el saludo base, pero mantén la esencia.
             - Si hay datos del tiempo, comenta algo breve y útil ("hace frío", "llevad paraguas").
+            - Si hay RESULTADOS DE FÚTBOL: ¡Menciónalos aquí! Es prioridad.
         
         2.  **Intro Noticias:** Introduce muy brevemente los temas que trataremos.
         

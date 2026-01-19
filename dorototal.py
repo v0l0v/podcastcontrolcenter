@@ -43,6 +43,7 @@ from src.web_scraper import extract_first_external_link, fetch_article_text, ext
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
 from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy
 from src.weather_utils import obtener_pronostico_meteo
+from src.sports_utils import obtener_resultados_futbol
 import mcmcn_prompts 
 
 # --- CONFIGURACIÓN Y CLIENTES ---
@@ -1860,12 +1861,22 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         if datos_meteo_hoy:
              print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
 
+        # NUEVO: Obtener deportes (Solo Lunes o si hay noticias relevantes)
+        # 0 = Lunes.
+        datos_deportes_hoy = ""
+        if dia_semana == 0: # Solo comprobar los lunes
+             print("      ⚽ Es lunes: Buscando resultados deportivos...")
+             datos_deportes_hoy = obtener_resultados_futbol()
+             if datos_deportes_hoy:
+                 print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
+        
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             contenido_noticias=contenido_completo_texto,
             texto_cta=cta_inicio_text,
             texto_base_saludo=saludo_base,
             dato_efemeride=efemerides_hoy,
             dato_meteo=datos_meteo_hoy,
+            dato_deportes=datos_deportes_hoy,
             sentimiento_general=sentimiento_general
         )
         
