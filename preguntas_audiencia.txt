@@ -70,9 +70,9 @@ fecha: 18-11-2025
 autor: Sergio Rubio
 texto: Me encanta cómo mezcláis la actualidad con las tradiciones. Vuestro podcast es cultura, es información, es pura Castilla-La Mancha.
 ---
-fecha: 19-11-2025
+fecha: 19-01-2026
 autor: Raquel Molina
-texto: Un domingo más, enganchada a vuestro resumen semanal. Es la mejor forma de ponerse al día. ¡Gracias por vuestra dedicación!
+texto: Un lunes más, enganchada a vuestro resumen semanal. Es la mejor forma de ponerse al día. ¡Gracias por vuestra dedicación!
 ---
 fecha: 20-11-2025
 autor: Jorge Sáez
