@@ -372,9 +372,16 @@ with st.sidebar:
                     )
                     
                     if process.returncode == 0:
-                        st.success("✅ Análisis completado. Ve al panel principal para editar.")
-                        time.sleep(1)
-                        st.rerun()
+                        # VERIFICACIÓN ADICIONAL: Comprobar si realmente se generó el archivo
+                        if os.path.exists("prevision_noticias_resumidas.json"):
+                            st.success("✅ Análisis completado. Ve al panel principal para editar.")
+                            time.sleep(1)
+                            st.rerun()
+                        else:
+                            # Caso: El script terminó bien (exit 0) pero no generó fichero (ej. 0 noticias encontradas)
+                            st.warning("⚠️ El proceso terminó, pero no se encontraron noticias nuevas o relevantes según los filtros actuales.")
+                            with st.expander("Ver detalles del análisis (Logs)"):
+                                st.code(process.stdout)
                     else:
                         st.error(f"Error analizando noticias:\n{process.stderr}")
                 except Exception as e:
