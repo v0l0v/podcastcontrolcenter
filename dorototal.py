@@ -194,19 +194,24 @@ def guardar_cache_noticias(cache_completo: Dict[str, Any]):
 def identificar_fuente_original(texto: str) -> str:
     print("      🔍 Identificando la fuente original con IA...")
     prompt = f"""
-    Analiza el siguiente texto de una publicación de redes sociales. Identifica si menciona un organismo, ayuntamiento o institución como la fuente original de la noticia. Si lo encuentras, devuelve solo el nombre del organismo. Si no lo encuentras, devuelve "Desconocida".
+    Analiza el siguiente texto. Tu misión es identificar quién es la FUENTE ORIGINAL de la información.
+
+    CONTEXTO:
+    Este texto ha sido publicado por un Grupo de Desarrollo Rural (el "reposter"). 
+    Buscamos saber si la noticia es PROPIA del grupo o si están citando a otra entidad (Ayuntamiento, Gobierno, Asociación, etc.).
+
+    INSTRUCCIONES:
+    1. Si el texto dice explícitamente "Compartimos noticia de...", "Según informa...", "Publicado por...", devuelve EL NOMBRE DE esa tercera entidad.
+    2. Si el contenido habla como "Nosotros", "Nuestro pueblo", "Desde el Grupo...", entonces la fuente es el propio emisor (devuelve "PROPIA").
+    3. Si no hay pistas claras, intenta inferir la institución responsable (ej: si habla de "El Ayuntamiento abre plazo...", la fuente es "Ayuntamiento").
+    4. Si es imposible determinarlo, devuelve "Desconocida".
 
     TEXTO:
     ---
     {texto}
     ---
 
-    EJEMPLOS DE RESPUESTA:
-    Ayuntamiento de Ontígola
-    Mancomunidad de La Sagra Baja
-    Desconocida
-
-    RESPUESTA:"""
+    RESPUESTA (Solo el nombre o "PROPIA" o "Desconocida"):"""
     respuesta = generar_texto_con_gemini(prompt)
     if respuesta and respuesta.strip() != "Desconocida":
         print(f"      ✅ Fuente original identificada: {respuesta.strip()}")
@@ -681,6 +686,29 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 
     # La IA ya debería incluir la transición, así que devolvemos el texto tal cual.
     return cronica_generada
+
+def extraer_nombre_de_url(url: str) -> str:
+    """Intenta extraer un nombre legible de la URL del feed o link."""
+    try:
+        if "facebook.com" in url:
+            # Intentar sacar el último segmento válida
+            parts = url.strip('/').split('/')
+            for part in reversed(parts):
+                if part and part not in ['facebook.com', 'www.facebook.com', 'groups', 'pages', 'profile.php']:
+                    # Limpiar ID si viene formato Name-123456
+                    if '-' in part and part.split('-')[-1].isdigit():
+                        return part.rsplit('-', 1)[0].replace('-', ' ').title()
+                    return part.replace('.', ' ').replace('-', ' ').title()
+        
+        # Fallback genérico para otros dominios
+        from urllib.parse import urlparse
+        domain = urlparse(url).netloc
+        if domain:
+             return domain.replace('www.', '').split('.')[0].title()
+             
+    except:
+        pass
+    return ""
 
 # (Función normalizar_voz_a_pico eliminada por falta de uso)
 
@@ -1404,6 +1432,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 try:
                     feed = feedparser.parse(url)
                     sitio = feed.feed.get('title', '').replace(" on Facebook", "").strip()
+                    if not sitio:
+                         link_feed = feed.feed.get('link', '') or url
+                         sitio = extraer_nombre_de_url(link_feed)
                     for entry in feed.entries:
                         fecha_pub = parsear_fecha_segura(entry)
                         if fecha_pub < limite_dias:
@@ -1581,10 +1612,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # ----------------------------------------------------------------
                 if resumen:
                     sitio_safe = noticia.get('sitio', '')
-                    if sitio_safe and fuente_original:
-                        fuente_final = f"{sitio_safe} ({fuente_original})"
-                    elif fuente_original:
-                        fuente_final = fuente_original
+                    
+                    if fuente_original and fuente_original != "PROPIA":
+                        if sitio_safe:
+                             fuente_final = f"{sitio_safe} (repost de {fuente_original})"
+                        else:
+                             fuente_final = fuente_original
                     else:
                         fuente_final = sitio_safe
                     audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}.mp3")
