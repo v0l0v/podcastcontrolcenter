@@ -693,7 +693,7 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
     
     texto_narracion = "" 
     
-    fuente = datos.get('fuente', 'Fuente desconocida')
+    fuente = datos.get('fuente', '')
     resumen = datos.get('resumen', '')
     es_breve = datos.get('es_breve', False)
     fecha_noticia = datos.get('fecha', 'Desconocida')
@@ -1403,7 +1403,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             for url in feeds_urls:
                 try:
                     feed = feedparser.parse(url)
-                    sitio = feed.feed.get('title', 'Fuente desconocida').replace(" on Facebook", "").strip()
+                    sitio = feed.feed.get('title', '').replace(" on Facebook", "").strip()
                     for entry in feed.entries:
                         fecha_pub = parsear_fecha_segura(entry)
                         if fecha_pub < limite_dias:
@@ -1580,8 +1580,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # PROCESAMIENTO COMÚN (Limpieza, Sentimiento, Audio)
                 # ----------------------------------------------------------------
                 if resumen:
-                    sitio_safe = noticia.get('sitio', 'Fuente desconocida')
-                    fuente_final = f"{sitio_safe} ({fuente_original})" if fuente_original else sitio_safe
+                    sitio_safe = noticia.get('sitio', '')
+                    if sitio_safe and fuente_original:
+                        fuente_final = f"{sitio_safe} ({fuente_original})"
+                    elif fuente_original:
+                        fuente_final = fuente_original
+                    else:
+                        fuente_final = sitio_safe
                     audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}.mp3")
                     
                     texto_limpio = limpiar_artefactos_ia(resumen)
@@ -1621,7 +1626,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     localidad_extraida = extraer_localidad_con_ia(texto_crudo)
 
                     # === GENERACIÓN DE AUDIO (TTS) ===
-                    sitio_print = noticia.get('sitio', 'Fuente desconocida')
+                    sitio_print = noticia.get('sitio', '')
                     print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
                     audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
 

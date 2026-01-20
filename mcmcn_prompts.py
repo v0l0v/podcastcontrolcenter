@@ -629,11 +629,11 @@ class PromptsCreativos:
 # (Método narracion_fluida_bloque_priorizada eliminado por falta de uso)
 
     @staticmethod
-    def narracion_profesional( # <-- Esta función ya estaba bien, no se modifica aquí.
+    def narracion_profesional(
         fuentes: str, 
         resumen: str, 
-        fecha_noticia_str: str, # <--- NUEVO PARÁMETRO
-        fecha_actual_str: str,  # <--- NUEVO PARÁMETRO
+        fecha_noticia_str: str,
+        fecha_actual_str: str,
         contexto_tematico: str = ""
     ) -> str:
         """Convierte un resumen en una narración de podcast profesional"""
@@ -642,6 +642,12 @@ class PromptsCreativos:
             instruccion_contexto = f"La noticia forma parte de un segmento sobre el tema: '{contexto_tematico}'. Asegúrate de que la narración encaje fluidamente en este contexto."
             
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast. Tu estilo es conversacional y cercano.")
+
+        # Lógica condicional para la fuente
+        if fuentes and fuentes.strip():
+             instruccion_fuente = f"""📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia ({fuentes}) de forma clara y agradable. Frases como "Según nos cuentan desde...", "Tal y como informa...", o "Leemos en...". La audiencia debe saber quién emite la información."""
+        else:
+             instruccion_fuente = "📻 **NO CITAR FUENTE:** No menciones ninguna fuente, ya que no se ha proporcionado. Narra la noticia directamente como un hecho confirmado, sin inventar atribuciones."
 
         return f"""{persona_base}
 
@@ -656,7 +662,7 @@ CONTEXTO TEMPORAL:
 ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión temporal es CRÍTICA. Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") si es relevante para el contexto. **NO utilices expresiones relativas como "hoy", "ayer" o "mañana"**. **NO intentes adivinar el día de la semana** (ej: no digas "el lunes 15", di solo "el 15"). La "fecha de hoy" es solo para tu referencia contextual.
 📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
 📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
-📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia de forma clara y agradable. Frases como "Según nos cuentan desde el Ayuntamiento de...", "Tal y como informa la asociación...", o "Leemos en...". La audiencia debe saber quién emite la información.
+{instruccion_fuente}
 {instruccion_contexto}
 
 ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO. Prohibido usar asteriscos (**), guiones bajos (_) o cualquier formato markdown. Si hay nombres propios o títulos, RESPÉTALOS.
