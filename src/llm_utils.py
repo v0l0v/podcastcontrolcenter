@@ -137,3 +137,32 @@ def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_ty
     except Exception as e:
         print(f"❌ Error en generación Multimodal Gemini: {e}")
         return ""
+
+@retry_on_failure(retries=3, delay=5, backoff=2)
+def generar_texto_multimodal_audio_con_gemini(prompt: str, audio_bytes: bytes, mime_type: str = "audio/mp3") -> str:
+    """
+    Genera texto a partir de un audio y un prompt usando Gemini Pro Vision / Flash.
+    """
+    if model is None:
+        print("❌ Error: Modelo no inicializado.")
+        return ""
+        
+    try:
+        from vertexai.generative_models import Part
+        
+        # CASO 1: SDK google.generativeai (AI Studio)
+        if 'google.generativeai' in sys.modules and hasattr(sys.modules['google.generativeai'], 'GenerativeModel'):
+             # AI Studio acepta diccionarios con 'mime_type' y 'data'
+             blob = {'mime_type': mime_type, 'data': audio_bytes}
+             response = model.generate_content([prompt, blob])
+             return response.text.strip() if response and hasattr(response, 'text') else ""
+
+        # CASO 2: SDK Vertex AI
+        else:
+            audio_part = Part.from_data(data=audio_bytes, mime_type=mime_type)
+            response = model.generate_content([prompt, audio_part])
+            return response.text.strip() if response and hasattr(response, 'text') else ""
+
+    except Exception as e:
+        print(f"❌ Error en generación Multimodal Audio Gemini: {e}")
+        return ""

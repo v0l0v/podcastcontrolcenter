@@ -40,7 +40,7 @@ from src.core.text_processing import (
 from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
-from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini
+from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini, generar_texto_multimodal_audio_con_gemini
 from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy
 from src.weather_utils import obtener_pronostico_meteo
 from src.sports_utils import obtener_resultados_futbol
@@ -2100,6 +2100,103 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 print("      ⚠️ No se pudo generar el segmento de la audiencia.")
         else:
             print("  -> No hay mensaje de la audiencia programado para hoy.")
+
+
+        # --- FASE 2.6: Audio Programado (Mirra/Colaboradores) ---
+        print("\n--- FASE 2.6: Buscando audios programados por fecha ---")
+        fecha_prefijo = datetime.now().strftime("%Y%m%d") + "_"
+        dir_programados = os.path.join(AUDIO_ASSETS_DIR, "programados")
+        
+        # Buscar archivo que empiece por el prefijo
+        archivo_programado = None
+        if os.path.exists(dir_programados):
+            for f in os.listdir(dir_programados):
+                # Soporte para MP3, WAV y OGG
+                if f.startswith(fecha_prefijo) and f.lower().endswith((".mp3", ".wav", ".ogg")):
+                    archivo_programado = os.path.join(dir_programados, f)
+                    print(f"  🎙️  Audio programado encontrado: {f}")
+                    break
+        else:
+             # Crear directorio si no existe para facilitar uso futuro
+             os.makedirs(dir_programados, exist_ok=True)
+
+        if archivo_programado:
+             try:
+                 with open(archivo_programado, "rb") as f_audio:
+                     audio_bytes = f_audio.read()
+                 
+                 # Determinar mimetype según extensión
+                 ext = os.path.splitext(archivo_programado)[1].lower()
+                 mime_type = "audio/mp3" # default
+                 if ext == ".wav": mime_type = "audio/wav"
+                 elif ext == ".ogg": mime_type = "audio/ogg"
+                 
+                 print(f"  -> Generando intro y respuesta para el audio programado ({mime_type}) con Gemini...")
+                 prompt_audio_prog = """
+                 Escucha este audio que se va a emitir en el podcast. 
+                 Genera dos textos breves para la presentadora, Dorotea. 
+                 
+                 1) INTRO: Una frase para dar paso al audio sin revelar todo el contenido, solo creando expectación (max 20 palabras).
+                 2) OUTRO: Una respuesta ingeniosa, empática o comentario sobre lo escuchado (max 30 palabras).
+                 
+                 Responde EXCLUSIVAMENTE en formato JSON: 
+                 { "intro": "...", "outro": "..." }
+                 """
+                 
+                 resp_audio_prog = generar_texto_multimodal_audio_con_gemini(prompt_audio_prog, audio_bytes, mime_type=mime_type)
+                 
+                 intro_txt = ""
+                 outro_txt = ""
+                 
+                 if resp_audio_prog:
+                     # Limpiar JSON
+                     json_limpio = resp_audio_prog
+                     if "```" in json_limpio:
+                          start = json_limpio.find('{')
+                          end = json_limpio.rfind('}')
+                          if start != -1 and end != -1:
+                               json_limpio = json_limpio[start:end+1]
+                     
+                     try:
+                         data_prog = json.loads(json_limpio)
+                         intro_txt = data_prog.get("intro", "")
+                         outro_txt = data_prog.get("outro", "")
+                     except:
+                         print("      ⚠️ Error parseando JSON de audio programado.")
+                 
+                 # Si falla la IA, usamos genéricos
+                 if not intro_txt: intro_txt = "Y ahora, escuchemos este audio que nos han enviado."
+                 if not outro_txt: outro_txt = "Interesante aporte. ¡Gracias por compartirlo!"
+
+                 # Generar Audios
+                 print(f"      ✅ Intro generada: {intro_txt}")
+                 print(f"      ✅ Consigna generada: {outro_txt}")
+                 
+                 transcript_data.append({'type': 'scheduled_audio_intro', 'content': intro_txt})
+                 
+                 audio_intro_prog = sintetizar_ssml_a_audio(f"<speak>{html.escape(intro_txt)}</speak>")
+                 audio_file_prog = AudioSegment.from_file(archivo_programado)
+                 audio_outro_prog = sintetizar_ssml_a_audio(f"<speak>{html.escape(outro_txt)}</speak>")
+                 
+                 if audio_intro_prog and audio_file_prog and audio_outro_prog:
+                      # Insertar: Transición -> Intro -> Audio -> Outro -> Transición
+                      segmentos_audio.append(agregar_transicion())
+                      segmentos_audio.append(audio_intro_prog)
+                      segmentos_audio.append(audio_file_prog)
+                      
+                      transcript_data.append({'type': 'scheduled_audio_content', 'content': '[Audio Programado Reproducido]'})
+                      
+                      segmentos_audio.append(audio_outro_prog)
+                      transcript_data.append({'type': 'scheduled_audio_outro', 'content': outro_txt})
+                      
+                      segmentos_audio.append(agregar_transicion())
+                      print("      ✅ Bloque de audio programado insertado correctamente.")
+
+             except Exception as e:
+                 print(f"      ❌ Error procesando audio programado: {e}")
+
+        else:
+             print("  -> No se encontraron audios programados para hoy.")
 
 
         print("\n--- FASE 3: Generando cierre del podcast ---")
