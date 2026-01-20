@@ -2265,24 +2265,27 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         if os.path.exists(ruta_sintonia_cierre):
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_cierre))
             
-        # 5. BONUS: Blooper final (Post-créditos)
-        print("      🎬 Generando blooper final...")
+        # 5. BONUS: Comentario Post-Créditos (Engage)
+        print("      🎬 Generando comentario post-créditos (engage)...")
         try:
-             prompt_blooper = mcmcn_prompts.PromptsCreativos.generar_blooper_final()
-             texto_blooper = generar_texto_con_gemini(prompt_blooper)
-             if texto_blooper:
-                 texto_blooper = limpiar_artefactos_ia(texto_blooper)
-                 print(f"      😆 Blooper: '{texto_blooper}'")
-                 # 2 segundos de silencio antes (Revertido a 2s por petición usuario)
+             # Usamos el contexto de cierre para que comente sobre algo real
+             prompt_comentario = mcmcn_prompts.PromptsCreativos.generar_comentario_post_creditos(contexto_cierre_str)
+             texto_comentario = generar_texto_con_gemini(prompt_comentario)
+             
+             if texto_comentario:
+                 texto_comentario = limpiar_artefactos_ia(texto_comentario)
+                 print(f"      😉 Comentario post-créditos: '{texto_comentario}'")
+                 
+                 # 2 segundos de silencio antes
                  silencio_extra = AudioSegment.silent(duration=2000)
                  segmentos_audio.append(silencio_extra)
                  
-                 # Audio del blooper
-                 audio_blooper = sintetizar_ssml_a_audio(f"<speak><prosody volume='soft'>{html.escape(texto_blooper)}</prosody></speak>")
-                 if audio_blooper:
-                      segmentos_audio.append(audio_blooper)
+                 # Audio del comentario (volumen suave)
+                 audio_comentario = sintetizar_ssml_a_audio(f"<speak><prosody volume='soft'>{html.escape(texto_comentario)}</prosody></speak>")
+                 if audio_comentario:
+                      segmentos_audio.append(audio_comentario)
         except Exception as e:
-             print(f"      ⚠️ No se pudo generar blooper: {e}")
+             print(f"      ⚠️ No se pudo generar comentario post-créditos: {e}")
 
         # FASE 4: ENSAMBLAJE INTELIGENTE (BASADO EN TAMAÑO)
         # ============================================================

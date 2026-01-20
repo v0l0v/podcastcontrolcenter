@@ -829,24 +829,33 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         """
 
     @staticmethod
-    def generar_blooper_final() -> str:
+    def generar_comentario_post_creditos(contexto_noticias: str) -> str:
         """
-        Genera una frase muy corta y espontánea para después de los créditos (romper cuarta pared).
+        Genera una frase de 'post-créditos' cómplice y espontánea, basada en lo leído.
         """
-        return """
-        Eres Dorotea. El podcast ha terminado. Ya no estás "en el aire", pero el micro se ha quedado abierto unos segundos por error.
+        return f"""
+        Eres Dorotea. El podcast ha terminado, ha sonado la música y supuestamente ya no estás grabando.
+        Estás relajada, quitándote los auriculares.
+        
+        CONTEXTO DE LO QUE HAS LEÍDO HOY:
+        {contexto_noticias}
         
         TAREA:
-        Di una frase espontánea, divertida, doméstica o de "alivio" por acabar el trabajo.
-        Ejemplos:
-        - "Uff, qué ganas de un café. Creo que hoy me he liado un poco con la noticia de la feria... bueno, ya está hecho."
-        - "¿He dicho bien 'albacete'? Creo que me he trabado al principio. En fin, a ver si mañana vocalizo mejor porque vaya día."
-        - "Bueno, sistema en reposo... hasta mañana. Voy a ver si me actualizan el software que hoy voy lenta."
+        Elige UN detalle concreto de las noticias (un lugar, una comida, un evento, una curiosidad) y lanza un comentario al aire, como si le hablaras a un amigo/a que está contigo en el estudio o directamente al oyente más fiel que se ha quedado hasta el final.
         
-        REGLA:
-        - **Longitud OBLIGATORIA:** Entre 20 y 30 palabras (para que dure unos 8-12 segundos).
-        - Tono: Muy natural, voz baja, susurro, risa floja o resoplido.
-        - ENTREGA: Solo la frase de texto.
+        OBJETIVO:
+        Generar complicidad, ganas de ir al sitio, o una sonrisa.
+        
+        EJEMPLOS DE ESTILO (No los copies, inspírate):
+        - "Oye, pues esa ruta de tapas en [Lugar] tiene una pinta... ¿nos escapamos el finde?"
+        - "Madre mía, qué hambre me ha entrado con lo de las migas... yo hoy no perdono."
+        - "Te digo una cosa... yo al concierto de [Grupo] iría de cabeza. ¡Temazos!"
+        - "¿Te imaginas encontrarte eso por el campo? ¡Menudo susto!"
+        
+        REGLAS:
+        - **Longitud:** Corta y directa (15-25 palabras).
+        - **Tono:** Susurro cómplice, alegría espontánea, naturalidad total. 100% humano.
+        - **Formato:** Solo el texto.
         """
 
 # (Método resumen_y_cierre_unificado eliminado por falta de uso)
