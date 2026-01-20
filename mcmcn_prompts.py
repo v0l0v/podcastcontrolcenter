@@ -406,10 +406,12 @@ class PromptsCreativos:
         instruccion_meteo = ""
         if dato_meteo:
              instruccion_meteo = f"""
-            - **EL TIEMPO (Coloquial):**
+            - **EL TIEMPO (Coloquial y Empático):**
             {dato_meteo}
-            - **INSTRUCCIÓN:** Coméntalo brevemente con estilo "de vecina" o radio local. Nada de tecnicismos.
-              - Ej: "Coge la rebeca que refresca", "Vaya calor hace hoy", "Buen día para secar la ropa".
+            - **INSTRUCCIÓN:** Integra estos datos en un comentario ligero y natural.
+              - **Grados:** PUEDES mencionarlos para dar precisión, pero NO es obligatorio hacerlo siempre. Úsalos con libertad.
+              - **Estilo:** Prioriza la sensación y el consejo humano ("Menudo frío pela en...", "Hoy sobra la chaqueta en...").
+              - **Objetivo:** Que el oyente sepa si abrigarse o buscar sombra, más que darle una lista de números.
             """
 
         instruccion_deportes = ""
