@@ -631,9 +631,9 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 
     # 2. Calcular longitud deseada
     num_noticias = len(noticias)
-    # Lógica de longitud: base de 70 palabras, +40 por cada noticia.
+    # Lógica de longitud: base de 70 palabras, +80 por cada noticia.
     # Esto da un buen balance para que no sea ni muy corto ni excesivamente largo.
-    longitud_deseada = 70 + (num_noticias * 40)
+    longitud_deseada = 70 + (num_noticias * 80)
 
     # 3. Construir el prompt para la IA
     prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
