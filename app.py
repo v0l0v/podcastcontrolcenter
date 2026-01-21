@@ -512,9 +512,9 @@ with st.sidebar:
 # Pestañas principales
 # Pestañas principales
 # Pestañas principales
-tab_rev, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab_ctas = st.tabs(["📝 Revisión", "⚙️ Configuración General", "🎛️ Audio y Voz", "🗣️ Pronunciación", "📝 Prompts", "📰 Lógica de Noticias", "📚 Historial de Podcasts", "📊 Fuentes", "📢 CTAs"])
+tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs"])
 
-with tab_rev:
+with tab_editor:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
     # --- ZONA PRINCIPAL DE EDICIÓN (VISUALIZACIÓN) ---
     # Si hay noticias para revisar, mostramos el editor AQUI
@@ -575,7 +575,7 @@ with tab_rev:
     else:
         st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
 
-with tab1:
+with tab_config:
     st.markdown('<div class="sub-header">Identidad de Podcast</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -659,8 +659,8 @@ with tab1:
         time.sleep(0.5)
         st.rerun()
 
-with tab2:
-    st.markdown('<div class="sub-header">Ajustes de Audio</div>', unsafe_allow_html=True)
+with tab_audio:
+    st.markdown('<div class="sub-header">Audio y Estilo</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
@@ -733,7 +733,7 @@ with tab2:
         time.sleep(0.5)
         st.rerun()
 
-with tab3:
+    st.markdown("---")
     st.markdown('<div class="sub-header">Diccionario de Pronunciación</div>', unsafe_allow_html=True)
     st.markdown("Define cómo debe leer la IA ciertas palabras o siglas.")
     
@@ -746,7 +746,7 @@ with tab3:
         # Editor tipo tabla (simple)
         new_correcciones_str = st.text_area(
             "Formato: ORIGINAL : CORRECCIÓN (una por línea)",
-            value="\n".join([f"{k} : {v}" for k, v in correcciones.items()]),
+            value="\\n".join([f"{k} : {v}" for k, v in correcciones.items()]),
             height=300
         )
         
@@ -756,7 +756,7 @@ with tab3:
         
         new_siglas_str = st.text_area(
             "Formato: SIGLA : DELETREO (una por línea)",
-            value="\n".join([f"{k} : {v}" for k, v in siglas.items()]),
+            value="\\n".join([f"{k} : {v}" for k, v in siglas.items()]),
             height=300
         )
 
@@ -764,7 +764,7 @@ with tab3:
         # Procesar texto a diccionario
         def parse_dict_text(text):
             new_dict = {}
-            for line in text.split('\n'):
+            for line in text.split('\\n'):
                 if ':' in line:
                     key, val = line.split(':', 1)
                     new_dict[key.strip()] = val.strip()
@@ -777,8 +777,8 @@ with tab3:
         time.sleep(0.5)
         st.rerun()
 
-with tab4:
-    st.markdown('<div class="sub-header">Editor de Personalidad y Prompts</div>', unsafe_allow_html=True)
+with tab_prompts:
+    st.markdown('<div class="sub-header">Personalidad y Prompts</div>', unsafe_allow_html=True)
     st.info("Aquí defines CÓMO habla Dorotea. Usa `{presentadora}`, `{region}`, `{email}`, `{email_alias}` y `{pausa}` como variables en los textos.")
     
     prompts_cfg = config.get('prompts', {})
@@ -849,10 +849,7 @@ with tab4:
         time.sleep(0.5)
         st.rerun()
 
-
-
-# Pestaña 5: Lógica de Noticias (Ahora centrada en Prompts)
-with tab5:
+    st.markdown("---")
     st.markdown('<div class="sub-header">Cerebro (Prompts de Análisis)</div>', unsafe_allow_html=True)
     st.info("Define las reglas para que la IA entienda, clasifique y agrupe las noticias.")
 
@@ -882,8 +879,8 @@ with tab5:
         time.sleep(0.5)
         st.rerun()
 
-with tab6:
-    st.markdown('<div class="sub-header">Historial de Podcasts</div>', unsafe_allow_html=True)
+with tab_library:
+    st.markdown('<div class="sub-header">Mediateca</div>', unsafe_allow_html=True)
     
     st.info("Aquí podrás consultar, descargar y gestionar los episodios anteriores.")
 
@@ -1036,8 +1033,8 @@ with tab6:
     except Exception as e:
         st.error(f"Error leyendo especiales: {e}")
 
-with tab7:
-    st.markdown('<div class="sub-header">Informe de Actividad de Fuentes</div>', unsafe_allow_html=True)
+with tab_sources:
+    st.markdown('<div class="sub-header">Monitor de Fuentes</div>', unsafe_allow_html=True)
     st.markdown("Monitoriza la salud de tus fuentes RSS con métricas de actividad en tiempo real.")
     
     
