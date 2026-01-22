@@ -115,25 +115,29 @@ def obtener_pronostico_meteo(lat=None, lon=None) -> str:
     ganador_min = random.choice(candidatos_min)
 
     # Descripciones
-    desc_max = obtener_descripcion_temp(ganador_max['t_max'])
-    desc_min = obtener_descripcion_temp(ganador_min['t_min'])
+    # desc_max = obtener_descripcion_temp(ganador_max['t_max']) # Removed
+    # desc_min = obtener_descripcion_temp(ganador_min['t_min']) # Removed
 
-    # Sensacion general (Promedio de máximas)
+    # Sensacion general (Promedio)
     promedio_max = sum(r['t_max'] for r in resultados) / len(resultados)
-    desc_general = obtener_descripcion_temp(promedio_max)
+    promedio_min = sum(r['t_min'] for r in resultados) / len(resultados)
+    
+    media_total = (promedio_max + promedio_min) / 2
+    
+    desc_general = obtener_descripcion_temp(media_total)
 
     # Lluvia general
     lluvia_general = any(r['lluvia_prob'] > 60 for r in resultados)
     t_lluvia = "se esperan lluvias" if lluvia_general else "cielos mayormente despejados"
 
     # Construir string informativo para la IA
-    # Se proporcionan datos exactos Y cualitativos para que la IA elija cómo contarlo.
+    # Se proporcionan datos GENERALES para evitar que la IA diga "en Hellín hace X".
     
     resumen = (
-        f"DATOS METEOROLÓGICOS (CASTILLA-LA MANCHA): \n"
-        f"- Sensación General: {desc_general}, cielos {t_lluvia}. \n"
-        f"- MÁXIMA Regional: {ganador_max['nombre']} ({ganador_max['provincia']}) alcanza los {ganador_max['t_max']}°C ({desc_max}). \n"
-        f"- MÍNIMA Regional: {ganador_min['nombre']} ({ganador_min['provincia']}) baja a {ganador_min['t_min']}°C ({desc_min})."
+        f"DATOS METEOROLÓGICOS REGIONALES (media): \n"
+        f"- Sensación Térmica General: {desc_general}. \n"
+        f"- Estado del cielo: {t_lluvia}. \n"
+        f"- Temperatura Media Regional: {media_total:.1f}°C."
     )
 
     return resumen

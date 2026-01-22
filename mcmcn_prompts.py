@@ -399,19 +399,17 @@ class PromptsCreativos:
             - **INSTRUCCIONES DE INTEGRACIÓN:**
               - Si hay **EFEMÉRIDE HISTÓRICA** en el texto de arriba: U sala ("Tal día como hoy..."). Si NO la hay, NO inventes nada histórico.
               - Si hay **SANTORAL**: Felicita a quienes lleven ese nombre.
-              - Si hay **REFRÁN**: Citalo con gracia como sabiduría popular ("Ya sabéis lo que dicen...").
-              - **IMPORTANTE:** No es necesario usar todo si es muy largo, prioriza lo más simpático o relevante.
+              - **REFRANES:** Úsalos SOLO MUY DE VEZ EN CUANDO si encaja perfecto. No queremos ser repetitivos. Si dudas, MEJOR NO USAR REFRÁN.
             """
 
         instruccion_meteo = ""
         if dato_meteo:
              instruccion_meteo = f"""
-            - **EL TIEMPO (Coloquial y Empático):**
+            - **EL TIEMPO (Breve y Humano):**
             {dato_meteo}
-            - **INSTRUCCIÓN:** Integra estos datos en un comentario ligero y natural.
-              - **Grados:** PUEDES mencionarlos para dar precisión, pero NO es obligatorio hacerlo siempre. Úsalos con libertad.
-              - **Estilo:** Prioriza la sensación y el consejo humano ("Menudo frío pela en...", "Hoy sobra la chaqueta en...").
-              - **Objetivo:** Que el oyente sepa si abrigarse o buscar sombra, más que darle una lista de números.
+            - **INSTRUCCIÓN:** Haz un comentario MUY BREVE sobre la sensación térmica media.
+              - **PROHIBIDO:** NO digas grados exactos ("25 grados") ni nombres poblaciones.
+              - **Estilo:** Solo comenta si hace frío, calor o está agradable ("hoy toca abrigarse", "día primaveral", etc.).
             """
 
         instruccion_deportes = ""
