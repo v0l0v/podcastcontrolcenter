@@ -1556,6 +1556,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     texto_crudo = preprocesar_texto_para_fechas(texto_origen)
                     es_noticia_breve = len(texto_crudo) < 150
                     fuente_original = identificar_fuente_original(texto_origen)
+                    # FIX: Si es propia, usar el nombre del sitio (feed) en su lugar para evitar "Desde PROPIA..."
+                    if fuente_original == "PROPIA":
+                        fuente_original = noticia.get('sitio', '') or "la organización"
                 else:
                     texto_crudo = ""
                     es_noticia_breve = noticia.get('es_breve', False)

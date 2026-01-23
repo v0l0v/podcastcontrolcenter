@@ -117,8 +117,12 @@ class PromptsAnalisis:
         Genera un guion de resumen periodístico con control estricto de duración y contenido.
         """
         instruccion_fuente = ""
+        instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- OBLIGATORIO: Menciona explícitamente en el guion que la noticia proviene de '{fuente_original}'. Usa fórmulas variadas como 'nos informan desde...', 'según...', 'en... han comunicado'."
+            if "PROPIA" in fuente_original.upper():
+                instruccion_fuente = "- OBLIGATORIO: Narra la noticia directamente o atribúyela a 'la organización', 'el grupo' o 'esta entidad'. PROHIBIDO decir 'desde PROPIA' o usar la palabra 'PROPIA' como nombre propio."
+            else:
+                instruccion_fuente = f"- OBLIGATORIO: Menciona explícitamente en el guion que la noticia proviene de '{fuente_original}'. Usa fórmulas variadas como 'nos informan desde...', 'según...', 'en... han comunicado'."
 
         instruccion_entidades = ""
         if entidades_clave:
@@ -178,8 +182,12 @@ TEXTO A ANALIZAR:
         """Genera una mención muy breve, ideal para anuncios o datos simples."""
         
         instruccion_fuente = ""
+        instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- Menciona de forma natural que la información proviene de '{fuente_original}'."
+            if "PROPIA" in fuente_original.upper():
+                instruccion_fuente = "- Puedes atribuir la información a 'la organización' o 'el grupo', pero NUNCA digas 'PROPIA'."
+            else:
+                instruccion_fuente = f"- Menciona de forma natural que la información proviene de '{fuente_original}'."
 
         return f"""Eres un/a profesional de la comunicación radiofónica que debe dar un aviso muy corto.
 
@@ -205,8 +213,12 @@ ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
         """Genera un resumen periodístico conciso y atractivo"""
         
         instruccion_fuente = ""
+        instruccion_fuente = ""
         if fuente_original:
-            instruccion_fuente = f"- En el resumen, incorpora de forma natural que la noticia proviene de '{fuente_original}' o está relacionada con este organismo."
+            if "PROPIA" in fuente_original.upper():
+                 instruccion_fuente = "- En el resumen, puedes citar a 'el grupo de desarrollo' o 'la entidad', pero PROHIBIDO usar la palabra 'PROPIA' como nombre."
+            else:
+                 instruccion_fuente = f"- En el resumen, incorpora de forma natural que la noticia proviene de '{fuente_original}' o está relacionada con este organismo."
         
         return f"""Eres un/a profesional de la edición de guiones para un podcast rural. Tu estilo es cercano, claro y humano. Queremos que cada resumen suene como una historia interesante, no como un simple despacho de noticias.
 
@@ -643,7 +655,10 @@ class PromptsCreativos:
 
         # Lógica condicional para la fuente
         if fuentes and fuentes.strip():
-             instruccion_fuente = f"""📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia ({fuentes}) de forma clara y agradable. Frases como "Según nos cuentan desde...", "Tal y como informa...", o "Leemos en...". La audiencia debe saber quién emite la información."""
+             if "PROPIA" in fuentes.upper():
+                 instruccion_fuente = """📻 **CITACIÓN DE FUENTE:** La noticia es de la propia organización/grupo. Puedes decir "nos informan desde el grupo" o "la entidad comunica", pero **PROHIBIDO** decir "desde PROPIA"."""
+             else:
+                 instruccion_fuente = f"""📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia ({fuentes}) de forma clara y agradable. Frases como "Según nos cuentan desde...", "Tal y como informa...", o "Leemos en...". La audiencia debe saber quién emite la información."""
         else:
              instruccion_fuente = "📻 **NO CITAR FUENTE:** No menciones ninguna fuente, ya que no se ha proporcionado. Narra la noticia directamente como un hecho confirmado, sin inventar atribuciones."
 
