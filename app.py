@@ -517,7 +517,7 @@ with st.sidebar:
 # Pestañas principales
 # Pestañas principales
 # Pestañas principales
-tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas, tab_ondemand = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs", "🎙️ Grabación a la Carta"])
+tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas, tab_ondemand, tab_buzon = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs", "🎙️ Grabación a la Carta", "🗣️ Buzón del Oyente"])
 
 with tab_editor:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -1493,6 +1493,143 @@ with tab_ondemand:
 
                 except Exception as e:
                     st.error(f"Error en el proceso: {e}")
+
+
+with tab_buzon:
+    st.markdown('<div class="sub-header">🗣️ Generador de Respuesta al Oyente</div>', unsafe_allow_html=True)
+    st.info("Sube un audio de un oyente para generar automáticamente una respuesta de Dorotea (Intro + Mensaje + Reacción).")
+
+    col_upload, col_opts = st.columns([1, 1])
+
+    with col_upload:
+        uploaded_listener_file = st.file_uploader("Subir audio del oyente", type=["mp3", "wav", "m4a", "ogg"])
+    
+    with col_opts:
+        st.write("**Opciones:**")
+        mover_a_buzon = st.checkbox("Mover también al Buzón del Podcast (para el episodio diario)", value=True)
+        if uploaded_listener_file:
+             st.audio(uploaded_listener_file, format="audio/mp3")
+
+    if uploaded_listener_file:
+        if st.button("🎙️ Generar Interacción Completa", type="primary"):
+            with st.status("Procesando interacción...", expanded=True) as status:
+                try:
+                    # 1. Guardar temporalmente
+                    temp_filename = f"temp_listener_{int(time.time())}_{uploaded_listener_file.name}"
+                    with open(temp_filename, "wb") as f:
+                        f.write(uploaded_listener_file.getbuffer())
+                    
+                    # 2. Analizar con Gemini
+                    st.write("🧠 Analizando audio con Gemini...")
+                    audio_bytes = uploaded_listener_file.getvalue()
+                    mime_type = uploaded_listener_file.type
+                    
+                    # Fix mime type for gemini if needed
+                    if mime_type == "audio/mpeg": mime_type = "audio/mp3"
+
+                    from mcmcn_prompts import ConfiguracionPodcast
+                    
+                    analisis_json = generar_texto_multimodal_audio_con_gemini(
+                        ConfiguracionPodcast.PROMPT_ANALISIS_AUDIO_OYENTE,
+                        audio_bytes,
+                        mime_type=mime_type
+                    )
+                    
+                    # Parsear
+                    analisis_json = analisis_json.replace("```json", "").replace("```", "").strip()
+                    datos_oyente = {}
+                    if "{" in analisis_json:
+                        try:
+                            start = analisis_json.find('{')
+                            end = analisis_json.rfind('}')
+                            datos_oyente = json.loads(analisis_json[start:end+1])
+                        except:
+                            pass
+                    
+                    nombre_oyente = datos_oyente.get("nombre_oyente", "Un oyente")
+                    tema_oyente = datos_oyente.get("tema_principal", "su mensaje")
+                    st.write(f"✅ Detectado: **{nombre_oyente}** hablando sobre *{tema_oyente}*.")
+
+                    # 3. Generar Guion
+                    st.write("✍️ Redactando guion de respuesta...")
+                    prompt_respuesta = ConfiguracionPodcast.PROMPT_RESPUESTA_OYENTE.format(
+                        nombre_oyente=nombre_oyente,
+                        tema_principal=tema_oyente
+                    )
+                    guion_respuesta = generar_texto_con_gemini(prompt_respuesta)
+                    
+                    texto_intro = ""
+                    texto_reaccion = ""
+                    if "INTRO:" in guion_respuesta and "REACCION:" in guion_respuesta:
+                        partes = guion_respuesta.split("REACCION:")
+                        texto_intro = partes[0].replace("INTRO:", "").strip()
+                        texto_reaccion = partes[1].strip()
+                    else:
+                        texto_intro = f"Escuchamos ahora a {nombre_oyente}."
+                        texto_reaccion = guion_respuesta
+
+                    # 4. Sintetizar (TTS)
+                    st.write("🗣️ Sintetizando voz de Dorotea...")
+                    audio_intro = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
+                    audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{texto_reaccion}</speak>")
+                    
+                    # 5. Cargar y Normalizar Listener Audio
+                    listener_segment = AudioSegment.from_file(temp_filename)
+                    listener_segment = masterizar_a_lufs(listener_segment, -16.0) # Target standard
+                    
+                    # 6. Transiciones (usando assets existentes o silencio)
+                    # Intentar cargar una transición random
+                    import glob
+                    transiciones = glob.glob("audio_assets/clickrozalen*.mp3")
+                    transicion_audio = AudioSegment.silent(duration=1000)
+                    if transiciones:
+                         t_file = random.choice(transiciones)
+                         transicion_audio = AudioSegment.from_file(t_file)
+                         # Cortar un trozo si es muy larga
+                         if len(transicion_audio) > 6000:
+                             transicion_audio = transicion_audio[:6000].fade_out(2000)
+
+                    # 7. Mezclar
+                    st.write("🎚️ Mezclando segmentos...")
+                    full_mix = AudioSegment.silent(duration=500)
+                    if audio_intro: full_mix += audio_intro
+                    
+                    full_mix += transicion_audio.fade_in(500).fade_out(500)
+                    full_mix += listener_segment
+                    full_mix += transicion_audio.fade_in(500).fade_out(500)
+                    
+                    if audio_reaccion: full_mix += audio_reaccion
+                    
+                    # 8. Exportar
+                    timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    output_filename = f"RESPUESTA_{nombre_oyente.replace(' ', '_')}_{timestamp_str}.mp3"
+                    full_mix.export(output_filename, format="mp3", bitrate="192k")
+                    
+                    st.success(f"¡Interacción generada!")
+                    st.audio(output_filename)
+                    
+                    with open(output_filename, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Descargar Interacción MP3",
+                            data=f,
+                            file_name=output_filename,
+                            mime="audio/mpeg"
+                        )
+                    
+                    # Opción de Mover
+                    if mover_a_buzon:
+                        dest_path = os.path.join("buzon_del_oyente", uploaded_listener_file.name)
+                        shutil.copy(temp_filename, dest_path)
+                        st.toast(f"📧 Copiado también a buzon_del_oyente/{uploaded_listener_file.name}")
+
+                    # Cleanup temp
+                    os.remove(temp_filename)
+                    status.update(label="¡Proceso completado!", state="complete", expanded=False)
+
+                except Exception as e:
+                    st.error(f"Error procesando: {e}")
+                    import traceback
+                    st.code(traceback.format_exc())
 
 # Footer
 st.markdown("---")
