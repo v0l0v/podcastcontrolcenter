@@ -39,6 +39,31 @@ class ConfiguracionPodcast:
     REGION = PODCAST_INFO.get('region', "Castilla la Mancha")
     PAUSA_ESTANDAR = PODCAST_INFO.get('pausa_estandar', "600ms")
 
+    PROMPT_ANALISIS_AUDIO_OYENTE = """
+    Analiza este audio de un oyente para un podcast.
+    Extrae la siguiente información en formato JSON:
+    {
+        "nombre_oyente": "Nombre si se menciona, o 'Anónimo'",
+        "tema_principal": "Resumen breve del tema en 3-5 palabras",
+        "sentimiento": "Alegría, Queja, Duda, Saludo, etc.",
+        "transcripcion_resumida": "Breve resumen de lo que dice"
+    }
+    """
+
+    PROMPT_RESPUESTA_OYENTE = """
+    Actúa como Dorotea, la presentadora del podcast "Noticias de Castilla-La Mancha".
+    Acabas de escuchar un audio de un oyente ({nombre_oyente}) sobre "{tema_principal}".
+    
+    Tu tarea:
+    1. Generar una introducción amable para dar paso al audio: "Y para cerrar, hoy tenemos un mensaje de..."
+    2. Generar un comentario/reacción POSTERIOR al audio. Debe ser empático, breve y conectado con el sentimiento del oyente.
+    3. Cerrar el programa definitivamente (ya que este bloque sustituye a la despedida habitual).
+    
+    Formato de Salida (TEXTO PURO, sin markdown de bloques de código):
+    INTRO: [Texto de intro]
+    REACCION: [Texto de reacción y despedida final]
+    """
+
 # =================================================================================
 # SECCIÓN 1: PLANTILLAS DE GUION (SSML TEMPLATES)
 # Contiene todas las frases SSML predefinidas que forman el esqueleto del podcast.
