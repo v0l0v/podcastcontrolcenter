@@ -19,7 +19,6 @@ import pandas as pd
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
 from src.llm_utils import (
-    inicializar_gemini, 
     generar_texto_con_gemini, 
     generar_texto_multimodal_audio_con_gemini
 )
