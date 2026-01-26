@@ -1198,16 +1198,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
             margin-top: 20px;
         }
         
-        a {
-            color: #ff4d00;
-            text-decoration: none;
-            border-bottom: 2px solid #ff4d00;
-            font-weight: bold;
-        }
-        a:hover {
-            background-color: #ff4d00;
-            color: #000;
-        }
+
     </style>
     
     <script>
