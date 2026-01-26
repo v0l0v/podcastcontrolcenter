@@ -19,6 +19,8 @@ import pandas as pd
 # from wordcloud import WordCloud
 from src.analytics import analizar_frecuencia_fuentes
 from src.llm_utils import generar_texto_con_gemini
+from src.engine.audio import sintetizar_ssml_a_audio, masterizar_a_lufs
+from pydub import AudioSegment
 
 from mcmcn_prompts import PromptsCreativos
 
@@ -512,7 +514,7 @@ with st.sidebar:
 # Pestañas principales
 # Pestañas principales
 # Pestañas principales
-tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs"])
+tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas, tab_ondemand = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs", "🎙️ Grabación a la Carta"])
 
 with tab_editor:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -1033,6 +1035,47 @@ with tab_library:
     except Exception as e:
         st.error(f"Error leyendo especiales: {e}")
 
+    st.markdown("---")
+    st.markdown('<div class="sub-header">🎧 Grabaciones a la Carta</div>', unsafe_allow_html=True)
+    
+    try:
+        od_files = sorted(glob.glob("OD_*.mp3"), key=os.path.getctime, reverse=True)
+        
+        if not od_files:
+            st.info("No hay grabaciones a la carta generadas.")
+        else:
+            for od_file in od_files:
+                # Nombre limpio
+                display_name_od = os.path.basename(od_file)
+                
+                with st.expander(f"🎙️ {display_name_od}", expanded=False):
+                    col_od_info, col_od_actions = st.columns([3, 1])
+                    
+                    with col_od_info:
+                        st.audio(od_file)
+                        st.caption(f"Archivo: {display_name_od}")
+                        
+                    with col_od_actions:
+                        with open(od_file, "rb") as f:
+                            st.download_button(
+                                label="⬇️ MP3",
+                                data=f,
+                                file_name=display_name_od,
+                                key=f"dl_od_{od_file}",
+                                use_container_width=True
+                            )
+                        
+                        if st.button("🗑️ Eliminar", key=f"del_od_{od_file}", type="secondary", use_container_width=True):
+                            try:
+                                os.remove(od_file)
+                                st.toast(f"Eliminado: {display_name_od}")
+                                time.sleep(1)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error eliminando: {e}")
+    except Exception as e:
+        st.error(f"Error leyendo on-demand: {e}")
+
 with tab_sources:
     st.markdown('<div class="sub-header">Monitor de Fuentes</div>', unsafe_allow_html=True)
     st.markdown("Monitoriza la salud de tus fuentes RSS con métricas de actividad en tiempo real.")
@@ -1338,6 +1381,115 @@ with tab_ctas:
             st.error(f"Error listando directorio: {e}")
 
 
+
+
+with tab_ondemand:
+    st.markdown('<div class="sub-header">Grabación a la Carta</div>', unsafe_allow_html=True)
+    st.info("Genera un audio con la voz de Dorotea sobre cualquier tema. Ideal para felicitaciones, explicaciones breves o mensajes personalizados.")
+
+    col_input, col_opts = st.columns([2, 1])
+
+    with col_input:
+        topic_ondemand = st.text_area("¿Sobre qué quieres que hable Dorotea?", placeholder="Ej: Explica cómo funciona un agujero negro a un niño de 6 años...", height=150)
+        
+    with col_opts:
+        duration_ondemand = st.slider("Duración Estimada (Minutos)", 1, 5, 2, 1)
+        st.caption(f"Aprox. {duration_ondemand * 150} palabras.")
+        
+        # Opciones avanzadas (opcional)
+        st.markdown("##### Estilo")
+        style_ondemand = st.selectbox("Tono", ["Normal (Dorotea)", "Muy Alegre", "Serio/Intenso", "Susurro/Cómplice"])
+
+    if st.button("🎙️ GENERAR AUDIO A LA CARTA", type="primary"):
+        if not topic_ondemand:
+            st.error("Por favor, escribe un tema.")
+        else:
+            with st.spinner("Redactando guion y generando audio... (Esto puede tardar unos segundos)"):
+                try:
+                    # 1. GENERACIÓN DE GUION
+                    target_words = duration_ondemand * 150
+                    
+                    tone_instruction = ""
+                    if style_ondemand == "Muy Alegre":
+                        tone_instruction = "El tono debe ser muy enérgico, alegre y divertido."
+                    elif style_ondemand == "Serio/Intenso":
+                        tone_instruction = "El tono debe ser sobrio, profundo y periodístico."
+                    elif style_ondemand == "Susurro/Cómplice":
+                        tone_instruction = "El tono debe ser muy cercano, como un secreto contado a media voz."
+
+                    prompt_ondemand = f"""
+                    Eres Dorotea, la voz de este podcast.
+                    
+                    TAREA: Escribir un guion para ser locutado sobre el siguiente tema:
+                    "{topic_ondemand}"
+                    
+                    REGLAS OBLIGATORIAS:
+                    1. Longitud: Debes escribir aproximadamente {target_words} palabras para cubrir el tiempo de {duration_ondemand} minutos.
+                    2. Estilo: Conversacional, claro y directo. {tone_instruction}
+                    3. Formato: TEXTO PLANO. No uses markdown, ni negritas, ni acotaciones entre paréntesis. Solo lo que se va a leer.
+                    4. No saludes si no te lo piden explícitamente en el tema. Ve al grano.
+                    
+                    GUION:
+                    """
+                    
+                    script_generated = generar_texto_con_gemini(prompt_ondemand)
+                    
+                    if not script_generated:
+                        st.error("Error al generar el guion con la IA.")
+                    else:
+                        st.success("✅ Guion generado. Sintetizando voz...")
+                        with st.expander("Ver Guion Generado", expanded=False):
+                            st.write(script_generated)
+                        
+                        # 2. SÍNTESIS DE AUDIO (SSML Básico)
+                        # Dividimos en chunks por párrafos para pausas naturales
+                        chunks = script_generated.split('\\n')
+                        full_audio = AudioSegment.empty()
+                        
+                        progress_bar = st.progress(0)
+                        
+                        # Filtrar chunks vacíos
+                        chunks = [c for c in chunks if c.strip()]
+                        total_chunks = len(chunks)
+                        
+                        for i, chunk in enumerate(chunks):
+                            # Pequeña limpieza SSML safe
+                            safe_text = chunk.replace('&', 'y').replace('<', '').replace('>', '')
+                            ssml = f"<speak>{safe_text}<break time='500ms'/></speak>"
+                            segment = sintetizar_ssml_a_audio(ssml)
+                            if segment:
+                                full_audio += segment
+                            
+                            progress_bar.progress((i + 1) / total_chunks)
+                            
+                        # 3. MASTERIZACIÓN
+                        st.text("Masterizando...")
+                        final_audio = masterizar_a_lufs(full_audio, target_lufs=-16.0)
+                        
+                        # 4. GUARDADO
+                        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                        # Nombre seguro para archivo
+                        safe_topic = "".join([c for c in topic_ondemand if c.isalnum() or c in (' ', '_', '-')]).strip().replace(" ", "_")[:30]
+                        output_filename = f"OD_{timestamp}_{safe_topic}.mp3"
+                        
+                        # Guardar en RAÍZ para que la Mediateca lo vea
+                        output_path = output_filename 
+                        
+                        final_audio.export(output_path, format="mp3", bitrate="192k")
+                        
+                        st.audio(output_path)
+                        st.success(f"¡Audio listo! Guardado en Mediateca como {output_filename}")
+                        
+                        with open(output_path, "rb") as file:
+                            st.download_button(
+                                label="⬇️ Descargar MP3",
+                                data=file,
+                                file_name=output_filename,
+                                mime="audio/mpeg"
+                            )
+
+                except Exception as e:
+                    st.error(f"Error en el proceso: {e}")
 
 # Footer
 st.markdown("---")
