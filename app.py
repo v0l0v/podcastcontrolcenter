@@ -943,104 +943,10 @@ with tab_library:
                                     use_container_width=True
                                 )
                         
-                        # --- BUZÓN DEL OYENTE ---
-                            st.text("📩 Revisando buzón del oyente...")
-                            buzon_path = "buzon_del_oyente"
-                            procesados_path = "buzon_del_oyente/procesados"
-                            os.makedirs(buzon_path, exist_ok=True)
-                            os.makedirs(procesados_path, exist_ok=True)
-                            
-                            audio_oyente_path = None
-                            # Buscar archivos de audio recientes
-                            archivos_audio = [f for f in os.listdir(buzon_path) if f.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg'))]
-                            
-                            hubo_audio_oyente = False
-                            
-                            if archivos_audio:
-                                # Tomar el primero (FIFO)
-                                audio_filename = sorted(archivos_audio)[0]
-                                audio_oyente_path = os.path.join(buzon_path, audio_filename)
-                                st.info(f"🎙️ Mensaje de oyente detectado: {audio_filename}")
-                                
-                                try:
-                                    with open(audio_oyente_path, "rb") as af:
-                                        audio_bytes = af.read()
-                                        
-                                    # 1. Analizar Audio
-                                    analisis_json = generar_texto_multimodal_audio_con_gemini(
-                                        Prompts.PROMPT_ANALISIS_AUDIO_OYENTE,
-                                        audio_bytes,
-                                        mime_type="audio/mpeg" # Asumimos mp3/compatible, o detectar extensión
-                                    )
-                                    # Limpieza básica de json
-                                    analisis_json = analisis_json.replace("```json", "").replace("```", "").strip()
-                                    import json
-                                    datos_oyente = json.loads(analisis_json) if "{" in analisis_json else {"nombre_oyente": "un oyente", "tema_principal": "un tema interesante", "sentimiento": "general"}
-                                    
-                                    # 2. Generar Guion Respuesta
-                                    prompt_respuesta = Prompts.PROMPT_RESPUESTA_OYENTE.format(
-                                        nombre_oyente=datos_oyente.get("nombre_oyente", "Oyente"),
-                                        tema_principal=datos_oyente.get("tema_principal", "actualidad")
-                                    )
-                                    guion_respuesta = generar_texto_con_gemini(prompt_respuesta)
-                                    
-                                    # Parsear INTRO y REACCION
-                                    texto_intro = ""
-                                    texto_reaccion = ""
-                                    
-                                    if "INTRO:" in guion_respuesta and "REACCION:" in guion_respuesta:
-                                        partes = guion_respuesta.split("REACCION:")
-                                        texto_intro = partes[0].replace("INTRO:", "").strip()
-                                        texto_reaccion = partes[1].strip()
-                                    else:
-                                        # Fallback si el formato falla
-                                        texto_intro = f"Y ahora, escuchamos a {datos_oyente.get('nombre_oyente')}."
-                                        texto_reaccion = guion_respuesta
-                                        
-                                    # 3. Añadir al Playlist
-                                    container_debug.write(f"**Buzón Oyente:** {datos_oyente}")
-                                    
-                                    # Intro Dorotea
-                                    audio_intro_oyente = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
-                                    full_podcast += audio_intro_oyente
-                                    full_script += f"\n\n[DOROTEA - INTRO OYENTE]\n{texto_intro}"
-                                    
-                                    # Audio Oyente (Normalizado)
-                                    segmento_oyente = AudioSegment.from_file(audio_oyente_path)
-                                    segmento_oyente = masterizar_a_lufs(segmento_oyente, -16.0)
-                                    full_podcast += segmento_oyente
-                                    full_script += f"\n\n[AUDIO OYENTE - {audio_filename}]\n(Audio insertado)"
-                                    
-                                    # Reacción/Cierre Dorotea
-                                    audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{texto_reaccion}</speak>")
-                                    full_podcast += audio_reaccion
-                                    full_script += f"\n\n[DOROTEA - CIERRE]\n{texto_reaccion}"
-                                    
-                                    hubo_audio_oyente = True
-                                    
-                                    # Mover a procesados
-                                    import shutil
-                                    shutil.move(audio_oyente_path, os.path.join(procesados_path, audio_filename))
-                                    
-                                except Exception as e:
-                                    st.error(f"Error procesando buzón: {e}")
-                                    # Si falla, hacemos fallback a cierre normal
-                                    hubo_audio_oyente = False
-                            
-                            # --- CIERRE / DESPEDIDA ---
-                            if not hubo_audio_oyente:
-                                st.text("Generando despedida estándar...")
-                                despedida_txt = generar_cierre(dia_semana, sentimiento_global)
-                                full_script += f"\n\n[CIERRE]\n{despedida_txt}"
-                                
-                                # Sintetizar despedida
-                                ssml_despedida = f"<speak>{despedida_txt}</speak>"
-                                audio_despedida = sintetizar_ssml_a_audio(ssml_despedida)
-                                full_podcast += audio_despedida
-                            else:
-                                st.success("✅ Buzón del oyente integrado correctamente.")
-
-                            # --- MÚSICA DE CIERRE (Outro) ---  label="📄 HTML",
+                        if htmls:
+                            with open(htmls[0], "rb") as f:
+                                st.download_button(
+                                    label="📄 HTML",
                                     data=f,
                                     file_name=os.path.basename(htmls[0]),
                                     mime="text/html",

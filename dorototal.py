@@ -2230,12 +2230,119 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         else:
              print("  -> No se encontraron audios programados para hoy.")
 
+        # --- FASE 2.7: Revisando Buzón del Oyente ---
+        print("\n--- FASE 2.7: Revisando Buzón del Oyente ---")
+        buzon_path = "buzon_del_oyente"
+        procesados_path = "buzon_del_oyente/procesados"
+        # Asegurar directorios
+        os.makedirs(buzon_path, exist_ok=True)
+        os.makedirs(procesados_path, exist_ok=True)
+        
+        hubo_audio_oyente = False
+        
+        # Buscar audios (.mp3, .wav, .m4a, .ogg)
+        archivos_buzon = [f for f in os.listdir(buzon_path) if f.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg'))]
+        
+        if archivos_buzon:
+            # Tomar el primero (FIFO)
+            audio_filename = sorted(archivos_buzon)[0] 
+            audio_oyente_path = os.path.join(buzon_path, audio_filename)
+            print(f"  🎙️  Audio de oyente encontrado: {audio_filename}")
+            
+            try:
+                # 1. Analizar Audio Multimodal
+                with open(audio_oyente_path, "rb") as f_oyente:
+                     audio_bytes = f_oyente.read()
+                
+                # Detectar mime
+                ext = os.path.splitext(audio_filename)[1].lower()
+                mime_type = "audio/mp3"
+                if ext == ".wav": mime_type = "audio/wav"
+                elif ext == ".ogg": mime_type = "audio/ogg"
+                elif ext == ".m4a": mime_type = "audio/mp4" 
+                
+                print("      🧠 Analizando audio del oyente con Gemini...")
+                analisis_json = generar_texto_multimodal_audio_con_gemini(
+                    mcmcn_prompts.ConfiguracionPodcast.PROMPT_ANALISIS_AUDIO_OYENTE,
+                    audio_bytes,
+                    mime_type=mime_type
+                )
+                
+                # Limpiar y parsear JSON
+                analisis_json = analisis_json.replace("```json", "").replace("```", "").strip()
+                import json
+                datos_oyente = {}
+                if "{" in analisis_json:
+                     try:
+                        start = analisis_json.find('{')
+                        end = analisis_json.rfind('}')
+                        datos_oyente = json.loads(analisis_json[start:end+1])
+                     except:
+                        pass
+                
+                nombre_oyente = datos_oyente.get("nombre_oyente", "un oyente")
+                tema_oyente = datos_oyente.get("tema_principal", "un tema interesante")
+                
+                print(f"      ✅ Audio analizado: De {nombre_oyente} sobre {tema_oyente}")
+
+                # 2. Generar Guion de Respuesta y Cierre
+                print("      ✍️ Generando respuesta y cierre especial...")
+                prompt_respuesta = mcmcn_prompts.ConfiguracionPodcast.PROMPT_RESPUESTA_OYENTE.format(
+                    nombre_oyente=nombre_oyente,
+                    tema_principal=tema_oyente
+                )
+                guion_respuesta = generar_texto_con_gemini(prompt_respuesta)
+                
+                # Parsear INTRO y REACCION
+                texto_intro = ""
+                texto_reaccion = ""
+                
+                if "INTRO:" in guion_respuesta and "REACCION:" in guion_respuesta:
+                    partes = guion_respuesta.split("REACCION:")
+                    texto_intro = partes[0].replace("INTRO:", "").strip()
+                    texto_reaccion = partes[1].strip()
+                else:
+                    texto_intro = f"Y para terminar, escuchamos a {nombre_oyente}."
+                    texto_reaccion = guion_respuesta # Fallback
+                
+                # 3. Sintetizar y ensamblar
+                audio_intro_oyente = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_intro)}</speak>")
+                
+                # Cargar y normalizar audio oyente
+                segmento_oyente = AudioSegment.from_file(audio_oyente_path)
+                segmento_oyente = masterizar_a_lufs(segmento_oyente, TARGET_LUFS)
+                
+                audio_reaccion_oyente = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_reaccion)}</speak>")
+                
+                if audio_intro_oyente and audio_reaccion_oyente:
+                     segmentos_audio.append(agregar_transicion())
+                     segmentos_audio.append(audio_intro_oyente)
+                     segmentos_audio.append(segmento_oyente)
+                     segmentos_audio.append(audio_reaccion_oyente)
+                     
+                     transcript_data.append({'type': 'listener_msg', 'content': f"[Audio Oyente: {nombre_oyente}]\nIntro: {texto_intro}\nReacción: {texto_reaccion}"})
+                     
+                     hubo_audio_oyente = True
+                     
+                     # Mover a procesados
+                     import shutil
+                     shutil.move(audio_oyente_path, os.path.join(procesados_path, audio_filename))
+                     print("      ✅ Buzón del oyente procesado e integrado.")
+
+            except Exception as e:
+                print(f"      ❌ Error procesando buzón del oyente: {e}")
+                hubo_audio_oyente = False
+
+
+        if hubo_audio_oyente:
+             # Si hubo audio, añadimos una transición para separar del cierre
+             segmentos_audio.append(agregar_transicion())
 
         print("\n--- FASE 3: Generando cierre del podcast ---")
 
         # --- INICIO DE LA NUEVA LÓGICA DE CIERRE UNIFICADO ---
         print("  -> Generando monólogo de cierre unificado (resumen + despedida)...")
-        
+            
         # 1. Preparar el contexto con los temas tratados para la IA.
         contexto_cierre = []
         for bloque in noticias_agrupadas.get('bloques_tematicos', []):

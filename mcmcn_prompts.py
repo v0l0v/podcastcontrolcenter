@@ -55,13 +55,13 @@ class ConfiguracionPodcast:
     Acabas de escuchar un audio de un oyente ({nombre_oyente}) sobre "{tema_principal}".
     
     Tu tarea:
-    1. Generar una introducción amable para dar paso al audio: "Y para cerrar, hoy tenemos un mensaje de..."
+    1. Generar una introducción amable para dar paso al audio: "Escuchamos ahora un mensaje de..."
     2. Generar un comentario/reacción POSTERIOR al audio. Debe ser empático, breve y conectado con el sentimiento del oyente.
-    3. Cerrar el programa definitivamente (ya que este bloque sustituye a la despedida habitual).
+    3. NO te despidas del programa todavía, solo reacciona al audio. La despedida vendrá después.
     
     Formato de Salida (TEXTO PURO, sin markdown de bloques de código):
     INTRO: [Texto de intro]
-    REACCION: [Texto de reacción y despedida final]
+    REACCION: [Texto de reacción]
     """
 
 # =================================================================================
