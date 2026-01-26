@@ -98,11 +98,11 @@ fecha: 25-11-2025
 autor: Mónica Bravo
 texto: Gracias por hacerme sentir más cerca de casa. Vuestro programa es un trocito de mi pueblo que me llega cada mañana.
 ---
-fecha: 26-11-2025
+fecha: 26-01-2026
 autor: Gabriel Pardo
-texto: Los domingos con vuestro podcast son más amenos. Gracias por el trabajo y por ser fieles a vuestra cita con los oyentes.
+texto: Los lunes con vuestro podcast son más amenos. Gracias por el trabajo y por ser fieles a vuestra cita con los oyentes.
 ---
-fecha: 27-11-2025
+fecha: 27-01-2026
 autor: Beatriz Cano
 texto: Una nueva semana y una nueva razón para felicitaros. La sección sobre innovación en el campo ha sido interesantísima.
 ---
