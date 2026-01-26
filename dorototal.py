@@ -2270,7 +2270,6 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 
                 # Limpiar y parsear JSON
                 analisis_json = analisis_json.replace("```json", "").replace("```", "").strip()
-                import json
                 datos_oyente = {}
                 if "{" in analisis_json:
                      try:
