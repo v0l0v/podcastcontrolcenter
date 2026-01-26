@@ -233,6 +233,11 @@ ESPECIFICACIONES:
 - Evita tecnicismos, pero no simplifiques en exceso la información.
 - **PRECISIÓN OBLIGATORIA:** Si la noticia menciona nombres propios de personas, títulos de libros/obras o nombres de eventos específicos, DEBES INCLUIRLOS. No digas "un escritor presentó su novela", di "el escritor [Nombre] presentó su novela '[Título]'".
 - **CERO MARKDOWN:** No uses negritas (**texto**) ni ningún otro formato. Texto plano puro.
+- **REGLA DE HIERRO SOBRE FECHAS:**
+    - SOLO menciona fechas si aparecen EXPLÍCITAMENTE en el texto original o en los datos de la imagen.
+    - PROHIBIDO decir "a partir de hoy" o "el próximo lunes" si no tienes la fecha exacta.
+    - SI NO HAY FECHA DE INICIO, NO LA INVENTES. Di simplemente "el plazo está abierto" o "próximamente".
+    - JAMÁS inventes un día específico (ej: "el 15 de enero") si el texto solo dice "enero".
 {instruccion_fuente}
 
 {contexto_calendario}
@@ -672,7 +677,13 @@ MATERIAL DE TRABAJO:
 CONTEXTO TEMPORAL:
 - La fecha de hoy es: {fecha_actual_str}
 
-ESTILO Y TÉCNICA500: 📻 **REGLA TEMPORAL OBLIGATORIA:** La precisión temporal es CRÍTICA. Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") si es relevante para el contexto. **NO utilices expresiones relativas como "hoy", "ayer" o "mañana"**. **NO intentes adivinar el día de la semana** (ej: no digas "el lunes 15", di solo "el 15"). La "fecha de hoy" es solo para tu referencia contextual.
+ESTILO Y TÉCNICA:
+📻 **REGLA TEMPORAL OBLIGATORIA (CRÍTICA):** 
+- Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") SOLO si es relevante. 
+- **PROHIBIDO** utilizar expresiones relativas como "hoy", "ayer" o "mañana". 
+- **PROHIBIDO** adivinar el día de la semana.
+- **PROHIBIDO INVENTAR FECHAS:** Si el texto no dice cuándo empieza algo, NO te inventes una fecha (como "el 15 de enero"). Di "ya está disponible", "el plazo sigue abierto" o "próximamente". La invención de datos es un fallo grave.
+- La "fecha de hoy" que te doy es solo para tu referencia contextual, NO para que calcules fechas relativas.
 📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
 📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
 {instruccion_fuente}
