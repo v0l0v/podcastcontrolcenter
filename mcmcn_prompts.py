@@ -186,11 +186,7 @@ Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
         """Determina si un texto contiene contenido informativo válido"""
         criterios_base = PROMPTS_CONFIG.get('analysis_prompts', {}).get('clasificacion_criterios', "")
         if not criterios_base:
-            criterios_base = """Eres un clasificador de contenido especializado en medios digitales. 
-TAREA: Determinar si el texto contiene información periodística o de agenda válida para un podcast.
-CRITERIOS DE EVALUACIÓN:
-✅ INFORMATIVO: Noticias, comunicados oficiales, eventos específicos.
-❌ IRRELEVANTE: Textos puramente publicitarios, preguntas retóricas, contenido borrado."""
+            criterios_base = "Clasifica si el texto es INFORMATIVO o IRRELEVANTE."
 
         return f"""{criterios_base}
 
@@ -237,37 +233,21 @@ ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
     def resumen_noticia(texto: str, idioma_destino: str = "español", fuente_original: str = "", contexto_calendario: str = "") -> str:
         """Genera un resumen periodístico conciso y atractivo"""
         
-        instruccion_fuente = ""
-        instruccion_fuente = ""
-        if fuente_original:
-            if "PROPIA" in fuente_original.upper():
-                 instruccion_fuente = "- En el resumen, puedes citar a 'el grupo de desarrollo' o 'la entidad', pero PROHIBIDO usar la palabra 'PROPIA' como nombre."
-            else:
-                 instruccion_fuente = f"- En el resumen, incorpora de forma natural que la noticia proviene de '{fuente_original}' o está relacionada con este organismo."
+        # Obtenemos las instrucciones base desde la configuración (JSON)
+        # Aquí ya están incluidas todas las reglas de estilo, fuentes y fechas.
+        instrucciones_base = PROMPTS_CONFIG.get('analysis_prompts', {}).get('resumen_instrucciones', "")
         
-        return f"""Eres un/a profesional de la edición de guiones para un podcast rural. Tu estilo es cercano, claro y humano. Queremos que cada resumen suene como una historia interesante, no como un simple despacho de noticias.
+        if not instrucciones_base:
+            # Fallback mínimo por seguridad
+            instrucciones_base = "Resume esta noticia de forma periodística y concisa para radio."
 
-TAREA: Crear un resumen informativo optimizado para formato audio, asegurando que el oyente comprenda todos los matices importantes.
-- **REGLA ESTRICTA DE LONGITUD:** El resumen final debe tener entre **100 y 150 palabras**. Sé conciso y ve directamente a la información más importante.
+        return f"""{instrucciones_base}
 
-ESPECIFICACIONES:
-- Longitud: 2-3 párrafos.
-- Idioma: {idioma_destino}
-- Estilo: Claro, directo y envolvente. Aunque sea para podcast, debe ser rico en detalles.
-- Enfoque: Extrae la información clave, el contexto, el propósito y el impacto de la noticia. Explica el "porqué" detrás de los hechos.
-- Evita tecnicismos, pero no simplifiques en exceso la información.
-- **PRECISIÓN OBLIGATORIA:** Si la noticia menciona nombres propios de personas, títulos de libros/obras o nombres de eventos específicos, DEBES INCLUIRLOS. No digas "un escritor presentó su novela", di "el escritor [Nombre] presentó su novela '[Título]'".
-- **CERO MARKDOWN:** No uses negritas (**texto**) ni ningún otro formato. Texto plano puro.
-- **REGLA DE HIERRO SOBRE FECHAS:**
-    - SOLO menciona fechas si aparecen EXPLÍCITAMENTE en el texto original o en los datos de la imagen.
-    - PROHIBIDO decir "a partir de hoy" o "el próximo lunes" si no tienes la fecha exacta.
-    - SI NO HAY FECHA DE INICIO, NO LA INVENTES. Di simplemente "el plazo está abierto" o "próximamente".
-    - JAMÁS inventes un día específico (ej: "el 15 de enero") si el texto solo dice "enero".
-{instruccion_fuente}
-
+CONTEXTO ADICIONAL:
+- Fuente Original: {fuente_original}
 {contexto_calendario}
 
-TEXTO ORIGINAL:
+TEXTO ORIGINAL A RESUMIR:
 ---
 {texto}
 ---
@@ -291,12 +271,6 @@ TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes
         ---
         {noticias_simplificadas}
         ---
-
-        FORMATO DE RESPUESTA ESPERADO (SOLO JSON):
-        {{
-          "astronomia_verano": ["id_noticia_15", "id_noticia_20"],
-          "iniciativas_agua_tierra": ["id_noticia_4", "id_noticia_11", "id_noticia_19"]
-        }}
         """
 
     @staticmethod
@@ -464,9 +438,14 @@ class PromptsCreativos:
               - Si perdieron: Da ánimos ("A la próxima remontamos").
             """
 
+        instrucciones_intro = PROMPTS_CONFIG.get('analysis_prompts', {}).get('intro_instrucciones', "Genera una intro de podcast.")
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
         prompt = f"""
-        Eres Dorotea, presentadora de un podcast local.
+        {persona_base}
         
+        {instrucciones_intro}
+
         CONTEXTO:
         - Sentimiento general hoy: {sentimiento_general}
         - Saludo base sugerido: "{texto_base_saludo}"
@@ -474,23 +453,6 @@ class PromptsCreativos:
         {instruccion_efemeride}
         {instruccion_meteo}
         {instruccion_deportes}
-        
-        TAREA:
-        Escribe TU MONÓLOGO DE APERTURA completo (Saludo + Intro a noticias + CTA).
-        
-        REGLAS:
-        1.  **Saludo:** Empieza saludando. Si hay efeméride/santoral, menciónalo con cariño.
-            - Puedes adaptar el saludo base, pero mantén la esencia.
-            - Si hay datos del tiempo, comenta algo breve y útil ("hace frío", "llevad paraguas").
-            - Si hay RESULTADOS DE FÚTBOL: ¡Menciónalos aquí! Es prioridad.
-        
-        2.  **Intro Noticias:** Introduce muy brevemente los temas que trataremos.
-        
-        3.  **CTA (Importante):**
-            - Justo antes de decir la CTA, escribe exactamente: `[CORTINILLA]`.
-            - Di la frase de CTA ("{texto_cta}") de forma natural.
-        
-        4.  **Cierre:** Termina dando paso al primer bloque.
         
         CONTENIDO DE NOTICIAS PARA TU CONTEXTO:
         {contenido_noticias[:2000]}...
@@ -677,22 +639,23 @@ class PromptsCreativos:
         contexto_tematico: str = ""
     ) -> str:
         """Convierte un resumen en una narración de podcast profesional"""
+        
+        # Obtenemos las instrucciones centralizadas desde el JSON
+        instrucciones_narracion = PROMPTS_CONFIG.get('analysis_prompts', {}).get('narracion_instrucciones', "")
+        
+        if not instrucciones_narracion:
+            # Fallback seguro
+            instrucciones_narracion = "Narra esta noticia para un podcast de forma natural."
+
         instruccion_contexto = ""
         if contexto_tematico:
             instruccion_contexto = f"La noticia forma parte de un segmento sobre el tema: '{contexto_tematico}'. Asegúrate de que la narración encaje fluidamente en este contexto."
             
-        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast. Tu estilo es conversacional y cercano.")
-
-        # Lógica condicional para la fuente
-        if fuentes and fuentes.strip():
-             if "PROPIA" in fuentes.upper():
-                 instruccion_fuente = """📻 **CITACIÓN DE FUENTE:** La noticia es de la propia organización/grupo. Puedes decir "nos informan desde el grupo" o "la entidad comunica", pero **PROHIBIDO** decir "desde PROPIA"."""
-             else:
-                 instruccion_fuente = f"""📻 **CITACIÓN DE FUENTES OBLIGATORIA:** Es IMPERATIVO que cites la fuente de la noticia ({fuentes}) de forma clara y agradable. Frases como "Según nos cuentan desde...", "Tal y como informa...", o "Leemos en...". La audiencia debe saber quién emite la información."""
-        else:
-             instruccion_fuente = "📻 **NO CITAR FUENTE:** No menciones ninguna fuente, ya que no se ha proporcionado. Narra la noticia directamente como un hecho confirmado, sin inventar atribuciones."
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast.")
 
         return f"""{persona_base}
+
+{instrucciones_narracion}
 
 MATERIAL DE TRABAJO:
 - Fuente(s): {fuentes}
@@ -700,21 +663,11 @@ MATERIAL DE TRABAJO:
 - Contenido: {resumen}
 
 CONTEXTO TEMPORAL:
-- La fecha de hoy es: {fecha_actual_str}
+- La fecha de hoy es: {fecha_actual_str} ([SOLO PARA REFERENCIA, NO USAR RELATIVOS])
 
-ESTILO Y TÉCNICA:
-📻 **REGLA TEMPORAL OBLIGATORIA (CRÍTICA):** 
-- Usa siempre la fecha explícita de la noticia (ej: "el 15 de octubre") SOLO si es relevante. 
-- **PROHIBIDO** utilizar expresiones relativas como "hoy", "ayer" o "mañana". 
-- **PROHIBIDO** adivinar el día de la semana.
-- **PROHIBIDO INVENTAR FECHAS:** Si el texto no dice cuándo empieza algo, NO te inventes una fecha (como "el 15 de enero"). Di "ya está disponible", "el plazo sigue abierto" o "próximamente". La invención de datos es un fallo grave.
-- La "fecha de hoy" que te doy es solo para tu referencia contextual, NO para que calcules fechas relativas.
-📻 **TONO CONVERSACIONAL:** Usa un lenguaje sencillo y directo. Puedes empezar con conectores como "Y otra noticia interesante nos llega desde...", "Pasamos ahora a hablar de...", o "Además, te cuento que...". El objetivo es que suene natural, no a un guion rígido.
-📻 **REGLA INQUEBRANTABLE:** JAMÁS saludes, te presentes o des la bienvenida. Empieza directamente con la información.ya saludaste al principio del podcast.
-{instruccion_fuente}
 {instruccion_contexto}
 
-ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO. Prohibido usar asteriscos (**), guiones bajos (_) o cualquier formato markdown. Si hay nombres propios o títulos, RESPÉTALOS.
+ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO.
 """
 
     @staticmethod
@@ -862,25 +815,26 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
             - Reinterprétala con tu propio estilo para que suene natural como última frase, pero manteniendo el significado original.
             """
 
+        instrucciones_despedida = PROMPTS_CONFIG.get('analysis_prompts', {}).get('despedida_instrucciones', "Cierra el programa.")
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
         return f"""
-        Eres Dorotea, la presentadora virtual, generada con IA, de un podcast de noticias rurales. Tu tarea es crear el monólogo de cierre del programa, combinando el resumen del día, un mensaje importante y la despedida en un único bloque de audio coherente y natural.
+        {persona_base}
 
-        TAREA:
-        Con tu voz cercana y reflexiva, como si te despidieras de la audiencia, crea un monólogo de cierre que siga esta estructura fluida:
+        {instrucciones_despedida}
 
-        1.  **Resumen Elegante:** Basándote en los temas del día, crea 1 o 2 frases que resuman el contenido del podcast. No uses la palabra "resumen".
-            - Temas tratados hoy: "{contexto}"
+        CONTEXTO:
+        - Sentimiento general hoy: {sentimiento_general}
+        
+        ESTRUCTURA VARIABLE (Usa si aplica):
+        1.  **Resumen Temas:** "{contexto}"
         {instruccion_cta}
         {instruccion_resolucion}
         {instruccion_despedida}
         {instruccion_firma}
 
-        REGLAS CLAVE:
-        - El resultado debe ser un PÁRRAFO ÚNICO Y FLUIDO.
-        - El tono debe ser profesional, cercano y ajustado al sentimiento general de las noticias: {sentimiento_general}.
-
         ENTREGA:
-        Devuelve SOLO el texto de tu monólogo, listo para ser locutado, sin encabezados ni anotaciones.
+        Devuelve SOLO el texto de tu monólogo, listo para ser locutado.
         """
 
     @staticmethod
@@ -888,29 +842,18 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         """
         Genera una frase de 'post-créditos' cómplice y espontánea, basada en lo leído.
         """
+        instrucciones_post = PROMPTS_CONFIG.get('analysis_prompts', {}).get('post_creditos_instrucciones', "Di algo espontáneo.")
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
         return f"""
-        Eres Dorotea. El podcast ha terminado, ha sonado la música y supuestamente ya no estás grabando.
-        Estás relajada, quitándote los auriculares.
+        {persona_base}
+        
+        {instrucciones_post}
         
         CONTEXTO DE LO QUE HAS LEÍDO HOY:
         {contexto_noticias}
         
-        TAREA:
-        Elige UN detalle concreto de las noticias (un lugar, una comida, un evento, una curiosidad) y lanza un comentario al aire, como si le hablaras a un amigo/a que está contigo en el estudio o directamente al oyente más fiel que se ha quedado hasta el final.
-        
-        OBJETIVO:
-        Generar complicidad, ganas de ir al sitio, o una sonrisa.
-        
-        EJEMPLOS DE ESTILO (No los copies, inspírate):
-        - "Oye, pues esa ruta de tapas en [Lugar] tiene una pinta... ¿nos escapamos el finde?"
-        - "Madre mía, qué hambre me ha entrado con lo de las migas... yo hoy no perdono."
-        - "Te digo una cosa... yo al concierto de [Grupo] iría de cabeza. ¡Temazos!"
-        - "¿Te imaginas encontrarte eso por el campo? ¡Menudo susto!"
-        
-        REGLAS:
-        - **Longitud:** Corta y directa (15-25 palabras).
-        - **Tono:** Susurro cómplice, alegría espontánea, naturalidad total. 100% humano.
-        - **Formato:** Solo el texto.
+        ENTREGA: Solo el texto.
         """
 
 # (Método resumen_y_cierre_unificado eliminado por falta de uso)
