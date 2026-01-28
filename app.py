@@ -185,20 +185,6 @@ st.markdown(f"""
         margin-bottom: 0; /* Align better with switch */
     }}
 
-    /* Large Round Sidebar Button (DEPRECATED in v1.0 Redesign) */
-    /* [data-testid="stSidebar"] button[kind="primary"] {
-        height: 120px !important;
-        border-radius: 500px !important;
-        font-size: 1.8rem !important;
-        white-space: normal !important;
-        margin-top: 2rem;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        display: block !important;
-        width: 90% !important;
-        box-shadow: 0 4px 14px 0 rgba(0,0,0,0.39) !important;
-    } */
-
     /* Sidebar */
     [data-testid="stSidebar"] {{
         background-color: var(--gray-100);
