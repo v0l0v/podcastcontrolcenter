@@ -185,20 +185,19 @@ st.markdown(f"""
         margin-bottom: 0; /* Align better with switch */
     }}
 
-    /* Large Round Sidebar Button */
-    /* Large Round Sidebar Button */
-    [data-testid="stSidebar"] button[kind="primary"] {{
+    /* Large Round Sidebar Button (DEPRECATED in v1.0 Redesign) */
+    /* [data-testid="stSidebar"] button[kind="primary"] {
         height: 120px !important;
-        border-radius: 500px !important; /* Fully round pill shape */
+        border-radius: 500px !important;
         font-size: 1.8rem !important;
         white-space: normal !important;
         margin-top: 2rem;
         margin-left: auto !important;
         margin-right: auto !important;
         display: block !important;
-        width: 90% !important; /* Slightly less than 100% to show centering */
+        width: 90% !important;
         box-shadow: 0 4px 14px 0 rgba(0,0,0,0.39) !important;
-    }}
+    } */
 
     /* Sidebar */
     [data-testid="stSidebar"] {{
@@ -237,8 +236,49 @@ config = cargar_config()
 # Título
 st.markdown('<div class="main-header">Podcast Control Center v0.97</div>', unsafe_allow_html=True)
 
-# Sidebar para acciones rápidas
-with st.sidebar:
+# Definición de la Nueva Estructura de Interfaz (v1.0)
+tab_dashboard, tab_editor, tab_brain, tab_config_eng, tab_tools = st.tabs([
+    "🏠 Dashboard", 
+    "📝 Editor", 
+    "🧠 Cerebro & Personalidad", 
+    "⚙️ Ingeniería", 
+    "🛠️ Extras"
+])
+
+# === Sub-navegación (Tabs Anidados) ===
+
+# 1. Ingeniería (Configuración técnica)
+with tab_config_eng:
+    st.markdown("### ⚙️ Ingeniería y Configuración")
+    sub_conf_gen, sub_conf_audio, sub_conf_sources, sub_conf_ctas = st.tabs([
+        "🔧 General", "🎛️ Audio", "📡 Fuentes", "📢 CTAs"
+    ])
+
+# 2. Extras (Herramientas)
+with tab_tools:
+    st.markdown("### 🛠️ Herramientas de Producción")
+    sub_tool_lib, sub_tool_od, sub_tool_buzon = st.tabs([
+        "📚 Mediateca", "🎙️ A la Carta", "🗣️ Buzón"
+    ])
+
+# === Alias de Enrutamiento ===
+# Conectamos las variables "legacy" a las nuevas sub-pestañas para que el código existente
+# se renderice automáticamente en el lugar correcto sin necesidad de mover bloques masivos.
+
+tab_config = sub_conf_gen       # Tab Configuración -> Subtab General
+tab_audio = sub_conf_audio      # Tab Audio -> Subtab Audio
+tab_sources = sub_conf_sources  # Tab Fuentes -> Subtab Fuentes
+tab_ctas = sub_conf_ctas        # Tab CTAs -> Subtab CTAs
+
+tab_library = sub_tool_lib      # Tab Mediateca -> Subtab Mediateca
+tab_ondemand = sub_tool_od      # Tab OnDemand -> Subtab OnDemand
+tab_buzon = sub_tool_buzon      # Tab Buzón -> Subtab Buzón
+
+tab_prompts = tab_brain         # Cerebro -> Tab Principal Cerebro (Por ahora plano)
+
+# Dashboard: Acciones rápidas (Antes Sidebar)
+with tab_dashboard:
+
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
 
@@ -514,10 +554,11 @@ with st.sidebar:
 
 
 
-# Pestañas principales
-# Pestañas principales
-# Pestañas principales
-tab_editor, tab_config, tab_audio, tab_prompts, tab_library, tab_sources, tab_ctas, tab_ondemand, tab_buzon = st.tabs(["📝 Editor", "⚙️ Configuración", "🎛️ Audio y Estilo", "🧠 Cerebro y Personalidad", "📚 Mediateca", "📡 Monitor de Fuentes", "📢 CTAs", "🎙️ Grabación a la Carta", "🗣️ Buzón del Oyente"])
+# --- FIN DEL DASHBOARD ---
+
+# Bloques de Contenido Principal (Migración en curso)
+# (Las variables tab_editor, tab_config, etc. ya están definidas arriba apuntando a los nuevos tabs)
+
 
 with tab_editor:
     st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
@@ -783,110 +824,108 @@ with tab_audio:
         st.rerun()
 
 with tab_prompts:
-    st.markdown('<div class="sub-header">Personalidad y Prompts</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Cerebro y Personalidad</div>', unsafe_allow_html=True)
     st.info("Aquí defines CÓMO habla Dorotea. Usa `{presentadora}`, `{region}`, `{email}`, `{email_alias}` y `{pausa}` como variables en los textos.")
     
     prompts_cfg = config.get('prompts', {})
-    
-    # 1. Personalidad Base
-    st.markdown("### 🧠 Personalidad Base (Instrucción Maestra)")
-    st.markdown("Esta instrucción define el estilo general de Dorotea al narrar noticias.")
-    new_persona = st.text_area(
-        "Prompt de Personalidad",
-        value=prompts_cfg.get('persona_base', ''),
-        height=150
-    )
-    
-    st.markdown("---")
-    
-    # 2. Saludos
-    st.markdown("### 👋 Saludos de Bienvenida")
-    col_sal1, col_sal2 = st.columns(2)
-    with col_sal1:
-        saludo_lunes = st.text_area("Lunes", value=prompts_cfg.get('saludos', {}).get('lunes', ''), height=150)
-        saludo_viernes = st.text_area("Viernes", value=prompts_cfg.get('saludos', {}).get('viernes', ''), height=150)
-    with col_sal2:
-        saludo_mj = st.text_area("Martes-Jueves", value=prompts_cfg.get('saludos', {}).get('martes_jueves', ''), height=150)
-        saludo_finde = st.text_area("Fin de Semana", value=prompts_cfg.get('saludos', {}).get('finde', ''), height=150)
-
-    st.markdown("---")
-
-    # 3. Despedidas
-    st.markdown("### 👋 Despedidas y Cierre")
-    col_desp1, col_desp2 = st.columns(2)
-    with col_desp1:
-        desp_lunes = st.text_area("Cierre Lunes", value=prompts_cfg.get('despedidas', {}).get('lunes', ''), height=150)
-        desp_viernes = st.text_area("Cierre Viernes", value=prompts_cfg.get('despedidas', {}).get('viernes', ''), height=150)
-    with col_desp2:
-        desp_mj = st.text_area("Cierre Martes-Jueves", value=prompts_cfg.get('despedidas', {}).get('martes_jueves', ''), height=150)
-        desp_finde = st.text_area("Cierre Finde", value=prompts_cfg.get('despedidas', {}).get('finde', ''), height=150)
-
-    st.markdown("---")
-    
-    # 4. Firmas
-    st.markdown("### ✍️ Firma Final (Última frase)")
-    col_firma1, col_firma2 = st.columns(2)
-    with col_firma1:
-        firma_lunes = st.text_area("Firma Lunes", value=prompts_cfg.get('firmas', {}).get('lunes', ''), height=100)
-        firma_viernes = st.text_area("Firma Viernes", value=prompts_cfg.get('firmas', {}).get('viernes', ''), height=100)
-    with col_firma2:
-        firma_mj = st.text_area("Firma Martes-Jueves", value=prompts_cfg.get('firmas', {}).get('martes_jueves', ''), height=100)
-        firma_finde = st.text_area("Firma Finde", value=prompts_cfg.get('firmas', {}).get('finde', ''), height=100)
-
-    if st.button("Guardar Personalidad y Prompts"):
-        # Actualizar estructura
-        if 'prompts' not in config: config['prompts'] = {}
-        
-        config['prompts']['persona_base'] = new_persona
-        
-        config['prompts']['saludos'] = {
-            'lunes': saludo_lunes, 'martes_jueves': saludo_mj, 'viernes': saludo_viernes, 'finde': saludo_finde
-        }
-        config['prompts']['despedidas'] = {
-            'lunes': desp_lunes, 'martes_jueves': desp_mj, 'viernes': desp_viernes, 'finde': desp_finde
-        }
-        config['prompts']['firmas'] = {
-            'lunes': firma_lunes, 'martes_jueves': firma_mj, 'viernes': firma_viernes, 'finde': firma_finde
-        }
-        
-        guardar_config(config)
-        st.success("✅ ¡Personalidad de Dorotea actualizada!")
-        time.sleep(0.5)
-        st.rerun()
-
-    st.markdown("---")
-    st.markdown('<div class="sub-header">Cerebro (Prompts de Análisis)</div>', unsafe_allow_html=True)
-    st.info("Define las reglas para que la IA entienda, clasifique y agrupe las noticias.")
-
     analysis_prompts = config.get('prompts', {}).get('analysis_prompts', {})
-    
-    st.markdown("**1. Criterios de Clasificación (Informativo vs Irrelevante)**")
-    prompt_clasif = st.text_area("Instrucciones para clasificar", value=analysis_prompts.get('clasificacion_criterios', ''), height=150)
-    
-    st.markdown("**2. Instrucciones de Resumen**")
-    prompt_resumen = st.text_area("Instrucciones para resumir la noticia", value=analysis_prompts.get('resumen_instrucciones', ''), height=200)
-    
-    st.markdown("**3. Narración de Bloques**")
-    prompt_narracion = st.text_area("Instrucciones para narrar bloques", value=analysis_prompts.get('narracion_instrucciones', ''), height=150)
 
-    st.markdown("**4. Lógica de Agrupación**")
-    prompt_agrup = st.text_area("Instrucciones para agrupar temas", value=analysis_prompts.get('agrupacion_instrucciones', ''), height=150)
+    # Definir Sub-tabs
+    sub_pers, sub_logic, sub_struct = st.tabs(["🎭 Personalidad", "🧠 Lógica IA", "🏗️ Estructura"])
 
+    # --- SUB-TAB 1: PERSONALIDAD ---
+    with sub_pers:
+        # 1. Personalidad Base
+        st.markdown("### 🧠 Personalidad Base (Instrucción Maestra)")
+        st.markdown("Esta instrucción define el estilo general de Dorotea al narrar noticias.")
+        new_persona = st.text_area(
+            "Prompt de Personalidad",
+            value=prompts_cfg.get('persona_base', ''),
+            height=150
+        )
+        
+        st.markdown("---")
+        
+        # 2. Saludos
+        st.markdown("### 👋 Saludos de Bienvenida")
+        col_sal1, col_sal2 = st.columns(2)
+        with col_sal1:
+            saludo_lunes = st.text_area("Lunes", value=prompts_cfg.get('saludos', {}).get('lunes', ''), height=150)
+            saludo_viernes = st.text_area("Viernes", value=prompts_cfg.get('saludos', {}).get('viernes', ''), height=150)
+        with col_sal2:
+            saludo_mj = st.text_area("Martes-Jueves", value=prompts_cfg.get('saludos', {}).get('martes_jueves', ''), height=150)
+            saludo_finde = st.text_area("Fin de Semana", value=prompts_cfg.get('saludos', {}).get('finde', ''), height=150)
+
+        st.markdown("---")
+
+        # 3. Despedidas
+        st.markdown("### 👋 Despedidas y Cierre")
+        col_desp1, col_desp2 = st.columns(2)
+        with col_desp1:
+            desp_lunes = st.text_area("Cierre Lunes", value=prompts_cfg.get('despedidas', {}).get('lunes', ''), height=150)
+            desp_viernes = st.text_area("Cierre Viernes", value=prompts_cfg.get('despedidas', {}).get('viernes', ''), height=150)
+        with col_desp2:
+            desp_mj = st.text_area("Cierre Martes-Jueves", value=prompts_cfg.get('despedidas', {}).get('martes_jueves', ''), height=150)
+            desp_finde = st.text_area("Cierre Finde", value=prompts_cfg.get('despedidas', {}).get('finde', ''), height=150)
+
+        st.markdown("---")
+        
+        # 4. Firmas
+        st.markdown("### ✍️ Firma Final (Última frase)")
+        col_firma1, col_firma2 = st.columns(2)
+        with col_firma1:
+            firma_lunes = st.text_area("Firma Lunes", value=prompts_cfg.get('firmas', {}).get('lunes', ''), height=100)
+            firma_viernes = st.text_area("Firma Viernes", value=prompts_cfg.get('firmas', {}).get('viernes', ''), height=100)
+        with col_firma2:
+            firma_mj = st.text_area("Firma Martes-Jueves", value=prompts_cfg.get('firmas', {}).get('martes_jueves', ''), height=100)
+            firma_finde = st.text_area("Firma Finde", value=prompts_cfg.get('firmas', {}).get('finde', ''), height=100)
+
+        if st.button("💾 Guardar Personalidad", type="primary", use_container_width=True):
+            # Actualizar estructura
+            if 'prompts' not in config: config['prompts'] = {}
+            
+            config['prompts']['persona_base'] = new_persona
+            config['prompts']['saludos'] = {
+                'lunes': saludo_lunes, 'martes_jueves': saludo_mj, 'viernes': saludo_viernes, 'finde': saludo_finde
+            }
+            config['prompts']['despedidas'] = {
+                'lunes': desp_lunes, 'martes_jueves': desp_mj, 'viernes': desp_viernes, 'finde': desp_finde
+            }
+            config['prompts']['firmas'] = {
+                'lunes': firma_lunes, 'martes_jueves': firma_mj, 'viernes': firma_viernes, 'finde': firma_finde
+            }
+            
+            guardar_config(config)
+            st.success("✅ ¡Personalidad de Dorotea actualizada!")
+            time.sleep(0.5)
+            st.rerun()
+
+    # --- SUB-TAB 2: LÓGICA IA ---
+    with sub_logic:
+        st.caption("Define las reglas de negocio para el análisis de noticias.")
+        
+        prompt_clasif = st.text_area("Instrucciones para clasificar (Relevante/Irrelevante)", value=analysis_prompts.get('clasificacion_criterios', ''), height=200)
+        prompt_resumen = st.text_area("Instrucciones para resumir la noticia", value=analysis_prompts.get('resumen_instrucciones', ''), height=250)
+        prompt_agrup = st.text_area("Instrucciones para agrupar temas", value=analysis_prompts.get('agrupacion_instrucciones', ''), height=150)
+
+    # --- SUB-TAB 3: ESTRUCTURA ---
+    with sub_struct:
+        st.caption("Define el formato de los guiones finales.")
+
+        prompt_narracion = st.text_area("Instrucciones para narrar bloques", value=analysis_prompts.get('narracion_instrucciones', ''), height=150)
+        
+        col_struct1, col_struct2 = st.columns(2)
+        with col_struct1:
+            prompt_intro = st.text_area("Instrucciones Intro", value=analysis_prompts.get('intro_instrucciones', ''), height=200)
+        with col_struct2:
+            prompt_despedida = st.text_area("Instrucciones Despedida", value=analysis_prompts.get('despedida_instrucciones', ''), height=200)
+            
+        prompt_post = st.text_area("Instrucciones Post-Créditos", value=analysis_prompts.get('post_creditos_instrucciones', ''), height=100)
+
+    # Botón Global para Lógica y Estructura (fuera de tabs para que se vea siempre o abajo)
+    # Lo pondremos abajo del todo
     st.markdown("---")
-    st.markdown("**5. Estructura del Programa (Intro y Cierre)**")
-    
-    col_struct1, col_struct2 = st.columns(2)
-    with col_struct1:
-        prompt_intro = st.text_area("Instrucciones Intro", value=analysis_prompts.get('intro_instrucciones', ''), height=200)
-    with col_struct2:
-        prompt_despedida = st.text_area("Instrucciones Despedida", value=analysis_prompts.get('despedida_instrucciones', ''), height=200)
-        
-    st.markdown("**6. Post-Créditos (El toque final)**")
-    prompt_post = st.text_area("Instrucciones Post-Créditos", value=analysis_prompts.get('post_creditos_instrucciones', ''), height=100)
-
-    if st.button("Guardar Configuración de Cerebro"):
-        # Ya no guardamos los sliders aquí, se guardan en Tab 1
-        
+    if st.button("💾 Guardar Lógica y Estructura (Tabs 2 y 3)", type="primary", use_container_width=True):
         if 'prompts' not in config: config['prompts'] = {}
         if 'analysis_prompts' not in config['prompts']: config['prompts']['analysis_prompts'] = {}
         
