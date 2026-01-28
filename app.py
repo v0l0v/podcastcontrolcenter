@@ -866,8 +866,23 @@ with tab_prompts:
     st.markdown("**2. Instrucciones de Resumen**")
     prompt_resumen = st.text_area("Instrucciones para resumir la noticia", value=analysis_prompts.get('resumen_instrucciones', ''), height=200)
     
-    st.markdown("**3. Lógica de Agrupación**")
+    st.markdown("**3. Narración de Bloques**")
+    prompt_narracion = st.text_area("Instrucciones para narrar bloques", value=analysis_prompts.get('narracion_instrucciones', ''), height=150)
+
+    st.markdown("**4. Lógica de Agrupación**")
     prompt_agrup = st.text_area("Instrucciones para agrupar temas", value=analysis_prompts.get('agrupacion_instrucciones', ''), height=150)
+
+    st.markdown("---")
+    st.markdown("**5. Estructura del Programa (Intro y Cierre)**")
+    
+    col_struct1, col_struct2 = st.columns(2)
+    with col_struct1:
+        prompt_intro = st.text_area("Instrucciones Intro", value=analysis_prompts.get('intro_instrucciones', ''), height=200)
+    with col_struct2:
+        prompt_despedida = st.text_area("Instrucciones Despedida", value=analysis_prompts.get('despedida_instrucciones', ''), height=200)
+        
+    st.markdown("**6. Post-Créditos (El toque final)**")
+    prompt_post = st.text_area("Instrucciones Post-Créditos", value=analysis_prompts.get('post_creditos_instrucciones', ''), height=100)
 
     if st.button("Guardar Configuración de Cerebro"):
         # Ya no guardamos los sliders aquí, se guardan en Tab 1
@@ -877,7 +892,11 @@ with tab_prompts:
         
         config['prompts']['analysis_prompts']['clasificacion_criterios'] = prompt_clasif
         config['prompts']['analysis_prompts']['resumen_instrucciones'] = prompt_resumen
+        config['prompts']['analysis_prompts']['narracion_instrucciones'] = prompt_narracion
         config['prompts']['analysis_prompts']['agrupacion_instrucciones'] = prompt_agrup
+        config['prompts']['analysis_prompts']['intro_instrucciones'] = prompt_intro
+        config['prompts']['analysis_prompts']['despedida_instrucciones'] = prompt_despedida
+        config['prompts']['analysis_prompts']['post_creditos_instrucciones'] = prompt_post
         
         guardar_config(config)
         st.success("✅ Lógica de noticias actualizada.")
