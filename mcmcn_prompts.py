@@ -401,7 +401,8 @@ class PromptsCreativos:
         dato_meteo: str = "",
         dato_deportes: str = "",
         dato_curioso_gancho: str = "",
-        sentimiento_general: str = "neutro"
+        sentimiento_general: str = "neutro",
+        fecha_actual_str: str = ""
     ) -> str:
         """
         Genera el monólogo de apertura completo.
@@ -446,7 +447,10 @@ class PromptsCreativos:
         
         {instrucciones_intro}
 
-        CONTEXTO:
+        CONTEXTO TEMPORAL:
+        - FECHA DE HOY: {fecha_actual_str} (Úsala para situarte, pero NO digas "hoy es martes 15", di cosas como "bienvenidos a este martes 15 de abril").
+        
+        CONTEXTO DEL PROGRAMA:
         - Sentimiento general hoy: {sentimiento_general}
         - Saludo base sugerido: "{texto_base_saludo}"
         - Llamada a la acción (CTA) obligatoria: "{texto_cta}"

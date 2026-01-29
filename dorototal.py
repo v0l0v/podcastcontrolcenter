@@ -1914,6 +1914,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              if datos_deportes_hoy:
                  print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
         
+        # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
+        fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
+        
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             contenido_noticias=contenido_completo_texto,
             texto_cta=cta_inicio_limpio,
@@ -1921,7 +1924,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             dato_efemeride=efemerides_hoy,
             dato_meteo=datos_meteo_hoy,
             dato_deportes=datos_deportes_hoy,
-            sentimiento_general=sentimiento_general
+            sentimiento_general=sentimiento_general,
+            fecha_actual_str=fecha_actual_str
         )
         
         texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
