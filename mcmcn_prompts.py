@@ -622,7 +622,15 @@ class PromptsCreativos:
     
         INSTRUCCIONES:
         - `descripcion_tema`: Un texto breve que describa el tema del bloque (ej: "Iniciativas para fomentar el turismo rural.").
-        - `transicion_elegante`: Una frase para introducir el bloque de forma natural (ej: "Y hablando de nuestro patrimonio, varias noticias se centran en...").
+        - `transicion_elegante`: Una frase para introducir el bloque de forma natural.
+        
+        REGLAS DE ORO PARA LA TRANSICIÓN:
+        - **PROHIBIDO INVENTAR CONTEXTO PASADO:** NUNCA digas "Tras repasar X...", "Después de hablar de Y...", "Dejamos atrás la política...". NO SABES de qué se ha hablado antes.
+        - **MIRA SOLO HACIA DELANTE:** Tu transición debe servir SOLAMENTE para abrir la puerta al NUEVO tema. Usa fórmulas como:
+          - "Cambiando de tercio, nos centramos ahora en..."
+          - "En otro orden de cosas, el foco se pone en..."
+          - "Pasamos ahora a abordar noticias sobre..."
+          - "Y un tema que cobra importancia hoy es..."
         - **CONTEXTO GEOGRÁFICO:** El podcast se emite desde {ConfiguracionPodcast.REGION}. Puedes mencionar otras comunidades (como Andalucía o Extremadura) **SOLO SI** la noticia trata explícitamente sobre ellas o sobre un proyecto compartido. NUNCA uses frases como "nos vamos al campo andaluz" o "actualidad extremeña" para presentar el bloque general, salvo que TODAS las noticias sean de esa región. Si son noticias locales, asume que son de {ConfiguracionPodcast.REGION}.
         - Devuelve ÚNICAMENTE un objeto JSON válido con las claves "descripcion" y "transicion".
 
