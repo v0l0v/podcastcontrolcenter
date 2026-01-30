@@ -825,17 +825,25 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         return f"""
         {persona_base}
 
+        ESTÁS EN EL DOMINIO FINAL DEL PODCAST. NO ESTÁS EMPEZANDO. ESTÁS TERMINANDO.
+        
         {instrucciones_despedida}
 
         CONTEXTO:
         - Sentimiento general hoy: {sentimiento_general}
         
         ESTRUCTURA VARIABLE (Usa si aplica):
-        1.  **Resumen Temas:** "{contexto}"
+        1.  **Reflexión Final (Resumen):** "{contexto}" (Úsalo solo para dar una pincelada de cierre, NO para volver a contar las noticias).
         {instruccion_cta}
         {instruccion_resolucion}
         {instruccion_despedida}
         {instruccion_firma}
+
+        REGLAS DE ORO (COMPORTAMIENTO OBLIGATORIO):
+        - **PROHIBIDO SALUDAR:** No digas "Hola", "Buenos días", "Buenas tardes", "Bienvenidos".
+        - **PROHIBIDO PRESENTARSE:** No digas "Soy Dorotea y esto es...". Ya se ha dicho al principio.
+        - **EMPIEZA DIRECTO:** Tu primera frase debe ser una conclusión o una reflexión sobre lo escuchado.
+        - **TONO DE CIERRE:** Tu voz se está apagando, estás despidiendo a los amigos hasta mañana.
 
         ENTREGA:
         Devuelve SOLO el texto de tu monólogo, listo para ser locutado.
