@@ -1460,7 +1460,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         # --- NUEVO: Multimodalidad (Análisis de imágenes) ---
                         texto_imagen = ""
                         url_imagen = extract_image_url(contenido)
-                        if url_imagen:
+                        if url_imagen and False: # DISABLED TEMPORARILY FOR STABILITY
                              print(f"      🖼️ Detectada imagen en la noticia: {url_imagen[:60]}...")
                              img_bytes = download_image_as_bytes(url_imagen)
                              if img_bytes:

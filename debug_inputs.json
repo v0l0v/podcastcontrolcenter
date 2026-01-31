@@ -1,0 +1,10 @@
+[
+    {
+        "sitio": "Test Feed",
+        "texto": "Esta es una noticia de prueba para verificar la generación de audio. Debería funcionar correctamente y generar un archivo mp3 final. Estamos probando el sistema de síntesis de voz y la integración con Gemini para asegurar que todo el flujo de trabajo es correcto y robusto ante fallos.",
+        "fecha": "2024-01-31T12:00:00",
+        "hash": "test_hash_123",
+        "titulo": "Noticia de Prueba",
+        "link": "http://example.com"
+    }
+]
