@@ -567,8 +567,17 @@ with tab_editor:
                  edited_news_list_main = []
                  
                  for i, news in enumerate(news_candidates):
-                     # Título robusto
-                     titulo_original = news.get("titulo") or news.get("sitio")
+                      # Título robusto
+                     titulo_feed = news.get("titulo")
+                     nombre_sitio = news.get("sitio")
+                     
+                     if titulo_feed and titulo_feed != "None" and len(titulo_feed) > 3:
+                         titulo_original = titulo_feed
+                     elif nombre_sitio:
+                         titulo_original = f"Noticia de {nombre_sitio}"
+                     else:
+                         titulo_original = "Noticia sin título"
+                         
                      resumen_original = news.get("resumen", "")
                      
                      # Usar expander para el detalle - expandido por defecto el primero? no, mejor colapsado para limpieza

@@ -1437,6 +1437,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         # Reparar posible codificación rota
                         contenido = reparar_codificacion(contenido)
                         titulo_reparado = reparar_codificacion(entry.get('title', ''))
+                        # Fallback for Title
+                        if not titulo_reparado or titulo_reparado == "None" or len(titulo_reparado) < 3:
+                             # Use first few words of content
+                             words = contenido.split()[:8]
+                             titulo_reparado = " ".join(words) + "..." if words else "Noticia sin título"
 
                         # --- NUEVO: Intentar seguir encadenamiento de noticias (republicaciones) ---
                         texto_externo = ""
