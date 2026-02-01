@@ -21,6 +21,7 @@ import feedparser
 from dateutil import parser as date_parser
 
 # --- IMPORTACIONES MODULARES ---
+from src.utils.caching import calculate_hash, get_cached_content, cache_content
 from src.config.settings import (
     CONFIG, AUDIO_CONFIG, GEN_CONFIG, VOICE_TARGET_PEAK_DBFS, TARGET_LUFS, 
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
