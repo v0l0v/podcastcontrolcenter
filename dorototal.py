@@ -987,6 +987,45 @@ def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tu
     
     return None, ""
 
+def _sintetizar_con_cache_estructural(texto: str) -> AudioSegment:
+    """
+    Wrapper para sintetizar audio estructural (Intro, Bloques, Cierre) usando caché.
+    Si el texto ya tiene un audio generado con la misma voz, lo reutiliza.
+    """
+    if not texto:
+        return None
+        
+    # Calcular hash del texto + voz actual (para invalidar si cambiamos de voz)
+    # Incluimos 'VOICE_NAME' que viene de settings/config.
+    from src.config.settings import VOICE_NAME
+    
+    unique_key = f"{texto}_{VOICE_NAME}"
+    key_hash = calculate_hash(unique_key)
+    
+    filename = f"struct_{key_hash}.mp3"
+    audio_path = os.path.join(AUDIO_CACHE_DIR, filename)
+    
+    # 1. Check Caché
+    if audio_cache_valido(audio_path):
+        print(f"      ⏩ Usando audio estructural en caché") #: {filename}")
+        try:
+            return AudioSegment.from_file(audio_path)
+        except Exception as e:
+            print(f"      ⚠️ Error leyendo audio estructural caché: {e}")
+            
+    # 2. Generar si no existe
+    # print(f"      🎙️  Generando nuevo audio estructural...")
+    audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto)}</speak>")
+    
+    if audio:
+        try:
+            audio.export(audio_path, format="mp3")
+        except Exception as e:
+            print(f"      ❌ Error guardando caché estructural: {e}")
+            
+    return audio
+
+
 def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp: str):
     """
     Genera un archivo HTML con la transcripción/resumen del podcast.
@@ -1922,18 +1961,45 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
         fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
         
-        prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
-            contenido_noticias=contenido_completo_texto,
-            texto_cta=cta_inicio_limpio,
-            texto_base_saludo=saludo_base,
-            dato_efemeride=efemerides_hoy,
-            dato_meteo=datos_meteo_hoy,
-            dato_deportes=datos_deportes_hoy,
-            sentimiento_general=sentimiento_general,
-            fecha_actual_str=fecha_actual_str
-        )
+        # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
+        fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
         
-        texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
+        # --- CACHING LLM: INTRO ---
+        intro_inputs = {
+            "contenido": contenido_completo_texto,
+            "cta": cta_inicio_limpio,
+            "saludo_base": saludo_base,
+            "efemerides": efemerides_hoy,
+            "meteo": datos_meteo_hoy,
+            "deportes": datos_deportes_hoy,
+            "semtimiento": sentimiento_general,
+            "fecha": fecha_actual_str
+        }
+        intro_hash = calculate_hash(intro_inputs)
+        
+        cached_intro_data = get_cached_content(f"intro_{intro_hash}")
+        texto_monologo_inicio = ""
+        
+        if cached_intro_data and cached_intro_data.get('text'):
+             print("      ⏩ Usando texto de INTRO en caché (Saltando LLM).")
+             texto_monologo_inicio = cached_intro_data.get('text')
+        else:
+            prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
+                contenido_noticias=contenido_completo_texto,
+                texto_cta=cta_inicio_limpio,
+                texto_base_saludo=saludo_base,
+                dato_efemeride=efemerides_hoy,
+                dato_meteo=datos_meteo_hoy,
+                dato_deportes=datos_deportes_hoy,
+                sentimiento_general=sentimiento_general,
+                fecha_actual_str=fecha_actual_str
+            )
+            texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
+            
+            # Guardar en caché
+            if texto_monologo_inicio:
+                cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})
+
         
         # 3. Añadir la sintonía de inicio ANTES del monólogo.
         ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
@@ -1953,7 +2019,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 
                 # Parte 1: Saludo + Resumen
                 if partes[0].strip():
-                    audio_p1 = sintetizar_ssml_a_audio(f"<speak>{html.escape(partes[0].strip())}</speak>")
+                    # Usar wrapper con caché
+                    audio_p1 = _sintetizar_con_cache_estructural(partes[0].strip())
                     if audio_p1:
                         segmentos_audio.append(audio_p1)
                 
@@ -1963,12 +2030,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 
                 # Parte 2: CTA + Adivinanza + Cierre
                 if len(partes) > 1 and partes[1].strip():
-                    audio_p2 = sintetizar_ssml_a_audio(f"<speak>{html.escape(partes[1].strip())}</speak>")
+                    audio_p2 = _sintetizar_con_cache_estructural(partes[1].strip())
                     if audio_p2:
                         segmentos_audio.append(audio_p2)
             else:
                 # Comportamiento normal si no hay marcador
-                monologo_inicio_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+                monologo_inicio_audio = _sintetizar_con_cache_estructural(texto_limpio)
                 if monologo_inicio_audio:
                     segmentos_audio.append(monologo_inicio_audio)
         else:
@@ -2016,8 +2083,26 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             # Guardamos el número de noticias procesadas ANTES de empezar el bloque
             noticias_antes_del_bloque = noticias_procesadas
             
-            # Generar narración unificada
-            cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
+            # --- CACHING LLM: BLOQUE ---
+            block_inputs = {
+                "tema": bloque.get('descripcion_tema'),
+                "noticias_ids": [n.get('id') for n in bloque.get('noticias', [])],
+                "fecha": fecha_actual_str
+            }
+            block_hash = calculate_hash(block_inputs)
+            
+            cached_block = get_cached_content(f"block_{block_hash}")
+            cronica_unificada_texto = ""
+            
+            if cached_block and cached_block.get('text'):
+                 print(f"      ⏩ Usando texto de BLOQUE '{bloque.get('descripcion_tema')}' en caché.")
+                 cronica_unificada_texto = cached_block.get('text')
+            else:
+                 # Generar narración unificada
+                 cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
+                 if cronica_unificada_texto:
+                     cache_content(f"block_{block_hash}", {"text": cronica_unificada_texto})
+
             
             if cronica_unificada_texto:
                 transcript_data.append({
@@ -2035,7 +2120,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     print(f"      🎵 Insertando cortinillas (clickrozalen) entre {len(parrafos)} noticias del bloque...")
                     for i, parrafo in enumerate(parrafos):
                         # Generamos audio para este párrafo/noticia
-                        audio_parrafo = sintetizar_ssml_a_audio(f"<speak>{html.escape(parrafo)}</speak>")
+                        # Usar wrapper con caché
+                        audio_parrafo = _sintetizar_con_cache_estructural(parrafo)
                         if audio_parrafo:
                             audio_cronica += audio_parrafo
                             # Si NO es el último párrafo, añadimos la cortinilla
@@ -2051,7 +2137,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                     audio_cronica += AudioSegment.silent(duration=600)
                 else:
                     # Fallback: Si solo hay 1 párrafo, lo hacemos todo junto
-                    audio_cronica = sintetizar_ssml_a_audio(f"<speak>{html.escape(cronica_unificada_texto)}</speak>")
+                    audio_cronica = _sintetizar_con_cache_estructural(cronica_unificada_texto)
                 # ------------------------------------------------------------------
                 sentimiento_bloque = analizar_sentimiento_general_noticias(bloque.get('noticias', []))
                 
@@ -2075,9 +2161,18 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             cta_intermedio_limpio,
                             tono_actual="informativo y sugerente"
                         )
-                        texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
+                        # No cacheamos CTA intermedio aleatorio por ahora o si?
+                        # Mejor si, para evitar gasto.
+                        cta_hash = calculate_hash(cta_intermedio_limpio + "intermedio")
+                        cached_cta = get_cached_content(f"cta_{cta_hash}")
+                        if cached_cta:
+                            texto_cta_reescrito = cached_cta['text']
+                        else:
+                            texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
+                            if texto_cta_reescrito: cache_content(f"cta_{cta_hash}", {"text": texto_cta_reescrito})
+
                         if texto_cta_reescrito:
-                            cta_intermedio_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_cta_reescrito)}</speak>")
+                            cta_intermedio_audio = _sintetizar_con_cache_estructural(texto_cta_reescrito)
                             if cta_intermedio_audio:
                                 # Insertamos: [Cortinilla] -> [CTA] -> [Transición existente]
                                 # 1. Insertamos el CTA antes de la última transición (index -1)
@@ -2380,23 +2475,44 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             
         contexto_cierre_str = "\n".join(contexto_seleccionado) 
         
-        prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
-            contexto=contexto_cierre_str,
-            texto_cta=cta_cierre_limpio,
-            texto_base_despedida=despedida_base,
-            texto_firma=firma_base,
-            # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
-            sentimiento_general=sentimiento_general
-        )
+        # --- CACHING LLM: CIERRE ---
+        outro_inputs = {
+            "contexto": contexto_cierre_str,
+            "cta": cta_cierre_limpio,
+            "despedida": despedida_base,
+            "firma": firma_base,
+            "sentimiento": sentimiento_general
+        }
+        outro_hash = calculate_hash(outro_inputs)
         
-        texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado)
+        cached_outro = get_cached_content(f"outro_{outro_hash}")
+        texto_monologo_cierre = ""
+        
+        if cached_outro and cached_outro.get('text'):
+             print("      ⏩ Usando texto de CIERRE en caché.")
+             texto_monologo_cierre = cached_outro.get('text')
+        else:
+            prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
+                contexto=contexto_cierre_str,
+                texto_cta=cta_cierre_limpio,
+                texto_base_despedida=despedida_base,
+                texto_firma=firma_base,
+                # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
+                sentimiento_general=sentimiento_general
+            )
+            
+            texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado)
+            if texto_monologo_cierre:
+                cache_content(f"outro_{outro_hash}", {"text": texto_monologo_cierre})
         
         # 4. Limpiar, sintetizar y añadir el monólogo de cierre.
         if texto_monologo_cierre:
             texto_limpio = limpiar_artefactos_ia(texto_monologo_cierre)
             print(f"      ✅ Monólogo final generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'outro', 'content': texto_limpio}) # <-- Capturar cierre
-            monologo_cierre_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+            
+            # Usar wrapper con caché
+            monologo_cierre_audio = _sintetizar_con_cache_estructural(texto_limpio)
             if monologo_cierre_audio:
                 segmentos_audio.append(monologo_cierre_audio)
         else:
