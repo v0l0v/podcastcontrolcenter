@@ -223,20 +223,13 @@ config = cargar_config()
 st.markdown('<div class="main-header">Podcast Control Center v0.97</div>', unsafe_allow_html=True)
 
 # Definición de la Nueva Estructura de Interfaz (v1.0)
-tab_dashboard, tab_editor, tab_brain, tab_config_eng, tab_tools = st.tabs([
+tab_dashboard, tab_editor, tab_log, tab_brain, tab_config_eng, tab_tools = st.tabs([
     "🏠 Dashboard", 
     "📝 Editor", 
     "📊 LOG & Costes",
     "🧠 Cerebro & Personalidad", 
     "⚙️ Ingeniería", 
     "🛠️ Extras"
-])
-
-tab_log = tab_brain # Placeholder temp variable shift
-tab_log = st.tabs(["dummy"])[0] # Hacky swap, better reassign properly below
-# Re-assign variables cleanly:
-(tab_dashboard, tab_editor, tab_log, tab_brain, tab_config_eng, tab_tools) = st.tabs([
-    "🏠 Dashboard", "📝 Editor", "📊 LOG & Costes", "🧠 Cerebro", "⚙️ Ingeniería", "🛠️ Extras"
 ])
 
 
