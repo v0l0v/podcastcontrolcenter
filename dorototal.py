@@ -47,6 +47,10 @@ from src.weather_utils import obtener_pronostico_meteo
 from src.sports_utils import obtener_resultados_futbol
 import mcmcn_prompts 
 
+# --- MONITORING ---
+from src.monitoring import logger, tracker
+ 
+
 # --- CONFIGURACIÓN Y CLIENTES ---
 # Los clientes se manejan en los módulos (src.engine.audio, src.llm_utils).
 # Translate client se eliminó por desuso.
@@ -1417,8 +1421,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 sys.exit(1)
                 
         print(f"Directorio de salida creado: {output_dir}")
+        logger.clear_logs() # Limpiar logs anteriores al iniciar uno nuevo
+        logger.step("Inicio del Proceso", "START")
+        logger.info(f"Directorio de salida: {output_dir}")
 
         print("\n--- FASE 1: Recopilando, filtrando y resumiendo noticias ---")
+
         
         cache_noticias = cargar_cache_noticias()
         noticias_candidatas_totales = []
@@ -1443,8 +1451,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         # --- MODO 2: PROCESAMIENTO NORMAL (O PREVIEW) DESDE RSS ---
         else:
+            logger.step("Lectura de Feeds RSS", "RUNNING")
             with open(nombre_archivo_feeds, 'r', encoding='utf-8') as f:
                 feeds_urls = [url.strip() for url in f.read().replace(',', '\n').splitlines() if url.strip()]
+
 
             if not feeds_urls:
                 print(f"Advertencia: El archivo de feeds '{nombre_archivo_feeds}' está vacío.")
@@ -1456,12 +1466,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             max_items = int(gen_config.get('max_news_items', 20))
             
             print(f"      ⚙️ Configuración: Ventana={window_hours}h, Máx. Noticias={max_items}")
+            logger.info(f"Configuración cargada: Ventana {window_hours}h, Máx {max_items} items")
 
             limite_dias = datetime.now() - timedelta(hours=window_hours)
 
             for url in feeds_urls:
                 try:
+                    logger.info(f"Leyendo feed: {url}")
                     feed = feedparser.parse(url)
+
                     sitio = feed.feed.get('title', '').replace(" on Facebook", "").strip()
                     if not sitio:
                          link_feed = feed.feed.get('link', '') or url
@@ -1517,7 +1530,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         noticia_hash = stable_text_hash(contenido)
                         texto_crudo = texto_contexto + texto_imagen
 
+                        logger.info(f"Noticia encontrada: {titulo_reparado[:30]}...", details={"source": sitio})
                         noticias_candidatas_totales.append({
+
                             'sitio': sitio, 
                             'texto': texto_crudo, 
                             'fecha': fecha_pub, 
@@ -1630,13 +1645,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         except:
                             entidades_clave = []
 
-                    # === FASE 2: Resumen ===
-                    if es_noticia_breve:
-                        print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
-                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
-                    else:
-                        print("      -> Fase 2/3: Generando resumen enriquecido con IA. (Incluye verificación de fechas)")
-                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
+                    if not resumen:
+                        logger.info(f"Resumiendo: {titulo_reparado[:40]}...", details={"length": len(texto_crudo)})
+                        if es_noticia_breve:
+
+                            print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
+                            prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
+                        else:
+                            print("      -> Fase 2/3: Generando resumen enriquecido con IA. (Incluye verificación de fechas)")
+                            prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
                             texto=texto_crudo,
                             fuente_original=fuente_original,
                             entidades_clave=entidades_clave,
@@ -1719,8 +1736,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         nuevas_noticias_para_cache[noticia_hash] = nueva_noticia_procesada
 
         if not resumenes_finales:
-            print("No se pudieron generar resúmenes válidos. Abortando.")
+            logger.error("No hay noticias válidas tras el filtrado.")
+            print("No quedan noticias válidas tras el filtrado y resumen. Terminando.")
             sys.exit(0)
+            
+        logger.step("Generación de Guion y Audios", "RUNNING")
+        print("\n--- FASE 2: Agrupación y Guionizado ---")
 
         # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR ---
         if solo_preview:
@@ -2099,10 +2120,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                  print(f"      ⏩ Usando texto de BLOQUE '{bloque.get('descripcion_tema')}' en caché.")
                  cronica_unificada_texto = cached_block.get('text')
             else:
-                 # Generar narración unificada
-                 cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
-                 if cronica_unificada_texto:
-                     cache_content(f"block_{block_hash}", {"text": cronica_unificada_texto})
+                tema = bloque.get('descripcion_tema')
+                print(f"   Bloque '{tema}': Generando narración consolidada...")
+                logger.info(f"Narrando bloque: {tema}")
+                cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
+
+                if cronica_unificada_texto:
+                    cache_content(f"block_{block_hash}", {"text": cronica_unificada_texto})
 
             
             if cronica_unificada_texto:
@@ -2299,7 +2323,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                          intro_txt = data_prog.get("intro", "")
                          outro_txt = data_prog.get("outro", "")
                      except:
-                         print("      ⚠️ Error parseando JSON de audio programado.")
+                         print(f"      ⚠️ Error parseando JSON de audio programado: {e}")
                  
                  # Si falla la IA, usamos genéricos
                  if not intro_txt: intro_txt = "Y ahora, escuchemos este audio que nos han enviado."
@@ -2559,7 +2583,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         duracion_total_seg = sum(len(s) for s in segmentos_audio if s) / 1000
         print(f"  📊 Duración total estimada: {duracion_total_seg / 60:.1f} minutos")
 
-        # Silencio inicial
+        logger.step("Finalización y Masterización", "RUNNING")
+        print("\n--- FASE 4: Montaje Final ---")
         podcast_final = AudioSegment.silent(duration=500)
 
         # Método adaptativo según duración

@@ -17,6 +17,9 @@ from src.core.text_processing import (
     corregir_decimales_con_coma_tts
 )
 from src.llm_utils import retry_on_failure
+# --- MONITORING ---
+from src.monitoring import tracker
+
 
 # --- LIBRARIES OPCIONALES ---
 try:
@@ -137,6 +140,14 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
         )
         audio_segment = AudioSegment.from_file(io.BytesIO(response.audio_content), format="mp3")
         print(f"      Volumen generado ({'Texto' if 'Journey' in voz else 'SSML'}): {audio_segment.max_dBFS:.2f} dBFS")
+        
+        # --- TRACKING ---
+        # Contamos caracteres del texto procesado
+        # Si es SSML, lo ideal sería contar solo el texto 'hablable', pero Google cobra por el input SSML completo (tags incluidos) en muchos casos,
+        # o texto plano. Para simplificar y ser conservadores, contamos el length del input enviado.
+        input_len = len(texto_plano) if "Journey" in voz or "Chirp" in voz else len(ssml_corregido)
+        tracker.track_tts(input_len, voz)
+        
         return audio_segment
     except Exception as e:
         raise e

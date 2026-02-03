@@ -226,10 +226,19 @@ st.markdown('<div class="main-header">Podcast Control Center v0.97</div>', unsaf
 tab_dashboard, tab_editor, tab_brain, tab_config_eng, tab_tools = st.tabs([
     "🏠 Dashboard", 
     "📝 Editor", 
+    "📊 LOG & Costes",
     "🧠 Cerebro & Personalidad", 
     "⚙️ Ingeniería", 
     "🛠️ Extras"
 ])
+
+tab_log = tab_brain # Placeholder temp variable shift
+tab_log = st.tabs(["dummy"])[0] # Hacky swap, better reassign properly below
+# Re-assign variables cleanly:
+(tab_dashboard, tab_editor, tab_log, tab_brain, tab_config_eng, tab_tools) = st.tabs([
+    "🏠 Dashboard", "📝 Editor", "📊 LOG & Costes", "🧠 Cerebro", "⚙️ Ingeniería", "🛠️ Extras"
+])
+
 
 # === Sub-navegación (Tabs Anidados) ===
 
@@ -615,6 +624,99 @@ with tab_editor:
                      st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
     else:
         st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
+
+with tab_log:
+    st.markdown('<div class="sub-header">Monitor de Proceso y Costes</div>', unsafe_allow_html=True)
+    
+    # Auto-refresh log
+    if st.button("🔄 Actualizar Logs"):
+        st.rerun()
+
+    col_logs, col_costs = st.columns([2, 1])
+    
+    with col_logs:
+        st.markdown("#### 📜 Registro de Ejecución (En Vivo)")
+        try:
+            log_file = "logs/process_log.jsonl"
+            if os.path.exists(log_file):
+                with open(log_file, "r") as f:
+                    lines = f.readlines()
+                
+                logs_display = []
+                for line in lines[-50:]: # Últimas 50 líneas
+                    try:
+                        entry = json.loads(line)
+                        ts = entry['timestamp'].split('T')[1].split('.')[0]
+                        lvl = entry['level']
+                        msg = entry['message']
+                        icon = "INFO"
+                        if lvl == "STEP": icon = "🔹"
+                        elif lvl == "SUCCESS": icon = "✅"
+                        elif lvl == "WARNING": icon = "⚠️"
+                        elif lvl == "ERROR": icon = "❌"
+                        elif lvl == "INFO": icon = "ℹ️"
+                        
+                        logs_display.append(f"{ts} {icon} {msg}")
+                    except:
+                        pass
+                
+                log_text = "\n".join(logs_display)
+                st.code(log_text, language="text")
+            else:
+                st.info("No hay logs disponibles aún. Inicia un proceso.")
+        except Exception as e:
+            st.error(f"Error leyendo logs: {e}")
+
+    with col_costs:
+        st.markdown("#### 💰 Estimación de Costes (Free Tier)")
+        
+        try:
+            usage_file = "logs/usage_stats.json"
+            if os.path.exists(usage_file):
+                with open(usage_file, "r") as f:
+                    stats = json.load(f)
+                
+                # GEMINI FLASH LIMITS (Aprox)
+                # Free: 1.500 requests/day, 1M TPM (Tokens per minute).
+                # Simplified daily view: 1M Tokens input/output combined (Safe limit)
+                gemini_in = stats.get('gemini_input_tokens', 0)
+                gemini_out = stats.get('gemini_output_tokens', 0)
+                total_gemini = gemini_in + gemini_out
+                
+                gemini_limit = 1_000_000 # 1M Tokens Daily Free Tier (Conservative)
+                gemini_pct = min(100, (total_gemini / gemini_limit) * 100)
+                
+                st.write(f"**Gemini 1.5 Flash**")
+                st.progress(gemini_pct / 100)
+                st.caption(f"{total_gemini:,} / {gemini_limit:,} tokens usados ({gemini_pct:.1f}%)")
+                
+                if gemini_pct > 90: st.warning("⚠️ Cerca del límite gratuito diario de Gemini.")
+
+                st.divider()
+
+                # TTS LIMITS
+                # Standard: 4M chars/month free.
+                # WaveNet: 1M chars/month free.
+                # Neural2/Studio: Paid.
+                tts_chars = stats.get('tts_chars', 0)
+                
+                # Asumimos mezcla, límite conservador de 1M (WaveNet limit)
+                tts_limit = 1_000_000 
+                tts_pct = min(100, (tts_chars / tts_limit) * 100)
+                
+                st.write(f"**Google TTS (Caracteres)**")
+                st.progress(tts_pct / 100)
+                st.caption(f"{tts_chars:,} / {tts_limit:,} caracteres usados ({tts_pct:.1f}%)")
+                if tts_pct > 90: st.warning("⚠️ Cerca del límite gratuito mensual de TTS.")
+                
+                st.divider()
+                st.info(f"💾 Las estadísticas se guardan en `logs/usage_stats.json`.")
+                
+            else:
+                st.write("No hay datos de consumo aún.")
+        except Exception as e:
+            st.error(f"Error stats: {e}")
+
 
 with tab_config:
     st.markdown('<div class="sub-header">Identidad de Podcast</div>', unsafe_allow_html=True)

@@ -7,12 +7,20 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
+# --- MONITORING ---
+from src.monitoring import tracker
+
+
 # =================================================================================
 # DECORADOR DE REINTENTOS PARA LAS LLAMADAS A API
 # =================================================================================
 def retry_on_failure(retries=3, delay=5, backoff=2):
     def decorator(func):
         def wrapper(*args, **kwargs):
+            # Wrapper for monitoring
+            if 'monitor_callback' in kwargs:
+                # Optional: Handle callback if needed
+                pass
             current_delay = delay
             for i in range(1, retries + 1):
                 try:
@@ -88,7 +96,25 @@ def generar_texto_con_gemini(prompt: str) -> str:
     try:
         # Tanto vertexai como google.generativeai soportan .generate_content() y .text
         response = model.generate_content(prompt)
-        return response.text.strip() if response and hasattr(response, 'text') and response.text else ""
+        text = response.text.strip() if response and hasattr(response, 'text') and response.text else ""
+        
+        # --- TRACKING ---
+        # Estimación simple (tipo Flash: caracteres / 4) o uso real si disponible
+        input_tokens = len(prompt) // 4 
+        output_tokens = len(text) // 4
+        if hasattr(response, 'usage_metadata'):
+            # Si el SDK devuelve metadata real, usarla
+            try:
+                # Adaptar según estructura de objeto response (Vertex vs AI Studio)
+                if hasattr(response.usage_metadata, 'prompt_token_count'):
+                    input_tokens = response.usage_metadata.prompt_token_count
+                if hasattr(response.usage_metadata, 'candidates_token_count'):
+                    output_tokens = response.usage_metadata.candidates_token_count
+            except:
+                pass
+        
+        tracker.track_gemini(input_tokens, output_tokens, model="flash-lite")
+        return text
             
     except Exception as e:
         # Fallback para estructuras antiguas o errores de bloqueos
@@ -132,7 +158,11 @@ def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_ty
         else:
             image_part = Part.from_data(data=image_bytes, mime_type=mime_type)
             response = model.generate_content([prompt, image_part])
-            return response.text.strip() if response and hasattr(response, 'text') else ""
+            text = response.text.strip() if response and hasattr(response, 'text') else ""
+            
+            # Tracking Multimodal (Estimación básica)
+            tracker.track_gemini(len(prompt)//4 + 258, len(text)//4, model="gemini-pro-vision") # +258 tokens por imagen aprox
+            return text
 
     except Exception as e:
         print(f"❌ Error en generación Multimodal Gemini: {e}")
