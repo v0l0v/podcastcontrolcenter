@@ -671,6 +671,7 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 **ESTRUCTURA VISUAL OBLIGATORIA:**
 - Aunque la narración debe sonar fluida y conectada, **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
 - Usa un salto de línea doble entre cada noticia.
+- **PROHIBIDO USAR SEPARADORES VISUALES:** No uses guiones ("---"), líneas, asteriscos, ni ningún otro carácter para separar noticias. Solo el salto de línea doble.
 - Esto es vital para que podamos insertar una pequeña cortinilla musical entre ellas.
 
 **Frase de transición de entrada (úsala para empezar):**

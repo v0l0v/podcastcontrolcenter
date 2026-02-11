@@ -472,7 +472,7 @@ def limpiar_artefactos_ia(texto: str) -> str:
     lineas = []
     for linea in texto_limpio.split('\n'):
         linea_limpia = linea.strip()
-        if linea_limpia and not re.match(r'^\s*(\d+\.|\*+)\s*$', linea_limpia):
+        if linea_limpia and not re.match(r'^\s*(\d+\.|\*+|[-_—]+)\s*$', linea_limpia):
             lineas.append(linea_limpia)
     texto_final = '\n'.join(lineas)
     texto_final = re.sub(r'[ \t]+', ' ', texto_final).strip()
