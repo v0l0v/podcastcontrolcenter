@@ -117,8 +117,3 @@ texto: Me emociona el respeto y la dignidad con la que tratáis cada tema y a ca
 fecha: 30-11-2025
 autor: Adrián Soto
 texto: Recta final del mes y seguís al pie del cañón con la misma calidad de siempre. Sois incansables. ¡Enhorabuena por vuestra constancia!
----
-fecha: 31-11-2025
-autor: Pilar Cruz
-texto: Terminando el mes con vosotros. Gracias por otros 31 días de información, compañía y amor por el mundo rural. Sois un referente. ¡A por noviembre!
----
