@@ -2019,6 +2019,15 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             )
             texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
             
+            # --- FIX: Inyección determinista de fecha ---
+            if texto_monologo_inicio:
+                if "[FECHA_HUMANIZADA]" in texto_monologo_inicio:
+                    print(f"      🗓️ Sustituyendo marcador de fecha por: {fecha_actual_str}")
+                    texto_monologo_inicio = texto_monologo_inicio.replace("[FECHA_HUMANIZADA]", fecha_actual_str)
+                else:
+                    print("      ⚠️ La IA no usó el marcador [FECHA_HUMANIZADA]. Verificando si alucinó fecha...")
+            # --------------------------------------------
+            
             # Guardar en caché
             if texto_monologo_inicio:
                 cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})

@@ -448,7 +448,9 @@ class PromptsCreativos:
         {instrucciones_intro}
 
         CONTEXTO TEMPORAL:
-        - FECHA DE HOY: {fecha_actual_str} (Úsala para situarte, pero NO digas "hoy es martes 15", di cosas como "bienvenidos a este martes 15 de abril").
+        - FECHA DE HOY: {fecha_actual_str} 
+        - **IMPORTANTE SOBRE LA FECHA:** NUNCA escribas la fecha tú misma. Para mencionar qué día es hoy en el saludo, DEBES escribir LITERALMENTE el marcador: `[FECHA_HUMANIZADA]`. Yo lo sustituiré después automáticamnete.
+        - Ejemplo correcto: "Bienvenidos a este [FECHA_HUMANIZADA]..."
         
         CONTEXTO DEL PROGRAMA:
         - Sentimiento general hoy: {sentimiento_general}
