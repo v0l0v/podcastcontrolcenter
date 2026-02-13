@@ -42,7 +42,7 @@ from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini, generar_texto_multimodal_audio_con_gemini
-from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy
+from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy, obtener_fecha_humanizada_es
 from src.weather_utils import obtener_pronostico_meteo
 from src.sports_utils import obtener_resultados_futbol
 import mcmcn_prompts 
@@ -1982,10 +1982,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                  print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
         
         # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
-        fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
+        fecha_actual_str = obtener_fecha_humanizada_es()
         
         # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
-        fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
+        fecha_actual_str = obtener_fecha_humanizada_es()
         
         # --- CACHING LLM: INTRO ---
         intro_inputs = {
@@ -2105,7 +2105,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         punto_insercion_cta = num_noticias // 2 if num_noticias > 0 else -1
         noticias_procesadas = 0
 
-        fecha_actual_str = datetime.now().strftime("%A, %d de %B de %Y")
+        fecha_actual_str = obtener_fecha_humanizada_es()
 
         # --- INICIO DE LA NUEVA LÓGICA DE PROCESAMIENTO DE AUDIO (MODIFICADA: UNIFICACIÓN TOTAL) ---
         # 1. Procesar TODOS los bloques temáticos como crónicas unificadas

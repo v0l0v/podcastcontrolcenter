@@ -129,3 +129,29 @@ def obtener_efemerides_hoy(fecha_dt: datetime.datetime = None) -> str:
         return ""
         
     return "\n".join(coincidencias)
+
+def obtener_fecha_humanizada_es(fecha_dt: datetime.datetime = None) -> str:
+    """
+    Devuelve la fecha en formato español.
+    A veces incluye el día de la semana para dar variedad.
+    Ejemplo: 'jueves, 13 de febrero' o '13 de febrero'
+    """
+    if fecha_dt is None:
+        fecha_dt = datetime.datetime.now()
+    
+    meses = {
+        1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
+        7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
+    }
+    
+    dias_semana = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+    
+    dia_str = f"{fecha_dt.day} de {meses[fecha_dt.month]}"
+    
+    # Decisión aleatoria: 50% de probabilidad de incluir el día de la semana
+    # OJO: random ya está importado arriba
+    if random.choice([True, False]):
+        nombre_dia = dias_semana[fecha_dt.weekday()]
+        return f"{nombre_dia}, {dia_str}"
+    
+    return dia_str
