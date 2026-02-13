@@ -179,9 +179,9 @@ def obtener_toque_humano(num_noticias: int, datos_meteo: dict = None) -> dict:
                     f"Comenta el tiempo usando esta expresión local: '{frase_meteo}'."
                 )
 
-    # 3. OTROS TOQUES (Opcional 30%, si no se ha llenado ya mucho con el clima)
-    # Si ya hemos metido clima extremo, bajamos la probabilidad de otro extra para no saturar.
-    prob_extra = 0.15 if len(instrucciones_finales) > 1 else 0.30
+    # 3. OTROS TOQUES (Opcional 60%, como pidió el usuario)
+    # Si ya hemos metido clima extremo, bajamos un poco la probabilidad (30%) para no saturar demasiado.
+    prob_extra = 0.30 if len(instrucciones_finales) > 1 else 0.60
     
     if random.random() < prob_extra:
         opciones_extra = [
