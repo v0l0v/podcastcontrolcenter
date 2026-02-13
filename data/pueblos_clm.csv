@@ -1,30 +1,864 @@
 Municipio,Provincia,Población,Superficie (km²),Altitud (m s.n.m.)
-Molinicos,Albacete,800,144,800
-Elche de la Sierra,Albacete,3500,240,680
-Alcalá del Júcar,Albacete,1100,146,600
-Belmonte,Cuenca,1800,92,800
-Sigüenza,Guadalajara,4300,386,1000
-Almagro,Ciudad Real,8900,250,640
-Campo de Criptana,Ciudad Real,13000,302,700
-Consuegra,Toledo,10000,358,700
-Villanueva de los Infantes,Ciudad Real,4800,135,880
-Brihuega,Guadalajara,2500,296,900
-Ayna,Albacete,600,147,650
-Riópar,Albacete,1300,81,950
-Pastrana,Guadalajara,850,96,760
-Tembleque,Toledo,1900,223,640
-Oropesa,Toledo,2600,337,420
-Valdepeñas,Ciudad Real,30000,487,700
-Tomelloso,Ciudad Real,36000,241,660
-Hellín,Albacete,30000,781,570
-Talavera de la Reina,Toledo,83000,186,370
-Cuenca,Cuenca,54000,911,950
-Alcudia de Veo,Castellón,190,30,465
-Letur,Albacete,900,263,720
-Nerpio,Albacete,1200,436,1080
-Yeste,Albacete,2600,511,880
-Alcaraz,Albacete,1300,370,960
-Toledo,Toledo,85000,232,520
-Guadalajara,Guadalajara,87000,235,700
-Ciudad Real,Ciudad Real,75000,285,620
-Albacete,Albacete,173000,1125,680
+Albareal de Tajo,Toledo,692,41.44,451
+Alcabón,Toledo,743,8.02,530
+Aldea en Cabo,Toledo,187,25.5,502
+Almorox,Toledo,2317,64.77,535
+Barcience,Toledo,1003,18.98,516
+Burujón,Toledo,1304,35.45,504
+Camarena,Toledo,4283,66.22,573
+Camarenilla,Toledo,610,24.35,507
+Carmena,Toledo,777,46.7,556
+"Carpio de Tajo, El",Toledo,1826,113.58,479
+Carranque,Toledo,5155,24.73,657
+Carriches,Toledo,276,18.67,545
+"Casar de Escalona, El",Toledo,1891,39.55,463
+Cedillo del Condado,Toledo,4101,26.44,646
+Domingo Pérez,Toledo,306,12.93,497
+Erustes,Toledo,206,9.52,537
+Escalona,Toledo,3573,73.15,457
+Escalonilla,Toledo,1440,50.95,547
+Fuensalida,Toledo,12004,68.37,591
+Gerindote,Toledo,2518,44.26,545
+Hormigos,Toledo,881,27.48,462
+Huecas,Toledo,810,27.42,547
+Malpica de Tajo,Toledo,1688,79.59,389
+"Mata, La",Toledo,854,19.18,564
+Mesegar de Tajo,Toledo,203,17.66,477
+Nombela,Toledo,881,121.56,493
+Novés,Toledo,3236,41.71,564
+Otero,Toledo,357,29.57,462
+Palomeque,Toledo,1126,22.28,608
+Paredes de Escalona,Toledo,122,24.92,489
+Portillo de Toledo,Toledo,2234,19.95,598
+"Puebla de Montalbán, La",Toledo,7838,141.34,508
+Quismondo,Toledo,1673,15.43,548
+Rielves,Toledo,760,32.83,494
+Santa Cruz del Retamar,Toledo,3682,129.46,595
+Santa Olalla,Toledo,3387,72.61,486
+Santo Domingo-Caudilla,Toledo,1111,53.8,543
+"Torre de Esteban Hambrán, La",Toledo,1703,50.7,577
+Torrijos,Toledo,13678,17.34,527
+Ugena,Toledo,5615,15.48,652
+"Ventas de Retamosa, Las",Toledo,3806,18.9,620
+Villamiel de Toledo,Toledo,1021,41.68,484
+"Viso de San Juan, El",Toledo,5533,53.06,650
+Cabañas de Yepes,Toledo,304,17.97,707
+Ciruelos,Toledo,630,22.94,705
+Dosbarrios,Toledo,2273,111.59,707
+"Guardia, La",Toledo,2163,195.59,698
+Huerta de Valdecarábanos,Toledo,1726,83,625
+Lillo,Toledo,2543,151.4,684
+Noblejas,Toledo,3857,69.67,732
+Ocaña,Toledo,13185,147.9,733
+Ontígola,Toledo,4752,41.49,607
+Santa Cruz de la Zarza,Toledo,4097,264.29,785
+Villamuelas,Toledo,610,43.36,590
+Villanueva de Bogas,Toledo,699,57.44,652
+Villarrubia de Santiago,Toledo,2509,155.29,757
+Villasequilla,Toledo,2563,76.95,517
+Villatobas,Toledo,2595,181.58,726
+Yepes,Toledo,5268,84.97,699
+Alcoba de los Montes,Ciudad Real,535,307.1,
+Alcolea de Calatrava,Ciudad Real,1370,70.72,
+Anchuras,Ciudad Real,265,231.05,
+"Cortijos, Los",Ciudad Real,865,94.89,
+Fernán Caballero,Ciudad Real,977,103.96,
+Fontanarejo,Ciudad Real,246,76.95,
+Fuente el Fresno,Ciudad Real,3085,119.46,
+Horcajo de los Montes,Ciudad Real,821,207.47,
+Luciana,Ciudad Real,368,113.84,
+Malagón,Ciudad Real,7801,364.8,
+Navas de Estena,Ciudad Real,292,146.54,
+Picón,Ciudad Real,667,59.66,
+Piedrabuena,Ciudad Real,4363,565.36,
+Poblete,Ciudad Real,2802,27.93,
+Porzuna,Ciudad Real,3505,211.9,
+Puebla de Don Rodrigo,Ciudad Real,1119,424.87,
+Retuerta del Bullaque,Ciudad Real,911,653.9,
+"Robledo, El",Ciudad Real,1061,105.5,
+Albaladejo,Ciudad Real,1074,48.94,
+Alcubillas,Ciudad Real,452,47.46,
+Almedina,Ciudad Real,489,55.9,
+Almuradiel,Ciudad Real,740,66.16,
+Castellar de Santiago,Ciudad Real,1819,95.5,
+Cózar,Ciudad Real,913,64.99,
+Fuenllana,Ciudad Real,214,59.96,
+Montiel,Ciudad Real,1233,271.22,
+Puebla del Príncipe,Ciudad Real,671,33.97,
+Santa Cruz de los Cáñamos,Ciudad Real,513,17.72,
+Santa Cruz de Mudela,Ciudad Real,3950,133.58,
+Terrinches,Ciudad Real,622,55.52,
+Torre de Juan Abad,Ciudad Real,1003,399.19,
+Torrenueva,Ciudad Real,2659,142,
+Valdepeñas,Ciudad Real,30071,489.26,
+Villamanrique,Ciudad Real,1083,370,
+Villanueva de la Fuente,Ciudad Real,1965,129.1,
+Villanueva de los Infantes,Ciudad Real,4828,135.06,
+Viso del Marqués,Ciudad Real,2183,533.2,
+Alarcón,Cuenca,152,119.96,840
+Almodóvar del Pinar,Cuenca,386,95.03,994
+Buenache de Alarcón,Cuenca,447,64.16,821
+Campillo de Altobuey,Cuenca,1262,172.41,939
+Casas de Benítez,Cuenca,816,46.76,753
+Casas de Guijarro,Cuenca,108,8.2,753
+Casasimarro,Cuenca,3140,49.62,751
+Castillejo de Iniesta,Cuenca,115,27.7,823
+Enguídanos,Cuenca,299,165.35,734
+Gabaldón,Cuenca,151,84.1,920
+Graja de Iniesta,Cuenca,362,28.22,835
+"Herrumblar, El",Cuenca,733,46.1,775
+Hontecillas,Cuenca,62,34.7,828
+Iniesta,Cuenca,4340,232.28,769
+Ledaña,Cuenca,1563,65.47,725
+Minglanilla,Cuenca,2268,109.64,823
+Motilla del Palancar,Cuenca,6026,73.89,830
+Olmedilla de Alarcón,Cuenca,136,38.31,822
+Paracuellos,Cuenca,96,123.48,969
+"Peral, El",Cuenca,650,85.84,793
+"Pesquera, La",Cuenca,212,72.3,795
+"Picazo, El",Cuenca,674,24.9,698
+Pozoamargo,Cuenca,279,53.38,752
+Pozorrubielos de la Mancha,Cuenca,173,73.58,779
+Puebla del Salvador,Cuenca,192,48.09,842
+Quintanar del Rey,Cuenca,7632,79.92,728
+Sisante,Cuenca,1618,134.36,744
+Tébar,Cuenca,287,99.02,888
+Valhermoso de la Fuente,Cuenca,42,32.12,800
+Valverdejo,Cuenca,94,32.47,867
+Villagarcía del Llano,Cuenca,697,116.84,728
+Villanueva de la Jara,Cuenca,2287,156.06,769
+Villarta,Cuenca,789,25.62,757
+Adobes,Guadalajara,28,32.66,
+Alcoroches,Guadalajara,122,32.25,
+Algar de Mesa,Guadalajara,48,23.83,
+Alustante,Guadalajara,145,93.04,
+Anguita,Guadalajara,155,127.22,
+Anquela del Ducado,Guadalajara,54,25.66,
+Anquela del Pedregal,Guadalajara,26,38.23,
+Arbeteta,Guadalajara,19,63,
+Armallones,Guadalajara,50,77.75,
+Baños de Tajo,Guadalajara,17,28.28,
+Campillo de Dueñas,Guadalajara,80,60.63,
+Canredondo,Guadalajara,76,63.52,
+Castellar de la Muela,Guadalajara,27,21.38,
+Castilnuevo,Guadalajara,6,19.54,
+Checa,Guadalajara,286,181.43,
+Chequilla,Guadalajara,16,15.3,
+Ciruelos del Pinar,Guadalajara,24,16.8,
+Cobeta,Guadalajara,108,43.59,
+Corduente,Guadalajara,324,232.92,
+Embid,Guadalajara,28,36.2,
+Esplegares,Guadalajara,33,37.45,
+Establés,Guadalajara,29,52.27,
+Fuembellida,Guadalajara,12,26.05,
+Fuentelsaz,Guadalajara,88,40.41,
+Herrería,Guadalajara,24,19.14,
+Hombrados,Guadalajara,45,37.84,
+Huertahernando,Guadalajara,57,51.32,
+Iniéstola,Guadalajara,22,10.05,
+Luzaga,Guadalajara,65,29.7,
+Luzón,Guadalajara,65,56.98,
+Maranchón,Guadalajara,225,153.32,
+Mazarete,Guadalajara,24,56.17,
+Megina,Guadalajara,36,27.89,
+Milmarcos,Guadalajara,70,43.91,
+Mochales,Guadalajara,38,32.32,
+Molina de Aragón,Guadalajara,3234,168.33,
+Morenilla,Guadalajara,52,28.37,
+Ocentejo,Guadalajara,16,30.95,
+Olmeda de Cobeta,Guadalajara,59,39.62,
+Orea,Guadalajara,189,71.25,
+Pardos,Guadalajara,39,23.15,
+"Pedregal, El",Guadalajara,63,23.2,
+Peñalén,Guadalajara,78,59.18,
+Peralejos de las Truchas,Guadalajara,149,70.76,
+Pinilla de Molina,Guadalajara,12,23.18,
+Piqueras,Guadalajara,42,32.31,
+"Pobo de Dueñas, El",Guadalajara,101,55.28,
+Poveda de la Sierra,Guadalajara,116,51.7,
+Prados Redondos,Guadalajara,54,53.43,
+"Recuenco, El",Guadalajara,61,75.18,
+Riba de Saelices,Guadalajara,115,66.68,
+Rillo de Gallo,Guadalajara,47,25.9,
+Rueda de la Sierra,Guadalajara,41,51.01,
+Saelices de la Sal,Guadalajara,48,19.37,
+Selas,Guadalajara,40,44.82,
+Setiles,Guadalajara,86,56.77,
+Taravilla,Guadalajara,33,60.68,
+Tartanedo,Guadalajara,147,148.29,
+Terzaga,Guadalajara,20,33.81,
+Tierzo,Guadalajara,36,40.06,
+Tordellego,Guadalajara,49,33.47,
+Tordesilos,Guadalajara,93,46.49,
+Torrecuadrada de Molina,Guadalajara,21,35.8,
+Torrecuadradilla,Guadalajara,28,32.88,
+Torremocha del Pinar,Guadalajara,40,50.47,
+Torremochuela,Guadalajara,8,17.82,
+Torrubia,Guadalajara,23,28.18,
+Tortuera,Guadalajara,181,82.21,
+Traíd,Guadalajara,24,48.59,
+Valhermoso,Guadalajara,26,29.09,
+Valtablado del Río,Guadalajara,8,25.21,
+Villanueva de Alcorón,Guadalajara,135,99.17,
+Villel de Mesa,Guadalajara,173,37.07,
+"Yunta, La",Guadalajara,90,56.19,
+Zaorejas,Guadalajara,101,189.14,
+Cabezamesada,Toledo,319,59.83,733
+Camuñas,Toledo,1742,102.03,667
+Corral de Almaguer,Toledo,4827,328.7,701
+Madridejos,Toledo,10202,262.01,687
+Miguel Esteban,Toledo,4791,92.96,681
+"Puebla de Almoradiel, La",Toledo,4953,106.13,697
+Quero,Toledo,985,104.38,650
+Quintanar de la Orden,Toledo,11069,87.87,695
+"Romeral, El",Toledo,555,78.92,662
+Tembleque,Toledo,1949,223.07,637
+"Toboso, El",Toledo,1663,143.94,696
+Turleque,Toledo,721,100.85,691
+"Villa de Don Fadrique, La",Toledo,2806,83.16,671
+Villacañas,Toledo,9418,268.51,664
+Villafranca de los Caballeros,Toledo,4884,106.69,642
+Villanueva de Alcardete,Toledo,3062,147.26,725
+"Ballestero, El",Albacete,427,138.69,
+Bienservida,Albacete,574,90.73,
+"Bonillo, El",Albacete,2698,502.87,
+Casas de Lázaro,Albacete,321,112.32,
+Cotillas,Albacete,129,14.47,
+"Herrera, La",Albacete,304,63.43,
+Lezuza,Albacete,1300,360.9,
+Masegoso,Albacete,114,103.87,
+Munera,Albacete,3422,229.69,
+Ossa de Montiel,Albacete,2215,243.71,
+Peñas de San Pedro,Albacete,1433,158.76,
+Peñascosa,Albacete,323,189.26,
+Povedilla,Albacete,388,49.43,
+Pozuelo,Albacete,461,133.98,
+Robledo,Albacete,385,120.08,
+Salobre,Albacete,438,49.53,
+San Pedro,Albacete,1142,83.12,
+Villaverde de Guadalimar,Albacete,321,69.08,
+Viveros,Albacete,335,65.37,
+Albalate de Zorita,Guadalajara,1056,53.32,
+Albares,Guadalajara,518,29.44,
+Alhóndiga,Guadalajara,158,19.26,
+Almonacid de Zorita,Guadalajara,659,44.9,
+Alovera,Guadalajara,13142,13.81,
+Aranzueque,Guadalajara,358,21.36,
+Armuña de Tajuña,Guadalajara,254,20.67,
+Cabanillas del Campo,Guadalajara,10968,34.91,
+Chiloeches,Guadalajara,3858,45.37,
+Driebes,Guadalajara,355,37.91,
+Escariche,Guadalajara,186,30.09,
+Escopete,Guadalajara,68,19.01,
+Fuentelencina,Guadalajara,314,44.3,
+Fuentenovilla,Guadalajara,568,37.34,
+Horche,Guadalajara,2751,44.34,
+Hueva,Guadalajara,97,31.76,
+Illana,Guadalajara,799,70.33,
+Loranca de Tajuña,Guadalajara,1318,36.4,
+Mazuecos,Guadalajara,260,23.77,
+Moratilla de los Meleros,Guadalajara,107,29.15,
+Pastrana,Guadalajara,850,95.7,
+Pioz,Guadalajara,5013,19.42,
+Pozo de Almoguera,Guadalajara,110,16.72,
+Pozo de Guadalajara,Guadalajara,1555,11.81,
+Renera,Guadalajara,104,20.23,
+Sayatón,Guadalajara,63,45.38,
+Valdarachas,Guadalajara,47,9.69,
+Valdeconcha,Guadalajara,39,23.47,
+Yebes,Guadalajara,4936,17.5,
+Yebra,Guadalajara,451,56.49,
+Zorita de los Canes,Guadalajara,60,20.23,
+Alarilla,Guadalajara,136,22.14,
+Aldeanueva de Guadalajara,Guadalajara,106,16.06,
+Atanzón,Guadalajara,97,28.03,
+Campillo de Ranas,Guadalajara,109,91.69,
+Casa de Uceda,Guadalajara,92,21.38,
+"Casar, El",Guadalajara,12919,51.84,
+Casas de San Galindo,Guadalajara,21,11.61,
+Caspueñas,Guadalajara,119,14.79,
+Copernal,Guadalajara,34,10.1,
+Espinosa de Henares,Guadalajara,625,39.42,
+Fontanar,Guadalajara,2567,15.47,
+Fuencemillán,Guadalajara,79,7.25,
+Fuentelahiguera de Albatages,Guadalajara,130,52.61,
+Galápagos,Guadalajara,2600,34.07,
+Hita,Guadalajara,325,56.49,
+Humanes,Guadalajara,1644,48.02,
+Majaelrayo,Guadalajara,54,54.94,
+Málaga del Fresno,Guadalajara,174,24.04,
+Malaguilla,Guadalajara,172,28.51,
+Marchamalo,Guadalajara,8030,30.9,
+Matarrubia,Guadalajara,64,28.21,
+Miralrío,Guadalajara,64,8.21,
+Mohernando,Guadalajara,167,26.34,
+Muduex,Guadalajara,103,22.23,
+Puebla de Beleña,Guadalajara,49,29.15,
+Quer,Guadalajara,945,14.32,
+Robledillo de Mohernando,Guadalajara,148,29.65,
+Taragudo,Guadalajara,43,6.42,
+Torrejón del Rey,Guadalajara,6002,25.17,
+Tórtola de Henares,Guadalajara,1331,26.85,
+Tortuero,Guadalajara,18,46.86,
+Trijueque,Guadalajara,1478,35.63,
+Uceda,Guadalajara,3048,47.25,
+Valdearenas,Guadalajara,76,15.44,
+Valdeavellano,Guadalajara,108,24.02,
+Valdeaveruelo,Guadalajara,1177,17.46,
+Valdegrudas,Guadalajara,53,13.92,
+Valdenuño Fernández,Guadalajara,308,24.81,
+Valdepeñas de la Sierra,Guadalajara,147,70.05,
+Villanueva de Argecilla,Guadalajara,39,5.28,
+Villanueva de la Torre,Guadalajara,6559,11.21,
+Villaseca de Uceda,Guadalajara,45,13.28,
+Viñuelas,Guadalajara,182,15.46,
+Yunquera de Henares,Guadalajara,4329,31.05,
+Alcañizo,Toledo,277,13.51,373
+Alcolea de Tajo,Toledo,824,64.47,353
+Azután,Toledo,296,21.61,337
+Calera y Chozas,Toledo,4716,219.04,391
+Caleruela,Toledo,202,9.42,371
+Calzada de Oropesa,Toledo,510,142.17,359
+Mejorada,Toledo,1354,46.17,564
+Montesclaros,Toledo,384,20.62,558
+Navalcán,Toledo,1888,60.12,393
+Navalmoralejo,Toledo,51,22.75,424
+Oropesa,Toledo,2607,336.46,422
+Parrillas,Toledo,337,51.3,399
+"Puente del Arzobispo, El",Toledo,1153,0.98,335
+Segurilla,Toledo,1366,22.77,561
+Torralba de Oropesa,Toledo,193,23.45,370
+Torrico,Toledo,691,33.53,442
+Valdeverdeja,Toledo,550,67.9,461
+Velada,Toledo,2865,144.83,431
+"Ventas de San Julián, Las",Toledo,222,6.53,315
+Bonete,Albacete,1006,125.06,
+Caudete,Albacete,10135,141.63,
+Chinchilla de Monte-Aragón,Albacete,4497,679.27,
+Corral-Rubio,Albacete,300,94.76,
+Higueruela,Albacete,1125,205.45,
+Hoya-Gonzalo,Albacete,561,114.57,
+Montealegre del Castillo,Albacete,2056,177.85,
+Pétrola,Albacete,663,74.61,
+Pozo Cañada,Albacete,2763,116.83,
+Agudo,Ciudad Real,1615,229.96,
+Almadén,Ciudad Real,5069,239.64,
+Almadenejos,Ciudad Real,391,102.88,
+Chillón,Ciudad Real,1758,207.78,
+Guadalmez,Ciudad Real,718,71.99,
+Saceruela,Ciudad Real,526,247.28,
+Valdemanca del Esteras,Ciudad Real,164,142.46,
+Alcaudete de la Jara,Toledo,1614,156.12,412
+Aldeanueva de Barbarroya,Toledo,482,91.8,510
+Aldeanueva de San Bartolomé,Toledo,416,34.61,577
+Almendral de la Cañada,Toledo,322,33.61,630
+Belvís de la Jara,Toledo,1497,114.02,451
+Buenaventura,Toledo,403,35.93,436
+"Campillo de la Jara, El",Toledo,336,88.06,650
+Cardiel de los Montes,Toledo,394,24.31,401
+Castillo de Bayuela,Toledo,895,37.32,561
+Cazalegas,Toledo,1927,29.52,440
+Cebolla,Toledo,3201,36.77,439
+"Cerralbos, Los",Toledo,397,40.15,462
+Cervera de los Montes,Toledo,508,31.69,533
+Espinoso del Rey,Toledo,437,48.28,723
+"Estrella, La",Toledo,194,77.23,558
+Garciotum,Toledo,216,22.73,469
+"Herencias, Las",Toledo,768,90.01,363
+Hinojosa de San Vicente,Toledo,394,31.06,651
+"Iglesuela del Tiétar, La",Toledo,471,69.1,520
+Lucillos,Toledo,571,40.55,478
+Marrupe,Toledo,147,10.5,584
+Mohedas de la Jara,Toledo,389,60.42,739
+Montearagón,Toledo,533,11.97,428
+"Nava de Ricomalillo, La",Toledo,493,39.53,651
+Navamorcuende,Toledo,595,110.81,770
+Nuño Gómez,Toledo,145,16.89,466
+Pelahustán,Toledo,342,44.34,673
+Pepino,Toledo,3003,45.42,445
+"Pueblanueva, La",Toledo,2166,122.33,480
+Puerto de San Vicente,Toledo,140,46.51,740
+"Real de San Vicente, El",Toledo,973,53.77,751
+Retamoso de la Jara,Toledo,97,48.24,610
+Robledo del Mazo,Toledo,249,136.71,738
+San Román de los Montes,Toledo,2047,44.85,447
+Sartajada,Toledo,107,15.31,459
+Sotillo de las Palomas,Toledo,,18.85,564
+Talavera de la Reina,Toledo,83247,187.12,367
+Torrecilla de la Jara,Toledo,208,70.61,645
+Alcázar de San Juan,Ciudad Real,30516,666.5,
+Herencia,Ciudad Real,8432,227.31,
+Pedro Muñoz,Ciudad Real,7480,101.63,
+Socuéllamos,Ciudad Real,12098,372.44,
+Alhambra,Ciudad Real,983,579.83,
+Argamasilla de Alba,Ciudad Real,6846,396.85,
+Carrizosa,Ciudad Real,1154,26.04,
+Daimiel,Ciudad Real,17680,438.06,
+"Labores, Las",Ciudad Real,557,34.14,
+Llanos del Caudillo,Ciudad Real,693,20.42,
+Manzanares,Ciudad Real,17738,474.22,
+Membrilla,Ciudad Real,5904,143.89,
+Puerto Lápice,Ciudad Real,896,54.84,
+Ruidera,Ciudad Real,555,39.2,
+San Carlos del Valle,Ciudad Real,1099,58.08,
+"Solana, La",Ciudad Real,15313,134.27,
+Villarrubia de los Ojos,Ciudad Real,9667,281.86,
+Villarta de San Juan,Ciudad Real,2713,66,
+Aldea del Rey,Ciudad Real,1580,154.32,
+Almagro,Ciudad Real,8907,249.95,
+Ballesteros de Calatrava,Ciudad Real,367,57.87,
+Bolaños de Calatrava,Ciudad Real,11910,87.89,
+Calzada de Calatrava,Ciudad Real,3704,410.82,
+Cañada de Calatrava,Ciudad Real,104,30.13,
+Caracuel de Calatrava,Ciudad Real,125,9.92,
+Carrión de Calatrava,Ciudad Real,3131,95.49,
+Corral de Calatrava,Ciudad Real,1089,148.82,
+Granátula de Calatrava,Ciudad Real,716,152.65,
+Miguelturra,Ciudad Real,15744,118.12,
+Pozuelo de Calatrava,Ciudad Real,3629,99.63,
+"Pozuelos de Calatrava, Los",Ciudad Real,352,84,
+Torralba de Calatrava,Ciudad Real,3052,101.58,
+Villanueva de San Carlos,Ciudad Real,278,109.25,
+Villar del Pozo,Ciudad Real,54,13.14,
+Ajofrín,Toledo,2290,35.1,773
+Almonacid de Toledo,Toledo,885,95.58,713
+Burguillos de Toledo,Toledo,3473,28.41,678
+Casasbuenas,Toledo,188,30.46,684
+Chueca,Toledo,249,11.12,739
+Cobisa,Toledo,4427,14.72,677
+Consuegra,Toledo,9886,358.49,705
+Cuerva,Toledo,1248,37.51,766
+Gálvez,Toledo,2986,55,711
+Guadamur,Toledo,1774,37.96,627
+Hontanar,Toledo,146,151.77,844
+Layos,Toledo,845,18.39,650
+Manzaneque,Toledo,382,12.22,719
+Marjaliza,Toledo,253,65.79,856
+Mascaraque,Toledo,414,65.61,713
+Mazarambroz,Toledo,1259,216.02,778
+Menasalbas,Toledo,2513,179.44,701
+Mora,Toledo,9796,168.57,721
+Nambroca,Toledo,5020,82.08,672
+Navahermosa,Toledo,3586,129.79,739
+"Navalmorales, Los",Toledo,2163,104.95,658
+Noez,Toledo,942,34.22,755
+Polán,Toledo,3870,158.62,646
+Pulgar,Toledo,1491,38.6,719
+San Bartolomé de las Abiertas,Toledo,533,56.86,552
+San Martín de Montalbán,Toledo,699,133.03,654
+San Martín de Pusa,Toledo,585,104.54,506
+San Pablo de los Montes,Toledo,1696,100.05,907
+Santa Ana de Pusa,Toledo,358,19.44,595
+Totanés,Toledo,358,26.04,731
+Urda,Toledo,2417,217.82,764
+"Ventas con Peña Aguilera, Las",Toledo,1109,140.09,790
+Villaminaya,Toledo,508,21.28,732
+Villarejo de Montalbán,Toledo,75,65.37,534
+"Yébenes, Los",Toledo,5752,677.46,818
+"Alberca de Záncara, La",Cuenca,1585,100.62,811
+Alconchel de la Estrella,Cuenca,77,42.94,839
+Atalaya del Cañavate,Cuenca,110,46.36,813
+Belmonte,Cuenca,1782,92.63,756
+Cañada Juncosa,Cuenca,231,42.72,807
+"Cañavate, El",Cuenca,136,36.1,792
+Carrascosa de Haro,Cuenca,98,29.05,790
+Casas de Fernando Alonso,Cuenca,1144,30.28,727
+Casas de Haro,Cuenca,844,110.88,729
+Casas de los Pinos,Cuenca,415,68.22,726
+Castillo de Garcimuñoz,Cuenca,128,82.21,932
+"Hinojosos, Los",Cuenca,759,114.02,775
+Honrubia,Cuenca,1530,110.34,815
+Hontanaya,Cuenca,256,53.63,807
+"Mesas, Las",Cuenca,2296,86.45,689
+Monreal del Llano,Cuenca,50,39.02,735
+Mota del Cuervo,Cuenca,6069,176.17,707
+Osa de la Vega,Cuenca,447,53.34,764
+"Pedernoso, El",Cuenca,1125,56.37,716
+"Pedroñeras, Las",Cuenca,6583,225.06,709
+Pinarejo,Cuenca,189,61.82,882
+"Provencio, El",Cuenca,2387,101.6,699
+Rada de Haro,Cuenca,49,32.25,823
+San Clemente,Cuenca,6827,277.51,721
+Santa María de los Llanos,Cuenca,680,43.01,716
+Santa María del Campo Rus,Cuenca,522,93.63,788
+Torrubia del Castillo,Cuenca,41,17.47,849
+Tresjuncos,Cuenca,268,70.29,796
+Vara de Rey,Cuenca,460,127.88,822
+Villaescusa de Haro,Cuenca,474,93.2,824
+Villalgordo del Marquesado,Cuenca,66,30.3,857
+Villamayor de Santiago,Cuenca,2433,181.17,775
+Villar de la Encina,Cuenca,161,49.19,842
+Barrax,Albacete,1831,189.83,
+Fuensanta,Albacete,281,23.96,
+"Gineta, La",Albacete,2568,136.76,
+Minaya,Albacete,1442,69.78,
+Montalvos,Albacete,88,24.78,
+"Roda, La",Albacete,15497,398.89,
+Tarazona de la Mancha,Albacete,6183,212.68,
+Villagordo del Júcar,Albacete,1072,46.68,
+Abánades,Guadalajara,61,36.08,
+Alaminos,Guadalajara,56,19.5,
+Albendiego,Guadalajara,46,22.91,
+Alcolea de las Peñas,Guadalajara,12,16.66,
+Algora,Guadalajara,80,46.95,
+Angón,Guadalajara,10,20.41,
+Arbancón,Guadalajara,145,34.93,
+Arroyo de las Fraguas,Guadalajara,23,21.35,
+Atienza,Guadalajara,398,104.28,
+Baides,Guadalajara,60,29.74,
+Bañuelos,Guadalajara,14,18.77,
+Bujalaro,Guadalajara,44,22.61,
+Bustares,Guadalajara,71,30.38,
+Campisábalos,Guadalajara,67,54.01,
+Cantalojas,Guadalajara,135,157.06,
+Castejón de Henares,Guadalajara,61,15.95,
+Cendejas de Enmedio,Guadalajara,67,19.09,
+Cendejas de la Torre,Guadalajara,24,14.27,
+Cincovillas,Guadalajara,27,16.4,
+Cogolludo,Guadalajara,563,96.87,
+Condemios de Abajo,Guadalajara,11,12.07,
+Condemios de Arriba,Guadalajara,106,43.11,
+Congostrina,Guadalajara,13,26.04,
+Estriégana,Guadalajara,12,16.19,
+Galve de Sorbe,Guadalajara,96,49.36,
+Gascueña de Bornova,Guadalajara,30,26.52,
+Hiendelaencina,Guadalajara,115,19.22,
+Hijes,Guadalajara,19,20.71,
+Hortezuela de Océn,Guadalajara,38,19.89,
+"Huerce, La",Guadalajara,54,41.04,
+Huérmeces del Cerro,Guadalajara,42,19.83,
+"Inviernas, Las",Guadalajara,61,34.09,
+Jadraque,Guadalajara,1393,38.91,
+Jirueque,Guadalajara,49,10.64,
+Mandayona,Guadalajara,298,33.18,
+Matillas,Guadalajara,103,10.38,
+Medranda,Guadalajara,68,11.44,
+Membrillera,Guadalajara,117,38.33,
+Miedes de Atienza,Guadalajara,54,42.99,
+"Mierla, La",Guadalajara,38,19.82,
+"Miñosa, La",Guadalajara,29,44,
+Mirabueno,Guadalajara,83,19.46,
+Monasterio,Guadalajara,15,21.47,
+"Navas de Jadraque, Las",Guadalajara,33,9.03,
+Negredo,Guadalajara,16,18.34,
+"Olmeda de Jadraque, La",Guadalajara,14,11.71,
+"Ordial, El",Guadalajara,39,29.98,
+Pálmaces de Jadraque,Guadalajara,42,29.41,
+Paredes de Sigüenza,Guadalajara,23,32.95,
+Pinilla de Jadraque,Guadalajara,52,13.27,
+Prádena de Atienza,Guadalajara,41,28.86,
+Puebla de Valles,Guadalajara,58,27.46,
+Rebollosa de Jadraque,Guadalajara,11,7.67,
+Retiendas,Guadalajara,50,20.99,
+Riofrío del Llano,Guadalajara,58,42.93,
+Robledo de Corpes,Guadalajara,42,41.11,
+Romanillos de Atienza,Guadalajara,32,23.84,
+San Andrés del Congosto,Guadalajara,73,15.27,
+Santiuste,Guadalajara,14,10.53,
+Saúca,Guadalajara,52,48.96,
+Semillas,Guadalajara,35,49.91,
+Sigüenza,Guadalajara,4359,386.87,
+Sienes,Guadalajara,48,29.5,
+Somolinos,Guadalajara,31,14.78,
+"Sotillo, El",Guadalajara,35,24.25,
+Sotodosos,Guadalajara,31,28.95,
+Tamajón,Guadalajara,147,116.28,
+"Toba, La",Guadalajara,76,36.6,
+Tordelrábano,Guadalajara,12,11.62,
+Torremocha de Jadraque,Guadalajara,18,11.17,
+Torremocha del Campo,Guadalajara,183,141.25,
+Ujados,Guadalajara,28,11.84,
+Valdelcubo,Guadalajara,38,13.83,
+Valdesotos,Guadalajara,27,27.3,
+Valverde de los Arroyos,Guadalajara,88,45.21,
+Viana de Jadraque,Guadalajara,41,24.41,
+Villares de Jadraque,Guadalajara,49,17.2,
+Villaseca de Henares,Guadalajara,26,17.17,
+Zarzuela de Jadraque,Guadalajara,54,32.04,
+Abenójar,Ciudad Real,1314,423.43,
+Almodóvar del Campo,Ciudad Real,5873,1208.25,
+Argamasilla de Calatrava,Ciudad Real,5849,167.31,
+Brazatortas,Ciudad Real,1005,271.82,
+Cabezarados,Ciudad Real,300,80.36,
+Cabezarrubias del Puerto,Ciudad Real,484,100.59,
+Fuencaliente,Ciudad Real,1012,269.85,
+Hinojosas de Calatrava,Ciudad Real,505,102.52,
+Mestanza,Ciudad Real,644,370,
+San Lorenzo de Calatrava,Ciudad Real,206,105.84,
+Solana del Pino,Ciudad Real,328,180.08,
+Villamayor de Calatrava,Ciudad Real,607,144.81,
+Albatana,Albacete,670,30.5,
+Fuente-Álamo,Albacete,2461,133.37,
+Ontur,Albacete,1934,54.41,
+Tobarra,Albacete,7758,324.65,
+Alcalá de la Vega,Cuenca,79,69.25,1194
+Algarra,Cuenca,22,41.91,1267
+Aliaguilla,Cuenca,634,105.91,1005
+Arcos de la Sierra,Cuenca,73,40.5,1000
+Arguisuelas,Cuenca,133,49.61,1044
+Beamud,Cuenca,41,23.38,1334
+Beteta,Cuenca,229,115,1217
+Boniches,Cuenca,141,53.02,1033
+Buenache de la Sierra,Cuenca,106,57.72,1301
+Campillos-Paravientos,Cuenca,103,54.34,1177
+Campillos-Sierra,Cuenca,29,38.03,1253
+Cañada del Hoyo,Cuenca,231,89.75,1022
+Cañamares,Cuenca,445,40.52,883
+Cañete,Cuenca,792,86.96,1074
+Cañizares,Cuenca,429,76.17,1063
+Carboneras de Guadazaón,Cuenca,794,100.65,1027
+Cardenete,Cuenca,474,97.51,964
+Carrascosa,Cuenca,68,71.47,1243
+Casas de Garcimolina,Cuenca,31,38.69,1153
+Castillejo-Sierra,Cuenca,28,30.37,1007
+"Cierva, La",Cuenca,37,71.7,1261
+Cueva del Hierro,Cuenca,35,28.2,1334
+Fresneda de la Sierra,Cuenca,46,31.9,993
+"Frontera, La",Cuenca,144,34.57,976
+Fuentelespino de Moya,Cuenca,103,65.72,1104
+Fuentes,Cuenca,467,107.66,1023
+Fuertescusa,Cuenca,69,64.04,982
+Garaballa,Cuenca,58,69.77,945
+Graja de Campalbo,Cuenca,96,22.3,1101
+Henarejos,Cuenca,129,145.9,1073
+Huélamo,Cuenca,73,79.24,1316
+Huérguina,Cuenca,50,28.01,1110
+Huerta del Marquesado,Cuenca,170,35.69,1262
+Laguna del Marquesado,Cuenca,56,37.91,1319
+Lagunaseca,Cuenca,55,34.34,1362
+Landete,Cuenca,1217,79.34,988
+"Majadas, Las",Cuenca,233,88.33,1390
+Mariana,Cuenca,312,39.97,961
+Masegosa,Cuenca,62,30.82,1376
+Mira,Cuenca,924,212.86,830
+Monteagudo de las Salinas,Cuenca,120,131.86,1017
+Narboneta,Cuenca,41,34.95,850
+Pajarón,Cuenca,77,52.61,1051
+Pajaroncillo,Cuenca,63,56.91,983
+Palomera,Cuenca,169,50.23,1075
+Portilla,Cuenca,58,32.91,1066
+Poyatos,Cuenca,58,45.13,1240
+"Pozuelo, El",Cuenca,43,41.26,1218
+Reíllo,Cuenca,105,81.7,1022
+Salinas del Manzano,Cuenca,67,33.65,1132
+Salvacañete,Cuenca,291,120.28,1212
+San Martín de Boniches,Cuenca,46,69.77,1208
+Santa Cruz de Moya,Cuenca,230,110.75,763
+Talayuelas,Cuenca,856,106.59,991
+Tejadillos,Cuenca,113,63.28,1235
+Tragacete,Cuenca,277,61.75,1281
+Uña,Cuenca,84,23.55,1139
+Valdemeca,Cuenca,74,69.82,1322
+Valdemorillo de la Sierra,Cuenca,54,70.27,1200
+Valdemoro-Sierra,Cuenca,104,107.64,1111
+Valsalobre,Cuenca,21,38.08,1225
+Vega del Codorno,Cuenca,132,32.27,1344
+Villalba de la Sierra,Cuenca,484,41.24,994
+Villar del Humo,Cuenca,169,150.05,990
+Víllora,Cuenca,141,68.9,897
+Yémeda,Cuenca,17,28.84,867
+Zafrilla,Cuenca,55,106.11,1418
+Zarzuela,Cuenca,154,40.33,1054
+Alcalá del Júcar,Albacete,1148,146.82,
+Balsa de Ves,Albacete,126,75.89,
+Carcelén,Albacete,483,75.36,
+Casas de Juan Núñez,Albacete,1356,88.98,
+Casas de Ves,Albacete,561,125.41,
+Casas-Ibáñez,Albacete,4547,103.25,
+Cenizate,Albacete,1183,63.26,
+Golosalvo,Albacete,98,28.18,
+Jorquera,Albacete,350,67.97,
+Madrigueras,Albacete,4644,73.35,
+Mahora,Albacete,1430,108.15,
+Motilleja,Albacete,660,23.82,
+Navas de Jorquera,Albacete,528,42.26,
+Pozo-Lorente,Albacete,391,80.96,
+"Recueja, La",Albacete,221,29.74,
+Villa de Ves,Albacete,60,57.76,
+Villamalea,Albacete,4000,128.33,
+Villatoya,Albacete,106,18.67,
+Villavaliente,Albacete,202,34.84,
+Albalate de las Nogueras,Cuenca,259,40.11,852
+Albendea,Cuenca,122,38.2,831
+Alcohujate,Cuenca,26,27.29,810
+Arandilla del Arroyo,Cuenca,9,19.48,890
+Arrancacepas,Cuenca,18,18.56,936
+Barajas de Melo,Cuenca,987,136.83,701
+Bascuñana de San Pedro,Cuenca,24,19.63,1060
+Buciegas,Cuenca,36,9.01,816
+Buendía,Cuenca,415,88.5,739
+Canalejas del Arroyo,Cuenca,168,60.95,799
+Cañaveras,Cuenca,244,73.63,817
+Cañaveruelas,Cuenca,129,33.57,796
+Castejón,Cuenca,124,43.62,861
+Castillo-Albaráñez,Cuenca,22,12.43,900
+Gascueña,Cuenca,142,51.81,945
+Leganiel,Cuenca,221,45.1,747
+"Peraleja, La",Cuenca,97,34.93,877
+Pineda de Gigüela,Cuenca,62,29.08,976
+Portalrubio de Guadamejud,Cuenca,31,20.97,812
+Priego,Cuenca,885,80.34,848
+Saceda-Trasierra,Cuenca,37,30.92,920
+Salmeroncillos,Cuenca,101,20.68,761
+San Pedro Palmiches,Cuenca,49,19.85,820
+Tinajas,Cuenca,196,46.89,864
+Torralba,Cuenca,109,55.49,912
+"Valdecolmenas, Los",Cuenca,74,31.31,932
+Valdeolivas,Cuenca,218,46.05,926
+Valdetórtola,Cuenca,127,103.21,900
+Vellisca,Cuenca,114,42.98,943
+Villaconejos de Trabaque,Cuenca,323,31.86,813
+Villalba del Rey,Cuenca,481,95.07,787
+Villanueva de Guadamejud,Cuenca,64,30.61,812
+Villar de Domingo García,Cuenca,222,76.89,933
+Villar del Infantado,Cuenca,39,21.76,763
+Villar y Velasco,Cuenca,79,61.77,978
+Vindel,Cuenca,12,25.25,886
+Alcocer,Guadalajara,315,61.19,
+Alique,Guadalajara,13,10.92,
+Alocén,Guadalajara,159,17.88,
+Argecilla,Guadalajara,70,40.67,
+Auñón,Guadalajara,151,52.71,
+Barriopedro,Guadalajara,19,10.68,
+Berninches,Guadalajara,52,35.36,
+Brihuega,Guadalajara,2511,296.41,
+Budia,Guadalajara,197,66.09,
+Castilforte,Guadalajara,56,33.97,
+Centenera,Guadalajara,144,17.41,
+Chillarón del Rey,Guadalajara,85,17.29,
+Cifuentes,Guadalajara,1625,219.95,
+Cogollor,Guadalajara,20,8.32,
+Durón,Guadalajara,109,23.32,
+Escamilla,Guadalajara,63,39.27,
+Gajanejos,Guadalajara,61,25.49,
+Henche,Guadalajara,82,23.05,
+Irueste,Guadalajara,81,14.25,
+Lupiana,Guadalajara,286,30.92,
+Mantiel,Guadalajara,31,15.34,
+Masegoso de Tajuña,Guadalajara,57,17.39,
+Millana,Guadalajara,110,27.81,
+"Olivar, El",Guadalajara,61,17.27,
+Pareja,Guadalajara,463,91.6,
+Peñalver,Guadalajara,154,40.98,
+Peralveche,Guadalajara,47,81.31,
+Romanones,Guadalajara,112,28.88,
+Sacedón,Guadalajara,1547,111.32,
+Salmerón,Guadalajara,128,36.39,
+San Andrés del Rey,Guadalajara,36,14.71,
+Solanillos del Extremo,Guadalajara,87,34.83,
+Tendilla,Guadalajara,315,22.84,
+Trillo,Guadalajara,1401,161.87,
+Utande,Guadalajara,34,19.04,
+Valderrebollo,Guadalajara,23,14.61,
+Valfermoso de Tajuña,Guadalajara,74,29.45,
+Yélamos de Abajo,Guadalajara,65,12.46,
+Yélamos de Arriba,Guadalajara,82,18.32,
+Abia de la Obispalía,Cuenca,60,63.05,1022
+"Acebrón, El",Cuenca,231,22.12,759
+Albaladejo del Cuende,Cuenca,230,55.19,915
+Alcázar del Rey,Cuenca,134,46.5,883
+"Almarchal, La",Cuenca,425,64.36,874
+Almendros,Cuenca,234,63.11,869
+Almonacid del Marquesado,Cuenca,424,47.15,892
+Altarejos,Cuenca,205,91.32,883
+Arcas,Cuenca,1994,81.52,960
+Barchín del Hoyo,Cuenca,97,65.25,950
+Belinchón,Cuenca,383,80.3,751
+Belmontejo,Cuenca,141,52.23,870
+Cervera del Llano,Cuenca,217,55.49,898
+Chillarón de Cuenca,Cuenca,721,39.17,914
+Chumillas,Cuenca,58,39.58,1034
+Fresneda de Altarejos,Cuenca,35,59.9,902
+Fuente de Pedro Naharro,Cuenca,1211,63.58,764
+Fuentelespino de Haro,Cuenca,235,33.44,851
+"Hito, El",Cuenca,151,41.22,869
+Horcajo de Santiago,Cuenca,3572,96.03,756
+Huerta de la Obispalía,Cuenca,116,41.88,929
+Huelves,Cuenca,72,39.34,818
+Montalbanejo,Cuenca,93,59.33,905
+Montalbo,Cuenca,691,73.96,891
+Mota de Altarejos,Cuenca,34,16.95,865
+Olmeda del Rey,Cuenca,134,74.81,938
+Palomares del Campo,Cuenca,560,60.98,877
+Paredes,Cuenca,55,19.35,834
+"Parra de las Vegas, La",Cuenca,33,61.51,1023
+Piqueras del Castillo,Cuenca,46,45.86,927
+Pozorrubio de Santiago,Cuenca,322,44.7,788
+Puebla de Almenara,Cuenca,311,37.67,864
+Rozalén del Monte,Cuenca,58,30.63,873
+Saelices,Cuenca,450,80.62,930
+San Lorenzo de la Parrilla,Cuenca,1066,59.89,940
+Solera de Gabaldón,Cuenca,36,50.49,1043
+Tarancón,Cuenca,15799,106.58,805
+Torrubia del Campo,Cuenca,296,53.36,797
+Tribaldos,Cuenca,99,21.28,824
+Uclés,Cuenca,222,64.61,863
+"Valeras, Las",Cuenca,1499,113.05,873
+Valverde de Júcar,Cuenca,1091,56.21,817
+Villar de Cañas,Cuenca,385,70.36,815
+Villar de Olalla,Cuenca,1356,157.83,921
+Villarejo de Fuentes,Cuenca,392,128.36,860
+Villarejo de la Peñuela,Cuenca,23,13.02,943
+Villarejo-Periesteban,Cuenca,383,33.43,910
+Villares del Saz,Cuenca,468,70.16,869
+Villarrubio,Cuenca,189,28.2,821
+Villaverde y Pasaconsol,Cuenca,338,21.2,857
+Zafra de Záncara,Cuenca,100,78.72,955
+Zarza de Tajo,Cuenca,268,45.82,709
+Ayna,Albacete,582,146.59,
+Bogarra,Albacete,756,166.01,
+Elche de la Sierra,Albacete,3553,239.49,
+Férez,Albacete,614,126.14,
+Letur,Albacete,901,264.4,
+Liétor,Albacete,1096,311.79,
+Molinicos,Albacete,837,143.59,
+Nerpio,Albacete,1180,436.74,
+Paterna del Madera,Albacete,329,112.34,
+Riópar,Albacete,1318,80.92,
+Socovos,Albacete,1743,139.04,
+Yeste,Albacete,2495,511.49,
+Albesa,Albacete,172357,1126.99,
+Pozohondo,Albacete,1569,136.49,
+Arroba de los Montes,Ciudad Real,402,61.7,
+Ciudad Real,Ciudad Real,74850,285.15,
+Puertollano,Ciudad Real,45539,225.36,
+Campos del Paraíso,Cuenca,691,216.89,896
+Cuenca,Cuenca,53389,910.6,997
+Fuentenava de Jábaga,Cuenca,546,133.16,968
+"Hinojosa, La",Cuenca,191,42.11,939
+Moya,Cuenca,128,91.73,1136
+Olivares de Júcar,Cuenca,294,50,906
+Olmeda de la Cuesta,Cuenca,21,23.23,897
+Olmedilla de Eliz,Cuenca,17,13.31,869
+Santa María del Val,Cuenca,61,47.06,1196
+Sotorribas,Cuenca,696,149.21,988
+"Valle de Altomira, El",Cuenca,206,147.41,801
+Azuqueca de Henares,Guadalajara,35182,19.75,
+Guadalajara,Guadalajara,87452,235.49,
+Alameda de la Sagra,Toledo,3908,32.99,595
+Añover de Tajo,Toledo,5225,40.25,599
+Argés,Toledo,6829,23.76,653
+Bargas,Toledo,10807,89.71,593
+Borox,Toledo,4032,60.05,582
+Cabañas de la Sagra,Toledo,2041,16.52,554
+Casarrubios del Monte,Toledo,6441,92.42,611
+Cobeja,Toledo,2482,17.7,501
+Illán de Vacas,Toledo,3,9.15,480
+Illescas,Toledo,30553,56.75,589
+Lominchar,Toledo,2510,22.26,647
+Magán,Toledo,3875,29.18,487
+Mocejón,Toledo,5004,30.51,480
+"Navalucillos, Los",Toledo,1987,355.98,745
+Numancia de la Sagra,Toledo,5287,29.42,528
+Olías del Rey,Toledo,8469,40.09,586
+Orgaz,Toledo,2584,154.1,742
+Pantoja,Toledo,3506,28.17,519
+Recas,Toledo,4552,31.05,569
+Seseña,Toledo,30112,71.41,610
+Sonseca,Toledo,11084,59.93,755
+Toledo,Toledo,85085,232.14,516
+Villaseca de la Sagra,Toledo,1864,31.76,483
+Yeles,Toledo,5868,20.48,550
+Yuncler,Toledo,4582,17.51,531
+Yunclillos,Toledo,806,31.06,519
+Yuncos,Toledo,10630,15.25,548
