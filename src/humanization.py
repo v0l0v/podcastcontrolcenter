@@ -90,11 +90,65 @@ def humanizar_superficie(dato):
 
 from src.weather_utils import obtener_meteo_para_provincia
 
+import requests
+from bs4 import BeautifulSoup
+
+def obtener_info_wikipedia(municipio, provincia):
+    """
+    Obtiene un breve resumen de Wikipedia para el municipio.
+    Intenta varias URLs probables: "Municipio", "Municipio_(Provincia)".
+    Retorna el primer párrafo útil o None.
+    """
+    headers = {'User-Agent': 'PodcastControlCenter/1.0 (info@micomicona.com)'}
+    
+    # Lista de intentos de URL (orden de probabilidad)
+    # 1. Municipio_(Provincia) - Más seguro para evitar ambigüedades
+    # 2. Municipio - Si es único
+    busquedas = [
+        f"{municipio.replace(' ', '_')}_({provincia})",
+        f"{municipio.replace(' ', '_')}"
+    ]
+    
+    for termino in busquedas:
+        url = f"https://es.wikipedia.org/wiki/{termino}"
+        try:
+            response = requests.get(url, headers=headers, timeout=2) # Timeout corto para no bloquear
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                # Buscar el primer párrafo significativo
+                # Wikipedia suele poner el contenido en <div class="mw-parser-output"> -> <p>
+                # Evitar párrafos vacíos o de coordenadas
+                content_div = soup.find('div', {'class': 'mw-parser-output'})
+                if content_div:
+                    for p in content_div.find_all('p', recursive=False):
+                        texto = p.get_text().strip()
+                        if texto and len(texto) > 50 and "coordenadas" not in texto.lower():
+                            if "puede hacer referencia a" in texto.lower() or "desambiguación" in texto.lower():
+                                print(f"Skipping disambiguation for {termino}")
+                                break # Skip this result, try next search term if any
+                            
+                            # Limpiar referencias [1], [2]...
+                            import re
+                            texto_limpio = re.sub(r'\[\d+\]', '', texto)
+                            # Truncar si es muy largo (aprox 2 frases o 250 chars)
+                            if len(texto_limpio) > 300:
+                                punto = texto_limpio.find('.', 200)
+                                if punto != -1:
+                                    texto_limpio = texto_limpio[:punto+1]
+                                else:
+                                    texto_limpio = texto_limpio[:300] + "..."
+                            return texto_limpio
+        except Exception as e:
+            print(f"Error Wikipedia ({termino}): {e}")
+            continue
+            
+    return None
+
 def obtener_toque_humano(num_noticias: int, datos_meteo: dict = None) -> dict:
     """
     Selecciona una 'píldora' de humanización para el podcast.
     MODIFICACIÓN: El 'Bingo de Pueblos' es OBLIGATORIO.
-    A veces (30%) se añade un segundo toque, incluyendo el 'Termómetro Manchego'.
+    A veces (60%) se añade un segundo toque, incluyendo el 'Termómetro Manchego'.
     """
     
     instrucciones_finales = []
@@ -112,21 +166,25 @@ def obtener_toque_humano(num_noticias: int, datos_meteo: dict = None) -> dict:
              desc_altitud = humanizar_altitud(pueblo_elegido.get("Altitud (m s.n.m.)", 0))
              desc_superficie = humanizar_superficie(pueblo_elegido.get("Superficie (km²)", 0))
              
-             # NUEVO: Obtener clima ESPECÍFICO de la provincia/zona para el Bingo
-             # "Adapta el clima mas cercano a la poblacion seleccionado"
+             # NUEVO: Obtener clima ESPECÍFICO
              datos_clima_local = obtener_meteo_para_provincia(provincia)
              frase_clima_local = ""
              
              if datos_clima_local:
                  temp_local = datos_clima_local.get('media_temp', 15)
-                 
-                 # Lógica termómetro manchego aplicada LOCALMENTE al saludo
                  if temp_local <= 4:
                      frase_clima_local = f"donde hoy hace un frío que pela ({temp_local:.1f}C), así que abríguense bien"
                  elif temp_local >= 35:
                      frase_clima_local = f"donde hoy cae una solana importante ({temp_local:.1f}C), busquen la sombra"
                  else:
                      frase_clima_local = f"donde hoy tienen un día estupendo ({temp_local:.1f}C)"
+
+             # NUEVO: Contexto Wikipedia
+             try:
+                 info_wiki = obtener_info_wikipedia(nombre, provincia)
+             except Exception as e:
+                 print(f"Wiki error: {e}")
+                 info_wiki = ""
 
              instrucciones_finales.append(
                 f"- **DINÁMICA 'BINGO DE PUEBLOS' (OBLIGATORIO):** Hoy el saludo viaja a la provincia de **{provincia}**.\n"
@@ -135,8 +193,21 @@ def obtener_toque_humano(num_noticias: int, datos_meteo: dict = None) -> dict:
                 f"    * Población: Es {desc_poblacion}.\n"
                 f"    * Entorno: Situado {desc_altitud}.\n"
                 f"    * Clima HOY allí: {frase_clima_local}.\n"
-                f"  - **INSTRUCCIÓN:** Manda un saludo cariñoso a {nombre}. Integra el dato del clima DE FORMA INVISIBLE "
-                f"(ej: 'espero que estéis disfrutando de ese fresco', 'cuidado con el calor'). NO DIGAS la temperatura exacta."
+             )
+             
+             if info_wiki:
+                 instrucciones_finales.append(
+                    f"    * CURIOSIDAD / HISTORIA (Wikipedia): \"{info_wiki}\"\n"
+                    f"      (Usa esto para dar un detalle culto o histórico si encaja en el tono).\n"
+                 )
+
+             instrucciones_finales.append(
+                f"  - **INSTRUCCIÓN CRÍTICA DE ESTILO:**\n"
+                f"    No hagas una lista de datos. **ENTRELAZA** la información de forma natural y cariñosa.\n"
+                f"    - Malo: 'Hola a {nombre}. Tiene {desc_poblacion}. Hace frío.'\n"
+                f"    - Bueno: 'Un abrazo enorme a la gente de {nombre}, esa villa tan viva donde hoy, por cierto, hace un frío que pela...'\n"
+                f"    - Si usas el dato de Wikipedia ({'SÍ' if info_wiki else 'NO'}), úsalo para dar color, no como enciclopedia.\n"
+                f"    - Integra el clima de forma invisible ('vaya día bueno tenéis', 'abríguense')."
              )
         else:
              # Fallback

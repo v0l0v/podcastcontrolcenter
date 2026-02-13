@@ -43,6 +43,20 @@ class TestCSVTowns(unittest.TestCase):
         self.assertIn("DINÁMICA 'BINGO DE PUEBLOS'", instruction)
         self.assertIn("Contexto Humanizado", instruction)
         
+        # Check for Wikipedia content (it might be empty if connection fails or no page, but let's see)
+        # We print it to verify visually
+        if "Wikipedia" in instruction:
+            print("✅ Wikipedia context found!")
+            # Extract and print the wikipedia part for verification
+            try:
+                start = instruction.index("CURIOSIDAD / HISTORIA")
+                end = instruction.index("(Usa esto", start)
+                print(f"📄 WIKI CONTENT: {instruction[start:end]}")
+            except:
+                pass
+        else:
+            print("⚠️ Wikipedia context NOT found (could be network issue or no page).")
+        
         print("\n📝 Sample Instruction Generated:")
         print(instruction[:300] + "...")
 
