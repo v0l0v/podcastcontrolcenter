@@ -43,6 +43,7 @@ from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini, generar_texto_multimodal_audio_con_gemini
 from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy, obtener_fecha_humanizada_es
+from src.humanization import obtener_toque_humano # Nuevo módulo
 from src.weather_utils import obtener_pronostico_meteo
 from src.sports_utils import obtener_resultados_futbol
 import mcmcn_prompts 
@@ -1968,8 +1969,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              print(f"      🗓️ Efeméride detectada: {efemerides_hoy[:50]}...")
              
         # NUEVO: Obtener meteo para enriquecer (Retranca)
-        datos_meteo_hoy = obtener_pronostico_meteo()
-        if datos_meteo_hoy:
+        datos_meteo_obj = obtener_pronostico_meteo()
+        datos_meteo_hoy = ""
+        datos_meteo_dict = {}
+
+        if isinstance(datos_meteo_obj, dict):
+             datos_meteo_hoy = datos_meteo_obj.get("texto", "")
+             datos_meteo_dict = datos_meteo_obj
+             print(f"      ☁️ Meteo obtenida (temp media {datos_meteo_obj.get('media_temp', '?')}ºC)")
+        elif datos_meteo_obj:
+             datos_meteo_hoy = str(datos_meteo_obj)
              print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
 
         # NUEVO: Obtener deportes (Solo Lunes o si hay noticias relevantes)
@@ -1981,11 +1990,20 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              if datos_deportes_hoy:
                  print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
         
-        # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
+        # FECHA ACTUAL
         fecha_actual_str = obtener_fecha_humanizada_es()
         
-        # FECHA ACTUAL (MOVIDO ARRIBA PARA EL CONTEXTO)
-        fecha_actual_str = obtener_fecha_humanizada_es()
+        # --- HUMANIZACIÓN DOROTEA ---
+        # Calcular número real de noticias tras agrupación para el contexto
+        noticias_individuales = noticias_agrupadas.get('noticias_individuales', [])
+        bloques = noticias_agrupadas.get('bloques_tematicos', [])
+        num_noticias_real = len(noticias_individuales) + sum(len(b.get('noticias', [])) for b in bloques)
+        
+        # Decidimos qué toque humano dar hoy (si toca). Pasamos DATOS METEO.
+        contexto_humanizacion = obtener_toque_humano(num_noticias_real, datos_meteo_dict)
+        instruccion_humanizacion = contexto_humanizacion.get("humanizacion_instruccion", "")
+        if instruccion_humanizacion:
+            print(f"      🤖 Toque humano activado:\n{instruccion_humanizacion}")
         
         # --- CACHING LLM: INTRO ---
         intro_inputs = {
@@ -1996,7 +2014,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             "meteo": datos_meteo_hoy,
             "deportes": datos_deportes_hoy,
             "semtimiento": sentimiento_general,
-            "fecha": fecha_actual_str
+            "fecha": fecha_actual_str,
+            "humanizacion": instruccion_humanizacion
         }
         intro_hash = calculate_hash(intro_inputs)
         
@@ -2015,7 +2034,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 dato_meteo=datos_meteo_hoy,
                 dato_deportes=datos_deportes_hoy,
                 sentimiento_general=sentimiento_general,
-                fecha_actual_str=fecha_actual_str
+                fecha_actual_str=fecha_actual_str,
+                humanizacion_instruccion=instruccion_humanizacion
             )
             texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
             

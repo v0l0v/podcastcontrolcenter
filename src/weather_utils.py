@@ -133,11 +133,61 @@ def obtener_pronostico_meteo(lat=None, lon=None) -> str:
     # Construir string informativo para la IA
     # Se proporcionan datos GENERALES para evitar que la IA diga "en Hellín hace X".
     
-    resumen = (
+    # Construir string informativo para la IA
+    # Se proporcionan datos GENERALES para evitar que la IA diga "en Hellín hace X".
+    
+    resumen_texto = (
         f"DATOS METEOROLÓGICOS REGIONALES (media): \n"
         f"- Sensación Térmica General: {desc_general}. \n"
         f"- Estado del cielo: {t_lluvia}. \n"
         f"- Temperatura Media Regional: {media_total:.1f}°C."
     )
+    return {
+        "texto": resumen_texto,
+        "media_temp": media_total,
+        "lluvia": lluvia_general
+    }
 
-    return resumen
+def obtener_meteo_para_provincia(provincia: str) -> dict:
+    """
+    Obtiene el clima de una población representativa de la provincia indicada.
+    Usado para el 'Bingo de Pueblos' cuando no tenemos coordenadas exactas del pueblo.
+    """
+    poblaciones = POBLACIONES_CLM.get(provincia, [])
+    if not poblaciones:
+        # Fallback: Elegir una provincia al azar si la indicada no existe
+        poblaciones = POBLACIONES_CLM.get("Albacete") 
+    
+    # Elegimos una representativa (la primera suele ser la capital o importante)
+    # O aleatoria para dar variedad dentro de la misma provincia
+    pob = random.choice(poblaciones)
+    
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": pob['lat'],
+        "longitude": pob['lon'],
+        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+        "timezone": "Europe/Madrid",
+        "forecast_days": 1
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=2)
+        if response.status_code == 200:
+            data = response.json()
+            daily = data.get("daily", {})
+            if daily:
+                t_max = daily["temperature_2m_max"][0]
+                t_min = daily["temperature_2m_min"][0]
+                media = (t_max + t_min) / 2
+                return {
+                    "provincia": provincia,
+                    "ciudad_ref": pob['nombre'],
+                    "media_temp": media,
+                    "t_max": t_max,
+                    "t_min": t_min
+                }
+    except Exception as e:
+        print(f"Error meteo provincia {provincia}: {e}")
+        
+    return {}

@@ -402,7 +402,8 @@ class PromptsCreativos:
         dato_deportes: str = "",
         dato_curioso_gancho: str = "",
         sentimiento_general: str = "neutro",
-        fecha_actual_str: str = ""
+        fecha_actual_str: str = "",
+        humanizacion_instruccion: str = ""
     ) -> str:
         """
         Genera el monólogo de apertura completo.
@@ -417,6 +418,14 @@ class PromptsCreativos:
               - Si hay **EFEMÉRIDE HISTÓRICA** en el texto de arriba: U sala ("Tal día como hoy..."). Si NO la hay, NO inventes nada histórico.
               - Si hay **SANTORAL**: Felicita a quienes lleven ese nombre.
               - **REFRANES:** Úsalos SOLO MUY DE VEZ EN CUANDO si encaja perfecto. No queremos ser repetitivos. Si dudas, MEJOR NO USAR REFRÁN.
+            """
+
+        instruccion_humanizacion = ""
+        if humanizacion_instruccion:
+            instruccion_humanizacion = f"""
+            - **TOQUE HUMANO / PERSONALIDAD (PRIORITARIO):**
+            {humanizacion_instruccion}
+            - **INSTRUCCIÓN:** Integra este comentario de forma natural en el monólogo. No lo fuerces, pero asegúrate de que aparezca.
             """
 
         instruccion_meteo = ""
@@ -457,6 +466,7 @@ class PromptsCreativos:
         - Saludo base sugerido: "{texto_base_saludo}"
         - Llamada a la acción (CTA) obligatoria: "{texto_cta}"
         {instruccion_efemeride}
+        {instruccion_humanizacion}
         {instruccion_meteo}
         {instruccion_deportes}
         
