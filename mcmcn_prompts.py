@@ -406,47 +406,32 @@ class PromptsCreativos:
         humanizacion_instruccion: str = ""
     ) -> str:
         """
-        Genera el monólogo de apertura completo.
+        Genera el monólogo de apertura completo con integración orgánica de todos los datos.
         """
-        instruccion_efemeride = ""
-        if dato_efemeride:
-            instruccion_efemeride = f"""
-            - **INFORMACIÓN DEL DÍA:**
-            {dato_efemeride}
-            
-            - **INSTRUCCIONES DE INTEGRACIÓN:**
-              - Si hay **EFEMÉRIDE HISTÓRICA** en el texto de arriba: U sala ("Tal día como hoy..."). Si NO la hay, NO inventes nada histórico.
-              - Si hay **SANTORAL**: Felicita a quienes lleven ese nombre.
-              - **REFRANES:** Úsalos SOLO MUY DE VEZ EN CUANDO si encaja perfecto. No queremos ser repetitivos. Si dudas, MEJOR NO USAR REFRÁN.
-            """
-
-        instruccion_humanizacion = ""
-        if humanizacion_instruccion:
-            instruccion_humanizacion = f"""
-            - **TOQUE HUMANO / PERSONALIDAD (PRIORITARIO):**
-            {humanizacion_instruccion}
-            - **INSTRUCCIÓN:** Integra este comentario de forma natural en el monólogo. No lo fuerces, pero asegúrate de que aparezca.
-            """
-
-        instruccion_meteo = ""
+        # --- Construir el CÓCTEL DE INGREDIENTES ---
+        ingredientes = []
+        
         if dato_meteo:
-             instruccion_meteo = f"""
-            - **EL TIEMPO (Breve y Humano):**
-            {dato_meteo}
-            - **INSTRUCCIÓN:** Haz un comentario MUY BREVE sobre la sensación térmica media.
-              - **PROHIBIDO:** NO digas grados exactos ("25 grados") ni nombres poblaciones.
-              - **Estilo:** Solo comenta si hace frío, calor o está agradable ("hoy toca abrigarse", "día primaveral", etc.).
-            """
-
-        instruccion_deportes = ""
+            ingredientes.append(f"""🌤️ TIEMPO: {dato_meteo}
+  (Comenta la sensación térmica de forma natural: "hoy toca abrigarse", "qué día tan estupendo"... 
+   PROHIBIDO decir grados exactos ni nombres de poblaciones.)""")
+        
+        if dato_efemeride:
+            ingredientes.append(f"""📅 EFEMÉRIDES / SANTORAL / FIESTAS:
+{dato_efemeride}
+  (Si hay efeméride histórica: "Tal día como hoy...". Si hay santoral: felicita. 
+   Si hay fiestas de interés turístico: menciónalas con entusiasmo y cariño.
+   Los refranes: úsalos SOLO si encajan perfecto, mejor no forzarlos.)""")
+        
         if dato_deportes:
-             instruccion_deportes = f"""
-            - **DEPORTES (LA TERTULIA):**
-            {dato_deportes}
-            - **INSTRUCCIÓN:** Coméntalo con mucha pasión, como si fueras del Albacete (o del equipo mencionado) a muerte.
-              - Si ganaron: Celébralo.
-              - Si perdieron: Da ánimos ("A la próxima remontamos").
-            """
+            ingredientes.append(f"""⚽ DEPORTES: {dato_deportes}
+  (Coméntalo con pasión futbolera real: celebra si ganaron, ánimos si perdieron.)""")
+        
+        if humanizacion_instruccion:
+            ingredientes.append(f"""🏘️ TOQUE HUMANO / BINGO DE PUEBLOS:
+{humanizacion_instruccion}""")
+        
+        ingredientes_texto = "\n\n".join(ingredientes) if ingredientes else "(No hay datos extra hoy, improvisa con tu personalidad.)"
 
         instrucciones_intro = PROMPTS_CONFIG.get('analysis_prompts', {}).get('intro_instrucciones', "Genera una intro de podcast.")
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
@@ -454,26 +439,62 @@ class PromptsCreativos:
         prompt = f"""
         {persona_base}
         
-        {instrucciones_intro}
+        ## TU MISIÓN HOY
+        
+        Vas a generar el monólogo de apertura del podcast. Pero NO como una lista de datos. 
+        Vas a crear una CONVERSACIÓN con tu audiencia: fluida, natural, con tu humor manchego 
+        y tu personalidad única. Piensa en cómo una presentadora de radio con chispa abre
+        su programa: mezclando temas, haciendo bromas, siendo cercana.
 
-        CONTEXTO TEMPORAL:
-        - FECHA DE HOY: {fecha_actual_str} 
-        - **IMPORTANTE SOBRE LA FECHA:** NUNCA escribas la fecha tú misma. Para mencionar qué día es hoy en el saludo, DEBES escribir LITERALMENTE el marcador: `[FECHA_HUMANIZADA]`. Yo lo sustituiré después automáticamnete.
-        - Ejemplo correcto: "Bienvenidos a este [FECHA_HUMANIZADA]..."
+        ## FECHA DE HOY
+        - FECHA: {fecha_actual_str}
+        - **REGLA ABSOLUTA:** Para mencionar qué día es, escribe LITERALMENTE `[FECHA_HUMANIZADA]`. Yo lo sustituiré después.
+        - Ejemplo: "Bienvenidos a este [FECHA_HUMANIZADA]..."
+
+        ## TUS INGREDIENTES (mézclalo todo de forma ORGÁNICA)
         
-        CONTEXTO DEL PROGRAMA:
-        - Sentimiento general hoy: {sentimiento_general}
-        - Saludo base sugerido: "{texto_base_saludo}"
-        - Llamada a la acción (CTA) obligatoria: "{texto_cta}"
-        {instruccion_efemeride}
-        {instruccion_humanizacion}
-        {instruccion_meteo}
-        {instruccion_deportes}
+        Tienes estos datos para tejer tu monólogo. NO los presentes como una lista.
+        ENTRELÁZALOS como si estuvieras charlando con alguien en un bar:
         
-        CONTENIDO DE NOTICIAS PARA TU CONTEXTO:
+        {ingredientes_texto}
+        
+        📰 NOTICIAS DEL DÍA (para el sumario/teaser):
         {contenido_noticias[:2000]}...
         
-        RESPUESTA SOLICITADA: Únicamente el texto del monólogo.
+        📢 CTA (Llamada a la acción - OBLIGATORIA):
+        "{texto_cta}"
+        (Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)
+        
+        🎭 CONTEXTO:
+        - Sentimiento general: {sentimiento_general}
+        - Saludo base sugerido: "{texto_base_saludo}" (Adáptalo, no lo leas literal.)
+
+        ## INSTRUCCIÓN MAESTRA DE INTEGRACIÓN
+        
+        {instrucciones_intro}
+        
+        ⚠️ **ANTI-PATRÓN (NO HAGAS ESTO):**
+        "Buenos días. Hoy es jueves. Hace frío. Hoy es San Valentín. Saludamos a Nerpio. 
+        En deportes, el Albacete ganó. Vamos con las noticias."
+        → Esto es una LISTA ABURRIDA. PROHIBIDO.
+        
+        ✅ **PATRÓN IDEAL:**
+        "¡Qué [FECHA_HUMANIZADA] tan fresquito nos ha dejado la noche, ¿eh? Yo que vosotros 
+        me agarraría bien al café... Hablando de agarrarse, menudo partido del Alba el fin de 
+        semana, ¡qué gol en el último minuto! Pero bueno, que hoy tenemos un programa bien 
+        cargadito. Mandamos un abrazo enorme a la gente de Nerpio, que andan con su Encuentro 
+        de Cuadrillas por todo lo alto. Y ojo, que en los próximos días se viene la Feria de 
+        las Mercaderías de Tendilla, así que apuntadlo. Hoy traemos noticias sobre..."
+        → TODO FLUYE. Un tema lleva al otro. Los datos se integran en la conversación.
+        
+        **REGLAS FINALES:**
+        1. Escribe un monólogo de extensión GENEROSA (400-600 palabras). La intro es tu momento de brillar.
+        2. Sé tú misma: humor manchego, ironía amable, cercanía. Con chispa.
+        3. NO uses markdown (negritas, cursivas). Texto plano para locución.
+        4. NO uses paréntesis ni corchetes (excepto [FECHA_HUMANIZADA] y [CORTINILLA]).
+        5. ENTRELAZA los datos como en una charla natural, no como un informe.
+        
+        RESPUESTA: Únicamente el texto del monólogo.
         """
         return prompt
 
