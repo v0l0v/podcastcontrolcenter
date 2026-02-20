@@ -1981,14 +1981,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              datos_meteo_hoy = str(datos_meteo_obj)
              print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
 
-        # NUEVO: Obtener deportes (Solo Lunes o si hay noticias relevantes)
-        # 0 = Lunes.
+        # Obtener deportes (todos los días)
         datos_deportes_hoy = ""
-        if dia_semana == 0: # Solo comprobar los lunes
-             print("      ⚽ Es lunes: Buscando resultados deportivos...")
-             datos_deportes_hoy = obtener_resultados_futbol()
-             if datos_deportes_hoy:
-                 print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
+        print("      ⚽ Buscando resultados deportivos...")
+        datos_deportes_hoy = obtener_resultados_futbol()
+        if datos_deportes_hoy:
+            print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
         
         # FECHA ACTUAL
         fecha_actual_str = obtener_fecha_humanizada_es()
