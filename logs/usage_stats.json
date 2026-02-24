@@ -1,9 +1,9 @@
 {
-    "gemini_input_tokens": 6417,
-    "gemini_output_tokens": 768,
+    "gemini_input_tokens": 328507,
+    "gemini_output_tokens": 20167,
     "tts_chars": 1393,
     "api_calls": {
-        "gemini_flash": 2,
+        "gemini_flash": 234,
         "gemini_pro": 0,
         "tts_standard": 0,
         "tts_wavenet": 0,

@@ -227,35 +227,51 @@ def identificar_fuente_original(texto: str) -> str:
 def calcular_similitud_texto(texto1: str, texto2: str) -> float:
     return composite_similarity(texto1, texto2)
 
-def detectar_duplicados_y_similares(resumenes: list, umbral_similitud: float = DEDUP_SIMILARITY_THRESHOLD) -> list:
+def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list, umbral_similitud: float = DEDUP_SIMILARITY_THRESHOLD) -> list:
     print(f"\n🔍 Detectando duplicados (umbral comp.: {umbral_similitud:.2f})")
     noticias_unicas = []
     hashes_vistos = set()
     eliminados = 0
 
     for noticia in resumenes:
-        resumen_actual = (noticia.get('resumen') or "").strip()
+        resumen_actual = (noticia.get('resumen') or noticia.get('contenido_rss') or noticia.get('texto') or "").strip()
         if not resumen_actual:
             continue
 
         # ID estable por hash del texto normalizado
         h = stable_text_hash(resumen_actual)
         if h in hashes_vistos:
+            noticias_descartadas.append({
+                "titulo": noticia.get('titulo', 'Sin título'),
+                "sitio": noticia.get('sitio', 'Desconocido'),
+                "motivo": "ID Hash ya procesado (Hash duplicado)",
+            })
             eliminados += 1
             continue
 
         es_duplicado = False
         for existente in noticias_unicas:
-            sim = calcular_similitud_texto(resumen_actual, existente.get('resumen', ''))
+            texto_existente = (existente.get('resumen') or existente.get('contenido_rss') or existente.get('texto') or "").strip()
+            sim = calcular_similitud_texto(resumen_actual, texto_existente)
             if sim >= umbral_similitud:
-                # combinar fuentes
-                f1 = existente.get('fuente', '')
-                f2 = noticia.get('fuente', '')
+                # combinar fuentes (sitios en la fase previa)
+                f1 = existente.get('sitio', '') or existente.get('fuente', '')
+                f2 = noticia.get('sitio', '') or noticia.get('fuente', '')
                 if f2 and f2 not in f1:
-                    existente['fuente'] = f"{f1} · {f2}" if f1 else f2
+                    # En fase temprana usamos 'sitio', en fase tardía 'fuente'
+                    if 'sitio' in existente:
+                        existente['sitio'] = f"{f1} · {f2}" if f1 else f2
+                    else:
+                        existente['fuente'] = f"{f1} · {f2}" if f1 else f2
                 # combinar fechas si no hay
                 if 'fecha' not in existente and 'fecha' in noticia:
                     existente['fecha'] = noticia['fecha']
+                
+                noticias_descartadas.append({
+                    "titulo": noticia.get('titulo', 'Sin título'),
+                    "sitio": noticia.get('sitio', 'Desconocido'),
+                    "motivo": f"Absorbida por similitud ({(sim*100):.1f}%) con: {existente.get('titulo', 'Sin título')[:50]}...",
+                })
                 es_duplicado = True
                 eliminados += 1
                 break
@@ -437,7 +453,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list) -> dict:
     print("\n🎯 Iniciando agrupación mejorada de noticias (Estrategia de 2 Pasos)...")
     
     # PASO 0: DEDUP (Esto no cambia)
-    noticias_unicas = detectar_duplicados_y_similares(resumenes, umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
+    noticias_unicas = detectar_duplicados_y_similares(resumenes, [], umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
 
     if len(noticias_unicas) < MIN_NEWS_PER_BLOCK:
         print("    ℹ️ Muy pocas noticias para agrupar. Procesando individualmente.")
@@ -1432,6 +1448,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         cache_noticias = cargar_cache_noticias()
         noticias_candidatas_totales = []
+        noticias_descartadas = []
 
         # --- MODO 1: CARGAR DESDE JSON (Selección de usuario) ---
         if archivo_entrada_json:
@@ -1487,6 +1504,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             continue
                         contenido = entry.get('summary', entry.get('description', ''))
                         if not contenido:
+                            noticias_descartadas.append({
+                                "titulo": entry.get('title', 'Sin título'),
+                                "sitio": sitio,
+                                "motivo": "Contenido/summary vacío"
+                            })
                             continue
 
                         # Reparar posible codificación rota
@@ -1498,45 +1520,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                              words = contenido.split()[:8]
                              titulo_reparado = " ".join(words) + "..." if words else "Noticia sin título"
 
-                        # --- NUEVO: Intentar seguir encadenamiento de noticias (republicaciones) ---
-                        texto_externo = ""
-                        enlace_externo = extract_first_external_link(contenido)
-                        if enlace_externo:
-                            print(f"      🔗 Detectado enlace externo en noticia: {enlace_externo}")
-                            scraped_text = fetch_article_text(enlace_externo)
-                            if scraped_text:
-                                # Limitamos el texto extraído para no saturar el prompt (ej: 3000 chars)
-                                texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
-                                print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
-
-                        # --- DEFINIR CONTEXTO BASE (Para uso en visión y texto final) ---
-                        texto_contexto = limpiar_html(contenido) + texto_externo
-
-                        # --- NUEVO: Multimodalidad (Análisis de imágenes) ---
-                        texto_imagen = ""
-                        url_imagen = extract_image_url(contenido)
-                        if url_imagen and False: # DISABLED TEMPORARILY FOR STABILITY
-                             print(f"      🖼️ Detectada imagen en la noticia: {url_imagen[:60]}...")
-                             img_bytes = download_image_as_bytes(url_imagen)
-                             if img_bytes:
-                                  print("      👁️ Analizando imagen con Gemini Vision...")
-                                  # USA texto_contexto AHORA QUE EXISTE
-                                  prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_contexto[:500])
-                                  analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
-                                  if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
-                                       texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
-                                       print(f"      ✅ Datos visuales extraídos: {analisis_img[:100].replace(chr(10), ' ')}...")
-                                  else:
-                                       print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
-
                         noticia_hash = stable_text_hash(contenido)
-                        texto_crudo = texto_contexto + texto_imagen
 
                         logger.info(f"Noticia encontrada: {titulo_reparado[:30]}...", details={"source": sitio})
                         noticias_candidatas_totales.append({
-
                             'sitio': sitio, 
-                            'texto': texto_crudo, 
+                            'contenido_rss': contenido, 
                             'fecha': fecha_pub, 
                             'hash': noticia_hash,
                             'titulo': titulo_reparado,
@@ -1552,14 +1541,23 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
         
-
-
-        # Continuar con el flujo normal...
-        # Usar el límite configurado solo si no venimos de un JSON manual (que manda el usuario)
+        # --- NUEVO FASE 2: Corte Duro y LUEGO Deduplicación Temprana ---
+        # 1. Aplicamos el límite sobre las más recientes, ignorando el resto por completo.
         if not archivo_entrada_json:
-            noticias_seleccionadas = noticias_candidatas_totales[:max_items]
+            noticias_top = noticias_candidatas_totales[:max_items]
+            # Registrar las que superan el límite máximo
+            noticias_excedentes = noticias_candidatas_totales[max_items:]
+            for ne in noticias_excedentes:
+                noticias_descartadas.append({
+                    "titulo": ne.get('titulo', 'Sin título'),
+                    "sitio": ne.get('sitio', 'Desconocido'),
+                    "motivo": f"Excede límite máximo de noticias ({max_items})"
+                })
         else:
-            noticias_seleccionadas = noticias_candidatas_totales
+            noticias_top = noticias_candidatas_totales
+
+        # 2. Deduplicamos usando el contenido en bruto SOLO sobre el top seleccionado
+        noticias_seleccionadas = detectar_duplicados_y_similares(noticias_top, noticias_descartadas, umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
 
         resumenes_finales = []
         nuevas_noticias_para_cache = {}
@@ -1570,7 +1568,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             
             if not noticia_hash:
                  # Fallback de emergencia si no hay ni hash ni id
-                 noticia_hash = stable_text_hash(noticia.get('texto', '') or noticia.get('resumen', ''))
+                 noticia_hash = stable_text_hash(noticia.get('contenido_rss', '') or noticia.get('texto', ''))
 
             # Determinar si necesitamos procesar (generar audio) o usar caché
             necesita_procesamiento = True
@@ -1603,12 +1601,41 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 entidades_clave = []
                 es_noticia_breve = False # Valor inicial
                 
+                # --- NUEVO: Extraer HTTP e imágenes SOLO para las ganadoras ---
+                if 'texto' not in noticia and 'contenido_rss' in noticia:
+                    contenido_base = noticia['contenido_rss']
+                    texto_externo = ""
+                    enlace_externo = extract_first_external_link(contenido_base)
+                    if enlace_externo:
+                        print(f"      🔗 Detectado enlace externo en noticia ganadora: {enlace_externo}")
+                        scraped_text = fetch_article_text(enlace_externo)
+                        if scraped_text:
+                            texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
+                            print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
+
+                    texto_contexto = limpiar_html(contenido_base) + texto_externo
+                    texto_imagen = ""
+                    url_imagen = extract_image_url(contenido_base)
+                    if url_imagen and False: # DISABLED TEMPORARILY FOR STABILITY
+                         print(f"      🖼️ Detectada imagen: {url_imagen[:60]}...")
+                         img_bytes = download_image_as_bytes(url_imagen)
+                         if img_bytes:
+                              print("      👁️ Analizando imagen con Gemini Vision...")
+                              prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_contexto[:500])
+                              analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
+                              if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
+                                   texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
+                                   print(f"      ✅ Datos visuales extraídos.")
+                              else:
+                                   print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
+                    noticia['texto'] = texto_contexto + texto_imagen
+                
                 # APLICAMOS LA PRE-LIMPIEZA SIEMPRE (para tener texto_crudo disponible)
                 texto_origen = noticia.get('texto', '')
                 if texto_origen:
                     texto_crudo = preprocesar_texto_para_fechas(texto_origen)
                     es_noticia_breve = len(texto_crudo) < 150
-                    fuente_original = identificar_fuente_original(texto_origen)
+                    fuente_original = identificar_fuente_original(texto_crudo)
                     # FIX: Si es propia, usar el nombre del sitio (feed) en su lugar para evitar "Desde PROPIA..."
                     if fuente_original == "PROPIA":
                         fuente_original = noticia.get('sitio', '') or "la organización"
@@ -1705,6 +1732,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     
                     if not es_manual and len(texto_limpio.split()) < MIN_WORDS_FOR_AUDIO:
                         print(f"      🗑️  Ignorando noticia por tener menos de {MIN_WORDS_FOR_AUDIO} palabras.")
+                        noticias_descartadas.append({
+                            "titulo": titulo_safe,
+                            "sitio": noticia.get('sitio', 'Desconocido'),
+                            "motivo": f"Contenido muy breve ({len(texto_limpio.split())} palabras frente a m\u00ednimo {MIN_WORDS_FOR_AUDIO})"
+                        })
                         continue
 
                     # === FASE 3: Sentimiento ===
@@ -1744,6 +1776,30 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             
         logger.step("Generación de Guion y Audios", "RUNNING")
         print("\n--- FASE 2: Agrupación y Guionizado ---")
+
+        # --- REPORTE DE DESCARTES ---
+        if solo_preview:
+            archivo_descartes = "prevision_noticias_descartadas.json"
+        else:
+            archivo_descartes = os.path.join(output_dir, f"noticias_descartadas_{timestamp}.json")
+
+        try:
+            with open(archivo_descartes, 'w', encoding='utf-8') as f:
+                json.dump(noticias_descartadas, f, indent=4, ensure_ascii=False)
+            print(f"\n🗑️  REPORTE DE DESCARTES CREADO EN: {archivo_descartes}")
+            if noticias_descartadas:
+                print(f"   Se descartaron {len(noticias_descartadas)} noticias en total:")
+                motivos = {}
+                for nd in noticias_descartadas:
+                    m = nd['motivo'].split(' (')[0] if ' (' in nd['motivo'] else nd['motivo']
+                    motivos[m] = motivos.get(m, 0) + 1
+                for m, count in motivos.items():
+                    print(f"   - {count} por: {m}")
+        except Exception as e:
+            print(f"❌ Error al guardar archivo de descartes: {e}")
+
+        # Agrupamos temáticamente las noticias resumidas
+        bloques_y_restantes = agrupar_noticias_por_temas_mejorado(resumenes_finales)
 
         # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR ---
         if solo_preview:

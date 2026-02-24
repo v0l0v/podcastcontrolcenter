@@ -615,6 +615,38 @@ with tab_editor:
                  if update_selection:
                      st.session_state['noticias_editadas_finales'] = edited_news_list_main
                      st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
+
+            # --- REPORTE DE DESCARTES EN UI ---
+            if os.path.exists("prevision_noticias_descartadas.json"):
+                st.markdown("---")
+                try:
+                    with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
+                        descartadas = json.load(f)
+                    
+                    if descartadas:
+                        with st.expander(f"🗑️ Ver Noticias Descartadas o Absorbidas ({len(descartadas)})"):
+                            st.info("Estas noticias se obtuvieron del RSS pero no se han incluido en la selección principal debido a tus reglas de filtrado o porque reportaban algo que ya cubría otra noticia (duplicados).")
+                            
+                            # Agrupar por motivo para un resumen visual
+                            motivos_count = {}
+                            for d in descartadas:
+                                motivo_base = d['motivo'].split(' (')[0] if ' (' in d['motivo'] else d['motivo']
+                                motivos_count[motivo_base] = motivos_count.get(motivo_base, 0) + 1
+                                
+                            st.markdown("**Resumen de Descartes:**")
+                            for m, c in motivos_count.items():
+                                st.markdown(f"- **{c}** por: {m}")
+                                
+                            st.markdown("---")
+                            
+                            # Lista detallada
+                            for i, d in enumerate(descartadas):
+                                st.markdown(f"**{i+1}. {d.get('titulo', 'Sin título')}**")
+                                st.caption(f"Fuente: {d.get('sitio', 'Desconocida')} | Motivo: {d.get('motivo', 'Desconocido')}")
+                                st.divider()
+                except Exception as e:
+                    st.error(f"Error cargando reporte de descartes: {e}")
+            # ----------------------------------
     else:
         st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
 
