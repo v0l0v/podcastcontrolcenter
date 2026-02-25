@@ -659,8 +659,8 @@ class PromptsCreativos:
         
         REGLAS DE ORO PARA LA TRANSICIÓN:
         - **PROHIBIDO INVENTAR CONTEXTO PASADO:** NUNCA digas "Tras repasar X...", "Después de hablar de Y...", "Dejamos atrás la política...". NO SABES de qué se ha hablado antes.
-        - **MIRA SOLO HACIA DELANTE:** Tu transición debe servir SOLAMENTE para abrir la puerta al NUEVO tema. Usa fórmulas como:
-          - "Cambiando de tercio, nos centramos ahora en..."
+        - **MIRA SOLO HACIA DELANTE:** Tu transición debe servir SOLAMENTE para abrir la puerta al NUEVO tema.
+        - **EVITA FÓRMULAS CLICHÉ:** Usa frases preparadas como "En torno a..." o "Cambiando de tercio..." **como máximo una vez por episodio**, o directamente evítalas. Prioriza iniciar de forma directa, hablando de lo importante inmediatamente, o usa alternativas naturales como:
           - "En otro orden de cosas, el foco se pone en..."
           - "Pasamos ahora a abordar noticias sobre..."
           - "Y un tema que cobra importancia hoy es..."
