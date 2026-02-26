@@ -46,6 +46,7 @@ from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides
 from src.humanization import obtener_toque_humano # Nuevo módulo
 from src.weather_utils import obtener_pronostico_meteo
 from src.sports_utils import obtener_resultados_futbol
+from costumbrismo import obtener_saludo_aleatorio
 import mcmcn_prompts 
 
 # --- MONITORING ---
@@ -2059,6 +2060,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         if instruccion_humanizacion:
             print(f"      🤖 Toque humano activado:\n{instruccion_humanizacion}")
         
+        # --- COSTUMBRISMO DOROTEA (Plato principal) ---
+        provincia_predominante = "General_Manchega" 
+        saludo_costumbrista = obtener_saludo_aleatorio(provincia=provincia_predominante, momento_dia="manana")
+        print(f"      🌾 Saludo Costumbrista generado: {saludo_costumbrista[:50]}...")
+
         # --- CACHING LLM: INTRO ---
         intro_inputs = {
             "contenido": contenido_completo_texto,
@@ -2069,7 +2075,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             "deportes": datos_deportes_hoy,
             "semtimiento": sentimiento_general,
             "fecha": fecha_actual_str,
-            "humanizacion": instruccion_humanizacion
+            "humanizacion": instruccion_humanizacion,
+            "costumbrismo": saludo_costumbrista
         }
         intro_hash = calculate_hash(intro_inputs)
         
@@ -2089,7 +2096,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 dato_deportes=datos_deportes_hoy,
                 sentimiento_general=sentimiento_general,
                 fecha_actual_str=fecha_actual_str,
-                humanizacion_instruccion=instruccion_humanizacion
+                humanizacion_instruccion=instruccion_humanizacion,
+                toque_costumbrista=saludo_costumbrista
             )
             texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
             
