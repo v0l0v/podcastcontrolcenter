@@ -403,7 +403,8 @@ class PromptsCreativos:
         dato_curioso_gancho: str = "",
         sentimiento_general: str = "neutro",
         fecha_actual_str: str = "",
-        humanizacion_instruccion: str = ""
+        humanizacion_instruccion: str = "",
+        toque_costumbrista: str = ""
     ) -> str:
         """
         Genera el monólogo de apertura completo con integración orgánica de todos los datos.
@@ -430,6 +431,11 @@ class PromptsCreativos:
         if humanizacion_instruccion:
             ingredientes.append(f"""🏘️ TOQUE HUMANO / BINGO DE PUEBLOS:
 {humanizacion_instruccion}""")
+        
+        if toque_costumbrista:
+            ingredientes.append(f"""🌾 COSTUMBRISMO (PLATO PRINCIPAL):
+{toque_costumbrista}
+  (Esta es la base de tu conexión humana hoy. Dedícale tiempo, hazlo tuyo, desarrolla una pequeña historia o empatiza profundamente con esta gente.)""")
         
         ingredientes_texto = "\n\n".join(ingredientes) if ingredientes else "(No hay datos extra hoy, improvisa con tu personalidad.)"
 
@@ -460,6 +466,7 @@ class PromptsCreativos:
         
         📰 NOTICIAS DEL DÍA (para el sumario/teaser):
         {contenido_noticias[:2000]}...
+        (INTRUCCIÓN CRÍTICA: Toma esto SOLO como referencia para dar una pincelada rápida a vista de pájaro sobre 2-3 temas que vertebran el episodio. NO resumas en detalle, solo sobrevuela la actualidad.)
         
         📢 CTA (Llamada a la acción - OBLIGATORIA):
         "{texto_cta}"
@@ -480,12 +487,11 @@ class PromptsCreativos:
         
         ✅ **PATRÓN IDEAL:**
         "¡Qué [FECHA_HUMANIZADA] tan fresquito nos ha dejado la noche, ¿eh? Yo que vosotros 
-        me agarraría bien al café... Hablando de agarrarse, menudo partido del Alba el fin de 
-        semana, ¡qué gol en el último minuto! Pero bueno, que hoy tenemos un programa bien 
-        cargadito. Mandamos un abrazo enorme a la gente de Nerpio, que andan con su Encuentro 
-        de Cuadrillas por todo lo alto. Y ojo, que en los próximos días se viene la Feria de 
-        las Mercaderías de Tendilla, así que apuntadlo. Hoy traemos noticias sobre..."
-        → TODO FLUYE. Un tema lleva al otro. Los datos se integran en la conversación.
+        me agarraría bien al café... Ojalá tuviéramos al fuego un asadillo manchego como los 
+        agricultores que van ya en el tractor. Un abrazo gigante para ellos. Energía que le 
+        vino bien al Alba el finde... Pero bueno, hoy tenemos un programa con tela que cortar. 
+        Hablaremos por encima de [Tema 1] y de [Tema 2], prestad atención. Pero antes..."
+        → TODO FLUYE. Un tema lleva al otro. Los datos humanos lideran la conversación.
         
         **REGLAS FINALES:**
         1. Escribe un monólogo de extensión GENEROSA (400-600 palabras). La intro es tu momento de brillar.

@@ -28,7 +28,8 @@ def obtener_festividades_contexto(anio: int = None) -> str:
         lista_festivos.append(f"- {name}: {date.strftime('%d-%m-%Y')}")
 
     # 3. Cargar datos extendidos del JSON
-    ruta_json = os.path.join(os.path.dirname(__file__), 'data', 'efemerides_clm.json')
+    # La carpeta data está al mismo nivel que src
+    ruta_json = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'efemerides_clm.json')
     datos_extra = {}
     if os.path.exists(ruta_json):
         try:
@@ -81,7 +82,8 @@ def obtener_efemerides_hoy(fecha_dt: datetime.datetime = None) -> str:
         
     dia_mes = fecha_dt.strftime("%d-%m") # "19-01"
     
-    ruta_json = os.path.join(os.path.dirname(__file__), 'data', 'efemerides_clm.json')
+    # La carpeta data está al mismo nivel que src
+    ruta_json = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'efemerides_clm.json')
     coincidencias = []
     
     if os.path.exists(ruta_json):
