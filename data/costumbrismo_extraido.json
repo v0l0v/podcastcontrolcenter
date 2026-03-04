@@ -1,0 +1,239 @@
+[
+    {
+        "origen": "Campana de Oropesa/bailes y canciones/bailes.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [
+                "los segadores segando el trigo",
+                "los trilladores trillando la mies"
+            ],
+            "comidas_tipicas": {
+                "Castilla-La Mancha General": []
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/bailes y canciones/canciones.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [
+                "los marineros cruzando las olas"
+            ],
+            "comidas_tipicas": {
+                "Castilla-La Mancha General": []
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/trajes tipicos/trajes tipicos.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [
+                "trabajadores del campo realizando sus labores cotidianas",
+                "esparteros tejiendo la pleita",
+                "ganaderos cuidando su rebaño",
+                "pastores trashumantes guiando sus rebaños"
+            ],
+            "comidas_tipicas": {},
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/recetas tradicionales/equivalencias-recetas.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {
+                "Castilla-La Mancha General": []
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/recetas tradicionales/recetas.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {
+                "El Bercial": [
+                    "Arroz con liebre"
+                ],
+                "Navalmoralejo": [
+                    "Cachuela",
+                    "Sapillos de Semana Santa"
+                ],
+                "Parrillas": [
+                    "Tortas de los Santos"
+                ],
+                "Herreruela": [
+                    "Suspiros",
+                    "Floretas"
+                ],
+                "Calera y Chozas": [
+                    "Bollo de Carnaval"
+                ],
+                "Castilla-La Mancha General": [
+                    "Roscas del candil",
+                    "Torrijas"
+                ],
+                "Gamonal": [
+                    "Orejones"
+                ],
+                "Calzada de Oropesa": [
+                    "Bacalao con tomate",
+                    "Postre de Semana Santa"
+                ],
+                "Lagartera": [
+                    "Buñuelos de bacalao"
+                ],
+                "Alcañizo": [
+                    "Potaje de cuaresma"
+                ],
+                "Puente del Arzobispo": [
+                    "Alcachofas con almejas"
+                ],
+                "Toda la Campana de Oropesa": [
+                    "Puches"
+                ],
+                "Las Ventas de San Julián": [
+                    "Hornazo"
+                ],
+                "Velada": [
+                    "Carillas con oreja"
+                ]
+            },
+            "refranes_o_dichos": [
+                "“Asómate a la ventana si te quieres asomar, que el puchero de las puches a tu ventanita está”"
+            ]
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/remedios tradicionales/remedios tradicionales.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {
+                "Castilla-La Mancha General": []
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/leyendas/leyendas.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [
+                "el barquero llevando la barca",
+                "los pastores cuidando su rebaño",
+                "las cocineras preparando los barbos"
+            ],
+            "comidas_tipicas": {
+                "Campana de Oropesa": [
+                    "barbo"
+                ]
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/tradiciones/despiece-matanza.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {
+                "Castilla-La Mancha General": [
+                    "JAMÓN",
+                    "PANCETA",
+                    "CHULETAS",
+                    "LOMO",
+                    "SOLOMILLO",
+                    "OREJA",
+                    "CARETA",
+                    "PAPADA",
+                    "CARRILLERA",
+                    "MANITAS",
+                    "AGUJA",
+                    "PALETA",
+                    "COSTILLAS",
+                    "PRESA",
+                    "LAGARTO",
+                    "Chorizo",
+                    "Morcilla"
+                ]
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/tradiciones/matanza.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {
+                "Campana de Oropesa": [
+                    "migas con chocolate",
+                    "la moraga",
+                    "el picadillo con el vino de pitarra",
+                    "judías blancas con chorizo"
+                ],
+                "Castilla-La Mancha General": [
+                    "salchichones",
+                    "chorizos",
+                    "morcillas",
+                    "cilindros de carne",
+                    "lomos embuchados",
+                    "jamones"
+                ]
+            },
+            "refranes_o_dichos": []
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/tradiciones/tradiciones.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [
+                "los panaderos elaborando panes de leña",
+                "los tratantes intercambiando o vendiendo caballerizas",
+                "los queseros elaborando queso con cinchos de esparto y esprimijos",
+                "los alfareros creando cerámica",
+                "los orfebres trabajando metales nobles"
+            ],
+            "comidas_tipicas": {
+                "Navalmoralejo": [
+                    "migas",
+                    "café",
+                    "rosquillas",
+                    "churros",
+                    "chocolate",
+                    "tortillas",
+                    "barbacoas"
+                ],
+                "Parrillas": [
+                    "castañas",
+                    "granadas",
+                    "Torta de los Santos"
+                ],
+                "Gamonal": [
+                    "tortilla de patatas",
+                    "dulces"
+                ],
+                "Las Ventas de San Julián": [
+                    "tortillas"
+                ],
+                "Torralba de Oropesa": [
+                    "puches"
+                ],
+                "Oropesa": [
+                    "queso"
+                ],
+                "Castilla-La Mancha General": []
+            },
+            "refranes_o_dichos": [
+                "Pesa oro, Oro pesa"
+            ]
+        }
+    },
+    {
+        "origen": "Campana de Oropesa/tradiciones/carnavales.pdf",
+        "extraccion": {
+            "oficios_tradicionales": [],
+            "comidas_tipicas": {},
+            "refranes_o_dichos": [
+                "«Jopé, jopé, la rana se peé y el burro también batiendo café, jopé,jopé...»"
+            ]
+        }
+    }
+]

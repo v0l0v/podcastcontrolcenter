@@ -16,7 +16,14 @@ oficios_madrugadores = [
     "conductores del autobús de línea escolar",
     "mujeres que salen a barrer y regar la puerta al amanecer",
     "camioneros que llevan horas de ruta atravesando la región",
-    "profesionales del centro de salud o el hospital saliendo del turno de noche"
+    "profesionales del centro de salud o el hospital saliendo del turno de noche",
+    "esparteros tejiendo la pleita al sol de la mañana",
+    "pastores trashumantes guiando sus rebaños",
+    "queseros elaborando queso con cinchos de esparto y esprimijos",
+    "alfareros dando forma a la cerámica",
+    "tratantes cerrando tratos de ganado de buena mañana",
+    "panaderos sacando por fin esos panes de leña del horno",
+    "cocineras preparando unos buenos barbos"
 ]
 
 oficios_tarde_noche = [
@@ -69,7 +76,14 @@ comidas_provincias = {
         "unas buenas carcamusas",
         "una perdiz estofada a fuego lento",
         "venado en salsa",
-        "mazapán de desayuno para los más golosos"
+        "mazapán de desayuno para los más golosos",
+        "un buen Arroz con liebre como el que preparan en El Bercial",
+        "una Cachuela contundente típica de Navalmoralejo",
+        "esas famosas Puches de la Campana de Oropesa",
+        "unas Carillas con oreja al estilo de Velada",
+        "las tradicionales Floretas y Suspiros de Herreruela",
+        "los sabrosos buñuelos de bacalao típicos de Lagartera",
+        "el clásico picadillo con vino de pitarra de la matanza"
     ],
     "Ciudad Real": [
         "un buen pisto manchego",
@@ -118,6 +132,12 @@ refranes_gastronomia = [
     "Con pan y vino se anda el camino."
 ]
 
+dichos_y_cancioncillas = [
+    "Como se canta por ahí: «Asómate a la ventana si te quieres asomar, que el puchero de las puches a tu ventanita está».",
+    "Como dice la sabiduría popular sobre Oropesa: «Pesa oro, Oro pesa».",
+    "Como cantan en carnavales: «Jopé, jopé, la rana se peé y el burro también batiendo café...»"
+]
+
 # ==========================================
 # FUNCIONES DE AYUDA (Opcional)
 # ==========================================
@@ -142,6 +162,8 @@ def obtener_saludo_aleatorio(provincia="General_Manchega", momento_dia="manana")
     comida_lista = comidas_provincias.get(provincia, comidas_provincias["General_Manchega"])
     comida = random.choice(comida_lista)
     
-    refran = random.choice(refranes_clima_tiempo + refranes_gastronomia)
+    # Añadimos las cancioncillas al pool de refranes
+    pool_frases = refranes_clima_tiempo + refranes_gastronomia + dichos_y_cancioncillas
+    refran = random.choice(pool_frases)
     
-    return f"Un abrazo enorme para esos {oficio}. Ojalá tengáis hoy al fuego {comida}. Ya lo dice el refrán: {refran}"
+    return f"Un abrazo enorme para esos {oficio}. Ojalá tengáis hoy al fuego {comida}. Y recordad: {refran}"

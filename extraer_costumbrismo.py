@@ -14,6 +14,12 @@ except ImportError:
     print("Prueba a ejecutar: pip install google-genai")
     sys.exit(1)
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("⚠️ python-dotenv no encontrado, asumiendo variables de entorno ya cargadas.")
+
 # Asegurarte de que la API key está presente (la puedes coger del entorno o de tu .env)
 # Asume que se ha cargado en el entorno antes de ejecutar, o lo configuras aquí
 if "GEMINI_API_KEY" not in os.environ and "GOOGLE_API_KEY" in os.environ:
@@ -101,28 +107,33 @@ def main():
     print("🌾 EXTRACTOR DE COSTUMBRISMO MANCHEGO 🌾")
     print("==================================================")
     
-    # Busca PDFs en la carpeta data
-    archivos_pdf = [f for f in os.listdir(directorio_datos) if f.lower().endswith('.pdf')]
+    # Busca PDFs en la carpeta data y subcarpetas
+    archivos_pdf = []
+    for root, _, files in os.walk(directorio_datos):
+        for f in files:
+            if f.lower().endswith('.pdf'):
+                ruta_completa = os.path.join(root, f)
+                ruta_relativa = os.path.relpath(ruta_completa, directorio_datos)
+                archivos_pdf.append((ruta_completa, ruta_relativa))
     
     if not archivos_pdf:
-        print(f"ℹ️ No se encontraron archivos PDF en '{directorio_datos}'.")
+        print(f"ℹ️ No se encontraron archivos PDF en '{directorio_datos}' o sus subcarpetas.")
         print("Sube ahí tus PDFs divididos (ej. oficios.pdf, refranes.pdf) y vuelve a ejecutar.")
         return
 
     print("Se encontraron los siguientes PDFs:")
-    for idx, f in enumerate(archivos_pdf):
-        print(f"  [{idx+1}] {f}")
+    for idx, (_, ruta_relativa)  in enumerate(archivos_pdf):
+        print(f"  [{idx+1}] {ruta_relativa}")
     
     print("\nProcesando todos uno por uno...")
     
     todos_los_datos = []
     
-    for archivo in archivos_pdf:
-        ruta_completa = os.path.join(directorio_datos, archivo)
+    for ruta_completa, ruta_relativa in archivos_pdf:
         datos = analizar_pdf(ruta_completa)
         if datos:
             todos_los_datos.append({
-                "origen": archivo,
+                "origen": ruta_relativa,
                 "extraccion": datos
             })
             

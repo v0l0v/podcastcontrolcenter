@@ -687,10 +687,9 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 **Importante:** La crónica debe empezar directamente con la frase de transición que te proporciono. No añadas introducciones adicionales.
 
 **ESTRUCTURA VISUAL OBLIGATORIA:**
-- Aunque la narración debe sonar fluida y conectada, **DEBES separar cada noticia o tema distinto en un PÁRRAFO NUEVO**.
-- Usa un salto de línea doble entre cada noticia.
-- **PROHIBIDO USAR SEPARADORES VISUALES:** No uses guiones ("---"), líneas, asteriscos, ni ningún otro carácter para separar noticias. Solo el salto de línea doble.
-- Esto es vital para que podamos insertar una pequeña cortinilla musical entre ellas.
+- IMPORTANTE: Si varias notas de prensa hablan del **MISMO** evento, festival, foro o iniciativa, debes redactar **UN SOLO PÁRRAFO** que lo cuente todo, fusionando la información y nombrando a todas las fuentes que lo reportan en ese mismo párrafo.
+- Solo debes usar un salto de línea doble (crear un PÁRRAFO NUEVO) cuando pases a hablar de un **TEMA o EVENTO DISTINTO** dentro de este mismo bloque.
+- **PROHIBIDO USAR SEPARADORES VISUALES:** No uses guiones ("---"), líneas, asteriscos, ni ningún otro carácter para separar noticias. Solo el salto de línea doble donde corresponda cambiar de tema.
 
 **Frase de transición de entrada (úsala para empezar):**
 "{transicion}"
