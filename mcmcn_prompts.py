@@ -447,6 +447,12 @@ class PromptsCreativos:
         instrucciones_intro = PROMPTS_CONFIG.get('analysis_prompts', {}).get('intro_instrucciones', "Genera una intro de podcast.")
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
 
+        instruccion_cta = ""
+        if texto_cta:
+            instruccion_cta = f"""📢 CTA (Llamada a la acción - OBLIGATORIA):
+        "{texto_cta}"
+        (Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)"""
+
         prompt = f"""
         {persona_base}
         
@@ -473,9 +479,7 @@ class PromptsCreativos:
         {contenido_noticias[:2000]}...
         (INTRUCCIÓN CRÍTICA: Toma esto SOLO como referencia para dar una pincelada rápida a vista de pájaro sobre 2-3 temas que vertebran el episodio. NO resumas en detalle, solo sobrevuela la actualidad.)
         
-        📢 CTA (Llamada a la acción - OBLIGATORIA):
-        "{texto_cta}"
-        (Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)
+        {instruccion_cta}
         
         🎭 CONTEXTO:
         - Sentimiento general: {sentimiento_general}

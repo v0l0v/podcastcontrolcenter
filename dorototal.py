@@ -27,7 +27,7 @@ from src.config.settings import (
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
     DEDUP_SIMILARITY_THRESHOLD, NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
     MAX_DYNAMIC_KEYPHRASES, MIN_WORDS_FOR_AUDIO, AUDIENCE_QUESTIONS_FILE, 
-    AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR
+    AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS
 )
 from src.core.text_processing import (
     strip_accents, reparar_codificacion, normalize_text_for_similarity, tokens, 
@@ -2116,7 +2116,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         else:
             prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
                 contenido_noticias=contenido_completo_texto,
-                texto_cta=cta_inicio_limpio,
+                texto_cta=cta_inicio_limpio if INTERPRET_CTAS else "",
                 texto_base_saludo=saludo_base,
                 dato_efemeride=efemerides_hoy,
                 dato_meteo=datos_meteo_hoy,
@@ -2169,16 +2169,36 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 print("      🎵 Insertando cortinilla 'clickrozalen'...")
                 segmentos_audio.append(agregar_transicion())
                 
+                # Insertar el CTA Literal de Inicio si la interpretación está apagada
+                if not INTERPRET_CTAS and cta_inicio_limpio:
+                    print("      📢 Insertando CTA Literal de inicio...")
+                    audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
+                    if audio_cta_estatico:
+                        segmentos_audio.append(audio_cta_estatico)
+                        segmentos_audio.append(agregar_transicion()) # Transición post-CTA literal
+
                 # Parte 2: CTA + Adivinanza + Cierre
                 if len(partes) > 1 and partes[1].strip():
                     audio_p2 = _sintetizar_con_cache_estructural(partes[1].strip())
                     if audio_p2:
                         segmentos_audio.append(audio_p2)
             else:
-                # Comportamiento normal si no hay marcador
+                # Comportamiento normal si no hay marcador (o si lo saltamos aposta por INTERPRET_CTAS = False)
                 monologo_inicio_audio = _sintetizar_con_cache_estructural(texto_limpio)
                 if monologo_inicio_audio:
                     segmentos_audio.append(monologo_inicio_audio)
+                
+                # Si INTERPRET_CTAS es False, el marcador [CORTINILLA] no existirá porque no pasamos texto_cta_inicio a la IA.
+                # Lo insertamos al final del monologo
+                if not INTERPRET_CTAS and cta_inicio_limpio:
+                    print("      📢 Insertando CTA Literal de inicio (sin marcador)...")
+                    if cortinilla_cta_audio:
+                        segmentos_audio.append(cortinilla_cta_audio)
+                    else:
+                        segmentos_audio.append(agregar_transicion())
+                    audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
+                    if audio_cta_estatico:
+                        segmentos_audio.append(audio_cta_estatico)
         else:
             # Fallback por si la IA falla.
             print("      ⚠️ Fallo en la generación del monólogo. Usando saludo estático.")
@@ -2301,19 +2321,24 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         # FIX: Limpiar SSML del CTA intermedio
                         cta_intermedio_limpio = convertir_ssml_a_texto_plano(cta_intermedio_text)
                         
-                        prompt_cta_intermedio = mcmcn_prompts.PromptsCreativos.reescritura_cta_creativa(
-                            cta_intermedio_limpio,
-                            tono_actual="informativo y sugerente"
-                        )
-                        # No cacheamos CTA intermedio aleatorio por ahora o si?
-                        # Mejor si, para evitar gasto.
-                        cta_hash = calculate_hash(cta_intermedio_limpio + "intermedio")
-                        cached_cta = get_cached_content(f"cta_{cta_hash}")
-                        if cached_cta:
-                            texto_cta_reescrito = cached_cta['text']
+                        texto_cta_reescrito = ""
+                        if INTERPRET_CTAS:
+                            prompt_cta_intermedio = mcmcn_prompts.PromptsCreativos.reescritura_cta_creativa(
+                                cta_intermedio_limpio,
+                                tono_actual="informativo y sugerente"
+                            )
+                            # No cacheamos CTA intermedio aleatorio por ahora o si?
+                            # Mejor si, para evitar gasto.
+                            cta_hash = calculate_hash(cta_intermedio_limpio + "intermedio")
+                            cached_cta = get_cached_content(f"cta_{cta_hash}")
+                            if cached_cta:
+                                texto_cta_reescrito = cached_cta['text']
+                            else:
+                                texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
+                                if texto_cta_reescrito: cache_content(f"cta_{cta_hash}", {"text": texto_cta_reescrito})
                         else:
-                            texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
-                            if texto_cta_reescrito: cache_content(f"cta_{cta_hash}", {"text": texto_cta_reescrito})
+                            print("      📢 Usando CTA Literal intermedio...")
+                            texto_cta_reescrito = cta_intermedio_limpio
 
                         if texto_cta_reescrito:
                             cta_intermedio_audio = _sintetizar_con_cache_estructural(texto_cta_reescrito)
@@ -2638,7 +2663,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         else:
             prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
                 contexto=contexto_cierre_str,
-                texto_cta=cta_cierre_limpio,
+                texto_cta=cta_cierre_limpio if INTERPRET_CTAS else "",
                 texto_base_despedida=despedida_base,
                 texto_firma=firma_base,
                 # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
@@ -2654,6 +2679,18 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             texto_limpio = limpiar_artefactos_ia(texto_monologo_cierre)
             print(f"      ✅ Monólogo final generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'outro', 'content': texto_limpio}) # <-- Capturar cierre
+            
+            # Insertar CTA Literal de cierre si está desactivada la IA
+            if not INTERPRET_CTAS and cta_cierre_limpio:
+                print("      📢 Insertando CTA Literal de cierre...")
+                if cortinilla_cta_audio:
+                    segmentos_audio.append(cortinilla_cta_audio)
+                else:
+                    segmentos_audio.append(agregar_transicion())
+                audio_cta_estatico = _sintetizar_con_cache_estructural(cta_cierre_limpio)
+                if audio_cta_estatico:
+                    segmentos_audio.append(audio_cta_estatico)
+                    segmentos_audio.append(agregar_transicion())
             
             # Usar wrapper con caché
             monologo_cierre_audio = _sintetizar_con_cache_estructural(texto_limpio)

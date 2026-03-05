@@ -693,7 +693,7 @@ elif page == "config":
         new_ctas_dir    = st.selectbox("Carpeta CTAs", cta_dirs, index=cta_dirs.index(cur_cta) if cur_cta in cta_dirs else 0)
         new_audio_dir   = st.text_input("Carpeta Audio Assets", value=config.get('directories',{}).get('audio_assets','audio_assets'))
 
-        st.markdown('<div class="pcc-section-title">Lógica de Noticias</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pcc-section-title">Lógica de Noticias y CTAs</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3:
             new_dedup     = st.slider("Umbral similitud (dedup)", 0.5, 1.0, float(config['generation_config'].get('dedup_similarity_threshold',0.9)), 0.05)
@@ -701,10 +701,11 @@ elif page == "config":
         with c4:
             new_max_items    = st.slider("Máx. noticias", 5, 50, int(config['generation_config'].get('max_news_items',20)), 1)
             new_window_hours = st.slider("Ventana por defecto (h)", 6, 168, int(config['generation_config'].get('news_window_hours',48)), 6)
+            new_interpret_ctas = st.checkbox("Interpretar CTAs con IA", value=bool(config['generation_config'].get('interpret_ctas', True)), help="Si está activo, Dorotea reescribirá los CTAs con sus propias palabras. Si se desmarca, los leerá literalmente.")
 
         if st.button("💾 Guardar Configuración General", type="primary"):
             config['podcast_info'].update({'presentadora':new_presentadora,'region':new_region,'email_contacto':new_email,'email_alias_ssml':new_email_alias})
-            config['generation_config'].update({'feeds_file':new_feeds_file,'dedup_similarity_threshold':new_dedup,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours})
+            config['generation_config'].update({'feeds_file':new_feeds_file,'dedup_similarity_threshold':new_dedup,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours,'interpret_ctas':new_interpret_ctas})
             config.setdefault('directories',{}).update({'ctas':new_ctas_dir,'audio_assets':new_audio_dir})
             guardar_config(config); st.success("✅ Guardado."); time.sleep(0.5); st.rerun()
 

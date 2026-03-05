@@ -55,6 +55,7 @@ MAX_DYNAMIC_KEYPHRASES = 12           # Límite de claves dinámicas a considera
 
 # --- CONFIGURACIÓN DE FILTRADO DE CONTENIDO ---
 MIN_WORDS_FOR_AUDIO = AUDIO_CONFIG.get('min_words_for_audio', 33)
+INTERPRET_CTAS = GEN_CONFIG.get('interpret_ctas', True)
 AUDIENCE_QUESTIONS_FILE = "preguntas_audiencia.txt"
 
 # --- STOPWORDS (es) ligeras para similitud/keywords ---
