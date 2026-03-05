@@ -821,7 +821,7 @@ with tab_config:
             )
 
             if "Solo hoy" in window_mode:
-                _ahora = datetime.now()
+                _ahora = datetime.datetime.now()
                 _horas_hoy = round(_ahora.hour + _ahora.minute / 60 + _ahora.second / 3600, 2)
                 horas_hoy_calculadas = max(1, round(_horas_hoy))
                 st.info(f"🌅 Son las {_ahora.strftime('%H:%M')}h → se recuperarán las noticias de las últimas **{horas_hoy_calculadas} horas** (desde medianoche).")
