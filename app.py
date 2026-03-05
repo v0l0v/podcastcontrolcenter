@@ -307,6 +307,9 @@ with tab_dashboard:
     # Estado 1: Confirmación de Configuración
     if 'config_check' not in st.session_state:
         st.session_state['config_check'] = False
+    # Ventana temporal: None = usar config.json. Se actualiza desde la pestaña Ingeniería.
+    if 'window_hours_override' not in st.session_state:
+        st.session_state['window_hours_override'] = None
 
     # Estado 0: Selección de Modo
     st.markdown("#### 0️⃣ Modo de Operación")
@@ -397,8 +400,14 @@ with tab_dashboard:
                     # Resetear confirmación al re-analizar
                     st.session_state['news_confirmed'] = False
 
+                    # Construir el comando con la ventana de tiempo calculada (si se ha elegido)
+                    _window_override = st.session_state.get('window_hours_override')
+                    _cmd_preview = [sys.executable, "dorototal.py", "--preview"]
+                    if _window_override is not None:
+                        _cmd_preview += ["--window-hours", str(_window_override)]
+
                     process = subprocess.run(
-                        [sys.executable, "dorototal.py", "--preview"],
+                        _cmd_preview,
                         capture_output=True,
                         text=True,
                         cwd=os.getcwd()
@@ -801,7 +810,30 @@ with tab_config:
             new_min_block = st.number_input("Mínimo noticias por bloque", value=int(config['generation_config'].get('min_news_per_block', 2)), help="Mínimo de noticias para formar un tema.")
         with col_log2:
             new_max_items = st.slider("Máximo de Noticias a Procesar", 5, 50, int(config['generation_config'].get('max_news_items', 20)), 1, help="Límite duro de noticias que entran al guion.")
-            new_window_hours = st.slider("Ventana de Tiempo (Horas)", 12, 168, int(config['generation_config'].get('news_window_hours', 48)), 12, help="Solo noticias publicadas hace X horas.")
+
+            st.markdown("**Ventana Temporal de Noticias**")
+            window_mode = st.radio(
+                "Modo de ventana:",
+                ["🌅 Solo hoy (desde medianoche)", "⏱️ Últimas X horas", "💾 Config guardada"],
+                index=0,
+                key="window_mode_selector",
+                help="• Solo hoy: recupera noticias publicadas hoy desde las 00:00.\n• Últimas X horas: elige un número fijo de horas.\n• Config guardada: usa el valor guardado en el archivo de configuración."
+            )
+
+            if "Solo hoy" in window_mode:
+                _ahora = datetime.now()
+                _horas_hoy = round(_ahora.hour + _ahora.minute / 60 + _ahora.second / 3600, 2)
+                horas_hoy_calculadas = max(1, round(_horas_hoy))
+                st.info(f"🌅 Son las {_ahora.strftime('%H:%M')}h → se recuperarán las noticias de las últimas **{horas_hoy_calculadas} horas** (desde medianoche).")
+                new_window_hours = int(config['generation_config'].get('news_window_hours', 48))  # no cambia config
+                st.session_state['window_hours_override'] = horas_hoy_calculadas
+            elif "X horas" in window_mode:
+                new_window_hours = st.slider("Ventana de Tiempo (Horas)", 12, 168, int(config['generation_config'].get('news_window_hours', 48)), 12, help="Solo noticias publicadas hace X horas.")
+                st.session_state['window_hours_override'] = new_window_hours
+            else:
+                new_window_hours = int(config['generation_config'].get('news_window_hours', 48))
+                st.caption(f"Se usará el valor guardado: **{new_window_hours} horas**")
+                st.session_state['window_hours_override'] = None  # None = usa config.json
 
     if st.button("Guardar Cambios Generales"):
         config['podcast_info']['presentadora'] = new_presentadora

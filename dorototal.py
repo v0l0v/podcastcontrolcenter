@@ -928,12 +928,14 @@ def _get_cta_text(tipo: str, dia_semana: str, base_dir: str) -> str:
 
 def limpiar_cache_antiguo(cache_completo: Dict[str, Any], horas_retencion: int = 72):
     """
-    Elimina entradas del caché y archivos de audio que sean más antiguos que el periodo de retención.
+    Elimina entradas del caché y purga físicamente archivos de audio que sean más antiguos
+    que el periodo de retención.
     """
-    print(f"\n🧹 Limpiando caché (entradas anteriores a {horas_retencion} horas)...")
+    print(f"\n🧹 Limpiando caché (entradas / archivos anteriores a {horas_retencion} horas)...")
     limite = datetime.now() - timedelta(hours=horas_retencion)
     eliminar = []
 
+    # 1. Limpiar entradas del JSON cache_noticias
     for hash_id, datos in cache_completo.items():
         fecha_str = datos.get('fecha')
         if not fecha_str:
@@ -941,8 +943,6 @@ def limpiar_cache_antiguo(cache_completo: Dict[str, Any], horas_retencion: int =
         
         try:
             # La fecha en cache suele guardarse como YYYY-MM-DD
-            # Asumimos fin del día para no borrar demasiado pronto si solo hay fecha
-            # O mejor, usamos la fecha tal cual (00:00:00)
             fecha_dato = datetime.strptime(fecha_str, "%Y-%m-%d")
             
             # Si es más vieja que el límite...
@@ -951,21 +951,31 @@ def limpiar_cache_antiguo(cache_completo: Dict[str, Any], horas_retencion: int =
         except ValueError:
             pass # Fecha mal formada, la dejamos por seguridad (o borrarla, a gusto)
 
-    count = 0
+    count_json = 0
     for hash_id in eliminar:
-        datos = cache_completo.pop(hash_id)
-        audio_path = datos.get('audio_path')
-        if audio_path and os.path.exists(audio_path):
-            try:
-                os.remove(audio_path)
-            except OSError:
-                pass
-        count += 1
+        cache_completo.pop(hash_id)
+        count_json += 1
 
-    if count > 0:
-        print(f"   🗑️  Se han eliminado {count} noticias antiguas y sus audios.")
+    # 2. Limpieza robusta de archivos físicos (huerfanitos, viejos) en AUDIO_CACHE_DIR
+    count_fisico = 0
+    if os.path.exists(AUDIO_CACHE_DIR):
+        for filename in os.listdir(AUDIO_CACHE_DIR):
+            file_path = os.path.join(AUDIO_CACHE_DIR, filename)
+            if os.path.isfile(file_path):
+                # Obtener la fecha de modificación del archivo
+                try:
+                    mtime = os.path.getmtime(file_path)
+                    file_datetime = datetime.fromtimestamp(mtime)
+                    if file_datetime < limite:
+                        os.remove(file_path)
+                        count_fisico += 1
+                except Exception as e:
+                    print(f"      ⚠️ No se pudo eliminar el archivo antiguo {filename}: {e}")
+
+    if count_json > 0 or count_fisico > 0:
+        print(f"   🗑️  Se han eliminado {count_json} registros antiguos del caché y {count_fisico} archivos físicos.")
     else:
-        print("   ✅ El caché está limpio.")
+        print("   ✅ El caché y los audios están limpios.")
 
 def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
     """
@@ -973,32 +983,37 @@ def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tu
     Devuelve (audio_segment, texto_narracion) o (None, "") si falla.
     """
     noticia_id = noticia.get('id')
+    texto = noticia.get('resumen', '')
     if not noticia_id:
         return None, ""
 
-    audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_id}.mp3")
-    text_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_id}.txt")
+    # Usamos un hash del texto junto al ID para asegurar que regenera si se edita
+    hash_texto = calculate_hash(texto)
+    nombre_base = f"{noticia_id}_{hash_texto}"
+
+    audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{nombre_base}.mp3")
+    text_file_path = os.path.join(AUDIO_CACHE_DIR, f"{nombre_base}.txt")
 
     if audio_cache_valido(audio_file_path):
-        print(f"  🎧 Cargando audio desde caché para noticia: {noticia.get('fuente')}")
+        print(f"  🎧 Cargando audio desde caché para noticia (texto match): {noticia.get('fuente')}")
         audio = AudioSegment.from_file(audio_file_path)
         
-        # Intentar cargar el texto asociado
-        texto = ""
+        # Intentar cargar el texto asociado real (narración)
+        texto_narrado = ""
         if os.path.exists(text_file_path):
             try:
                 with open(text_file_path, 'r', encoding='utf-8') as f:
-                    texto = f.read()
+                    texto_narrado = f.read()
             except Exception as e:
                 print(f"      ⚠️ Error leyendo caché de texto: {e}")
         
         # Si no hay texto en caché, usar el resumen como fallback
-        if not texto:
-            texto = noticia.get('resumen', '')
+        if not texto_narrado:
+            texto_narrado = texto
             
-        return audio, texto
+        return audio, texto_narrado
     
-    print(f"  🎤 Generando nuevo audio para noticia: {noticia.get('fuente')}")
+    print(f"  🎤 Generando nuevo audio para noticia (cambios detectados o no existe): {noticia.get('fuente')}")
     audio_generado, texto_generado = _generar_audio_noticia(noticia, fecha_actual_str)
     
     if audio_generado:
@@ -1429,7 +1444,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -1487,6 +1502,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             gen_config = CONFIG.get('generation_config', {})
             window_hours = int(gen_config.get('news_window_hours', 48))
             max_items = int(gen_config.get('max_news_items', 20))
+
+            # La ventana pasada por CLI tiene prioridad sobre la configuración guardada
+            if window_hours_override is not None:
+                window_hours = window_hours_override
+                print(f"      ⚙️ Ventana temporal sobrescrita por argumento CLI: {window_hours}h")
             
             print(f"      ⚙️ Configuración: Ventana={window_hours}h, Máx. Noticias={max_items}")
             logger.info(f"Configuración cargada: Ventana {window_hours}h, Máx {max_items} items")
@@ -1709,7 +1729,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                              fuente_final = fuente_original
                     else:
                         fuente_final = sitio_safe
-                    audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}.mp3")
+                    hash_texto = calculate_hash(resumen)
+                    audio_file_path = os.path.join(AUDIO_CACHE_DIR, f"{noticia_hash}_{hash_texto}.mp3")
                     
                     texto_limpio = limpiar_artefactos_ia(resumen)
                     texto_limpio = reemplazar_urls_por_mencion(texto_limpio)
@@ -2737,6 +2758,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
     parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
     parser.add_argument("--from-json", help="Ruta al archivo JSON con noticias seleccionadas manualmente.")
+    parser.add_argument("--window-hours", type=int, default=None, help="Ventana temporal de noticias en horas. Tiene prioridad sobre la configuración guardada.")
     args = parser.parse_args()
 
     # Cargar configuración para obtener el archivo de feeds
@@ -2747,13 +2769,13 @@ if __name__ == "__main__":
         print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
     elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
-        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json)
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, window_hours_override=args.window_hours)
     elif args.preview:
         print(f"🔮 Modo: Preview de noticias (sin audio)")
-        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True)
+        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True, window_hours_override=args.window_hours)
     else:
         print(f"🚀 Modo: Generación automática estándar usando {archivo_feeds}")
-        procesar_feeds_google(archivo_feeds, min_items=20)
+        procesar_feeds_google(archivo_feeds, min_items=20, window_hours_override=args.window_hours)
 
     # ---------------------------------------------------------
     # AUTOMATIZACIÓN DE EPISODIOS ESPECIALES (EE_*.txt)
