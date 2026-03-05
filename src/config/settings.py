@@ -62,7 +62,7 @@ DEFAULT_MATRIX = {
     "martes": {"inicio": True, "intermedio": True, "cierre": True},
     "miercoles": {"inicio": True, "intermedio": True, "cierre": True},
     "jueves": {"inicio": True, "intermedio": True, "cierre": True},
-    "viernes": {"inicio": True, "intermedio": True, "cierre": true},
+    "viernes": {"inicio": True, "intermedio": True, "cierre": True},
     "fin de semana": {"inicio": True, "intermedio": True, "cierre": True},
     "generico": {"inicio": True, "intermedio": True, "cierre": True}
 }
