@@ -734,18 +734,17 @@ elif page == "config":
         new_ctas_dir    = st.selectbox("Carpeta CTAs", cta_dirs, index=cta_dirs.index(cur_cta) if cur_cta in cta_dirs else 0)
         new_audio_dir   = st.text_input("Carpeta Audio Assets", value=config.get('directories',{}).get('audio_assets','audio_assets'))
 
-        st.markdown('<div class="pcc-section-title">Lógica de Noticias y CTAs</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pcc-section-title">Lógica de Noticias</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3:
             new_min_block = st.number_input("Mín. noticias por bloque", value=int(config['generation_config'].get('min_news_per_block',2)))
         with c4:
             new_max_items    = st.slider("Máx. noticias", 5, 50, int(config['generation_config'].get('max_news_items',20)), 1)
             new_window_hours = st.slider("Ventana por defecto (h)", 6, 168, int(config['generation_config'].get('news_window_hours',48)), 6)
-            new_interpret_ctas = st.checkbox("Interpretar CTAs con IA", value=bool(config['generation_config'].get('interpret_ctas', True)), help="Si está activo, Dorotea reescribirá los CTAs con sus propias palabras. Si se desmarca, los leerá literalmente.")
 
         if st.button("💾 Guardar Configuración General", type="primary"):
             config['podcast_info'].update({'presentadora':new_presentadora,'region':new_region,'email_contacto':new_email,'email_alias_ssml':new_email_alias})
-            config['generation_config'].update({'feeds_file':new_feeds_file,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours,'interpret_ctas':new_interpret_ctas})
+            config['generation_config'].update({'feeds_file':new_feeds_file,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours})
             config.setdefault('directories',{}).update({'ctas':new_ctas_dir,'audio_assets':new_audio_dir})
             guardar_config(config); st.success("✅ Guardado."); time.sleep(0.5); st.rerun()
 
@@ -827,7 +826,18 @@ elif page == "config":
                         except Exception as e: st.error(f"Error: {e}")
 
     with tab_ctas_p:
-        st.markdown('<div class="pcc-section-title">Editor de CTAs</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pcc-section-title">Opciones y Editor de CTAs</div>', unsafe_allow_html=True)
+        st.info("Configura cómo Dorotea lee los anuncios o textos comerciales durante el programa.")
+        
+        ccta1, ccta2 = st.columns([1, 2])
+        with ccta1:
+            st.markdown("**Comportamiento de la IA**")
+            new_interpret_ctas = st.checkbox("Tono Humano (Interpretar)", value=bool(config['generation_config'].get('interpret_ctas', True)), help="✔️ Dorotea reescribirá los CTAs con sus propias palabras integrándolos naturalmente.\n\n❌ Los leerá de forma estrictamente literal y separada con cortinillas.")
+            if st.button("💾 Guardar Ajustes", type="primary"):
+                config['generation_config']['interpret_ctas'] = new_interpret_ctas
+                guardar_config(config); st.success("✅ Guardado."); time.sleep(0.5); st.rerun()
+
+        st.markdown("---")
         ctas_dir = config.get('directories',{}).get('ctas','cta_texts')
         if not os.path.isabs(ctas_dir): ctas_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), ctas_dir)
         if not os.path.exists(ctas_dir):
@@ -840,8 +850,8 @@ elif page == "config":
                 path_f = os.path.join(ctas_dir, sel)
                 try:
                     content = open(path_f, encoding="utf-8").read()
-                    new_c = st.text_area(f"Editando `{sel}`", value=content, height=300)
-                    if st.button("💾 Guardar CTA", type="primary"):
+                    new_c = st.text_area(f"Editando `{sel}`", value=content, height=250)
+                    if st.button("💾 Sobrescribir Archivo"):
                         with open(path_f,"w",encoding="utf-8") as f: f.write(new_c)
                         st.success("✅ Guardado."); time.sleep(1); st.rerun()
                 except Exception as e: st.error(f"Error: {e}")
