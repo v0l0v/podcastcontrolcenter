@@ -1585,7 +1585,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             noticias_top = noticias_candidatas_totales
 
         # 2. Deduplicamos usando el contenido en bruto SOLO sobre el top seleccionado
-        noticias_seleccionadas = detectar_duplicados_y_similares(noticias_top, noticias_descartadas, umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
+        if archivo_entrada_json:
+            noticias_seleccionadas = noticias_top
+            print("      ⏩ Omitiendo deduplicación automática porque es una selección manual del usuario.")
+        else:
+            noticias_seleccionadas = detectar_duplicados_y_similares(noticias_top, noticias_descartadas, umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
 
         resumenes_finales = []
         nuevas_noticias_para_cache = {}
