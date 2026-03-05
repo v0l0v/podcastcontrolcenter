@@ -668,10 +668,12 @@ class PromptsCreativos:
         REGLAS DE ORO PARA LA TRANSICIÓN:
         - **PROHIBIDO INVENTAR CONTEXTO PASADO:** NUNCA digas "Tras repasar X...", "Después de hablar de Y...", "Dejamos atrás la política...". NO SABES de qué se ha hablado antes.
         - **MIRA SOLO HACIA DELANTE:** Tu transición debe servir SOLAMENTE para abrir la puerta al NUEVO tema.
-        - **EVITA FÓRMULAS CLICHÉ:** Usa frases preparadas como "En torno a..." o "Cambiando de tercio..." **como máximo una vez por episodio**, o directamente evítalas. Prioriza iniciar de forma directa, hablando de lo importante inmediatamente, o usa alternativas naturales como:
-          - "En otro orden de cosas, el foco se pone en..."
-          - "Pasamos ahora a abordar noticias sobre..."
-          - "Y un tema que cobra importancia hoy es..."
+        - **EVITA FÓRMULAS CLICHÉ Y MULETILLAS:** Tienes ESTRICTAMENTE PROHIBIDO usar las siguientes frases o variaciones de las mismas: "En torno a...", "Cambiando de tercio...", "En otro orden de cosas...", "El foco se pone en...", "Y un tema que cobra importancia hoy es...", "Pasamos ahora a abordar noticias sobre...".
+        - **SÉ NATURAL Y DIRECTA:** Usa formas frescas de introducir un tema. Ejemplos permitidos:
+          - "Atención a lo que llega desde..."
+          - "Nos detenemos ahora en..."
+          - "Si hay algo de lo que se habla hoy es de..."
+          - O simplemente entra directo al tema: "La vivienda vacía puede ser la clave..."
         - **CONTEXTO GEOGRÁFICO:** El podcast se emite desde {ConfiguracionPodcast.REGION}. Puedes mencionar otras comunidades (como Andalucía o Extremadura) **SOLO SI** la noticia trata explícitamente sobre ellas o sobre un proyecto compartido. NUNCA uses frases como "nos vamos al campo andaluz" o "actualidad extremeña" para presentar el bloque general, salvo que TODAS las noticias sean de esa región. Si son noticias locales, asume que son de {ConfiguracionPodcast.REGION}.
         - Devuelve ÚNICAMENTE un objeto JSON válido con las claves "descripcion" y "transicion".
 
@@ -720,9 +722,12 @@ CONTEXTO TEMPORAL:
 
 {instruccion_contexto}
 
-REGLAS ADICIONALES:
+REGLAS ADICIONALES Y TONO (¡MUY IMPORTANTE!):
 - NO INVENTES CONTEXTO INSTITUCIONAL: Cíñete a los hechos descritos en la noticia. Está terminantemente prohibido añadir conclusiones inventadas, propaganda u opiniones políticas o institucionales que no estén textualmente en las fuentes originales.
 - ENLACES A REDES Y WEBS: Si en el texto original aparece un enlace a YouTube, Facebook, Instagram o cualquier página web, DEBES conservarlo. En lugar de leer la URL entera, añade una frase natural al final como: "Recuerda visitar su web [o perfil], te dejamos el enlace en las notas del podcast: [AQUÍ ESCRIBES LA URL LITERAL]".
+- PROHIBIDO USAR MULETILLAS ROBÓTICAS: NO EMPIECES NUNCA con "Y otra noticia interesante nos llega desde...". Varía tus aperturas y sé creativa. Ejemplos permitidos: "Nos vamos hasta...", "Desde X nos cuentan que...", "Ojo a lo que pasa en...".
+- HUYE DEL TONO BUROCRÁTICO: No parezcas un tablón de anuncios de un ayuntamiento. NO USES frases formales como "Los interesados deberán cumplir con los requisitos", "Se ruega a la ciudadanía", "Este proyecto busca empoderar". Traduce ese lenguaje administrativo a lenguaje de radio cercano. Ejemplo: en vez de "Los interesados pueden postularse en...", di "Si te cuadra, échale un ojo en su web...".
+- SÉ CERCANA O DIRECTA: Eres Dorotea, una locutora. Tienes que sonar natural.
 
 ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO.
 """
