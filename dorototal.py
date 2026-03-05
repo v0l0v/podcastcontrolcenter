@@ -228,8 +228,8 @@ def identificar_fuente_original(texto: str) -> str:
 def calcular_similitud_texto(texto1: str, texto2: str) -> float:
     return composite_similarity(texto1, texto2)
 
-def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list, umbral_similitud: float = DEDUP_SIMILARITY_THRESHOLD) -> list:
-    print(f"\n🔍 Detectando duplicados (umbral comp.: {umbral_similitud:.2f})")
+def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list, umbral_similitud: float = 0.99) -> list:
+    print(f"\n🔍 Detectando duplicados exactos por Hash...")
     noticias_unicas = []
     hashes_vistos = set()
     eliminados = 0
@@ -245,45 +245,17 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list,
             noticias_descartadas.append({
                 "titulo": noticia.get('titulo', 'Sin título'),
                 "sitio": noticia.get('sitio', 'Desconocido'),
-                "motivo": "ID Hash ya procesado (Hash duplicado)",
+                "motivo": "ID Hash ya procesado (Hash duplicado exacto)",
             })
             eliminados += 1
             continue
 
-        es_duplicado = False
-        for existente in noticias_unicas:
-            texto_existente = (existente.get('resumen') or existente.get('contenido_rss') or existente.get('texto') or "").strip()
-            sim = calcular_similitud_texto(resumen_actual, texto_existente)
-            if sim >= umbral_similitud:
-                # combinar fuentes (sitios en la fase previa)
-                f1 = existente.get('sitio', '') or existente.get('fuente', '')
-                f2 = noticia.get('sitio', '') or noticia.get('fuente', '')
-                if f2 and f2 not in f1:
-                    # En fase temprana usamos 'sitio', en fase tardía 'fuente'
-                    if 'sitio' in existente:
-                        existente['sitio'] = f"{f1} · {f2}" if f1 else f2
-                    else:
-                        existente['fuente'] = f"{f1} · {f2}" if f1 else f2
-                # combinar fechas si no hay
-                if 'fecha' not in existente and 'fecha' in noticia:
-                    existente['fecha'] = noticia['fecha']
-                
-                noticias_descartadas.append({
-                    "titulo": noticia.get('titulo', 'Sin título'),
-                    "sitio": noticia.get('sitio', 'Desconocido'),
-                    "motivo": f"Absorbida por similitud ({(sim*100):.1f}%) con: {existente.get('titulo', 'Sin título')[:50]}...",
-                })
-                es_duplicado = True
-                eliminados += 1
-                break
+        noticia_copia = noticia.copy()
+        noticia_copia['id'] = h
+        noticias_unicas.append(noticia_copia)
+        hashes_vistos.add(h)
 
-        if not es_duplicado:
-            noticia_copia = noticia.copy()
-            noticia_copia['id'] = h
-            noticias_unicas.append(noticia_copia)
-            hashes_vistos.add(h)
-
-    print(f"    ✅ Eliminados {eliminados} duplicados. Quedan {len(noticias_unicas)} noticias únicas.")
+    print(f"    ✅ Eliminados {eliminados} duplicados exactos. Quedan {len(noticias_unicas)} noticias únicas.")
     return noticias_unicas
 
 # --------- EXTRACCIÓN DE ENTIDADES/KEYWORDS DINÁMICAS ---------

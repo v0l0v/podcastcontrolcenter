@@ -262,7 +262,12 @@ ENTREGA: Solo el resumen final, sin introducciones."""
         instrucciones_agrupacion = PROMPTS_CONFIG.get('analysis_prompts', {}).get('agrupacion_instrucciones', "")
         if not instrucciones_agrupacion:
             instrucciones_agrupacion = """Eres un analista de contenido experto en identificar patrones temáticos.
-TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes."""
+TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes.
+
+REGLA DE DEDUPLICACIÓN DE EVENTOS (¡MUY IMPORTANTE!):
+Es muy común que varios grupos publiquen noticias distintas que, en realidad, hablan del MISMO EVENTO EXACTO (ej: la misma feria, la misma visita de un político, el mismo proyecto en un punto geográfico).
+Tu misión es detectar estos eventos idénticos. Si dos o más noticias hablan del MISMO evento, DEBES AGRUPARLAS EN EL MISMO TEMA.
+No crees un tema separado para la "Noticia A del evento X" y la "Noticia B del evento X". Mételas todas bajo el tema "Evento X". """
 
         return f"""
         {instrucciones_agrupacion}
