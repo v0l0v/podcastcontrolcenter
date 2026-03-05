@@ -334,33 +334,39 @@ elif page == "generar":
             "Ventana temporal:",
             ["🌅 Solo hoy (desde medianoche)", "⏱️ Últimas X horas", "💾 Config guardada"],
             horizontal=True,
-            key="window_mode_selector_v2"
+            key="window_mode_selector_v2",
+            index=0
         )
         if "Solo hoy" in window_mode:
             _ahora = datetime.datetime.now()
             horas_hoy = max(1, round(_ahora.hour + _ahora.minute / 60))
-            st.caption(f"🌅 Son las {_ahora.strftime('%H:%M')} → se usarán las últimas **{horas_hoy} horas**")
+            st.caption(f"🌅 Son las {_ahora.strftime('%H:%M')} → se usarán las últimas **{horas_hoy} horas** (Máx. noticias liberado)")
             st.session_state['window_hours_override'] = horas_hoy
+            st.session_state['max_items_override'] = 500
         elif "X horas" in window_mode:
             _saved = int(config.get('generation_config', {}).get('news_window_hours', 48))
             wh = st.slider("Horas", 6, 168, _saved, 6)
             st.session_state['window_hours_override'] = wh
+            st.session_state['max_items_override'] = None
         else:
             _saved = int(config.get('generation_config', {}).get('news_window_hours', 48))
             st.caption(f"Valor guardado: **{_saved} horas**")
             st.session_state['window_hours_override'] = None
+            st.session_state['max_items_override'] = None
 
         config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config_v2')
         st.session_state['config_check'] = config_checked
 
         if st.button("🔎 ANALIZAR NOTICIAS", type="primary", disabled=not config_checked):
             with st.spinner("Analizando feeds y resumiendo con IA..."):
-                for f in ["prevision_noticias_resumidas.json", "seleccion_usuario.json"]:
+                for f in ["prevision_noticias_resumidas.json", "prevision_noticias_descartadas.json", "seleccion_usuario.json"]:
                     if os.path.exists(f): os.remove(f)
                 st.session_state['news_confirmed'] = False
                 _wo = st.session_state.get('window_hours_override')
+                _mo = st.session_state.get('max_items_override')
                 _cmd = [sys.executable, "dorototal.py", "--preview"]
                 if _wo: _cmd += ["--window-hours", str(_wo)]
+                if _mo: _cmd += ["--max-items", str(_mo)]
                 
                 # Use Popen to stream logs in real-time so user knows it's not hanging
                 log_placeholder = st.empty()
@@ -376,7 +382,7 @@ elif page == "generar":
                         # Mantener solo las ultimas 15 lineas de log
                         log_placeholder.code("\n".join(logs_list[-15:]), language="text")
                         
-                if proc.poll() == 0 and os.path.exists("prevision_noticias_resumidas.json"):
+                if proc.poll() == 0 and (os.path.exists("prevision_noticias_resumidas.json") or os.path.exists("prevision_noticias_descartadas.json")):
                     st.success("✅ Análisis completado. Revisa las noticias en el Paso 2.")
                     time.sleep(1); st.rerun()
                 elif proc.poll() == 0:
@@ -386,7 +392,10 @@ elif page == "generar":
         st.markdown('</div>', unsafe_allow_html=True)
 
         # ── PASO 2: REVISAR ──
-        has_preview = os.path.exists("prevision_noticias_resumidas.json")
+        has_resumidas = os.path.exists("prevision_noticias_resumidas.json")
+        has_descartadas = os.path.exists("prevision_noticias_descartadas.json")
+        has_preview = has_resumidas or has_descartadas
+        
         step2_cls = "pcc-step pcc-step-active" if has_preview else "pcc-step"
         st.markdown(f'<div class="{step2_cls}">', unsafe_allow_html=True)
         st.markdown('<div class="pcc-step-label">Paso 2</div>', unsafe_allow_html=True)
@@ -396,9 +405,23 @@ elif page == "generar":
             st.caption("Pendiente de análisis.")
         else:
             try:
-                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                    news_candidates = json.load(f)
-                st.info(f"{len(news_candidates)} noticias disponibles para revisar.")
+                news_candidates = []
+                if has_resumidas:
+                    with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                        for n in json.load(f):
+                            n['_selected_default'] = True
+                            n['_is_discarded'] = False
+                            news_candidates.append(n)
+                if has_descartadas:
+                    with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
+                        for n in json.load(f):
+                            n['_selected_default'] = False
+                            n['_is_discarded'] = True
+                            if 'resumen' not in n: n['resumen'] = ""
+                            if 'motivo' not in n: n['motivo'] = "Desconocido"
+                            news_candidates.append(n)
+                            
+                st.info(f"{len([n for n in news_candidates if n['_selected_default']])} noticias pre-seleccionadas y {len([n for n in news_candidates if not n['_selected_default']])} descartadas disponibles para revisar.")
 
                 with st.form("form_edicion_v2"):
                     edited_list = []
@@ -407,48 +430,44 @@ elif page == "generar":
                         sitio = news.get("sitio", "")
                         titulo_show = titulo_raw if (titulo_raw and titulo_raw != "None" and len(titulo_raw) > 3) else f"Noticia de {sitio}"
                         resumen_raw = news.get("resumen", "")
-                        with st.expander(f"{i+1}. {titulo_show}", expanded=(i == 0)):
+                        
+                        # Decorador para descartadas
+                        if news['_is_discarded']:
+                            exp_title = f"{i+1}. 🗑️ [DESCARTADA: {news['motivo'].split(' (')[0]}] {titulo_show}"
+                        else:
+                            exp_title = f"{i+1}. ✅ {titulo_show}"
+                            
+                        with st.expander(exp_title, expanded=(i == 0)):
                             col_chk, col_cnt = st.columns([0.08, 0.92])
                             with col_chk:
-                                incluir = st.checkbox("✓", value=True, key=f"v2_chk_{i}")
+                                st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
+                                incluir = st.checkbox("Incluir", value=news['_selected_default'], key=f"v2_chk_{i}")
                             with col_cnt:
                                 new_titulo = st.text_input("Título", value=titulo_show, key=f"v2_tit_{i}")
                                 nh = max(4, len(resumen_raw) // 60)
                                 new_res = st.text_area("Resumen", value=resumen_raw, height=max(150, nh * 22), key=f"v2_res_{i}")
+                                if news['_is_discarded']:
+                                    st.warning(f"Motivo descarte original: {news['motivo']}")
                                 st.caption(f"Fuente: {sitio} | Fecha: {news.get('fecha', '—')}")
+                            
                             if incluir:
-                                n2 = news.copy()
+                                n2 = {k: v for k, v in news.items() if not k.startswith('_')} # clean internal flags
                                 n2['titulo'] = new_titulo
                                 n2['resumen'] = new_res
+                                # If missing essential fields, fill them
+                                if 'url' not in n2: n2['url'] = ""
+                                if 'fecha' not in n2: n2['fecha'] = datetime.datetime.now().isoformat()
                                 edited_list.append(n2)
 
                     col_save, _ = st.columns([1, 2])
                     with col_save:
                         if st.form_submit_button("💾 GUARDAR CAMBIOS", type="primary", use_container_width=True):
                             st.session_state['noticias_editadas_finales'] = edited_list
-                            st.toast(f"✅ {len(edited_list)} noticias guardadas.")
-
-                # Panel de descartes
-                if os.path.exists("prevision_noticias_descartadas.json"):
-                    with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
-                        descartadas = json.load(f)
-                    if descartadas:
-                        with st.expander(f"🗑️ Noticias descartadas ({len(descartadas)})"):
-                            motivos = {}
-                            for d in descartadas:
-                                m = d['motivo'].split(' (')[0]
-                                motivos[m] = motivos.get(m, 0) + 1
-                            for m, c in motivos.items():
-                                st.markdown(f"- **{c}** por: {m}")
-                            st.markdown("---")
-                            for i, d in enumerate(descartadas):
-                                st.markdown(f"**{i+1}. {d.get('titulo','Sin título')}**")
-                                st.caption(f"Fuente: {d.get('sitio','—')} | {d.get('motivo','—')}")
-                                st.divider()
+                            st.toast(f"✅ {len(edited_list)} noticias guardadas en selección.")
 
                 if st.button("✅ CONFIRMAR SELECCIÓN", type="primary"):
                     st.session_state['news_confirmed'] = True
-                    st.success("¡Selección confirmada! Procede al Paso 3.")
+                    st.success(f"¡Selección confirmada ({len(st.session_state.get('noticias_editadas_finales', []))} noticias)! Procede al Paso 3.")
 
             except Exception as e:
                 st.error(f"Error: {e}")

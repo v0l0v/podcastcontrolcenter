@@ -1444,7 +1444,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None, max_items_override: int = None):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -1508,6 +1508,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 window_hours = window_hours_override
                 print(f"      ⚙️ Ventana temporal sobrescrita por argumento CLI: {window_hours}h")
             
+            if max_items_override is not None:
+                max_items = max_items_override
+                print(f"      ⚙️ Máximo de noticias sobrescrito por argumento CLI: {max_items}")
+
             print(f"      ⚙️ Configuración: Ventana={window_hours}h, Máx. Noticias={max_items}")
             logger.info(f"Configuración cargada: Ventana {window_hours}h, Máx {max_items} items")
 
@@ -2759,6 +2763,7 @@ if __name__ == "__main__":
     parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
     parser.add_argument("--from-json", help="Ruta al archivo JSON con noticias seleccionadas manualmente.")
     parser.add_argument("--window-hours", type=int, default=None, help="Ventana temporal de noticias en horas. Tiene prioridad sobre la configuración guardada.")
+    parser.add_argument("--max-items", type=int, default=None, help="Número máximo de noticias a procesar. Tiene prioridad sobre la configuración guardada.")
     args = parser.parse_args()
 
     # Cargar configuración para obtener el archivo de feeds
@@ -2769,13 +2774,13 @@ if __name__ == "__main__":
         print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
     elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
-        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, window_hours_override=args.window_hours)
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, window_hours_override=args.window_hours, max_items_override=args.max_items)
     elif args.preview:
         print(f"🔮 Modo: Preview de noticias (sin audio)")
-        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True, window_hours_override=args.window_hours)
+        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True, window_hours_override=args.window_hours, max_items_override=args.max_items)
     else:
         print(f"🚀 Modo: Generación automática estándar usando {archivo_feeds}")
-        procesar_feeds_google(archivo_feeds, min_items=20, window_hours_override=args.window_hours)
+        procesar_feeds_google(archivo_feeds, min_items=20, window_hours_override=args.window_hours, max_items_override=args.max_items)
 
     # ---------------------------------------------------------
     # AUTOMATIZACIÓN DE EPISODIOS ESPECIALES (EE_*.txt)
