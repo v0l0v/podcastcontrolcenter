@@ -486,7 +486,13 @@ elif page == "generar":
                             with col_cnt:
                                 new_titulo = st.text_input("Título", value=titulo_show, key=f"v2_tit_{i}")
                                 nh = max(4, len(resumen_raw) // 60)
-                                new_res = st.text_area("Resumen", value=resumen_raw, height=max(150, nh * 22), key=f"v2_res_{i}")
+                                if news['_is_discarded'] and not resumen_raw:
+                                    st.info("ℹ️ El resumen no se ha generado para ahorrar costes (Pipeline Zero-Cost). Si marcas 'Incluir' y lo dejas en blanco, la IA lo generará en el Paso 3, o puedes escribirlo tú mismo.")
+                                    placeholder_txt = "Déjalo en blanco para generación automática por IA, o escribe tu propio resumen..."
+                                else:
+                                    placeholder_txt = "Escribe el resumen de la noticia..."
+                                    
+                                new_res = st.text_area("Resumen", value=resumen_raw, height=max(150, nh * 22), key=f"v2_res_{i}", placeholder=placeholder_txt)
                                 if news['_is_discarded']:
                                     st.warning(f"Motivo descarte original: {news['motivo']}")
                                 st.caption(f"Fuente: {sitio} | Fecha: {news.get('fecha', '—')}")
