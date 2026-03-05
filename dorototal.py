@@ -866,10 +866,14 @@ def analizar_sentimiento_general_noticias(resumenes: List[Dict[str, Any]]) -> st
 
 def parsear_fecha_segura(entry):
     """Maneja fechas de forma segura con múltiples intentos."""
+    import calendar
     for field in ['published_parsed', 'updated_parsed']:
         if hasattr(entry, field) and entry[field]:
             try:
-                return datetime.fromtimestamp(time.mktime(entry[field]))
+                # feedparser deuelve un struct_time en UTC. 
+                # calendar.timegm() obtiene el timestamp UTC real y luego fromtimestamp lo convierte a hora local.
+                # Usar time.mktime() erróneamente lo trata como hora local causando desfase de 1-2 horas en España.
+                return datetime.fromtimestamp(calendar.timegm(entry[field]))
             except (ValueError, TypeError):
                 continue
     return datetime(2000, 1, 1)  # Valor por defecto: antigua para ser filtrada si no tiene fecha
