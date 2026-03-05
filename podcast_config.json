@@ -20,7 +20,44 @@
     "generation_config": {
         "min_news_per_block": 2,
         "ngram_n": 3,
-        "feeds_file": "feeds_castillalamancha.txt"
+        "feeds_file": "feeds_castillalamancha.txt",
+        "interpret_ctas_matrix": {
+            "lunes": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "martes": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "miercoles": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "jueves": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "viernes": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "fin de semana": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            },
+            "generico": {
+                "inicio": true,
+                "intermedio": true,
+                "cierre": true
+            }
+        }
     },
     "festividades": {
         "San Antón": "17-01",

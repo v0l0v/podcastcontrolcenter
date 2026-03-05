@@ -27,7 +27,7 @@ from src.config.settings import (
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
     NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
     MAX_DYNAMIC_KEYPHRASES, MIN_WORDS_FOR_AUDIO, AUDIENCE_QUESTIONS_FILE, 
-    AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS
+    AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS_MATRIX
 )
 from src.core.text_processing import (
     strip_accents, reparar_codificacion, normalize_text_for_similarity, tokens, 
@@ -255,8 +255,27 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
         noticias_unicas.append(noticia_copia)
         hashes_vistos.add(h)
 
-    print(f"    ✅ Eliminados {eliminados} duplicados exactos. Quedan {len(noticias_unicas)} noticias únicas.")
     return noticias_unicas
+
+def debe_interpretar_cta(tipo: str, dia_semana: str) -> bool:
+    """
+    Consulta la matriz de configuración para saber si un CTA debe interpretarse por IA o leerse literal.
+    tipo: 'inicio', 'intermedio', 'cierre'
+    dia_semana: 'lunes', 'martes', etc... 'fin de semana'
+    """
+    import unicodedata
+    dia_norm = ''.join(c for c in unicodedata.normalize('NFD', dia_semana) if unicodedata.category(c) != 'Mn').lower()
+    
+    # Try exact day match
+    if dia_norm in INTERPRET_CTAS_MATRIX:
+        return INTERPRET_CTAS_MATRIX[dia_norm].get(tipo, True)
+    
+    # Try generic fallback
+    if "generico" in INTERPRET_CTAS_MATRIX:
+        return INTERPRET_CTAS_MATRIX["generico"].get(tipo, True)
+    
+    return True # Default safe fallback
+
 
 # --------- EXTRACCIÓN DE ENTIDADES/KEYWORDS DINÁMICAS ---------
 
@@ -2114,9 +2133,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              print("      ⏩ Usando texto de INTRO en caché (Saltando LLM).")
              texto_monologo_inicio = cached_intro_data.get('text')
         else:
+            # Check matrix decision
+            interpr_inicio = debe_interpretar_cta("inicio", dia_semana_str)
+
             prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
                 contenido_noticias=contenido_completo_texto,
-                texto_cta=cta_inicio_limpio if INTERPRET_CTAS else "",
+                texto_cta=cta_inicio_limpio if interpr_inicio else "",
                 texto_base_saludo=saludo_base,
                 dato_efemeride=efemerides_hoy,
                 dato_meteo=datos_meteo_hoy,
@@ -2170,7 +2192,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 segmentos_audio.append(agregar_transicion())
                 
                 # Insertar el CTA Literal de Inicio si la interpretación está apagada
-                if not INTERPRET_CTAS and cta_inicio_limpio:
+                if not debe_interpretar_cta("inicio", dia_semana_str) and cta_inicio_limpio:
                     print("      📢 Insertando CTA Literal de inicio...")
                     audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
                     if audio_cta_estatico:
@@ -2183,14 +2205,14 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     if audio_p2:
                         segmentos_audio.append(audio_p2)
             else:
-                # Comportamiento normal si no hay marcador (o si lo saltamos aposta por INTERPRET_CTAS = False)
+                # Comportamiento normal si no hay marcador (o si lo saltamos aposta por matrix = False)
                 monologo_inicio_audio = _sintetizar_con_cache_estructural(texto_limpio)
                 if monologo_inicio_audio:
                     segmentos_audio.append(monologo_inicio_audio)
                 
-                # Si INTERPRET_CTAS es False, el marcador [CORTINILLA] no existirá porque no pasamos texto_cta_inicio a la IA.
+                # Si la matriz dice False, el marcador [CORTINILLA] no existirá porque no pasamos texto_cta a la IA.
                 # Lo insertamos al final del monologo
-                if not INTERPRET_CTAS and cta_inicio_limpio:
+                if not debe_interpretar_cta("inicio", dia_semana_str) and cta_inicio_limpio:
                     print("      📢 Insertando CTA Literal de inicio (sin marcador)...")
                     if cortinilla_cta_audio:
                         segmentos_audio.append(cortinilla_cta_audio)
@@ -2322,7 +2344,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         cta_intermedio_limpio = convertir_ssml_a_texto_plano(cta_intermedio_text)
                         
                         texto_cta_reescrito = ""
-                        if INTERPRET_CTAS:
+                        interpr_intermedio = debe_interpretar_cta("intermedio", dia_semana_str)
+                        if interpr_intermedio:
                             prompt_cta_intermedio = mcmcn_prompts.PromptsCreativos.reescritura_cta_creativa(
                                 cta_intermedio_limpio,
                                 tono_actual="informativo y sugerente"
@@ -2661,9 +2684,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              print("      ⏩ Usando texto de CIERRE en caché.")
              texto_monologo_cierre = cached_outro.get('text')
         else:
+            interpr_cierre = debe_interpretar_cta("cierre", dia_semana_str)
             prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
                 contexto=contexto_cierre_str,
-                texto_cta=cta_cierre_limpio if INTERPRET_CTAS else "",
+                texto_cta=cta_cierre_limpio if interpr_cierre else "",
                 texto_base_despedida=despedida_base,
                 texto_firma=firma_base,
                 # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
@@ -2680,8 +2704,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             print(f"      ✅ Monólogo final generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'outro', 'content': texto_limpio}) # <-- Capturar cierre
             
-            # Insertar CTA Literal de cierre si está desactivada la IA
-            if not INTERPRET_CTAS and cta_cierre_limpio:
+            # Insertar CTA Literal de cierre si la matriz dice False
+            interpr_cierre = debe_interpretar_cta("cierre", dia_semana_str)
+            if not interpr_cierre and cta_cierre_limpio:
                 print("      📢 Insertando CTA Literal de cierre...")
                 if cortinilla_cta_audio:
                     segmentos_audio.append(cortinilla_cta_audio)

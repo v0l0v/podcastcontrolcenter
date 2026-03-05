@@ -55,7 +55,19 @@ MAX_DYNAMIC_KEYPHRASES = 12           # Límite de claves dinámicas a considera
 
 # --- CONFIGURACIÓN DE FILTRADO DE CONTENIDO ---
 MIN_WORDS_FOR_AUDIO = AUDIO_CONFIG.get('min_words_for_audio', 33)
-INTERPRET_CTAS = GEN_CONFIG.get('interpret_ctas', True)
+
+# Default behavior fallback in case it's missing
+DEFAULT_MATRIX = {
+    "lunes": {"inicio": True, "intermedio": True, "cierre": True},
+    "martes": {"inicio": True, "intermedio": True, "cierre": True},
+    "miercoles": {"inicio": True, "intermedio": True, "cierre": True},
+    "jueves": {"inicio": True, "intermedio": True, "cierre": True},
+    "viernes": {"inicio": True, "intermedio": True, "cierre": true},
+    "fin de semana": {"inicio": True, "intermedio": True, "cierre": True},
+    "generico": {"inicio": True, "intermedio": True, "cierre": True}
+}
+INTERPRET_CTAS_MATRIX = GEN_CONFIG.get('interpret_ctas_matrix', DEFAULT_MATRIX)
+
 AUDIENCE_QUESTIONS_FILE = "preguntas_audiencia.txt"
 
 # --- STOPWORDS (es) ligeras para similitud/keywords ---

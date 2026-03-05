@@ -831,11 +831,41 @@ elif page == "config":
         
         ccta1, ccta2 = st.columns([1, 2])
         with ccta1:
-            st.markdown("**Comportamiento de la IA**")
-            new_interpret_ctas = st.checkbox("Tono Humano (Interpretar)", value=bool(config['generation_config'].get('interpret_ctas', True)), help="✔️ Dorotea reescribirá los CTAs con sus propias palabras integrándolos naturalmente.\n\n❌ Los leerá de forma estrictamente literal y separada con cortinillas.")
-            if st.button("💾 Guardar Ajustes", type="primary"):
-                config['generation_config']['interpret_ctas'] = new_interpret_ctas
-                guardar_config(config); st.success("✅ Guardado."); time.sleep(0.5); st.rerun()
+            st.markdown("**Matriz: ¿Qué CTAs lee Dorotea (interpreta con IA)?**")
+            st.caption("☑️ Dorotea lo reescribe e integra | ☐ Lo lee como anuncio literal (con cortinilla)")
+            
+            # Default matrix if not set
+            default_matrix = {
+                "lunes": {"inicio": True, "intermedio": True, "cierre": True},
+                "martes": {"inicio": True, "intermedio": True, "cierre": True},
+                "miercoles": {"inicio": True, "intermedio": True, "cierre": True},
+                "jueves": {"inicio": True, "intermedio": True, "cierre": True},
+                "viernes": {"inicio": True, "intermedio": True, "cierre": True},
+                "fin de semana": {"inicio": True, "intermedio": True, "cierre": True},
+                "generico": {"inicio": True, "intermedio": True, "cierre": True}
+            }
+            
+            current_matrix = config['generation_config'].get('interpret_ctas_matrix', default_matrix)
+            
+            # Convert to Pandas DataFrame for data_editor
+            df_matrix = pd.DataFrame.from_dict(current_matrix, orient='index')
+            
+            # Show interactive editor
+            edited_df = st.data_editor(
+                df_matrix,
+                column_config={
+                    "inicio": st.column_config.CheckboxColumn("Inicio", default=True),
+                    "intermedio": st.column_config.CheckboxColumn("Intermedio", default=True),
+                    "cierre": st.column_config.CheckboxColumn("Cierre", default=True)
+                },
+                use_container_width=True,
+                hide_index=False
+            )
+
+            if st.button("💾 Guardar Matriz", type="primary"):
+                # Convert back to dict and save
+                config['generation_config']['interpret_ctas_matrix'] = edited_df.to_dict(orient='index')
+                guardar_config(config); st.success("✅ Matriz guardada."); time.sleep(0.5); st.rerun()
 
         st.markdown("---")
         ctas_dir = config.get('directories',{}).get('ctas','cta_texts')
