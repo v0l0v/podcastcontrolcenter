@@ -40,9 +40,9 @@ st.markdown("""
     --g-dark:    #1b5f00;
     --g-mid:     #cef89c;
     --g-light:   #e5fabd;
-    --bg:        #ffffff;
-    --surface:   #f7f7f5;
-    --border:    #e4e4e0;
+    --bg:        #e5fabd;
+    --surface:   #cef89c;
+    --border:    #cef89c;
     --text:      #1a1a1a;
     --muted:     #6b6b6b;
 }
