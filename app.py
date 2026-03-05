@@ -50,12 +50,16 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
     color: var(--text);
+}
+
+/* ── Forzar Fondo Verde en todo el layout de Streamlit ── */
+.stApp {
     background-color: var(--bg);
 }
 
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
-    background-color: var(--surface);
+    background-color: var(--surface) !important;
     border-right: 1px solid var(--border);
 }
 [data-testid="stSidebar"] .stRadio label {
@@ -156,16 +160,53 @@ html, body, [class*="css"] {
     border-bottom: 1px solid var(--border);
 }
 
-/* ── Dividers & misc ── */
-hr { border-color: var(--border); }
-.stAlert { border-radius: 6px; }
-.stExpander { border: 1px solid var(--border) !important; border-radius: 6px !important; }
-/* Remove default tab underline mess */
+/* ├── OVERRIDES DE FONDOS GRISES Y BLANCOS DE STREAMLIT ├── */
+
+/* Inputs y Selectores */
+.stTextInput > div > div > input, 
+.stNumberInput > div > div > input,
+.stTextArea > div > textarea,
+.stSelectbox > div > div {
+    background-color: #f0fbd3 !important; /* Verde ultra claro */
+    border: 1px solid var(--g-dark) !important;
+    color: var(--text) !important;
+}
+
+/* Dataframes */
+[data-testid="stDataFrame"] {
+    background-color: var(--surface) !important;
+}
+
+/* Expanders */
+.stExpander, [data-testid="stExpander"] { 
+    border: 1px solid var(--g-dark) !important; 
+    border-radius: 6px !important; 
+    background-color: var(--surface) !important;
+}
+[data-testid="stExpander"] summary {
+    background-color: var(--g-mid) !important;
+}
+
+/* Tooltips y Alertas */
+.stAlert { 
+    border-radius: 6px; 
+    background-color: var(--surface) !important;
+    border: 1px solid var(--g-dark) !important;
+    color: var(--text) !important;
+}
+
+/* Tabs */
 button[data-baseweb="tab"] { border-radius: 4px; font-size: 0.85rem; }
 button[data-baseweb="tab"][aria-selected="true"] {
     background-color: var(--g-light) !important;
     color: var(--g-dark) !important;
     font-weight: 700;
+}
+[data-baseweb="tab-list"] {
+    background-color: var(--surface) !important;
+}
+[data-baseweb="tab-panel"] {
+    background-color: var(--bg) !important;
 }
 </style>
 """, unsafe_allow_html=True)
