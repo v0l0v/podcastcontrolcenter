@@ -887,6 +887,7 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         {instruccion_firma}
 
         REGLAS DE ORO (COMPORTAMIENTO OBLIGATORIO):
+        - **LONGITUD MÁXIMA:** Todo el monólogo no debe durar más de 30 segundos locutados (aproximadamente 60-80 palabras como máximo). Sé directa, breve y muy concisa. ¡NO TE ENROLLES!
         - **PROHIBIDO SALUDAR:** No digas "Hola", "Buenos días", "Buenas tardes", "Bienvenidos".
         - **PROHIBIDO PRESENTARSE:** No digas "Soy Dorotea y esto es...". Ya se ha dicho al principio.
         - **EMPIEZA DIRECTO:** Tu primera frase debe ser una conclusión o una reflexión sobre lo escuchado.
