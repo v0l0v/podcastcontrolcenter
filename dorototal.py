@@ -684,6 +684,9 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
     - **USA SIEMPRE FECHAS ABSOLUTAS:** Di "el 25 de noviembre", "el 3 de diciembre".
     - Si la fecha no es relevante o es confusa, omítela o usa términos genéricos como "recientemente" o "próximamente".
 
+8.  **NO INVENTES CONTEXTO INSTITUCIONAL:** Cíñete a los hechos descritos en la noticia. Está terminantemente prohibido añadir conclusiones inventadas, propaganda u opiniones políticas o institucionales que no estén textualmente en las fuentes originales. Mantén un tono narrativo y cercano.
+9.  **ENLACES A REDES Y WEBS (MUY IMPORTANTE):** Si en el texto original aparece un enlace a YouTube, Facebook, Instagram o cualquier página web relevante, DEBES conservarlo. En lugar de leer la URL entera, añade una frase natural al final como: "Recuerda visitar su página web [o perfil de Instagram/Facebook/Canal de Youtube], te dejamos el enlace en las notas del podcast: [AQUÍ ESCRIBES LA URL LITERAL]".
+
 **Importante:** La crónica debe empezar directamente con la frase de transición que te proporciono. No añadas introducciones adicionales.
 
 **ESTRUCTURA VISUAL OBLIGATORIA:**
@@ -1375,6 +1378,26 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
         
         # Limpieza básica de HTML en el contenido
         contenido_html = html.escape(contenido).replace('\n', '<br>')
+        
+        # Formatear enlaces en el HTML para que resalten (redes sociales y webs)
+        import re
+        def format_url(match):
+            url = match.group(1)
+            icon = "🔗"
+            color = "#00aaff"
+            if "instagram.com" in url:
+                icon = "📸"
+                color = "#ff4d00"
+            elif "youtube.com" in url or "youtu.be" in url:
+                icon = "▶️"
+                color = "#ff0000"
+            elif "facebook.com" in url or "fb.com" in url or "fb.watch" in url:
+                icon = "📘"
+                color = "#005ce6"
+            return f'<strong>{icon} <a href="{url}" target="_blank" style="color: {color}; text-decoration: underline; word-break: break-all;">{url}</a></strong>'
+
+        url_pattern = re.compile(r'(https?://[^\s<]+)')
+        contenido_html = url_pattern.sub(format_url, contenido_html)
         
         if tipo == 'intro':
             html_content += f"""

@@ -720,6 +720,10 @@ CONTEXTO TEMPORAL:
 
 {instruccion_contexto}
 
+REGLAS ADICIONALES:
+- NO INVENTES CONTEXTO INSTITUCIONAL: Cíñete a los hechos descritos en la noticia. Está terminantemente prohibido añadir conclusiones inventadas, propaganda u opiniones políticas o institucionales que no estén textualmente en las fuentes originales.
+- ENLACES A REDES Y WEBS: Si en el texto original aparece un enlace a YouTube, Facebook, Instagram o cualquier página web, DEBES conservarlo. En lugar de leer la URL entera, añade una frase natural al final como: "Recuerda visitar su web [o perfil], te dejamos el enlace en las notas del podcast: [AQUÍ ESCRIBES LA URL LITERAL]".
+
 ENTREGA: Párrafo de locución listo para ser leído al aire, TEXTO PLANO PURO.
 """
 
