@@ -361,15 +361,28 @@ elif page == "generar":
                 _wo = st.session_state.get('window_hours_override')
                 _cmd = [sys.executable, "dorototal.py", "--preview"]
                 if _wo: _cmd += ["--window-hours", str(_wo)]
-                proc = subprocess.run(_cmd, capture_output=True, text=True, cwd=os.getcwd())
-                if proc.returncode == 0 and os.path.exists("prevision_noticias_resumidas.json"):
+                
+                # Use Popen to stream logs in real-time so user knows it's not hanging
+                log_placeholder = st.empty()
+                logs_list = []
+                proc = subprocess.Popen(_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.getcwd())
+                
+                while True:
+                    line = proc.stdout.readline()
+                    if line == '' and proc.poll() is not None:
+                        break
+                    if line:
+                        logs_list.append(line.strip())
+                        # Mantener solo las ultimas 15 lineas de log
+                        log_placeholder.code("\n".join(logs_list[-15:]), language="text")
+                        
+                if proc.poll() == 0 and os.path.exists("prevision_noticias_resumidas.json"):
                     st.success("✅ Análisis completado. Revisa las noticias en el Paso 2.")
                     time.sleep(1); st.rerun()
-                elif proc.returncode == 0:
+                elif proc.poll() == 0:
                     st.warning("⚠️ No se encontraron noticias con los filtros actuales.")
-                    with st.expander("Ver logs"): st.code(proc.stdout)
                 else:
-                    st.error(f"Error: {proc.stderr}")
+                    st.error(f"Error: {proc.stderr.read()}")
         st.markdown('</div>', unsafe_allow_html=True)
 
         # ── PASO 2: REVISAR ──
