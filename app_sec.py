@@ -806,7 +806,6 @@ with tab_config:
         
         col_log1, col_log2 = st.columns(2)
         with col_log1:
-            new_dedup = st.slider("Umbral de Similitud (Deduplicación)", 0.5, 1.0, float(config['generation_config'].get('dedup_similarity_threshold', 0.9)), 0.05, help="Si dos noticias se parecen más que esto, se consideran la misma.")
             new_min_block = st.number_input("Mínimo noticias por bloque", value=int(config['generation_config'].get('min_news_per_block', 2)), help="Mínimo de noticias para formar un tema.")
         with col_log2:
             new_max_items = st.slider("Máximo de Noticias a Procesar", 5, 50, int(config['generation_config'].get('max_news_items', 20)), 1, help="Límite duro de noticias que entran al guion.")
@@ -849,7 +848,6 @@ with tab_config:
         config['directories']['audio_assets'] = new_audio_assets_dir
 
         # Guardar lógica de noticias (ahora en Tab 1)
-        config['generation_config']['dedup_similarity_threshold'] = new_dedup
         config['generation_config']['min_news_per_block'] = new_min_block
         config['generation_config']['max_news_items'] = new_max_items
         config['generation_config']['news_window_hours'] = new_window_hours

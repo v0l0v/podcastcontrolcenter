@@ -18,7 +18,6 @@
         "audio_assets": "audio_assets"
     },
     "generation_config": {
-        "dedup_similarity_threshold": 0.85,
         "min_news_per_block": 2,
         "ngram_n": 3,
         "feeds_file": "feeds_castillalamancha.txt"

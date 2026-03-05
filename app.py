@@ -696,7 +696,6 @@ elif page == "config":
         st.markdown('<div class="pcc-section-title">Lógica de Noticias y CTAs</div>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3:
-            new_dedup     = st.slider("Umbral similitud (dedup)", 0.5, 1.0, float(config['generation_config'].get('dedup_similarity_threshold',0.9)), 0.05)
             new_min_block = st.number_input("Mín. noticias por bloque", value=int(config['generation_config'].get('min_news_per_block',2)))
         with c4:
             new_max_items    = st.slider("Máx. noticias", 5, 50, int(config['generation_config'].get('max_news_items',20)), 1)
@@ -705,7 +704,7 @@ elif page == "config":
 
         if st.button("💾 Guardar Configuración General", type="primary"):
             config['podcast_info'].update({'presentadora':new_presentadora,'region':new_region,'email_contacto':new_email,'email_alias_ssml':new_email_alias})
-            config['generation_config'].update({'feeds_file':new_feeds_file,'dedup_similarity_threshold':new_dedup,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours,'interpret_ctas':new_interpret_ctas})
+            config['generation_config'].update({'feeds_file':new_feeds_file,'min_news_per_block':new_min_block,'max_news_items':new_max_items,'news_window_hours':new_window_hours,'interpret_ctas':new_interpret_ctas})
             config.setdefault('directories',{}).update({'ctas':new_ctas_dir,'audio_assets':new_audio_dir})
             guardar_config(config); st.success("✅ Guardado."); time.sleep(0.5); st.rerun()
 

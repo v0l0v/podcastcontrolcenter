@@ -25,7 +25,7 @@ from src.utils.caching import calculate_hash, get_cached_content, cache_content
 from src.config.settings import (
     CONFIG, AUDIO_CONFIG, GEN_CONFIG, VOICE_TARGET_PEAK_DBFS, TARGET_LUFS, 
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
-    DEDUP_SIMILARITY_THRESHOLD, NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
+    NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
     MAX_DYNAMIC_KEYPHRASES, MIN_WORDS_FOR_AUDIO, AUDIENCE_QUESTIONS_FILE, 
     AUDIO_CACHE_DIR, SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS
 )
@@ -228,7 +228,7 @@ def identificar_fuente_original(texto: str) -> str:
 def calcular_similitud_texto(texto1: str, texto2: str) -> float:
     return composite_similarity(texto1, texto2)
 
-def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list, umbral_similitud: float = 0.99) -> list:
+def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list) -> list:
     print(f"\n🔍 Detectando duplicados exactos por Hash...")
     noticias_unicas = []
     hashes_vistos = set()
@@ -426,7 +426,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list) -> dict:
     print("\n🎯 Iniciando agrupación mejorada de noticias (Estrategia de 2 Pasos)...")
     
     # PASO 0: DEDUP (Esto no cambia)
-    noticias_unicas = detectar_duplicados_y_similares(resumenes, [], umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
+    noticias_unicas = detectar_duplicados_y_similares(resumenes, [])
 
     if len(noticias_unicas) < MIN_NEWS_PER_BLOCK:
         print("    ℹ️ Muy pocas noticias para agrupar. Procesando individualmente.")
@@ -1584,7 +1584,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             noticias_seleccionadas = noticias_top
             print("      ⏩ Omitiendo deduplicación automática porque es una selección manual del usuario.")
         else:
-            noticias_seleccionadas = detectar_duplicados_y_similares(noticias_top, noticias_descartadas, umbral_similitud=DEDUP_SIMILARITY_THRESHOLD)
+            noticias_seleccionadas = detectar_duplicados_y_similares(noticias_top, noticias_descartadas)
 
         resumenes_finales = []
         nuevas_noticias_para_cache = {}
