@@ -1,0 +1,1848 @@
+import streamlit as st
+import sys
+import json
+import os
+from dotenv import load_dotenv
+load_dotenv() # Cargar variables de entorno desde .env
+import subprocess
+import threading
+import threading
+import time
+import shutil
+import datetime
+import random
+
+import pandas as pd
+# import matplotlib
+# matplotlib.use('Agg') # Configurar backend no interactivo para servidor
+# import matplotlib.pyplot as plt
+# from wordcloud import WordCloud
+from src.analytics import analizar_frecuencia_fuentes
+from src.llm_utils import (
+    generar_texto_con_gemini, 
+    generar_texto_multimodal_audio_con_gemini
+)
+from src.engine.audio import sintetizar_ssml_a_audio, masterizar_a_lufs
+from pydub import AudioSegment
+
+from mcmcn_prompts import PromptsCreativos
+
+
+# Configuración de la página
+st.set_page_config(
+    page_title="Podcast Control Center v0.97",
+    page_icon="🎙️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Define Palette (Light Mode Enforced)
+colors = {
+    "verge_orange": "#e21b3c",
+    "verge_purple": "#c209c1",
+    "neon_green": "#ccff00",
+    "bright_orange": "#ff6600",
+    "sunny_yellow": "#ffcc00",
+    "deep_black": "#121212",
+    "off_white": "#fdfdfd",
+    "gray_100": "#f3f3f3", # Light gray for light mode
+    "gray_200": "#e0e0e0",
+    "gray_800": "#2c2c2c", # Dark text for light mode
+    "text_color": "#121212",
+    "bg_color": "#ffffff"
+}
+
+# Estilos CSS personalizados
+st.markdown(f"""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+    :root {{
+        --verge-orange: {colors['verge_orange']};
+        --verge-purple: {colors['verge_purple']};
+        --neon-green: {colors['neon_green']};
+        --bright-orange: {colors['bright_orange']};
+        --sunny-yellow: {colors['sunny_yellow']};
+        --deep-black: {colors['deep_black']};
+        --off-white: {colors['off_white']};
+        --gray-100: {colors['gray_100']};
+        --gray-200: {colors['gray_200']};
+        --gray-800: {colors['gray_800']};
+        --text-color: {colors['text_color']};
+        --bg-color: {colors['bg_color']};
+    }}
+
+    html, body, [class*="css"] {{
+        font-family: 'Inter', sans-serif;
+        color: var(--text-color);
+        background-color: var(--bg_color);
+    }}
+    
+    /* Force Streamlit main container background */
+    .stApp {{
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }}
+
+    /* Main Headers */
+    .main-header {{
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 3rem;
+        background: linear-gradient(90deg, var(--verge-orange), var(--verge-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        letter-spacing: -1px;
+    }}
+
+    /* Sub Headers */
+    .sub-header {{
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        border-bottom: 4px solid var(--neon-green);
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        color: var(--text-color);
+    }}
+
+    /* Buttons */
+    .stButton > button {{
+        border-radius: 0px; /* Sharp corners */
+        font-weight: 700;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }}
+
+    .stButton > button:hover {{
+        border-color: var(--sunny-yellow);
+        transform: translateY(-2px);
+        box-shadow: 4px 4px 0px var(--bright-orange);
+    }}
+
+    /* Primary Buttons */
+    .stButton > button[kind="primary"] {{
+        background-color: var(--deep-black);
+        color: white;
+        border: 1px solid var(--gray-800);
+    }}
+    .stButton > button[kind="primary"]:hover {{
+        background-color: var(--verge-orange);
+        color: white;
+        box-shadow: 4px 4px 0px var(--deep-black);
+        border-color: transparent;
+    }}
+
+    /* Tab Styling (Enhanced) */
+    button[data-baseweb="tab"] {{
+        border-radius: 0px;
+        margin-right: 8px;
+        border: 1px solid transparent;
+        font-weight: 700;
+        text-transform: uppercase;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: var(--gray-100);
+        color: var(--text-color);
+        padding: 0.5rem 1rem;
+        border-bottom: 3px solid transparent;
+    }}
+    
+    button[data-baseweb="tab"]:hover {{
+        color: var(--verge-orange);
+        background-color: var(--gray-200);
+        transform: translateY(-2px);
+        border-bottom: 3px solid var(--verge-orange);
+    }}
+    
+    button[data-baseweb="tab"][aria-selected="true"] {{
+        background-color: var(--neon-green);
+        color: black; /* Always black text on neon green */
+        border: 1px solid black;
+        box-shadow: 3px 3px 0px black;
+        transform: translateY(-2px);
+    }}
+
+    /* Info Boxes */
+    .stAlert {{
+        border-radius: 0px;
+        border-left: 6px solid var(--sunny-yellow);
+        background-color: var(--gray-100);
+        color: var(--text-color);
+    }}
+
+    /* Dataframes */
+    [data-testid="stDataFrame"] {{
+        border: 1px solid var(--gray-800);
+    }}
+
+    /* Adjust the switch element itself if possible, but the container style is the main visual */
+    .stToggle [data-testid="stWidgetLabel"] {{
+        margin-bottom: 0; /* Align better with switch */
+    }}
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {{
+        background-color: var(--gray-100);
+        border-right: 1px solid var(--gray-800);
+    }}
+
+    /* Success Message */
+    .success-msg {{
+        padding: 1rem;
+        background-color: var(--neon-green);
+        color: black;
+        font-weight: bold;
+        border: 2px solid black;
+        margin-bottom: 1rem;
+    }}
+</style>
+""", unsafe_allow_html=True)
+
+# Ruta del archivo de configuración
+CONFIG_FILE = 'podcast_config.json'
+
+def cargar_config():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def guardar_config(config):
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=4, ensure_ascii=False)
+
+# Cargar configuración inicial
+config = cargar_config()
+
+# Título
+st.markdown('<div class="main-header">Podcast Control Center v0.97</div>', unsafe_allow_html=True)
+
+# Definición de la Nueva Estructura de Interfaz (v1.0)
+tab_dashboard, tab_editor, tab_log, tab_brain, tab_config_eng, tab_tools = st.tabs([
+    "🏠 Dashboard", 
+    "📝 Editor", 
+    "📊 LOG & Costes",
+    "🧠 Cerebro & Personalidad", 
+    "⚙️ Ingeniería", 
+    "🛠️ Extras"
+])
+
+
+# === Sub-navegación (Tabs Anidados) ===
+
+# 1. Ingeniería (Configuración técnica)
+with tab_config_eng:
+    st.markdown("### ⚙️ Ingeniería y Configuración")
+    sub_conf_gen, sub_conf_audio, sub_conf_sources, sub_conf_ctas = st.tabs([
+        "🔧 General", "🎛️ Audio", "📡 Fuentes", "📢 CTAs"
+    ])
+
+# 2. Extras (Herramientas)
+with tab_tools:
+    st.markdown("### 🛠️ Herramientas de Producción")
+    sub_tool_lib, sub_tool_od, sub_tool_buzon = st.tabs([
+        "📚 Mediateca", "🎙️ A la Carta", "🗣️ Buzón"
+    ])
+
+# === Alias de Enrutamiento ===
+# Conectamos las variables "legacy" a las nuevas sub-pestañas para que el código existente
+# se renderice automáticamente en el lugar correcto sin necesidad de mover bloques masivos.
+
+tab_config = sub_conf_gen       # Tab Configuración -> Subtab General
+tab_audio = sub_conf_audio      # Tab Audio -> Subtab Audio
+tab_sources = sub_conf_sources  # Tab Fuentes -> Subtab Fuentes
+tab_ctas = sub_conf_ctas        # Tab CTAs -> Subtab CTAs
+
+tab_library = sub_tool_lib      # Tab Mediateca -> Subtab Mediateca
+tab_ondemand = sub_tool_od      # Tab OnDemand -> Subtab OnDemand
+tab_buzon = sub_tool_buzon      # Tab Buzón -> Subtab Buzón
+
+tab_prompts = tab_brain         # Cerebro -> Tab Principal Cerebro (Por ahora plano)
+
+# Dashboard: Acciones rápidas (Antes Sidebar)
+with tab_dashboard:
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+
+    # Mostrar siempre el último podcast generado
+    st.markdown("### 🎧 Último Podcast")
+    import glob
+    try:
+        # 1. Buscar directorios de podcasts (podcast_apg_*)
+        # Usamos os.path.isdir para asegurar que son carpetas
+        podcast_dirs = [d for d in glob.glob("podcast_apg_*") if os.path.isdir(d)]
+        
+        if podcast_dirs:
+            # 2. Encontrar el directorio más reciente
+            latest_dir = max(podcast_dirs, key=os.path.getctime)
+            
+            # 3. Buscar el mp3 dentro de ese directorio
+            mp3_files_in_dir = glob.glob(os.path.join(latest_dir, "*.mp3"))
+            
+            if mp3_files_in_dir:
+                latest_mp3 = mp3_files_in_dir[0] # Tomamos el primero que haya
+                
+                st.success(f"📁 Carpeta: {latest_dir}")
+                st.audio(latest_mp3)
+                
+
+            else:
+                st.warning(f"Se encontró la carpeta {latest_dir} pero no contiene MP3.")
+        else:
+            st.text("No hay podcasts generados aún.")
+    except Exception as e:
+        st.error(f"Error al buscar podcasts: {e}")
+
+    st.markdown("---")
+    
+    # === ASISTENTE DE GENERACIÓN (WIZARD) ===
+    st.header("🧙‍♂️ Asistente de Producción")
+    
+    # Estado 1: Confirmación de Configuración
+    if 'config_check' not in st.session_state:
+        st.session_state['config_check'] = False
+    # Ventana temporal: None = usar config.json. Se actualiza desde la pestaña Ingeniería.
+    if 'window_hours_override' not in st.session_state:
+        st.session_state['window_hours_override'] = None
+
+    # Estado 0: Selección de Modo
+    st.markdown("#### 0️⃣ Modo de Operación")
+    mode_options = ["Completo (Podcast + Especiales)", "Solo Podcast (Sin Especiales)", "Solo Episodios Especiales"]
+    selected_mode_label = st.radio("Selecciona qué deseas generar:", mode_options, index=0, key="gen_mode_selector")
+    
+    mode_only_special = "Solo Episodios Especiales" in selected_mode_label
+    mode_skip_special = "Sin Especiales" in selected_mode_label
+    
+    if mode_only_special:
+        st.info("ℹ️ Modifica o selecciona los guiones especiales antes de generar el audio.")
+        
+        # Buscar archivos .txt que empiecen por EE_
+        ee_scripts = sorted(glob.glob("EE_*.txt"))
+        
+        selected_scripts = []
+        
+        if not ee_scripts:
+            st.warning("No se han encontrado guiones (EE_*.txt).")
+        else:
+            st.markdown("##### 📜 Guiones disponibles:")
+            for script in ee_scripts:
+                col_sel, col_del = st.columns([4, 1])
+                with col_sel:
+                    # Checkbox marcado por defecto
+                    if st.checkbox(f"{script}", value=True, key=f"sel_{script}"):
+                        selected_scripts.append(script)
+                with col_del:
+                    if st.button("🗑️", key=f"del_script_{script}", help="Eliminar guion"):
+                        try:
+                            os.remove(script)
+                            st.toast(f"Borrado: {script}")
+                            time.sleep(0.5)
+                            st.rerun()
+                        except Exception as e:
+                            st.error("Error")
+
+            st.divider()
+            
+            # Botón de generar solo si hay seleccionados
+            btn_disabled = len(selected_scripts) == 0
+            
+            if st.button("🚀 GENERAR SELECCIONADOS", type="primary", disabled=btn_disabled):
+                with st.spinner(f"Procesando {len(selected_scripts)} episodios..."):
+                    try:
+                        cmd = [sys.executable, "dorototal.py", "--only-special", "--file-list"] + selected_scripts
+                        
+                        process = subprocess.run(
+                            cmd,
+                            capture_output=True,
+                            text=True,
+                            cwd=os.getcwd()
+                        )
+                        if process.returncode == 0:
+                            st.success("✅ Proceso completado.")
+                            st.code(process.stdout)
+                            # Recargar para actualizar (quizas se movieron a .processed)
+                            time.sleep(2)
+                            st.rerun()
+                        else:
+                            st.error("Error en el proceso.")
+                            st.code(process.stderr)
+                    except Exception as e:
+                        st.error(f"Error ejecución: {e}")
+        
+    st.divider()
+
+    # Si es solo especiales, ocultamos el resto del wizard
+    if not mode_only_special:
+        st.markdown("#### 1️⃣ Configuración")
+        st.caption("Antes de analizar, asegúrate de que en la pestaña [LÓGICA DE NOTICIAS] los Límites de Selección son correctos.Si los modificas, guardalos presionando el boton al final de la pantalla [GUARDAR LÓGICA DE NOTICIAS]")
+        
+        config_checked = st.checkbox("He revisado la configuración", value=st.session_state['config_check'], key='chk_config')
+        st.session_state['config_check'] = config_checked
+
+        # Estado 2: Análisis (Solo si check marcado)
+        st.markdown("#### 2️⃣ Análisis de Fuentes")
+        btn_analizar_disabled = not config_checked
+        
+        if st.button("🔎 ANALIZAR NOTICIAS", type="secondary", disabled=btn_analizar_disabled):
+            with st.spinner("Conectando con feeds, filtrando y RESUMIENDO noticias con IA..."):
+                try:
+                    if os.path.exists("prevision_noticias_resumidas.json"):
+                        os.remove("prevision_noticias_resumidas.json")
+                    if os.path.exists("seleccion_usuario.json"):
+                        os.remove("seleccion_usuario.json")
+                        
+                    # Resetear confirmación al re-analizar
+                    st.session_state['news_confirmed'] = False
+
+                    # Construir el comando con la ventana de tiempo calculada (si se ha elegido)
+                    _window_override = st.session_state.get('window_hours_override')
+                    _cmd_preview = [sys.executable, "dorototal.py", "--preview"]
+                    if _window_override is not None:
+                        _cmd_preview += ["--window-hours", str(_window_override)]
+
+                    process = subprocess.run(
+                        _cmd_preview,
+                        capture_output=True,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    
+                    if process.returncode == 0:
+                        # VERIFICACIÓN ADICIONAL: Comprobar si realmente se generó el archivo
+                        if os.path.exists("prevision_noticias_resumidas.json"):
+                            st.success("✅ Análisis completado. Ve al panel principal para editar.")
+                            time.sleep(1)
+                            st.rerun()
+                        else:
+                            # Caso: El script terminó bien (exit 0) pero no generó fichero (ej. 0 noticias encontradas)
+                            st.warning("⚠️ El proceso terminó, pero no se encontraron noticias nuevas o relevantes según los filtros actuales.")
+                            with st.expander("Ver detalles del análisis (Logs)"):
+                                st.code(process.stdout)
+                    else:
+                        st.error(f"Error analizando noticias:\n{process.stderr}")
+                except Exception as e:
+                    st.error(f"Error ejecución: {e}")
+
+        # Lógica de Selección Manual (Edición)
+        manual_selection_mode = False
+        selected_news_to_process = []
+        
+        if os.path.exists("prevision_noticias_resumidas.json"):
+            st.markdown("#### 3️⃣ Revisión y Confirmación")
+            
+            # Cargar datos para el formulario principal (que se muestra en el sidebar también para feedback visual)
+            try:
+                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                    news_candidates = json.load(f)
+                    
+                manual_selection_mode = True
+                st.info(f"Tienes {len(news_candidates)} noticias pendientes de revisión en el panel central.")
+                
+                # --- FORMULARIO DE EDICIÓN (PANEL CENTRAL REVISADO) ---
+                # Mostramos el formulario en un expander AQUI en el sidebar NO, debe ir en el main, 
+                # pero necesitamos la lógica de confirmación aquí.
+                # Para simplificar y seguir la petición del usuario: La edición se hace abajo (main), 
+                # pero el botón de CONFIRMAR lo ponemos aquí como paso del wizard.
+                
+                # Botón de confirmación explícita
+                if 'news_confirmed' not in st.session_state:
+                    st.session_state['news_confirmed'] = False
+                    
+                if st.button("✅ NOTICIAS REVISADAS Y CONFIRMADAS", type="secondary", disabled=False):
+                    st.session_state['news_confirmed'] = True
+                    st.success("¡Perfecto! Ahora puedes generar el podcast.")
+                
+                if st.session_state['news_confirmed']:
+                    st.caption("✅ Selección confirmada.")
+                else:
+                    st.warning("⚠️ Debes editar (si quieres) y luego pulsar confirmar arriba.")
+
+            except Exception as e:
+                st.error("Error leyendo archivo de preview.")
+
+        # Estado 4: Generación
+        st.markdown("#### 4️⃣ Generación Final")
+        
+        # Solo activo si estamos en modo manual Y confirmado
+        can_generate = False
+        btn_type = "secondary"
+        btn_text = "GENERAR PODCAST (Espera...)"
+        
+        if manual_selection_mode:
+            if st.session_state.get('news_confirmed', False):
+                can_generate = True
+                btn_type = "primary"
+                btn_text = "🎙️ ¡VAMOS A GENERAR EL PODCAST!"
+            else:
+                btn_text = "Confirma las noticias primero"
+        else:
+            # Caso sin preview (no debería pasar con este flujo, pero fallback)
+            if config_checked: 
+                 # Si no hay preview json, quizás quieran generar directo sin editar (legacy)
+                 # Pero el usuario pidió guiado. Forzamos análisis primero.
+                 btn_text = "Analiza las noticias primero (Paso 2)"
+
+        if st.button(btn_text, type=btn_type, disabled=not can_generate):
+            with st.spinner("Generando audios, montando bloques y finalizando podcast..."):
+                try:
+                    # Recopilar la selección FINAL desde el session_state si se guardó en el formulario principal
+                    # OJO: La edición real ocurre en el MAIN loop.
+                    # Necesitamos que el formulario principal actualice 'noticias_editadas_finales'
+                    # Y que usemos eso aquí.
+                    
+                    # Leemos la selección del state o del archivo original si no se tocó nada
+                    final_news = st.session_state.get('noticias_editadas_finales', [])
+                    
+                    # Si está vacío, puede ser que no hayan tocado nada y confirmado directo.
+                    # En ese caso cargamos el json original de preview
+                    if not final_news and os.path.exists("prevision_noticias_resumidas.json"):
+                         with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                            final_news = json.load(f)
+
+                    # Guardar selección final para el script
+                    with open("seleccion_usuario.json", "w", encoding="utf-8") as f:
+                        json.dump(final_news, f, ensure_ascii=False, indent=4)
+                    
+                    cmd = [sys.executable, "dorototal.py", "--from-json", "seleccion_usuario.json"]
+                    
+                    # Lógica para saltar especiales si el usuario lo pidió
+                    if mode_skip_special:
+                        cmd.append("--skip-special")
+
+                    process = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=os.getcwd()
+                    )
+                    
+                    # Logs
+                    log_placeholder = st.empty()
+                    logs = []
+                    while True:
+                        output = process.stdout.readline()
+                        if output == '' and process.poll() is not None:
+                            break
+                        if output:
+                            logs.append(output.strip())
+                            log_placeholder.code("\n".join(logs[-15:]))
+                    
+                    if process.poll() == 0:
+                        st.success("¡Podcast generado con éxito!")
+                        st.balloons()
+                        # Resetear
+                        if os.path.exists("seleccion_usuario.json"): os.remove("seleccion_usuario.json")
+                        if os.path.exists("prevision_noticias_resumidas.json"): os.remove("prevision_noticias_resumidas.json")
+                        st.session_state['news_confirmed'] = False # Reset
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        st.error(f"Error generación:\n{process.stderr.read()}")
+                        
+                except Exception as e:
+                    st.error(f"Error script: {e}")
+
+
+
+# --- FIN DEL DASHBOARD ---
+
+# Bloques de Contenido Principal (Migración en curso)
+# (Las variables tab_editor, tab_config, etc. ya están definidas arriba apuntando a los nuevos tabs)
+
+
+with tab_editor:
+    st.markdown('<div class="sub-header">Revisión de Noticias</div>', unsafe_allow_html=True)
+    # --- ZONA PRINCIPAL DE EDICIÓN (VISUALIZACIÓN) ---
+    # Si hay noticias para revisar, mostramos el editor AQUI
+    if 'manual_selection_mode' in locals() and manual_selection_mode:
+        
+        st.info("Revisa los resúmenes generados por la IA. Edita lo que quieras y pulsa 'Guardar Cambios' al final.")
+        
+        # Intentar recuperar candidates si no están en local (por si acaso)
+        if 'news_candidates' not in locals():
+             try:
+                with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                    news_candidates = json.load(f)
+             except:
+                news_candidates = []
+
+        if news_candidates:
+            with st.form("seleccion_noticias_main"):
+                 edited_news_list_main = []
+                 
+                 for i, news in enumerate(news_candidates):
+                      # Título robusto
+                     titulo_feed = news.get("titulo")
+                     nombre_sitio = news.get("sitio")
+                     
+                     if titulo_feed and titulo_feed != "None" and len(titulo_feed) > 3:
+                         titulo_original = titulo_feed
+                     elif nombre_sitio:
+                         titulo_original = f"Noticia de {nombre_sitio}"
+                     else:
+                         titulo_original = "Noticia sin título"
+                         
+                     resumen_original = news.get("resumen", "")
+                     
+                     # Usar expander para el detalle - expandido por defecto el primero? no, mejor colapsado para limpieza
+                     with st.expander(f"Noticia {i+1}: {titulo_original}", expanded=(i==0)):
+                         
+                         col_check, col_content = st.columns([0.1, 0.9])
+                         
+                         with col_check:
+                             # Checkbox de inclusión
+                             incluir = st.checkbox("Incluir", value=True, key=f"main_chk_{i}")
+                         
+                         with col_content:
+                             # Campos editables
+                             new_titulo = st.text_input("Título", value=titulo_original, key=f"main_title_{i}")
+                             # Calcular altura dinámica aproximada (mínimo 200px)
+                             num_lines = max(4, len(resumen_original) // 60) # aprox 60 caracteres por línea
+                             dynamic_height = max(200, num_lines * 25)
+                             new_resumen = st.text_area("Resumen (Texto para el locutor)", value=resumen_original, height=dynamic_height, key=f"main_res_{i}")
+                             st.caption(f"Fuente: {news.get('sitio', 'Desconocida')} | Fecha: {news.get('fecha', '---')}")
+                         
+                         if incluir:
+                             # Crear copia de la noticia con los datos editados
+                             news_edited = news.copy()
+                             news_edited['titulo'] = new_titulo
+                             news_edited['resumen'] = new_resumen
+                             edited_news_list_main.append(news_edited)
+
+                 st.markdown("---")
+                 col_save, col_info = st.columns([1, 2])
+                 with col_save:
+                     update_selection = st.form_submit_button("💾 GUARDAR CAMBIOS", type="primary", use_container_width=True)
+                 
+                 if update_selection:
+                     st.session_state['noticias_editadas_finales'] = edited_news_list_main
+                     st.toast(f"✅ Se han guardado {len(edited_news_list_main)} noticias. Ahora confirma en la barra lateral.")
+
+            # --- REPORTE DE DESCARTES EN UI ---
+            if os.path.exists("prevision_noticias_descartadas.json"):
+                st.markdown("---")
+                try:
+                    with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
+                        descartadas = json.load(f)
+                    
+                    if descartadas:
+                        with st.expander(f"🗑️ Ver Noticias Descartadas o Absorbidas ({len(descartadas)})"):
+                            st.info("Estas noticias se obtuvieron del RSS pero no se han incluido en la selección principal debido a tus reglas de filtrado o porque reportaban algo que ya cubría otra noticia (duplicados).")
+                            
+                            # Agrupar por motivo para un resumen visual
+                            motivos_count = {}
+                            for d in descartadas:
+                                motivo_base = d['motivo'].split(' (')[0] if ' (' in d['motivo'] else d['motivo']
+                                motivos_count[motivo_base] = motivos_count.get(motivo_base, 0) + 1
+                                
+                            st.markdown("**Resumen de Descartes:**")
+                            for m, c in motivos_count.items():
+                                st.markdown(f"- **{c}** por: {m}")
+                                
+                            st.markdown("---")
+                            
+                            # Lista detallada
+                            for i, d in enumerate(descartadas):
+                                st.markdown(f"**{i+1}. {d.get('titulo', 'Sin título')}**")
+                                st.caption(f"Fuente: {d.get('sitio', 'Desconocida')} | Motivo: {d.get('motivo', 'Desconocido')}")
+                                st.divider()
+                except Exception as e:
+                    st.error(f"Error cargando reporte de descartes: {e}")
+            # ----------------------------------
+    else:
+        st.write("No hay análisis pendiente. Pulsa '🔎 ANALIZAR NOTICIAS' en la barra lateral para comenzar.")
+
+with tab_log:
+    st.markdown('<div class="sub-header">Monitor de Proceso y Costes</div>', unsafe_allow_html=True)
+    
+    # Auto-refresh log
+    if st.button("🔄 Actualizar Logs"):
+        st.rerun()
+
+    col_logs, col_costs = st.columns([2, 1])
+    
+    with col_logs:
+        st.markdown("#### 📜 Registro de Ejecución (En Vivo)")
+        try:
+            log_file = "logs/process_log.jsonl"
+            if os.path.exists(log_file):
+                with open(log_file, "r") as f:
+                    lines = f.readlines()
+                
+                logs_display = []
+                for line in lines[-50:]: # Últimas 50 líneas
+                    try:
+                        entry = json.loads(line)
+                        ts = entry['timestamp'].split('T')[1].split('.')[0]
+                        lvl = entry['level']
+                        msg = entry['message']
+                        icon = "INFO"
+                        if lvl == "STEP": icon = "🔹"
+                        elif lvl == "SUCCESS": icon = "✅"
+                        elif lvl == "WARNING": icon = "⚠️"
+                        elif lvl == "ERROR": icon = "❌"
+                        elif lvl == "INFO": icon = "ℹ️"
+                        
+                        logs_display.append(f"{ts} {icon} {msg}")
+                    except:
+                        pass
+                
+                log_text = "\n".join(logs_display)
+                st.code(log_text, language="text")
+            else:
+                st.info("No hay logs disponibles aún. Inicia un proceso.")
+        except Exception as e:
+            st.error(f"Error leyendo logs: {e}")
+
+    with col_costs:
+        st.markdown("#### 💰 Estimación de Costes (Free Tier)")
+        
+        try:
+            usage_file = "logs/usage_stats.json"
+            if os.path.exists(usage_file):
+                with open(usage_file, "r") as f:
+                    stats = json.load(f)
+                
+                # GEMINI FLASH LIMITS (Aprox)
+                # Free: 1.500 requests/day, 1M TPM (Tokens per minute).
+                # Simplified daily view: 1M Tokens input/output combined (Safe limit)
+                gemini_in = stats.get('gemini_input_tokens', 0)
+                gemini_out = stats.get('gemini_output_tokens', 0)
+                total_gemini = gemini_in + gemini_out
+                
+                gemini_limit = 1_000_000 # 1M Tokens Daily Free Tier (Conservative)
+                gemini_pct = min(100, (total_gemini / gemini_limit) * 100)
+                
+                st.write(f"**Gemini 1.5 Flash**")
+                st.progress(gemini_pct / 100)
+                st.caption(f"{total_gemini:,} / {gemini_limit:,} tokens usados ({gemini_pct:.1f}%)")
+                
+                if gemini_pct > 90: st.warning("⚠️ Cerca del límite gratuito diario de Gemini.")
+
+                st.divider()
+
+                # TTS LIMITS
+                # Standard: 4M chars/month free.
+                # WaveNet: 1M chars/month free.
+                # Neural2/Studio: Paid.
+                tts_chars = stats.get('tts_chars', 0)
+                
+                # Asumimos mezcla, límite conservador de 1M (WaveNet limit)
+                tts_limit = 1_000_000 
+                tts_pct = min(100, (tts_chars / tts_limit) * 100)
+                
+                st.write(f"**Google TTS (Caracteres)**")
+                st.progress(tts_pct / 100)
+                st.caption(f"{tts_chars:,} / {tts_limit:,} caracteres usados ({tts_pct:.1f}%)")
+                if tts_pct > 90: st.warning("⚠️ Cerca del límite gratuito mensual de TTS.")
+                
+                st.divider()
+                st.info(f"💾 Las estadísticas se guardan en `logs/usage_stats.json`.")
+                
+            else:
+                st.write("No hay datos de consumo aún.")
+        except Exception as e:
+            st.error(f"Error stats: {e}")
+
+
+with tab_config:
+    st.markdown('<div class="sub-header">Identidad de Podcast</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        new_presentadora = st.text_input("Nombre de la Presentadora", value=config['podcast_info'].get('presentadora', 'Dorotea'))
+        new_region = st.text_input("Región", value=config['podcast_info'].get('region', 'Castilla la Mancha'))
+        
+    with col2:
+        new_email = st.text_input("Email de Contacto", value=config['podcast_info'].get('email_contacto', ''))
+        new_email_alias = st.text_input("Alias de Email (para leer)", value=config['podcast_info'].get('email_alias_ssml', ''))
+        
+
+        
+        st.markdown("---")
+        st.markdown("**Directorios de Recursos**")
+        
+        # Selector de archivo de feeds
+        # Selector de archivo de feeds
+        txt_files = [f for f in os.listdir('.') if f.endswith('.txt') and f.startswith('feeds_')]
+        
+        current_feeds_file = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+        if current_feeds_file not in txt_files:
+            txt_files.append(current_feeds_file)
+            
+        new_feeds_file = st.selectbox(
+            "Archivo de Feeds",
+            options=sorted(list(set(txt_files))),
+            index=txt_files.index(current_feeds_file) if current_feeds_file in txt_files else 0
+        )
+        # Escanear directorios de CTAs (que empiecen por ctas_)
+        cta_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d.startswith('ctas_')]
+        current_cta = config.get('directories', {}).get('ctas', 'ctas_castillalamancha')
+        
+        # Asegurar que el actual esté en la lista aunque no empiece por ctas_ (soporte legacy)
+        if current_cta not in cta_dirs and os.path.isdir(current_cta):
+            cta_dirs.append(current_cta)
+        elif current_cta not in cta_dirs:
+            # Si no existe, al menos mostrarlo para que se vea que está configurado
+             cta_dirs.append(current_cta)
+
+        new_ctas_dir = st.selectbox(
+            "Carpeta de CTAs", 
+            options=sorted(list(set(cta_dirs))),
+            index=cta_dirs.index(current_cta) if current_cta in cta_dirs else 0
+        )
+        new_audio_assets_dir = st.text_input("Carpeta de Audio Assets", value=config.get('directories', {}).get('audio_assets', 'audio_assets'))
+
+        st.markdown("---")
+        st.markdown("#### 🔍 Lógica de Noticias (Filtrado y Límites)")
+        
+        col_log1, col_log2 = st.columns(2)
+        with col_log1:
+            new_dedup = st.slider("Umbral de Similitud (Deduplicación)", 0.5, 1.0, float(config['generation_config'].get('dedup_similarity_threshold', 0.9)), 0.05, help="Si dos noticias se parecen más que esto, se consideran la misma.")
+            new_min_block = st.number_input("Mínimo noticias por bloque", value=int(config['generation_config'].get('min_news_per_block', 2)), help="Mínimo de noticias para formar un tema.")
+        with col_log2:
+            new_max_items = st.slider("Máximo de Noticias a Procesar", 5, 50, int(config['generation_config'].get('max_news_items', 20)), 1, help="Límite duro de noticias que entran al guion.")
+
+            st.markdown("**Ventana Temporal de Noticias**")
+            window_mode = st.radio(
+                "Modo de ventana:",
+                ["🌅 Solo hoy (desde medianoche)", "⏱️ Últimas X horas", "💾 Config guardada"],
+                index=0,
+                key="window_mode_selector",
+                help="• Solo hoy: recupera noticias publicadas hoy desde las 00:00.\n• Últimas X horas: elige un número fijo de horas.\n• Config guardada: usa el valor guardado en el archivo de configuración."
+            )
+
+            if "Solo hoy" in window_mode:
+                _ahora = datetime.datetime.now()
+                _horas_hoy = round(_ahora.hour + _ahora.minute / 60 + _ahora.second / 3600, 2)
+                horas_hoy_calculadas = max(1, round(_horas_hoy))
+                st.info(f"🌅 Son las {_ahora.strftime('%H:%M')}h → se recuperarán las noticias de las últimas **{horas_hoy_calculadas} horas** (desde medianoche).")
+                new_window_hours = int(config['generation_config'].get('news_window_hours', 48))  # no cambia config
+                st.session_state['window_hours_override'] = horas_hoy_calculadas
+            elif "X horas" in window_mode:
+                new_window_hours = st.slider("Ventana de Tiempo (Horas)", 12, 168, int(config['generation_config'].get('news_window_hours', 48)), 12, help="Solo noticias publicadas hace X horas.")
+                st.session_state['window_hours_override'] = new_window_hours
+            else:
+                new_window_hours = int(config['generation_config'].get('news_window_hours', 48))
+                st.caption(f"Se usará el valor guardado: **{new_window_hours} horas**")
+                st.session_state['window_hours_override'] = None  # None = usa config.json
+
+    if st.button("Guardar Cambios Generales"):
+        config['podcast_info']['presentadora'] = new_presentadora
+        config['podcast_info']['region'] = new_region
+        config['podcast_info']['email_contacto'] = new_email
+        config['podcast_info']['email_alias_ssml'] = new_email_alias
+        
+        if 'generation_config' not in config: config['generation_config'] = {}
+        config['generation_config']['feeds_file'] = new_feeds_file
+        
+        if 'directories' not in config: config['directories'] = {}
+        config['directories']['ctas'] = new_ctas_dir
+        config['directories']['audio_assets'] = new_audio_assets_dir
+
+        # Guardar lógica de noticias (ahora en Tab 1)
+        config['generation_config']['dedup_similarity_threshold'] = new_dedup
+        config['generation_config']['min_news_per_block'] = new_min_block
+        config['generation_config']['max_news_items'] = new_max_items
+        config['generation_config']['news_window_hours'] = new_window_hours
+
+        guardar_config(config)
+        st.success("✅ Configuración general actualizada.")
+        time.sleep(0.5)
+        st.rerun()
+
+with tab_audio:
+    st.markdown('<div class="sub-header">Audio y Estilo</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        voice_options = [
+                # --- CHIRP 3 HD (Generative, Ultra-Realistic) ---
+                "es-ES-Chirp3-HD-Achernar [FEMALE]", "es-ES-Chirp3-HD-Aoede [FEMALE]", 
+                "es-ES-Chirp3-HD-Autonoe [FEMALE]", "es-ES-Chirp3-HD-Callirrhoe [FEMALE]", 
+                "es-ES-Chirp3-HD-Despina [FEMALE]", "es-ES-Chirp3-HD-Erinome [FEMALE]", 
+                "es-ES-Chirp3-HD-Gacrux [FEMALE]", "es-ES-Chirp3-HD-Kore [FEMALE]", 
+                "es-ES-Chirp3-HD-Laomedeia [FEMALE]", "es-ES-Chirp3-HD-Leda [FEMALE]", 
+                "es-ES-Chirp3-HD-Pulcherrima [FEMALE]", "es-ES-Chirp3-HD-Sulafat [FEMALE]", 
+                "es-ES-Chirp3-HD-Vindemiatrix [FEMALE]", "es-ES-Chirp3-HD-Zephyr [FEMALE]",
+                
+                "es-ES-Chirp3-HD-Achird [MALE]", "es-ES-Chirp3-HD-Algenib [MALE]", 
+                "es-ES-Chirp3-HD-Algieba [MALE]", "es-ES-Chirp3-HD-Alnilam [MALE]", 
+                "es-ES-Chirp3-HD-Charon [MALE]", "es-ES-Chirp3-HD-Enceladus [MALE]", 
+                "es-ES-Chirp3-HD-Fenrir [MALE]", "es-ES-Chirp3-HD-Iapetus [MALE]", 
+                "es-ES-Chirp3-HD-Orus [MALE]", "es-ES-Chirp3-HD-Puck [MALE]", 
+                "es-ES-Chirp3-HD-Rasalgethi [MALE]", "es-ES-Chirp3-HD-Sadachbia [MALE]", 
+                "es-ES-Chirp3-HD-Sadaltager [MALE]", "es-ES-Chirp3-HD-Schedar [MALE]", 
+                "es-ES-Chirp3-HD-Umbriel [MALE]", "es-ES-Chirp3-HD-Zubenelgenubi [MALE]",
+
+                # --- CHIRP HD (Previous Gen) ---
+                "es-ES-Chirp-HD-F [FEMALE]", "es-ES-Chirp-HD-O [FEMALE]", 
+                "es-ES-Chirp-HD-D [MALE]",
+
+                # --- NEURAL2 (High Quality) ---
+                "es-ES-Neural2-A [FEMALE]", "es-ES-Neural2-E [FEMALE]", "es-ES-Neural2-H [FEMALE]",
+                "es-ES-Neural2-F [MALE]", "es-ES-Neural2-G [MALE]",
+
+                # --- STUDIO (Professional) ---
+                "es-ES-Studio-C [FEMALE]", "es-ES-Studio-F [MALE]",
+
+                # --- JOURNEY (Experimental) ---
+                "es-ES-Journey-F [FEMALE]", "es-ES-Journey-D [MALE]",
+                
+                # --- WAVENET (Legacy) ---
+                "es-ES-Wavenet-F [FEMALE]", "es-ES-Wavenet-H [FEMALE]",
+                "es-ES-Wavenet-E [MALE]", "es-ES-Wavenet-G [MALE]",
+                
+                # --- STANDARD (Basic) ---
+                "es-ES-Standard-F [FEMALE]", "es-ES-Standard-H [FEMALE]",
+                "es-ES-Standard-E [MALE]", "es-ES-Standard-G [MALE]"
+        ]
+        
+        try:
+            current_voice_index = voice_options.index(config['audio_config'].get('voice_name'))
+        except:
+            current_voice_index = 11 # Default Sulafat
+
+        new_voice = st.selectbox(
+            "Voz de Google TTS", 
+            options=voice_options,
+            index=current_voice_index
+        )
+        new_lufs = st.slider("Volumen Objetivo (LUFS)", min_value=-24.0, max_value=-10.0, value=float(config['audio_config'].get('target_lufs', -16.0)), step=0.5)
+        
+    with col2:
+        new_pausa = st.text_input("Pausa Estándar (SSML)", value=config['podcast_info'].get('pausa_estandar', '600ms'))
+        new_min_words = st.number_input("Mínimo palabras por noticia", value=int(config['audio_config'].get('min_words_for_audio', 33)))
+
+    if st.button("Guardar Ajustes de Audio"):
+        config['audio_config']['voice_name'] = new_voice
+        config['audio_config']['target_lufs'] = new_lufs
+        config['podcast_info']['pausa_estandar'] = new_pausa
+        config['audio_config']['min_words_for_audio'] = new_min_words
+        guardar_config(config)
+        st.success("✅ Ajustes de audio actualizados.")
+        time.sleep(0.5)
+        st.rerun()
+
+    st.markdown("---")
+    st.markdown('<div class="sub-header">Diccionario de Pronunciación</div>', unsafe_allow_html=True)
+    st.markdown("Define cómo debe leer la IA ciertas palabras o siglas.")
+    
+    col_dict1, col_dict2 = st.columns(2)
+    
+    with col_dict1:
+        st.markdown("#### 📖 Palabras y Nombres")
+        correcciones = config['pronunciation'].get('correcciones', {})
+        
+        # Editor tipo tabla (simple)
+        new_correcciones_str = st.text_area(
+            "Formato: ORIGINAL : CORRECCIÓN (una por línea)",
+            value="\\n".join([f"{k} : {v}" for k, v in correcciones.items()]),
+            height=300
+        )
+        
+    with col_dict2:
+        st.markdown("#### 🔤 Siglas (Deletreo)")
+        siglas = config['pronunciation'].get('siglas', {})
+        
+        new_siglas_str = st.text_area(
+            "Formato: SIGLA : DELETREO (una por línea)",
+            value="\\n".join([f"{k} : {v}" for k, v in siglas.items()]),
+            height=300
+        )
+
+    if st.button("Actualizar Diccionarios"):
+        # Procesar texto a diccionario
+        def parse_dict_text(text):
+            new_dict = {}
+            for line in text.split('\\n'):
+                if ':' in line:
+                    key, val = line.split(':', 1)
+                    new_dict[key.strip()] = val.strip()
+            return new_dict
+            
+        config['pronunciation']['correcciones'] = parse_dict_text(new_correcciones_str)
+        config['pronunciation']['siglas'] = parse_dict_text(new_siglas_str)
+        guardar_config(config)
+        st.success("✅ Diccionarios de pronunciación actualizados.")
+        time.sleep(0.5)
+        st.rerun()
+
+with tab_prompts:
+    st.markdown('<div class="sub-header">Cerebro y Personalidad</div>', unsafe_allow_html=True)
+    st.info("Aquí defines CÓMO habla Dorotea. Usa `{presentadora}`, `{region}`, `{email}`, `{email_alias}` y `{pausa}` como variables en los textos.")
+    
+    prompts_cfg = config.get('prompts', {})
+    analysis_prompts = config.get('prompts', {}).get('analysis_prompts', {})
+
+    # Definir Sub-tabs
+    sub_pers, sub_logic, sub_struct = st.tabs(["🎭 Personalidad", "🧠 Lógica IA", "🏗️ Estructura"])
+
+    # --- SUB-TAB 1: PERSONALIDAD ---
+    with sub_pers:
+        # 1. Personalidad Base
+        st.markdown("### 🧠 Personalidad Base (Instrucción Maestra)")
+        st.markdown("Esta instrucción define el estilo general de Dorotea al narrar noticias.")
+        new_persona = st.text_area(
+            "Prompt de Personalidad",
+            value=prompts_cfg.get('persona_base', ''),
+            height=150
+        )
+        
+        st.markdown("---")
+        
+        # 2. Saludos
+        st.markdown("### 👋 Saludos de Bienvenida")
+        col_sal1, col_sal2 = st.columns(2)
+        with col_sal1:
+            saludo_lunes = st.text_area("Lunes", value=prompts_cfg.get('saludos', {}).get('lunes', ''), height=150)
+            saludo_viernes = st.text_area("Viernes", value=prompts_cfg.get('saludos', {}).get('viernes', ''), height=150)
+        with col_sal2:
+            saludo_mj = st.text_area("Martes-Jueves", value=prompts_cfg.get('saludos', {}).get('martes_jueves', ''), height=150)
+            saludo_finde = st.text_area("Fin de Semana", value=prompts_cfg.get('saludos', {}).get('finde', ''), height=150)
+
+        st.markdown("---")
+
+        # 3. Despedidas
+        st.markdown("### 👋 Despedidas y Cierre")
+        col_desp1, col_desp2 = st.columns(2)
+        with col_desp1:
+            desp_lunes = st.text_area("Cierre Lunes", value=prompts_cfg.get('despedidas', {}).get('lunes', ''), height=150)
+            desp_viernes = st.text_area("Cierre Viernes", value=prompts_cfg.get('despedidas', {}).get('viernes', ''), height=150)
+        with col_desp2:
+            desp_mj = st.text_area("Cierre Martes-Jueves", value=prompts_cfg.get('despedidas', {}).get('martes_jueves', ''), height=150)
+            desp_finde = st.text_area("Cierre Finde", value=prompts_cfg.get('despedidas', {}).get('finde', ''), height=150)
+
+        st.markdown("---")
+        
+        # 4. Firmas
+        st.markdown("### ✍️ Firma Final (Última frase)")
+        col_firma1, col_firma2 = st.columns(2)
+        with col_firma1:
+            firma_lunes = st.text_area("Firma Lunes", value=prompts_cfg.get('firmas', {}).get('lunes', ''), height=100)
+            firma_viernes = st.text_area("Firma Viernes", value=prompts_cfg.get('firmas', {}).get('viernes', ''), height=100)
+        with col_firma2:
+            firma_mj = st.text_area("Firma Martes-Jueves", value=prompts_cfg.get('firmas', {}).get('martes_jueves', ''), height=100)
+            firma_finde = st.text_area("Firma Finde", value=prompts_cfg.get('firmas', {}).get('finde', ''), height=100)
+
+        if st.button("💾 Guardar Personalidad", type="primary", use_container_width=True):
+            # Actualizar estructura
+            if 'prompts' not in config: config['prompts'] = {}
+            
+            config['prompts']['persona_base'] = new_persona
+            config['prompts']['saludos'] = {
+                'lunes': saludo_lunes, 'martes_jueves': saludo_mj, 'viernes': saludo_viernes, 'finde': saludo_finde
+            }
+            config['prompts']['despedidas'] = {
+                'lunes': desp_lunes, 'martes_jueves': desp_mj, 'viernes': desp_viernes, 'finde': desp_finde
+            }
+            config['prompts']['firmas'] = {
+                'lunes': firma_lunes, 'martes_jueves': firma_mj, 'viernes': firma_viernes, 'finde': firma_finde
+            }
+            
+            guardar_config(config)
+            st.success("✅ ¡Personalidad de Dorotea actualizada!")
+            time.sleep(0.5)
+            st.rerun()
+
+    # --- SUB-TAB 2: LÓGICA IA ---
+    with sub_logic:
+        st.caption("Define las reglas de negocio para el análisis de noticias.")
+        
+        prompt_clasif = st.text_area("Instrucciones para clasificar (Relevante/Irrelevante)", value=analysis_prompts.get('clasificacion_criterios', ''), height=200)
+        prompt_resumen = st.text_area("Instrucciones para resumir la noticia", value=analysis_prompts.get('resumen_instrucciones', ''), height=250)
+        prompt_agrup = st.text_area("Instrucciones para agrupar temas", value=analysis_prompts.get('agrupacion_instrucciones', ''), height=150)
+
+    # --- SUB-TAB 3: ESTRUCTURA ---
+    with sub_struct:
+        st.caption("Define el formato de los guiones finales.")
+
+        prompt_narracion = st.text_area("Instrucciones para narrar bloques", value=analysis_prompts.get('narracion_instrucciones', ''), height=150)
+        
+        col_struct1, col_struct2 = st.columns(2)
+        with col_struct1:
+            prompt_intro = st.text_area("Instrucciones Intro", value=analysis_prompts.get('intro_instrucciones', ''), height=200)
+        with col_struct2:
+            prompt_despedida = st.text_area("Instrucciones Despedida", value=analysis_prompts.get('despedida_instrucciones', ''), height=200)
+            
+        prompt_post = st.text_area("Instrucciones Post-Créditos", value=analysis_prompts.get('post_creditos_instrucciones', ''), height=100)
+
+    # Botón Global para Lógica y Estructura (fuera de tabs para que se vea siempre o abajo)
+    # Lo pondremos abajo del todo
+    st.markdown("---")
+    if st.button("💾 Guardar Lógica y Estructura (Tabs 2 y 3)", type="primary", use_container_width=True):
+        if 'prompts' not in config: config['prompts'] = {}
+        if 'analysis_prompts' not in config['prompts']: config['prompts']['analysis_prompts'] = {}
+        
+        config['prompts']['analysis_prompts']['clasificacion_criterios'] = prompt_clasif
+        config['prompts']['analysis_prompts']['resumen_instrucciones'] = prompt_resumen
+        config['prompts']['analysis_prompts']['narracion_instrucciones'] = prompt_narracion
+        config['prompts']['analysis_prompts']['agrupacion_instrucciones'] = prompt_agrup
+        config['prompts']['analysis_prompts']['intro_instrucciones'] = prompt_intro
+        config['prompts']['analysis_prompts']['despedida_instrucciones'] = prompt_despedida
+        config['prompts']['analysis_prompts']['post_creditos_instrucciones'] = prompt_post
+        
+        guardar_config(config)
+        st.success("✅ Lógica de noticias actualizada.")
+        time.sleep(0.5)
+        st.rerun()
+
+with tab_library:
+    st.markdown('<div class="sub-header">Mediateca</div>', unsafe_allow_html=True)
+    
+    st.info("Aquí podrás consultar, descargar y gestionar los episodios anteriores.")
+
+
+    # Listar todos los podcasts disponibles
+    import glob
+    try:
+        podcast_dirs = sorted([d for d in glob.glob("podcast_apg_*") if os.path.isdir(d)], key=os.path.getctime, reverse=True)
+        
+        if not podcast_dirs:
+            st.write("No hay podcasts generados.")
+        else:
+            for p_dir in podcast_dirs:
+                # Extraer fecha legible del nombre si es posible
+                display_name = p_dir.replace("podcast_apg_", "").replace("_", " ")
+                
+                with st.expander(f"🎙️ {display_name}", expanded=False):
+                    col_info, col_actions = st.columns([3, 1])
+                    
+                    mp3s = glob.glob(os.path.join(p_dir, "*.mp3"))
+                    htmls = glob.glob(os.path.join(p_dir, "*.html"))
+                    json_path = os.path.join(p_dir, "transcript.json")
+                    
+                    with col_info:
+                        if mp3s:
+                            st.audio(mp3s[0])
+                            st.caption(f"Archivo: {os.path.basename(mp3s[0])}")
+                        else:
+                            st.warning("Carpeta vacía o sin MP3.")
+                        
+                        # Social Pack Result Display
+                        if f'social_result_{p_dir}' in st.session_state:
+                            st.markdown("### 📱 Social Pack Generado")
+                            social_data = st.session_state[f'social_result_{p_dir}']
+                            
+                            subtab1, subtab2 = st.tabs(["Facebook", "Instagram"])
+                            with subtab1:
+                                st.text_area("Post Facebook", value=social_data.get('facebook_post', ''), height=250, key=f"fb_area_{p_dir}")
+                            with subtab2:
+                                st.text_area("Caption Instagram", value=social_data.get('instagram_caption', ''), height=250, key=f"ig_area_{p_dir}")
+                            
+                            if st.button("❌ Cerrar Pack", key=f"close_sp_{p_dir}"):
+                                del st.session_state[f'social_result_{p_dir}']
+                                st.rerun()
+
+                    with col_actions:
+                        if mp3s:
+                            with open(mp3s[0], "rb") as f:
+                                st.download_button(
+                                    label="⬇️ MP3",
+                                    data=f,
+                                    file_name=os.path.basename(mp3s[0]),
+                                    key=f"dl_mp3_{p_dir}",
+                                    use_container_width=True
+                                )
+                        
+                        if htmls:
+                            with open(htmls[0], "rb") as f:
+                                st.download_button(
+                                    label="📄 HTML",
+                                    data=f,
+                                    file_name=os.path.basename(htmls[0]),
+                                    mime="text/html",
+                                    key=f"dl_html_{p_dir}",
+                                    use_container_width=True
+                                )
+                        
+                        # Botón Social Pack
+                        if os.path.exists(json_path):
+                            if st.button("📱 Social Pack", key=f"btn_sp_{p_dir}", use_container_width=True):
+                                with st.spinner("Generando contenidos con IA..."):
+                                    try:
+                                        with open(json_path, 'r', encoding='utf-8') as f:
+                                            transcript = json.load(f)
+                                        
+                                        # Combinar texto de noticias
+                                        full_text = "\n".join([item['content'] for item in transcript if item.get('type') in ['block', 'news', 'intro']])
+                                        
+                                        # Generar con IA
+                                        prompt = PromptsCreativos.generar_social_pack(full_text)
+                                        resp_json = generar_texto_con_gemini(prompt)
+                                        
+                                        # Limpiar y parsear
+                                        clean_json = resp_json.replace("```json", "").replace("```", "").strip()
+                                        social_dict = json.loads(clean_json)
+                                        
+                                        st.session_state[f'social_result_{p_dir}'] = social_dict
+                                        st.rerun()
+                                        
+                                    except Exception as e:
+                                        st.error(f"Error: {e}")
+                        
+                        st.markdown("---")
+                        if st.button("🗑️ Eliminar", key=f"del_{p_dir}", type="secondary", use_container_width=True):
+                            try:
+                                shutil.rmtree(p_dir)
+                                st.toast(f"Eliminado: {p_dir}")
+                                time.sleep(1)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error eliminando: {e}")
+
+    except Exception as e:
+        st.error(f"Error leyendo historial: {e}")
+
+    st.markdown("---")
+    st.markdown('<div class="sub-header">🎭 Historial de Episodios Especiales</div>', unsafe_allow_html=True)
+    
+    try:
+        ee_files = sorted(glob.glob("EE_*.mp3"), key=os.path.getctime, reverse=True)
+        
+        if not ee_files:
+            st.info("No hay episodios especiales generados.")
+        else:
+            for ee_file in ee_files:
+                # Nombre limpio
+                display_name_ee = os.path.basename(ee_file)
+                
+                with st.expander(f"📢 {display_name_ee}", expanded=False):
+                    col_ee_info, col_ee_actions = st.columns([3, 1])
+                    
+                    with col_ee_info:
+                        st.audio(ee_file)
+                        st.caption(f"Archivo: {display_name_ee}")
+                        
+                    with col_ee_actions:
+                         with open(ee_file, "rb") as f:
+                                st.download_button(
+                                    label="⬇️ MP3",
+                                    data=f,
+                                    file_name=display_name_ee,
+                                    key=f"dl_ee_{ee_file}",
+                                    use_container_width=True
+                                )
+                         
+                         if st.button("🗑️ Eliminar", key=f"del_ee_{ee_file}", type="secondary", use_container_width=True):
+                            try:
+                                os.remove(ee_file)
+                                # Buscar si existe también el .txt.processed y borrarlo para limpiar
+                                txt_processed = ee_file.split("_1")[0] + ".txt.processed" # Aproximacion simple, mejor regex si fuera critico
+                                # Intentamos buscar el original basado en nombre
+                                # EE_nombre_timestamp.mp3 -> EE_nombre.txt.processed
+                                # Esto es dificil deducir exacto sin timestamp. Borramos solo mp3 por seguridad.
+                                
+                                st.toast(f"Eliminado: {display_name_ee}")
+                                time.sleep(1)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error eliminando: {e}")
+    except Exception as e:
+        st.error(f"Error leyendo especiales: {e}")
+
+    st.markdown("---")
+    st.markdown('<div class="sub-header">🎧 Grabaciones a la Carta</div>', unsafe_allow_html=True)
+    
+    try:
+        od_files = sorted(glob.glob("OD_*.mp3"), key=os.path.getctime, reverse=True)
+        
+        if not od_files:
+            st.info("No hay grabaciones a la carta generadas.")
+        else:
+            for od_file in od_files:
+                # Nombre limpio
+                display_name_od = os.path.basename(od_file)
+                
+                with st.expander(f"🎙️ {display_name_od}", expanded=False):
+                    col_od_info, col_od_actions = st.columns([3, 1])
+                    
+                    with col_od_info:
+                        st.audio(od_file)
+                        st.caption(f"Archivo: {display_name_od}")
+                        
+                    with col_od_actions:
+                        with open(od_file, "rb") as f:
+                            st.download_button(
+                                label="⬇️ MP3",
+                                data=f,
+                                file_name=display_name_od,
+                                key=f"dl_od_{od_file}",
+                                use_container_width=True
+                            )
+                        
+                        if st.button("🗑️ Eliminar", key=f"del_od_{od_file}", type="secondary", use_container_width=True):
+                            try:
+                                os.remove(od_file)
+                                st.toast(f"Eliminado: {display_name_od}")
+                                time.sleep(1)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error eliminando: {e}")
+    except Exception as e:
+        st.error(f"Error leyendo on-demand: {e}")
+
+with tab_sources:
+    st.markdown('<div class="sub-header">Monitor de Fuentes</div>', unsafe_allow_html=True)
+    st.markdown("Monitoriza la salud de tus fuentes RSS con métricas de actividad en tiempo real.")
+    
+    
+    col_analizar, col_espacio = st.columns([1,3])
+    with col_analizar:
+        btn_check_feeds = st.button("🔄 Analizar Estado de Feeds", type="primary", use_container_width=True)
+
+    # Lógica de carga: Botón O Caché existe
+    should_load = btn_check_feeds or ('fuentes_analytics_df' in st.session_state and st.session_state['fuentes_analytics_df'] is not None)
+
+    if should_load:
+        # Si fue por botón, o si no hay caché (aunque la lógica de should_load ya cubre parte, forzamos recarga si es botón)
+        if btn_check_feeds:
+            with st.spinner("Conectando con servidores RSS y calculando estadísticas..."):
+                base_dir = os.path.dirname(os.path.abspath(__file__))
+                # FIXED: Usar el archivo configurado, no 'feeds.txt' hardcoded
+                feeds_file_conf = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+                feeds_path = os.path.join(base_dir, feeds_file_conf)
+                
+                if os.path.exists(feeds_path):
+                    try:
+                        df = analizar_frecuencia_fuentes(feeds_path)
+                        st.session_state['fuentes_analytics_df'] = df
+                    except Exception as e:
+                        st.error(f"Error al analizar fuentes: {e}")
+                        df = None
+                else:
+                    st.error(f"No se encuentra el archivo {feeds_file_conf}")
+                    df = None
+        else:
+            # Recuperar de caché
+            df = st.session_state['fuentes_analytics_df']
+
+        # Renderizar si tenemos datos
+        if df is not None:
+            try:
+                # Métricas Globales
+                total_fuentes = len(df)
+                fuentes_activas = len(df[df['Estado'].isin(["🟢 Muy Activo", "🟡 Activo"])])
+                
+                m1, m2 = st.columns(2)
+                m1.metric("Total Fuentes", total_fuentes)
+                m2.metric("Fuentes Activas (30d)", fuentes_activas, delta=f"{round(fuentes_activas/total_fuentes*100)}%")
+                
+                st.dataframe(
+                    df, 
+                    column_config={
+                        "Estado": st.column_config.TextColumn("Salud"),
+                        "24h": st.column_config.NumberColumn("Hoy", format="%d"),
+                        "7d": st.column_config.NumberColumn("7 Días", format="%d"),
+                        "30d": st.column_config.NumberColumn("30 Días", format="%d"),
+                        "1 año": st.column_config.NumberColumn("Año", format="%d"),
+                    },
+                    use_container_width=True,
+                    hide_index=True
+                )
+            except Exception as e:
+                 st.error(f"Error renderizando tabla: {e}")
+
+        # === GENERACIÓN DE EPISODIO ESPECIAL DE ANÁLISIS ===
+        st.markdown("---")
+        st.markdown("### 🎙️ Episodio Especial: Informe Semanal")
+        st.info("Genera un guion humorístico analizando quién ha trabajado más y quién menos esta semana.")
+        
+        # --- AUTO-LOAD: Cargar último análisis generado si existe ---
+        bg_script_content = ""
+        last_analysis_file = None
+        
+        try:
+             # Buscar archivos que coincidan con el patrón
+             base_dir_search = os.path.dirname(os.path.abspath(__file__))
+             candidates = [f for f in os.listdir(base_dir_search) if f.startswith("EE_analisis_semanal") and f.endswith(".txt")]
+             
+             if candidates:
+                 # Ordenar por fecha de modificación (más reciente primero)
+                 candidates.sort(key=lambda x: os.path.getmtime(os.path.join(base_dir_search, x)), reverse=True)
+                 last_analysis_file = candidates[0]
+                 
+                 # Leer contenido
+                 with open(os.path.join(base_dir_search, last_analysis_file), 'r', encoding='utf-8') as f:
+                     bg_script_content = f.read()
+        except Exception as e:
+            print(f"Error auto-cargando análisis: {e}")
+
+        # Mostrar previo si existe
+        if bg_script_content:
+             st.success(f"📂 Último guion cargado automáticamente: {last_analysis_file}")
+             st.text_area("Previsualización (Último generado):", value=bg_script_content, height=300, key="txt_weekly_auto")
+        
+        # -----------------------------------------------------------
+        
+        if st.button("📝 Redactar Guion de Agradecimiento (Semanal)", type="primary"):
+            if df is not None and not df.empty:
+                with st.spinner("Analizando datos y redactando con gracia..."):
+                    try:
+                        # 1. Preparar datos (Enfasis en '7d' como pidió el usuario)
+                        # Ordenar por 7 días
+                        df_sorted = df.sort_values(by="7d", ascending=False)
+                        
+                        top_3 = df_sorted.head(3)
+                        bottom_3 = df_sorted[df_sorted['7d'] == 0].head(3) # Los que tienen 0 esta semana
+                        if bottom_3.empty:
+                             bottom_3 = df_sorted.tail(3) # Si todos tienen algo, los ultimos
+                        
+                        # Construir string de análisis con TODA la tabla
+                        # El usuario pidió: "consulta la tabla, todas las columnas y todas las celdas y ordenalos de mayor a menor"
+                        
+                        analisis_str = "TABLA COMPLETA DE ACTIVIDAD DE FUENTES (ORDENADA POR ACTIVIDAD SEMANAL):\n"
+                        analisis_str += df_sorted.to_string(index=False)
+                        
+                        # Añadimos una nota sobre la lectura de la tabla
+                        analisis_str += "\n\nNOTA: La columna '7d' indica el número de noticias esta semana.\n"
+
+                        # =========================================================================================
+                        # OBTENCIÓN DE TITULARES PARA EL TOP 3 (Bloque 1)
+                        # =========================================================================================
+                        # El usuario quiere que citemos "uno o dos titulares" de los ganadores.
+                        # Como el DF no tiene los titulares, recorremos feeds.txt buscando los feeds de estos Top 3
+                        # y extraemos sus ultimas 2 noticias.
+                        
+                        import feedparser
+                        
+                        top_3_names = top_3['Fuente'].tolist()
+                        analisis_str += "\n\n--- DETALLE DE TITULARES DE LOS GANADORES (TOP 3) ---\n"
+                        analisis_str += "Usa estos titulares solo como inspiración para mencionar su actividad, NO LOS LEAS LITERALMENTE:\n"
+
+                        try:
+                            found_count = 0
+                            # Volvemos a leer el archivo de feeds configurado para buscar las URLs de estos nombres
+                            base_dir = os.path.dirname(os.path.abspath(__file__))
+                            feeds_file_conf = config.get('generation_config', {}).get('feeds_file', 'feeds.txt')
+                            feeds_path_local = os.path.join(base_dir, feeds_file_conf)
+                            
+                            if os.path.exists(feeds_path_local):
+                                with open(feeds_path_local, 'r', encoding='utf-8') as f:
+                                    for line in f:
+                                        url = line.strip()
+                                        if not url or url.startswith('#'): continue
+                                        
+                                        # Parseamos para ver el titulo
+                                        # (Para optimizar, podriamos tener un mapa previo, pero esto es 'on demand')
+                                        try:
+                                            d_feed = feedparser.parse(url)
+                                            feed_title = d_feed.feed.get('title', 'Unknown')
+                                            
+                                            # Chequeo simple de coincidencia (src.analytics usa el titulo tal cual)
+                                            # Intentamos ver si el nombre del feed esta en nuestro top_3_names
+                                            # OJO: src.analytics hace limpieza de encoding. Puede haber ligeras diferencias.
+                                            # Hacemos match "in"
+                                            
+                                            matched_name = None
+                                            for name in top_3_names:
+                                                if name in feed_title or feed_title in name: # Coincidencia laxa
+                                                    matched_name = name
+                                                    break
+                                            
+                                            if matched_name:
+                                                entries = d_feed.entries[:2] # Solo las 2 ultimas
+                                                if entries:
+                                                    analisis_str += f"\n- {matched_name}:\n"
+                                                    for e in entries:
+                                                        analisis_str += f"  * {e.get('title', 'Sin titulo')}\n"
+                                                found_count += 1
+                                                
+                                            if found_count >= 3: break # Ya encontramos los 3
+                                            
+                                        except: continue
+                        except Exception as ex_feeds:
+                            print(f"Error recuperando titulares: {ex_feeds}")
+                            analisis_str += "(No se pudieron recuperar titulares detallados, improvisa basándote en que son muy activos)\n"
+
+                        # =========================================================================================
+
+                        # =========================================================================================
+                        # DATOS ADICIONALES PARA BLOQUE 2: RANKING MENSUAL (30d)
+                        # =========================================================================================
+                        # Para facilitar que la IA elija "de manera descendente" sin equivocarse,
+                        # le damos ya la tabla ordenada por 30d.
+                        df_30d = df.sort_values(by="30d", ascending=False).head(15)
+                        
+                        analisis_str += "\n\n--- RANKING MENSUAL DETALLADO (Para Bloque 2) ---\n"
+                        analisis_str += "Aquí tienes los candidatos para el Bloque 2 (Top 30 días), con sus titulares recientes para que puedas resumir su actividad:\n"
+                        
+                        # Recuperar titulares para estos 15 también
+                        top_30d_names = df_30d['Fuente'].tolist()
+                        
+                        try:
+                            found_count_30d = 0
+                            # Reutilizamos lógica de lectura (ineficiente leer dos veces, pero seguro)
+                            if os.path.exists(feeds_path_local):
+                                with open(feeds_path_local, 'r', encoding='utf-8') as f:
+                                    for line in f:
+                                        url = line.strip()
+                                        if not url or url.startswith('#'): continue
+                                        
+                                        try:
+                                            # Chequeo rápido de string antes de parsear para ganar velocidad
+                                            # Si la url no tiene pinta de ser de ninguno de los nombres, saltar? dificil saber.
+                                            # Parseamos
+                                            d_feed = feedparser.parse(url)
+                                            feed_title = d_feed.feed.get('title', 'Unknown')
+                                            
+                                            matched_name = None
+                                            for name in top_30d_names:
+                                                if name in feed_title or feed_title in name:
+                                                    matched_name = name
+                                                    break
+                                            
+                                            if matched_name:
+                                                # Sacamos 2 titulares recientes
+                                                entries = d_feed.entries[:2]
+                                                if entries:
+                                                    analisis_str += f"\n- {matched_name} ({df_30d[df_30d['Fuente']==matched_name]['30d'].values[0]} noticias/mes):\n"
+                                                    for e in entries:
+                                                        analisis_str += f"  Hashtags/Temas: {e.get('title', 'Sin titulo')}\n"
+                                                found_count_30d += 1
+                                                
+                                            if found_count_30d >= len(top_30d_names): break 
+                                        except: continue
+                        except Exception as ex_30d:
+                            print(f"Error titulares mensuales: {ex_30d}")
+                            # Fallback a tabla simple si falla
+                            analisis_str += df_30d[['Fuente', '30d']].to_string(index=False)
+
+                        # =========================================================================================
+
+                        # 2. Llamar a la IA
+                        prompt = PromptsCreativos.generar_analisis_fuentes(analisis_str)
+                        guion_generado = generar_texto_con_gemini(prompt)
+                        
+                        # 3. Limpiar y Guardar
+                        clean_script = guion_generado.replace("```txt", "").replace("```", "").strip()
+                        
+                        timestamp_str = datetime.datetime.now().strftime("%d-%m-%y_%H-%M")
+                        filename = f"EE_analisis_semanal - {timestamp_str}.txt"
+                        
+                        with open(filename, "w", encoding="utf-8") as f:
+                            f.write(clean_script)
+                            
+                        st.success(f"✅ ¡Guion generado con éxito! ({filename})")
+                        st.balloons()
+                        st.write("Puedes revisarlo en la pestaña de 'Episodios Especiales' (automático) o abrirlo aquí:")
+                        st.text_area("Previsualización:", value=clean_script, height=300)
+                        
+                    except Exception as e:
+                        st.error(f"Error generando guion: {e}")
+            else:
+                st.warning("Primero debes analizar el estado de los feeds (botón arriba).")
+
+with tab_ctas:
+    st.markdown('<div class="sub-header">Editor de CTAs</div>', unsafe_allow_html=True)
+    
+    # 1. Obtener directorio desde config (o usar default)
+    ctas_dir = config.get('directories', {}).get('ctas', 'cta_texts')
+    
+    # Resolver ruta absoluta si es relativa
+    if not os.path.isabs(ctas_dir):
+        ctas_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), ctas_dir)
+        
+    if not os.path.exists(ctas_dir):
+        st.error(f"❌ El directorio configurado no existe: `{ctas_dir}`")
+    else:
+        # 2. Listar archivos .txt
+        try:
+            files = sorted([f for f in os.listdir(ctas_dir) if f.endswith(".txt")])
+            
+            if not files:
+                st.warning(f"No hay archivos .txt en `{ctas_dir}`")
+            else:
+                col_sel, col_info = st.columns([1, 2])
+                
+                with col_sel:
+                    selected_file = st.selectbox("Selecciona un archivo para editar:", files)
+                    
+                path_file = os.path.join(ctas_dir, selected_file)
+                
+                # 3. Leer contenido
+                try:
+                    with open(path_file, "r", encoding="utf-8") as f:
+                        current_content = f.read()
+                        
+                    # 4. Mostrar editor
+                    st.markdown(f"**Editando:** `{selected_file}`")
+                    new_content = st.text_area("Contenido del CTA:", value=current_content, height=300, key=f"editor_{selected_file}")
+                    
+                    # 5. Guardar
+                    if st.button("💾 Guardar Cambios en CTA", type="primary"):
+                        try:
+                            with open(path_file, "w", encoding="utf-8") as f:
+                                f.write(new_content)
+                            st.success(f"✅ Archivo `{selected_file}` guardado correctamente.")
+                            time.sleep(1)
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error guardando archivo: {e}")
+                            
+                except Exception as e:
+                    st.error(f"Error leyendo archivo: {e}")
+                    
+        except Exception as e:
+            st.error(f"Error listando directorio: {e}")
+
+
+
+
+with tab_ondemand:
+    st.markdown('<div class="sub-header">Grabación a la Carta</div>', unsafe_allow_html=True)
+    st.info("Genera un audio con la voz de Dorotea sobre cualquier tema. Ideal para felicitaciones, explicaciones breves o mensajes personalizados.")
+
+    col_input, col_opts = st.columns([2, 1])
+
+    with col_input:
+        topic_ondemand = st.text_area("¿Sobre qué quieres que hable Dorotea?", placeholder="Ej: Explica cómo funciona un agujero negro a un niño de 6 años...", height=150)
+        
+    with col_opts:
+        duration_ondemand = st.slider("Duración Estimada (Minutos)", 1, 5, 2, 1)
+        st.caption(f"Aprox. {duration_ondemand * 150} palabras.")
+        
+        # Opciones avanzadas (opcional)
+        st.markdown("##### Estilo")
+        style_ondemand = st.selectbox("Tono", ["Normal (Dorotea)", "Muy Alegre", "Serio/Intenso", "Susurro/Cómplice"])
+
+    if st.button("🎙️ GENERAR AUDIO A LA CARTA", type="primary"):
+        if not topic_ondemand:
+            st.error("Por favor, escribe un tema.")
+        else:
+            with st.spinner("Redactando guion y generando audio... (Esto puede tardar unos segundos)"):
+                try:
+                    # 1. GENERACIÓN DE GUION
+                    target_words = duration_ondemand * 150
+                    
+                    tone_instruction = ""
+                    if style_ondemand == "Muy Alegre":
+                        tone_instruction = "El tono debe ser muy enérgico, alegre y divertido."
+                    elif style_ondemand == "Serio/Intenso":
+                        tone_instruction = "El tono debe ser sobrio, profundo y periodístico."
+                    elif style_ondemand == "Susurro/Cómplice":
+                        tone_instruction = "El tono debe ser muy cercano, como un secreto contado a media voz."
+
+                    prompt_ondemand = f"""
+                    Eres Dorotea, la voz de este podcast.
+                    
+                    TAREA: Escribir un guion para ser locutado sobre el siguiente tema:
+                    "{topic_ondemand}"
+                    
+                    REGLAS OBLIGATORIAS:
+                    1. Longitud: Debes escribir aproximadamente {target_words} palabras para cubrir el tiempo de {duration_ondemand} minutos.
+                    2. Estilo: Conversacional, claro y directo. {tone_instruction}
+                    3. Formato: TEXTO PLANO. No uses markdown, ni negritas, ni acotaciones entre paréntesis. Solo lo que se va a leer.
+                    4. No saludes si no te lo piden explícitamente en el tema. Ve al grano.
+                    
+                    GUION:
+                    """
+                    
+                    script_generated = generar_texto_con_gemini(prompt_ondemand)
+                    
+                    if not script_generated:
+                        st.error("Error al generar el guion con la IA.")
+                    else:
+                        st.success("✅ Guion generado. Sintetizando voz...")
+                        with st.expander("Ver Guion Generado", expanded=False):
+                            st.write(script_generated)
+                        
+                        # 2. SÍNTESIS DE AUDIO (SSML Básico)
+                        # Dividimos en chunks por párrafos para pausas naturales
+                        chunks = script_generated.split('\\n')
+                        full_audio = AudioSegment.empty()
+                        
+                        progress_bar = st.progress(0)
+                        
+                        # Filtrar chunks vacíos
+                        chunks = [c for c in chunks if c.strip()]
+                        total_chunks = len(chunks)
+                        
+                        for i, chunk in enumerate(chunks):
+                            # Pequeña limpieza SSML safe
+                            safe_text = chunk.replace('&', 'y').replace('<', '').replace('>', '')
+                            ssml = f"<speak>{safe_text}<break time='500ms'/></speak>"
+                            segment = sintetizar_ssml_a_audio(ssml)
+                            if segment:
+                                full_audio += segment
+                            
+                            progress_bar.progress((i + 1) / total_chunks)
+                            
+                        # 3. MASTERIZACIÓN
+                        st.text("Masterizando...")
+                        final_audio = masterizar_a_lufs(full_audio, target_lufs=-16.0)
+                        
+                        # 4. GUARDADO
+                        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                        # Nombre seguro para archivo
+                        safe_topic = "".join([c for c in topic_ondemand if c.isalnum() or c in (' ', '_', '-')]).strip().replace(" ", "_")[:30]
+                        output_filename = f"OD_{timestamp}_{safe_topic}.mp3"
+                        
+                        # Guardar en RAÍZ para que la Mediateca lo vea
+                        output_path = output_filename 
+                        
+                        final_audio.export(output_path, format="mp3", bitrate="192k")
+                        
+                        st.audio(output_path)
+                        st.success(f"¡Audio listo! Guardado en Mediateca como {output_filename}")
+                        
+                        with open(output_path, "rb") as file:
+                            st.download_button(
+                                label="⬇️ Descargar MP3",
+                                data=file,
+                                file_name=output_filename,
+                                mime="audio/mpeg"
+                            )
+
+                except Exception as e:
+                    st.error(f"Error en el proceso: {e}")
+
+
+with tab_buzon:
+    st.markdown('<div class="sub-header">🗣️ Generador de Respuesta al Oyente</div>', unsafe_allow_html=True)
+    st.info("Sube un audio de un oyente para generar automáticamente una respuesta de Dorotea (Intro + Mensaje + Reacción).")
+
+    col_upload, col_opts = st.columns([1, 1])
+
+    with col_upload:
+        uploaded_listener_file = st.file_uploader("Subir audio del oyente", type=["mp3", "wav", "m4a", "ogg"])
+    
+    with col_opts:
+        st.write("**Opciones:**")
+        mover_a_buzon = st.checkbox("Mover también al Buzón del Podcast (para el episodio diario)", value=True)
+        if uploaded_listener_file:
+             st.audio(uploaded_listener_file, format="audio/mp3")
+
+    if uploaded_listener_file:
+        if st.button("🎙️ Generar Interacción Completa", type="primary"):
+            with st.status("Procesando interacción...", expanded=True) as status:
+                try:
+                    # 1. Guardar temporalmente
+                    temp_filename = f"temp_listener_{int(time.time())}_{uploaded_listener_file.name}"
+                    with open(temp_filename, "wb") as f:
+                        f.write(uploaded_listener_file.getbuffer())
+                    
+                    # 2. Analizar con Gemini
+                    st.write("🧠 Analizando audio con Gemini...")
+                    audio_bytes = uploaded_listener_file.getvalue()
+                    mime_type = uploaded_listener_file.type
+                    
+                    # Fix mime type for gemini if needed
+                    if mime_type == "audio/mpeg": mime_type = "audio/mp3"
+
+                    from mcmcn_prompts import ConfiguracionPodcast
+                    
+                    analisis_json = generar_texto_multimodal_audio_con_gemini(
+                        ConfiguracionPodcast.PROMPT_ANALISIS_AUDIO_OYENTE,
+                        audio_bytes,
+                        mime_type=mime_type
+                    )
+                    
+                    # Parsear
+                    analisis_json = analisis_json.replace("```json", "").replace("```", "").strip()
+                    datos_oyente = {}
+                    if "{" in analisis_json:
+                        try:
+                            start = analisis_json.find('{')
+                            end = analisis_json.rfind('}')
+                            datos_oyente = json.loads(analisis_json[start:end+1])
+                        except:
+                            pass
+                    
+                    nombre_oyente = datos_oyente.get("nombre_oyente", "Un oyente")
+                    tema_oyente = datos_oyente.get("tema_principal", "su mensaje")
+                    st.write(f"✅ Detectado: **{nombre_oyente}** hablando sobre *{tema_oyente}*.")
+
+                    # 3. Generar Guion
+                    st.write("✍️ Redactando guion de respuesta...")
+                    prompt_respuesta = ConfiguracionPodcast.PROMPT_RESPUESTA_OYENTE.format(
+                        nombre_oyente=nombre_oyente,
+                        tema_principal=tema_oyente
+                    )
+                    guion_respuesta = generar_texto_con_gemini(prompt_respuesta)
+                    
+                    texto_intro = ""
+                    texto_reaccion = ""
+                    if "INTRO:" in guion_respuesta and "REACCION:" in guion_respuesta:
+                        partes = guion_respuesta.split("REACCION:")
+                        texto_intro = partes[0].replace("INTRO:", "").strip()
+                        texto_reaccion = partes[1].strip()
+                    else:
+                        texto_intro = f"Escuchamos ahora a {nombre_oyente}."
+                        texto_reaccion = guion_respuesta
+
+                    # 4. Sintetizar (TTS)
+                    st.write("🗣️ Sintetizando voz de Dorotea...")
+                    audio_intro = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
+                    audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{texto_reaccion}</speak>")
+                    
+                    # 5. Cargar y Normalizar Listener Audio
+                    listener_segment = AudioSegment.from_file(temp_filename)
+                    listener_segment = masterizar_a_lufs(listener_segment, -16.0) # Target standard
+                    
+                    # 6. Transiciones (usando assets existentes o silencio)
+                    # Intentar cargar una transición random
+                    import glob
+                    transiciones = glob.glob("audio_assets/clickrozalen*.mp3")
+                    transicion_audio = AudioSegment.silent(duration=1000)
+                    if transiciones:
+                         t_file = random.choice(transiciones)
+                         transicion_audio = AudioSegment.from_file(t_file)
+                         # Cortar un trozo si es muy larga
+                         if len(transicion_audio) > 6000:
+                             transicion_audio = transicion_audio[:6000].fade_out(2000)
+
+                    # 7. Mezclar
+                    st.write("🎚️ Mezclando segmentos...")
+                    full_mix = AudioSegment.silent(duration=500)
+                    if audio_intro: full_mix += audio_intro
+                    
+                    full_mix += transicion_audio.fade_in(500).fade_out(500)
+                    full_mix += listener_segment
+                    full_mix += transicion_audio.fade_in(500).fade_out(500)
+                    
+                    if audio_reaccion: full_mix += audio_reaccion
+                    
+                    # 8. Exportar
+                    timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    output_filename = f"RESPUESTA_{nombre_oyente.replace(' ', '_')}_{timestamp_str}.mp3"
+                    full_mix.export(output_filename, format="mp3", bitrate="192k")
+                    
+                    st.success(f"¡Interacción generada!")
+                    st.audio(output_filename)
+                    
+                    with open(output_filename, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Descargar Interacción MP3",
+                            data=f,
+                            file_name=output_filename,
+                            mime="audio/mpeg"
+                        )
+                    
+                    # Opción de Mover
+                    if mover_a_buzon:
+                        dest_path = os.path.join("buzon_del_oyente", uploaded_listener_file.name)
+                        shutil.copy(temp_filename, dest_path)
+                        st.toast(f"📧 Copiado también a buzon_del_oyente/{uploaded_listener_file.name}")
+
+                    # Cleanup temp
+                    os.remove(temp_filename)
+                    status.update(label="¡Proceso completado!", state="complete", expanded=False)
+
+                except Exception as e:
+                    st.error(f"Error procesando: {e}")
+                    import traceback
+                    st.code(traceback.format_exc())
+
+# Footer
+st.markdown("---")
+st.markdown("Desarrollado por Podcast control center | v1.0")
