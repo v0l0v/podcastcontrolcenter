@@ -1,17 +1,14 @@
-
 import os
 import re
 import json
 import logging
 from pydub import AudioSegment
-import logging
-from pydub import AudioSegment
 from src.core.text_processing import limpiar_markdown_audio
 from src.config.settings import VOICE_NAME, AUDIO_ASSETS_DIR
+from src.engine.audio import sintetizar_ssml_a_audio
 
 # Obtener rutas absolutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# AUDIO_ASSETS_DIR ya importado de settings
 
 
 # (Eliminada función cargar_configuracion redundante)

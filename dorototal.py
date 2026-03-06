@@ -45,6 +45,7 @@ from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_te
 from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy, obtener_fecha_humanizada_es
 from src.humanization import obtener_toque_humano # Nuevo módulo
 from src.weather_utils import obtener_pronostico_meteo
+from src.audio_processor import generar_episodio_especial
 from src.sports_utils import obtener_resultados_futbol
 from costumbrismo import obtener_saludo_aleatorio
 import mcmcn_prompts 
@@ -2893,6 +2894,8 @@ if __name__ == "__main__":
                         print(f"     ⚠️ El archivo {script_file} está vacío.")
                         
                 except Exception as e:
+                    import traceback
                     print(f"     ❌ Error procesando {script_file}: {e}")
+                    logger.error(f"Error procesando el especial {script_file}", details={"error": str(e), "traceback": traceback.format_exc()})
         else:
             print("  -> No se encontraron guiones especiales (EE_*.txt).")
