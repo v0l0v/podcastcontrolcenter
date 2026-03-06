@@ -42,7 +42,7 @@ from src.core.geography import obtener_provincia, obtener_info_gal
 from src.engine.audio import masterizar_a_lufs, sintetizar_ssml_a_audio
 from src.web_scraper import extract_first_external_link, fetch_article_text, extract_image_url, download_image_as_bytes
 from src.llm_utils import generar_texto_con_gemini, retry_on_failure, generar_texto_multimodal_con_gemini, generar_texto_multimodal_audio_con_gemini
-from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy, obtener_fecha_humanizada_es
+from src.calendar_utils import obtener_festividades_contexto, obtener_efemerides_hoy, obtener_fecha_humanizada_es, obtener_oficio_del_dia
 from src.humanization import obtener_toque_humano # Nuevo módulo
 from src.weather_utils import obtener_pronostico_meteo
 from src.audio_processor import generar_episodio_especial
@@ -2085,6 +2085,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
              datos_meteo_hoy = str(datos_meteo_obj)
              print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
 
+        # NUEVO: Obtener oficio o tradición del día sugerido por el calendario
+        dato_oficio_hoy = obtener_oficio_del_dia()
+        if dato_oficio_hoy:
+             print(f"      🧶 Oficio/Tradición de hoy detectado: {dato_oficio_hoy}")
+
         # Obtener deportes (todos los días)
         datos_deportes_hoy = ""
         print("      ⚽ Buscando resultados deportivos...")
@@ -2120,6 +2125,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             "efemerides": efemerides_hoy,
             "meteo": datos_meteo_hoy,
             "deportes": datos_deportes_hoy,
+            "oficio": dato_oficio_hoy,
             "semtimiento": sentimiento_general,
             "fecha": fecha_actual_str,
             "humanizacion": instruccion_humanizacion,
@@ -2147,7 +2153,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 sentimiento_general=sentimiento_general,
                 fecha_actual_str=fecha_actual_str,
                 humanizacion_instruccion=instruccion_humanizacion,
-                toque_costumbrista=saludo_costumbrista
+                toque_costumbrista=saludo_costumbrista,
+                dato_oficio_hoy=dato_oficio_hoy
             )
             texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
             

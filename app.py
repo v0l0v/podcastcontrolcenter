@@ -681,7 +681,60 @@ elif page == "mediateca":
 elif page == "config":
     st.markdown('<div class="pcc-page-title">⚙️ Configuración</div>', unsafe_allow_html=True)
     st.info("💡 **Sala de Máquinas.** Configura la identidad base, los enlaces de fuentes de noticias a escrapear, los modelos de voz, y personaliza las campañas publicitarias (CTAs).")
-    tab_gen, tab_audio, tab_src, tab_ctas_p = st.tabs(["🔧 General", "🎛️ Audio", "📡 Fuentes", "📢 CTAs"])
+    tab_gen, tab_audio, tab_src, tab_ctas_p, tab_calendario = st.tabs(["🔧 General", "🎛️ Audio", "📡 Fuentes", "📢 CTAs", "🗓️ Calendario"])
+
+    with tab_calendario:
+        st.markdown('<div class="pcc-section-title">Calendario Anual de Oficios, Tradiciones y Costumbres</div>', unsafe_allow_html=True)
+        st.info("💡 **Añade efemérides rurales.** Dorotea leerá este calendario cada mañana. Si la fecha actual coincide con un registro, lo integrará de forma educativa en su saludo inicial.")
+        csv_path = "calendario_oficios.csv"
+        
+        if not os.path.exists(csv_path):
+            st.warning("No se encontró `calendario_oficios.csv`. Se creará uno nuevo al guardar.")
+            df_cal = pd.DataFrame(columns=["Fecha", "Oficio", "Explicacion"])
+        else:
+            df_cal = pd.read_csv(csv_path, dtype=str)
+        
+        # Ensure column order
+        cols = ["Fecha", "Oficio", "Explicacion"]
+        for c in cols:
+            if c not in df_cal.columns:
+                df_cal[c] = ""
+        df_cal = df_cal[cols]
+        
+        st.caption("Formato de Fecha requerido: **DD-MM** (Ej: `06-03` para el 6 de marzo).")
+        
+        edited_df = st.data_editor(
+            df_cal,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_config={
+                "Fecha": st.column_config.TextColumn("Día-Mes (DD-MM)", required=True, max_chars=5),
+                "Oficio": st.column_config.TextColumn("Oficio / Tradición", required=True),
+                "Explicacion": st.column_config.TextColumn("Explicación Educativa", required=True)
+            },
+            key="calendar_editor"
+        )
+        
+        if st.button("💾 Guardar Calendario", type="primary"):
+            # Clean up empty rows
+            edited_df.replace("", pd.NA, inplace=True)
+            edited_df.dropna(how="all", inplace=True)
+            edited_df.fillna("", inplace=True)
+            
+            # Simple validation
+            valid_rows = []
+            import re
+            for idx, row in edited_df.iterrows():
+                fecha_valida = re.match(r"^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])$", str(row["Fecha"]))
+                if fecha_valida and row["Oficio"] and row["Explicacion"]:
+                    valid_rows.append(row)
+            
+            final_df = pd.DataFrame(valid_rows, columns=cols)
+            final_df.to_csv(csv_path, index=False)
+            
+            st.success(f"✅ Calendario guardado correctamente con {len(final_df)} entradas válidas.")
+            time.sleep(1)
+            st.rerun()
 
     with tab_gen:
         st.markdown('<div class="pcc-section-title">Identidad del Podcast</div>', unsafe_allow_html=True)

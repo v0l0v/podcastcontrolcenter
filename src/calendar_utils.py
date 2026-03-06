@@ -147,3 +147,31 @@ def obtener_fecha_humanizada_es(fecha_dt: datetime.datetime = None) -> str:
         return f"{nombre_dia}, {dia_str}"
     
     return dia_str
+
+def obtener_oficio_del_dia(fecha_dt: datetime.datetime = None) -> str:
+    """
+    Busca si para la fecha dada existe un oficio o tradición en calendario_oficios.csv.
+    Devuelve un string con la información o cadena vacía si no hay nada.
+    """
+    if fecha_dt is None:
+        fecha_dt = datetime.datetime.now()
+        
+    dia_mes = fecha_dt.strftime("%d-%m")
+    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'calendario_oficios.csv')
+    
+    if os.path.exists(csv_path):
+        try:
+            with open(csv_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            
+            # Skip header
+            for line in lines[1:]:
+                parts = line.strip().split(',', 2)
+                if len(parts) >= 3:
+                    fecha_csv, oficio, explicacion = parts[0].strip(), parts[1].strip(), parts[2].strip()
+                    if fecha_csv == dia_mes:
+                        return f"Oficio/Tradición: {oficio}. Detalles: {explicacion}"
+        except Exception as e:
+            print(f"Error leyendo calendario_oficios.csv: {e}")
+            
+    return ""

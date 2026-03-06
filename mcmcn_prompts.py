@@ -409,7 +409,8 @@ class PromptsCreativos:
         sentimiento_general: str = "neutro",
         fecha_actual_str: str = "",
         humanizacion_instruccion: str = "",
-        toque_costumbrista: str = ""
+        toque_costumbrista: str = "",
+        dato_oficio_hoy: str = ""
     ) -> str:
         """
         Genera el monólogo de apertura completo con integración orgánica de todos los datos.
@@ -441,6 +442,11 @@ class PromptsCreativos:
             ingredientes.append(f"""🌾 COSTUMBRISMO (PLATO PRINCIPAL):
 {toque_costumbrista}
   (Esta es la base de tu conexión humana hoy. Dedícale tiempo, hazlo tuyo, desarrolla una pequeña historia o empatiza profundamente con esta gente.)""")
+
+        if dato_oficio_hoy:
+             ingredientes.append(f"""🌾 OFICIO O TRADICIÓN DEL DÍA:
+{dato_oficio_hoy}
+  (Habla de este oficio o tradición de forma educativa, rindiéndole homenaje. Intégralo de forma natural en el monólogo inicial.)""")
         
         ingredientes_texto = "\n\n".join(ingredientes) if ingredientes else "(No hay datos extra hoy, improvisa con tu personalidad.)"
 
