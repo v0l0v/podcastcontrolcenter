@@ -272,6 +272,7 @@ for key, val in {
 # ═══════════════════════════════════════════════════════════════
 if page == "inicio":
     st.markdown('<div class="pcc-page-title">🏠 Inicio</div>', unsafe_allow_html=True)
+    st.info("💡 **Bienvenido al Centro de Control.** Aquí tienes una vista panorámica del estado de tu podcast, las fuentes RSS activas y el último boletín listo para escuchar.")
 
     # Status cards
     voz_activa = config.get('audio_config', {}).get('voice_name', '—')
@@ -319,6 +320,7 @@ if page == "inicio":
 # ═══════════════════════════════════════════════════════════════
 elif page == "generar":
     st.markdown('<div class="pcc-page-title">🎙️ Generar Podcast</div>', unsafe_allow_html=True)
+    st.info("💡 **El corazón del sistema.** Este es el flujo de 3 pasos para crear el **Podcast Diario**. Extraemos noticias, las revisas/editas, y Dorotea las locuta.")
 
     # ────────────────────────────────
     #  FLUJO NORMAL (3 pasos)
@@ -533,6 +535,7 @@ elif page == "generar":
 # ═══════════════════════════════════════════════════════════════
 elif page == "mediateca":
     st.markdown('<div class="pcc-page-title">📚 Mediateca</div>', unsafe_allow_html=True)
+    st.info("💡 **Tu archivo histórico.** Aquí se guardan listos para descarga todos los audios generados por el sistema, clasificados por tipología.")
 
     tab_podcasts, tab_especiales, tab_od = st.tabs(["🎙️ Podcasts", "🎭 Episodios Especiales", "🎧 A la Carta"])
 
@@ -677,6 +680,7 @@ elif page == "mediateca":
 # ═══════════════════════════════════════════════════════════════
 elif page == "config":
     st.markdown('<div class="pcc-page-title">⚙️ Configuración</div>', unsafe_allow_html=True)
+    st.info("💡 **Sala de Máquinas.** Configura la identidad base, los enlaces de fuentes de noticias a escrapear, los modelos de voz, y personaliza las campañas publicitarias (CTAs).")
     tab_gen, tab_audio, tab_src, tab_ctas_p = st.tabs(["🔧 General", "🎛️ Audio", "📡 Fuentes", "📢 CTAs"])
 
     with tab_gen:
@@ -856,6 +860,7 @@ elif page == "config":
 # ═══════════════════════════════════════════════════════════════
 elif page == "cerebro":
     st.markdown('<div class="pcc-page-title">🧠 Cerebro y Personalidad</div>', unsafe_allow_html=True)
+    st.info("💡 **El Alma de Dorotea.** Construye detalladamente y mediante prompts en lenguaje natural cómo se debe comportar, saludar, redactar o filtrar noticias tu Inteligencia Artificial.")
     st.caption("Define CÓMO habla Dorotea. Variables disponibles: `{presentadora}`, `{region}`, `{email}`, `{pausa}`")
     prompts_cfg      = config.get('prompts',{})
     analysis_prompts = prompts_cfg.get('analysis_prompts',{})
