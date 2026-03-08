@@ -1063,8 +1063,12 @@ elif page == "extras":
         with col_i:
             topic_od = st.text_area("¿Sobre qué quieres que hable Dorotea?", placeholder="Ej: Explica cómo funciona un agujero negro a un niño de 5 años...", height=150)
         with col_o:
-            dur_od = st.slider("Duración (min)", 1, 5, 2, 1)
-            st.caption(f"≈ {dur_od*150} palabras")
+            modo_od = st.radio("Modo de Generación", ["Resumen a medida", "Guion Fiel (íntegro)"])
+            dur_od = st.slider("Duración (min)", 1, 5, 2, 1, disabled=(modo_od == "Guion Fiel (íntegro)"))
+            if modo_od == "Resumen a medida":
+                st.caption(f"≈ {dur_od*150} palabras")
+            else:
+                st.caption("Sin límite de palabras.")
             style_od = st.selectbox("Tono", ["Normal (Dorotea)","Muy Alegre","Serio/Intenso","Susurro/Cómplice"])
         if st.button("🎙️ GENERAR GUION + AUDIO", type="primary"):
             if not topic_od: st.error("Escribe un tema.")
@@ -1073,7 +1077,12 @@ elif page == "extras":
                     try:
                         tone_map = {"Muy Alegre":"Muy enérgico y alegre.","Serio/Intenso":"Sobrio y periodístico.","Susurro/Cómplice":"Cercano, secreto."}
                         tone = tone_map.get(style_od,"")
-                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {dur_od*150} palabras. {tone} TEXTO PLANO. REGLA OBLIGATORIA: Si el tema incluye un diálogo o entrevista, ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores. Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez. GUION:')
+                        
+                        regla_longitud = f"{dur_od*150} palabras."
+                        if modo_od == "Guion Fiel (íntegro)":
+                            regla_longitud = "REGLA DE LONGITUD: NO RESUMAS. Transforma y transcribe el contenido íntegro del texto proporcionado, manteniendo todos los puntos, ideas y diálogos (en formato adaptado), sin importar la longitud final. Todo el contenido original debe estar presente."
+                            
+                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {regla_longitud} {tone} TEXTO PLANO. REGLA OBLIGATORIA: Si el tema incluye un diálogo o entrevista, ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores. Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez. GUION:')
                         if not script: st.error("Error generando guion.")
                         else:
                             with st.expander("Revisar lo que IA ha escrito (Guion)"): st.write(script)

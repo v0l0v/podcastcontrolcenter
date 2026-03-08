@@ -1606,8 +1606,12 @@ with tab_ondemand:
         topic_ondemand = st.text_area("¿Sobre qué quieres que hable Dorotea?", placeholder="Ej: Explica cómo funciona un agujero negro a un niño de 6 años...", height=150)
         
     with col_opts:
-        duration_ondemand = st.slider("Duración Estimada (Minutos)", 1, 5, 2, 1)
-        st.caption(f"Aprox. {duration_ondemand * 150} palabras.")
+        modo_ondemand = st.radio("Modo de Generación", ["Resumen a medida", "Guion Fiel (íntegro)"])
+        duration_ondemand = st.slider("Duración Estimada (Minutos)", 1, 5, 2, 1, disabled=(modo_ondemand == "Guion Fiel (íntegro)"))
+        if modo_ondemand == "Resumen a medida":
+            st.caption(f"Aprox. {duration_ondemand * 150} palabras.")
+        else:
+            st.caption("Sin límite de palabras.")
         
         # Opciones avanzadas (opcional)
         st.markdown("##### Estilo")
@@ -1630,6 +1634,10 @@ with tab_ondemand:
                     elif style_ondemand == "Susurro/Cómplice":
                         tone_instruction = "El tono debe ser muy cercano, como un secreto contado a media voz."
 
+                    regla_longitud = f"1. Longitud: Debes escribir aproximadamente {target_words} palabras para cubrir el tiempo de {duration_ondemand} minutos."
+                    if modo_ondemand == "Guion Fiel (íntegro)":
+                        regla_longitud = "1. Longitud: NO RESUMAS. Transforma y transcribe el contenido íntegro del texto proporcionado, manteniendo todos los puntos, ideas y diálogos (en formato adaptado), sin importar la longitud final. Todo el contenido original debe estar presente."
+
                     prompt_ondemand = f"""
                     Eres Dorotea, la voz de este podcast.
                     
@@ -1637,7 +1645,7 @@ with tab_ondemand:
                     "{topic_ondemand}"
                     
                     REGLAS OBLIGATORIAS:
-                    1. Longitud: Debes escribir aproximadamente {target_words} palabras para cubrir el tiempo de {duration_ondemand} minutos.
+                    {regla_longitud}
                     2. Estilo: Conversacional, claro y directo. {tone_instruction}
                     3. Formato: TEXTO PLANO. No uses markdown, ni negritas, ni acotaciones entre paréntesis. Solo lo que se va a leer.
                     4. No saludes si no te lo piden explícitamente en el tema. Ve al grano.
