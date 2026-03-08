@@ -1073,7 +1073,7 @@ elif page == "extras":
                     try:
                         tone_map = {"Muy Alegre":"Muy enérgico y alegre.","Serio/Intenso":"Sobrio y periodístico.","Susurro/Cómplice":"Cercano, secreto."}
                         tone = tone_map.get(style_od,"")
-                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {dur_od*150} palabras. {tone} TEXTO PLANO. GUION:')
+                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {dur_od*150} palabras. {tone} TEXTO PLANO. REGLA OBLIGATORIA: Si el tema incluye un diálogo o entrevista, ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores. Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez. GUION:')
                         if not script: st.error("Error generando guion.")
                         else:
                             with st.expander("Revisar lo que IA ha escrito (Guion)"): st.write(script)

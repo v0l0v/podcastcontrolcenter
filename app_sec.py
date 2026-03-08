@@ -1641,6 +1641,7 @@ with tab_ondemand:
                     2. Estilo: Conversacional, claro y directo. {tone_instruction}
                     3. Formato: TEXTO PLANO. No uses markdown, ni negritas, ni acotaciones entre paréntesis. Solo lo que se va a leer.
                     4. No saludes si no te lo piden explícitamente en el tema. Ve al grano.
+                    5. Si el tema incluye un diálogo o entrevista: ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores (ej. 'Presentador:', 'Nick:'). Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez.
                     
                     GUION:
                     """
