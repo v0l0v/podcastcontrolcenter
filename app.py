@@ -788,7 +788,7 @@ elif page == "config":
             "es-ES-Standard-F [FEMALE]","es-ES-Standard-H [FEMALE]","es-ES-Standard-E [MALE]","es-ES-Standard-G [MALE]"
         ]
         try: cur_vi = voice_options.index(config['audio_config'].get('voice_name'))
-        except: cur_vi = 11
+        except: cur_vi = 8 # Default Laomedeia
         ca1, ca2 = st.columns(2)
         with ca1:
             new_voice    = st.selectbox("Voz TTS", voice_options, index=cur_vi)

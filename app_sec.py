@@ -908,7 +908,7 @@ with tab_audio:
         try:
             current_voice_index = voice_options.index(config['audio_config'].get('voice_name'))
         except:
-            current_voice_index = 11 # Default Sulafat
+            current_voice_index = 8 # Default Laomedeia
 
         new_voice = st.selectbox(
             "Voz de Google TTS", 
