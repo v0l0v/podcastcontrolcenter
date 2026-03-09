@@ -474,9 +474,25 @@ elif page == "generar":
                         st.session_state['noticias_editadas_finales'] = edited_list
                         st.toast(f"✅ {len(edited_list)} noticias guardadas en selección.")
 
+
             if st.button("✅ CONFIRMAR SELECCIÓN", type="primary"):
+                # Si el usuario no pulsó GUARDAR CAMBIOS antes, tomamos la lista
+                # que se acaba de construir en el formulario (edited_list todavía
+                # no existe aquí porque estamos fuera del with st.form). Lo más
+                # robusto: recargar prevision_noticias_resumidas.json y asumir
+                # que todas las pre-seleccionadas entran.
+                if not st.session_state.get('noticias_editadas_finales'):
+                    try:
+                        fallback = []
+                        if os.path.exists("prevision_noticias_resumidas.json"):
+                            with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
+                                fallback = json.load(f)
+                        st.session_state['noticias_editadas_finales'] = fallback
+                    except Exception:
+                        pass
                 st.session_state['news_confirmed'] = True
                 st.success(f"¡Selección confirmada ({len(st.session_state.get('noticias_editadas_finales', []))} noticias)! Procede al Paso 3.")
+
 
         except Exception as e:
             st.error(f"Error: {e}")
