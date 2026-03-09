@@ -1722,7 +1722,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             entidades_clave = []
 
                     if not resumen:
-                        logger.info(f"Resumiendo: {titulo_reparado[:40]}...", details={"length": len(texto_crudo)})
+                        _titulo_log = locals().get('titulo_reparado') or noticia.get('titulo') or 'Sin título'
+                        logger.info(f"Resumiendo: {_titulo_log[:40]}...", details={"length": len(texto_crudo)})
                         if es_noticia_breve:
 
                             print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
