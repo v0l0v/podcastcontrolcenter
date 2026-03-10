@@ -1296,7 +1296,7 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
 # FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 
-def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None):
+def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None, max_items_override: int = None):
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = f"podcast_apg_{timestamp}"
@@ -1351,10 +1351,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
             # --- Configuración de ventana temporal y límite ---
             gen_config = CONFIG.get('generation_config', {})
-            window_hours = int(gen_config.get('news_window_hours', 24))
-            max_noticias = int(gen_config.get('max_news_items', 50))
+            
+            # Priorizar overrides del CLI sobre la configuración
+            window_hours = window_hours_override if window_hours_override is not None else int(gen_config.get('news_window_hours', 24))
+            max_noticias = max_items_override if max_items_override is not None else int(gen_config.get('max_news_items', 50))
+            
             print(f"      ⚙️  Ventana temporal: {window_hours}h | Máx. noticias: {max_noticias}")
-            logger.info(f"Configuración: ventana {window_hours}h, máx. {max_noticias} noticias")
+            logger.info(f"Configuración efectiva: ventana {window_hours}h, máx. {max_noticias} noticias")
             limite_temporal = datetime.now() - timedelta(hours=window_hours)
 
             for url in feeds_urls:
@@ -2627,6 +2630,8 @@ if __name__ == "__main__":
     parser.add_argument("--skip-special", action="store_true", help="Saltar la verificación y generación de episodios especiales automáticos.")
     parser.add_argument("--file-list", nargs='+', help="Lista específica de archivos EE_*.txt a procesar (ignora búsqueda automática).")
     parser.add_argument("--from-json", help="Ruta al archivo JSON con noticias seleccionadas manualmente.")
+    parser.add_argument("--window-hours", type=int, help="Override: Horas de ventana temporal para noticias.")
+    parser.add_argument("--max-items", type=int, help="Override: Límite máximo de noticias a procesar.")
     args = parser.parse_args()
 
 
@@ -2638,13 +2643,13 @@ if __name__ == "__main__":
         print("🚀 Modo: Solo Episodios Especiales. Saltando generación del noticiero diario.")
     elif args.from_json:
         print(f"🔄 Modo: Generando podcast desde selección manual ({args.from_json})")
-        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json)
+        procesar_feeds_google(archivo_feeds, min_items=20, archivo_entrada_json=args.from_json, window_hours_override=args.window_hours, max_items_override=args.max_items)
     elif args.preview:
         print(f"🔮 Modo: Preview de noticias (sin audio)")
-        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True)
+        procesar_feeds_google(archivo_feeds, min_items=20, solo_preview=True, window_hours_override=args.window_hours, max_items_override=args.max_items)
     else:
         print(f"🚀 Modo: Generación automática estándar usando {archivo_feeds}")
-        procesar_feeds_google(archivo_feeds, min_items=20)
+        procesar_feeds_google(archivo_feeds, min_items=20, window_hours_override=args.window_hours, max_items_override=args.max_items)
 
     # ---------------------------------------------------------
     # AUTOMATIZACIÓN DE EPISODIOS ESPECIALES (EE_*.txt)
