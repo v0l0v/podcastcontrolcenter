@@ -419,13 +419,13 @@ elif page == "generar":
             if has_descartadas:
                 with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
                     for n in json.load(f):
-                        n['_selected_default'] = False
+                        n['_selected_default'] = True
                         n['_is_discarded'] = True
                         if 'resumen' not in n: n['resumen'] = ""
                         if 'motivo' not in n: n['motivo'] = "Desconocido"
                         news_candidates.append(n)
                         
-            st.info(f"{len([n for n in news_candidates if n['_selected_default']])} noticias pre-seleccionadas y {len([n for n in news_candidates if not n['_selected_default']])} descartadas disponibles para revisar.")
+            st.info(f"✅ Hay {len(news_candidates)} noticias listas para revisar (todas pre-seleccionadas).")
 
             with st.form("form_edicion_v2"):
                 edited_list = []

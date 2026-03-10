@@ -219,13 +219,12 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
         if not resumen_actual:
             continue
 
-        # ID estable por hash del texto normalizado
         h = stable_text_hash(resumen_actual)
         if h in hashes_vistos:
             noticias_descartadas.append({
                 "titulo": noticia.get('titulo', 'Sin título'),
                 "sitio": noticia.get('sitio', 'Desconocido'),
-                "motivo": "ID Hash ya procesado (Hash duplicado exacto)",
+                "motivo": f"Duplicado detectado (Hash {h[:8]})"
             })
             eliminados += 1
             continue
@@ -235,6 +234,7 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
         noticias_unicas.append(noticia_copia)
         hashes_vistos.add(h)
 
+    print(f"      ✅ Deduplicación: {len(resumenes)} originales -> {len(noticias_unicas)} únicas ({eliminados} eliminados).")
     return noticias_unicas
 
 def debe_interpretar_cta(tipo: str, dia_semana: str) -> bool:
@@ -1349,6 +1349,14 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 print(f"Advertencia: El archivo de feeds '{nombre_archivo_feeds}' está vacío.")
                 sys.exit(1)
 
+            # --- Configuración de ventana temporal y límite ---
+            gen_config = CONFIG.get('generation_config', {})
+            window_hours = int(gen_config.get('news_window_hours', 24))
+            max_noticias = int(gen_config.get('max_news_items', 50))
+            print(f"      ⚙️  Ventana temporal: {window_hours}h | Máx. noticias: {max_noticias}")
+            logger.info(f"Configuración: ventana {window_hours}h, máx. {max_noticias} noticias")
+            limite_temporal = datetime.now() - timedelta(hours=window_hours)
+
             for url in feeds_urls:
                 try:
                     logger.info(f"Leyendo feed: {url}")
@@ -1360,6 +1368,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                          sitio = extraer_nombre_de_url(link_feed)
                     for entry in feed.entries:
                         fecha_pub = parsear_fecha_segura(entry)
+                        # Filtrar por ventana temporal
+                        if fecha_pub < limite_temporal:
+                            continue
                         contenido = entry.get('summary', entry.get('description', ''))
                         if not contenido:
                             noticias_descartadas.append({
@@ -1398,7 +1409,20 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             
         # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
-        
+
+        # --- Aplicar límite máximo (solo en modo RSS, no en JSON manual) ---
+        if not archivo_entrada_json:
+            if len(noticias_candidatas_totales) > max_noticias:
+                excedentes = noticias_candidatas_totales[max_noticias:]
+                for ne in excedentes:
+                    noticias_descartadas.append({
+                        "titulo": ne.get('titulo', 'Sin título'),
+                        "sitio": ne.get('sitio', 'Desconocido'),
+                        "motivo": f"Fuera del límite máximo ({max_noticias} noticias más recientes)"
+                    })
+                noticias_candidatas_totales = noticias_candidatas_totales[:max_noticias]
+            print(f"      📋 Noticias dentro de la ventana tras filtros: {len(noticias_candidatas_totales)}")
+
         # --- Deduplicación ---
         if archivo_entrada_json:
             noticias_seleccionadas = noticias_candidatas_totales
@@ -1411,184 +1435,192 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         for noticia in noticias_seleccionadas:
             # Soporte para ambas claves: 'hash' (raw) o 'id' (processed/edited)
             noticia_hash = noticia.get('hash') or noticia.get('id')
-            
+
             if not noticia_hash:
-                 # Fallback de emergencia si no hay ni hash ni id
-                 noticia_hash = stable_text_hash(noticia.get('contenido_rss', '') or noticia.get('texto', ''))
+                noticia_hash = stable_text_hash(noticia.get('contenido_rss', '') or noticia.get('texto', ''))
 
-            if True:
-                # ----------------------------------------------------------------
-                # LÓGICA UNIFICADA: Si ya tiene resumen (edición manual), lo usamos.
-                # Si no, lo generamos con IA. LUEGO, siempre hacemos el resto.
-                # ----------------------------------------------------------------
+            # ----------------------------------------------------------------
+            # LÓGICA UNIFICADA: Si ya tiene resumen (edición manual), lo usamos.
+            # Si no, lo generamos con IA. LUEGO, siempre hacemos el resto.
+            # ----------------------------------------------------------------
                 
-                resumen = None
-                entidades_clave = []
-                es_noticia_breve = False # Valor inicial
+            resumen = None
+            entidades_clave = []
+            es_noticia_breve = False # Valor inicial
                 
-                # --- NUEVO: Extraer HTTP e imágenes SOLO para las ganadoras ---
-                if 'texto' not in noticia and 'contenido_rss' in noticia:
-                    contenido_base = noticia['contenido_rss']
-                    texto_externo = ""
-                    enlace_externo = extract_first_external_link(contenido_base)
-                    if enlace_externo:
-                        print(f"      🔗 Detectado enlace externo en noticia ganadora: {enlace_externo}")
-                        scraped_text = fetch_article_text(enlace_externo)
-                        if scraped_text:
-                            texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
-                            print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
+            # --- NUEVO: Extraer HTTP e imágenes SOLO para las ganadoras ---
+            if 'texto' not in noticia and 'contenido_rss' in noticia:
+                contenido_base = noticia['contenido_rss']
+                texto_externo = ""
+                enlace_externo = extract_first_external_link(contenido_base)
+                if enlace_externo:
+                    print(f"      🔗 Detectado enlace externo en noticia ganadora: {enlace_externo}")
+                    scraped_text = fetch_article_text(enlace_externo)
+                    if scraped_text:
+                        texto_externo = f"\n\n[INFORMACIÓN DE FUENTE ENLAZADA ({enlace_externo})]:\n{scraped_text[:3000]}"
+                        print(f"      ✅ Contenido externo añadido ({len(scraped_text)} caracteres).")
 
-                    texto_contexto = limpiar_html(contenido_base) + texto_externo
-                    texto_imagen = ""
-                    url_imagen = extract_image_url(contenido_base)
-                    if url_imagen and False: # DISABLED TEMPORARILY FOR STABILITY
-                         print(f"      🖼️ Detectada imagen: {url_imagen[:60]}...")
-                         img_bytes = download_image_as_bytes(url_imagen)
-                         if img_bytes:
-                              print("      👁️ Analizando imagen con Gemini Vision...")
-                              prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_contexto[:500])
-                              analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
-                              if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
-                                   texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
-                                   print(f"      ✅ Datos visuales extraídos.")
-                              else:
-                                   print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
-                    noticia['texto'] = texto_contexto + texto_imagen
+                texto_contexto = limpiar_html(contenido_base) + texto_externo
+                texto_imagen = ""
+                url_imagen = extract_image_url(contenido_base)
+                if url_imagen and False: # DISABLED TEMPORARILY FOR STABILITY
+                     print(f"      🖼️ Detectada imagen: {url_imagen[:60]}...")
+                     img_bytes = download_image_as_bytes(url_imagen)
+                     if img_bytes:
+                          print("      👁️ Analizando imagen con Gemini Vision...")
+                          prompt_vision = mcmcn_prompts.PromptsAnalisis.analizar_imagen(texto_contexto[:500])
+                          analisis_img = generar_texto_multimodal_con_gemini(prompt_vision, img_bytes)
+                          if analisis_img and "IMAGEN_SIN_DATOS" not in analisis_img:
+                               texto_imagen = f"\n\n[DATOS EXTRAÍDOS DE LA IMAGEN ADJUNTA]:\n{analisis_img}"
+                               print(f"      ✅ Datos visuales extraídos.")
+                          else:
+                               print("      ℹ️ La imagen no contenía datos relevantes o legibles.")
+                noticia['texto'] = texto_contexto + texto_imagen
                 
-                # APLICAMOS LA PRE-LIMPIEZA SIEMPRE (para tener texto_crudo disponible)
-                texto_origen = noticia.get('texto', '')
-                if texto_origen:
-                    texto_crudo = preprocesar_texto_para_fechas(texto_origen)
-                    es_noticia_breve = len(texto_crudo) < 150
-                    fuente_original = identificar_fuente_original(texto_crudo)
-                    # FIX: Si es propia, usar el nombre del sitio (feed) en su lugar para evitar "Desde PROPIA..."
-                    if fuente_original == "PROPIA":
-                        fuente_original = noticia.get('sitio', '') or "la organización"
-                else:
-                    texto_crudo = ""
-                    es_noticia_breve = noticia.get('es_breve', False)
-                    fuente_original = ""
+            # APLICAMOS LA PRE-LIMPIEZA SIEMPRE (para tener texto_crudo disponible)
+            texto_origen = noticia.get('texto', '')
+            if texto_origen:
+                texto_crudo = preprocesar_texto_para_fechas(texto_origen)
+                es_noticia_breve = len(texto_crudo) < 150
+                fuente_original = identificar_fuente_original(texto_crudo)
+                # FIX: Si es propia, usar el nombre del sitio (feed) en su lugar para evitar "Desde PROPIA..."
+                if fuente_original == "PROPIA":
+                    fuente_original = noticia.get('sitio', '') or "la organización"
+            else:
+                texto_crudo = ""
+                es_noticia_breve = noticia.get('es_breve', False)
+                fuente_original = ""
 
-                # CASO 1: RESUMEN YA EXISTENTE (Manual)
-                if 'resumen' in noticia and noticia.get('resumen'):
-                    titulo_safe = noticia.get('titulo') or ""
-                    print(f"      📝 Usando resumen editado manualmente: {titulo_safe[:50]}...")
-                    resumen = noticia['resumen']
-                    # Intentamos recuperar entidades si vienen en el JSON
-                    entidades_clave = noticia.get('entidades_clave', [])
+            # CASO 1: RESUMEN YA EXISTENTE (Manual)
+            if 'resumen' in noticia and noticia.get('resumen'):
+                titulo_safe = noticia.get('titulo') or ""
+                print(f"      📝 Usando resumen editado manualmente: {titulo_safe[:50]}...")
+                resumen = noticia['resumen']
+                # Intentamos recuperar entidades si vienen en el JSON
+                entidades_clave = noticia.get('entidades_clave', [])
+            
+            # CASO 2: GENERAR RESUMEN CON IA (Automático)
+            else:
+                print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
                 
-                # CASO 2: GENERAR RESUMEN CON IA (Automático)
-                else:
-                    print(f"  Resumiendo y generando audio para noticia nueva: {noticia['sitio'][:50]}...")
-                    
-                    # === FASE 1: Entidades (solo si no es manual) ===
-                    print("      -> Fase 1/3: Extrayendo entidades clave con IA...")
-                    prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
-                    respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
-                    
-                    if respuesta_entidades_json:
-                        try:
-                            json_limpio = respuesta_entidades_json
-                            if "```" in json_limpio:
-                                start_idx = json_limpio.find('[')
-                                end_idx = json_limpio.rfind(']')
-                                if start_idx != -1 and end_idx != -1:
-                                    json_limpio = json_limpio[start_idx:end_idx+1]
-                            entidades_clave = json.loads(json_limpio)
-                            print(f"      ✅ Entidades extraídas: {', '.join(entidades_clave)}")
-                        except:
-                            entidades_clave = []
+                # === FASE 1: Entidades (solo si no es manual) ===
+                print("      -> Phase 1/3: Extrayendo entidades clave con IA...")
+                prompt_entidades = mcmcn_prompts.PromptsAnalisis.extraer_entidades_clave(texto_crudo)
+                respuesta_entidades_json = generar_texto_con_gemini(prompt_entidades)
+                
+                if respuesta_entidades_json:
+                    try:
+                        json_limpio = respuesta_entidades_json
+                        if "```" in json_limpio:
+                            start_idx = json_limpio.find('[')
+                            end_idx = json_limpio.rfind(']')
+                            if start_idx != -1 and end_idx != -1:
+                                json_limpio = json_limpio[start_idx:end_idx+1]
+                        entidades_clave = json.loads(json_limpio)
+                        print(f"      ✅ Entidades extraídas: {', '.join(entidades_clave)}")
+                    except:
+                        entidades_clave = []
 
-                    if not resumen:
-                        _titulo_log = locals().get('titulo_reparado') or noticia.get('titulo') or 'Sin título'
-                        logger.info(f"Resumiendo: {_titulo_log[:40]}...", details={"length": len(texto_crudo)})
-                        if es_noticia_breve:
+                if not resumen:
+                    _titulo_log = locals().get('titulo_reparado') or noticia.get('titulo') or 'Sin título'
+                    logger.info(f"Resumiendo: {_titulo_log[:40]}...", details={"length": len(texto_crudo)})
+                    if es_noticia_breve:
 
-                            print("      -> Fase 2/3: Usando el prompt de resumen MUY BREVE.")
-                            prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
-                        else:
-                            print("      -> Fase 2/3: Generando resumen enriquecido con IA. (Incluye verificación de fechas)")
-                            prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
-                            texto=texto_crudo,
-                            fuente_original=fuente_original,
-                            entidades_clave=entidades_clave,
-                            idioma_destino=idioma_destino,
-                            contexto_calendario=obtener_festividades_contexto()
-                        )
-                    
-                    resumen = generar_texto_con_gemini(prompt_para_ia)
-
-                # ----------------------------------------------------------------
-                # PROCESAMIENTO COMÚN (Limpieza, Sentimiento, Audio)
-                # ----------------------------------------------------------------
-                if resumen:
-                    sitio_safe = noticia.get('sitio', '')
-                    
-                    if fuente_original and fuente_original != "PROPIA":
-                        if sitio_safe:
-                             fuente_final = f"{sitio_safe} (repost de {fuente_original})"
-                        else:
-                             fuente_final = fuente_original
+                        print("      -> Phase 2/3: Usando el prompt de resumen MUY BREVE.")
+                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_muy_breve(texto=texto_crudo, fuente_original=fuente_original)
                     else:
-                        fuente_final = sitio_safe
-                    texto_limpio = limpiar_artefactos_ia(resumen)
-                    texto_limpio = reemplazar_urls_por_mencion(texto_limpio)
+                        print("      -> Phase 2/3: Generando resumen enriquecido con IA. (Incluye verificación de fechas)")
+                        prompt_para_ia = mcmcn_prompts.PromptsAnalisis.resumen_noticia_enriquecido(
+                        texto=texto_crudo,
+                        fuente_original=fuente_original,
+                        entidades_clave=entidades_clave,
+                        idioma_destino=idioma_destino,
+                        contexto_calendario=obtener_festividades_contexto()
+                    )
+                
+                resumen = generar_texto_con_gemini(prompt_para_ia)
 
-                    # Si estamos en PREVIEW, guardamos el objeto parcial y CONTINUAMOS (Saltar TTS)
-                    if solo_preview:
-                         nueva_noticia_procesada = {
-                            'fuente': fuente_final,
-                            'resumen': texto_limpio, # Guardamos el limpio ya
-                            'titulo': noticia.get('titulo', ''), # Importante para editar
-                            'sitio': noticia.get('sitio', ''),
-                            'fecha': noticia['fecha'],
-                            'id': noticia_hash,
-                            'es_breve': es_noticia_breve,
-                            'entidades_clave': entidades_clave
-                        }
-                         resumenes_finales.append(nueva_noticia_procesada)
-                         continue # <--- SALTAR RESTO DEL BUCLE (TTS)
+            # ----------------------------------------------------------------
+            # PROCESAMIENTO COMÚN (Limpieza, Sentimiento, Audio)
+            # ----------------------------------------------------------------
+            if resumen:
+                sitio_safe = noticia.get('sitio', '')
+                
+                if fuente_original and fuente_original != "PROPIA":
+                    if sitio_safe:
+                         fuente_final = f"{sitio_safe} (repost de {fuente_original})"
+                    else:
+                         fuente_final = fuente_original
+                else:
+                    fuente_final = sitio_safe
+                texto_limpio = limpiar_artefactos_ia(resumen)
+                texto_limpio = reemplazar_urls_por_mencion(texto_limpio)
 
-                    # Filtrar noticias cortas (SOLO si no es manual, si es manual el usuario manda)
-                    # Si viene 'entidades_clave' asumimos que puede ser manual, pero mejor flag explícito.
-                    # Asumimos: si 'resumen' estaba en input, es manual -> NO FILTRAR.
-                    es_manual = 'resumen' in noticia and noticia.get('resumen')
-                    
-                    if not es_manual and len(texto_limpio.split()) < MIN_WORDS_FOR_AUDIO:
-                        print(f"      🗑️  Ignorando noticia por tener menos de {MIN_WORDS_FOR_AUDIO} palabras.")
-                        noticias_descartadas.append({
-                            "titulo": titulo_safe,
-                            "sitio": noticia.get('sitio', 'Desconocido'),
-                            "motivo": f"Contenido muy breve ({len(texto_limpio.split())} palabras frente a m\u00ednimo {MIN_WORDS_FOR_AUDIO})"
-                        })
-                        continue
+                # Si estamos en PREVIEW, guardamos el objeto parcial y CONTINUAMOS (Saltar TTS)
+                if solo_preview:
+                     nueva_noticia_procesada = {
+                        'fuente': fuente_final,
+                        'resumen': texto_limpio, # Guardamos el limpio ya
+                        'titulo': noticia.get('titulo', ''), # Importante para editar
+                        'sitio': noticia.get('sitio', ''),
+                        'fecha': noticia['fecha'].strftime("%Y-%m-%d"),
+                        'id': noticia_hash,
+                        'es_breve': es_noticia_breve,
+                        'entidades_clave': entidades_clave
+                    }
+                     resumenes_finales.append(nueva_noticia_procesada)
+                     continue # <--- SALTAR RESTO DEL BUCLE (TTS)
 
-                    # === FASE 3: Sentimiento ===
-                    print(f"      -> Fase 3/3: Analizando sentimiento...")
-                    prompt_sentimiento = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_limpio)
-                    sentimiento_noticia = generar_texto_con_gemini(prompt_sentimiento).lower().strip()
-                    if sentimiento_noticia not in ['positivo', 'negativo', 'neutro']: sentimiento_noticia = 'neutro'
-                    
-                    # Extraer localidad
-                    localidad_extraida = extraer_localidad_con_ia(texto_crudo)
+                # Filtrar noticias cortas (SOLO si no es manual, si es manual el usuario manda)
+                # Si viene 'entidades_clave' asumimos que puede ser manual, pero mejor flag explícito.
+                # Asumimos: si 'resumen' estaba en input, es manual -> NO FILTRAR.
+                es_manual = 'resumen' in noticia and noticia.get('resumen')
+                
+                if not es_manual and len(texto_limpio.split()) < MIN_WORDS_FOR_AUDIO:
+                    print(f"      🗑️  Ignorando noticia por tener menos de {MIN_WORDS_FOR_AUDIO} palabras.")
+                    noticias_descartadas.append({
+                        "titulo": titulo_safe,
+                        "sitio": noticia.get('sitio', 'Desconocido'),
+                    "motivo": f"Contenido muy breve ({len(texto_limpio.split())} palabras frente a m\u00ednimo {MIN_WORDS_FOR_AUDIO})"
+                })
+                continue
 
-                    # === GENERACIÓN DE AUDIO (TTS) ===
-                    sitio_print = noticia.get('sitio', '')
-                    print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
-                    audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+            # === FASE 3: Sentimiento ===
+            print(f"      -> Fase 3/3: Analizando sentimiento...")
+            prompt_sentimiento = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_limpio)
+            sentimiento_noticia = generar_texto_con_gemini(prompt_sentimiento).lower().strip()
+            if sentimiento_noticia not in ['positivo', 'negativo', 'neutro']: sentimiento_noticia = 'neutro'
+            
+            # Extraer localidad
+            localidad_extraida = extraer_localidad_con_ia(texto_crudo)
 
-                    if audio_segment:
-                        nueva_noticia_procesada = {
-                            'fuente': fuente_final,
-                            'resumen': resumen, # Original o editado
-                            'fecha': noticia['fecha'].strftime("%Y-%m-%d"),
-                            'id': noticia_hash,
-                            'es_breve': es_noticia_breve,
-                            'localidad': localidad_extraida,
-                            'sentimiento': sentimiento_noticia,
-                            'entidades_clave': entidades_clave
-                        }
-                        resumenes_finales.append(nueva_noticia_procesada)
+            # === GENERACIÓN DE AUDIO (TTS) ===
+            sitio_print = noticia.get('sitio', '')
+            print(f"      🎙️  Generando audio para: {sitio_print[:30]}...")
+            audio_segment = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_limpio)}</speak>")
+
+            if audio_segment:
+                nueva_noticia_procesada = {
+                    'fuente': fuente_final,
+                    'resumen': resumen, # Original o editado
+                    'fecha': noticia['fecha'].strftime("%Y-%m-%d"),
+                    'id': noticia_hash,
+                    'es_breve': es_noticia_breve,
+                    'localidad': localidad_extraida,
+                    'sentimiento': sentimiento_noticia,
+                    'entidades_clave': entidades_clave
+                }
+                resumenes_finales.append(nueva_noticia_procesada)
+
+        # --- GUARDAR JSON EN MODO PREVIEW (SIEMPRE, incluso si está vacío) ---
+        if solo_preview:
+            # 1. Resumidos/Seleccionados
+            with open("prevision_noticias_resumidas.json", "w", encoding="utf-8") as f:
+                json.dump(resumenes_finales, f, ensure_ascii=False, indent=4)
+            # 2. Descartados
+            with open("prevision_noticias_descartadas.json", "w", encoding="utf-8") as f:
+                json.dump(noticias_descartadas, f, ensure_ascii=False, indent=4)
+            print(f"      💾 Archivos de preview actualizados ({len(resumenes_finales)} resumidas, {len(noticias_descartadas)} descartadas).")
 
         if not resumenes_finales:
             logger.error("No hay noticias válidas tras el filtrado.")

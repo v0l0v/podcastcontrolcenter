@@ -1,91 +1,583 @@
 [
     {
-        "fuente": "Sierra de Alcaraz y Campo de Montiel (repost de RED DE ÁREAS PROTEGIDAS DE CASTILLA-LA MANCHA)",
-        "resumen": "Nos informan desde la Red de Áreas Protegidas de Castilla-La Mancha sobre el programa \"Explora tu espacio\". Esta iniciativa busca fomentar la educación ambiental y la sensibilización sobre el valioso patrimonio natural de la región. Se invita a centros educativos, desde primaria hasta bachillerato, así como a universidades, asociaciones y otros grupos, a participar activamente.\nEl programa ofrece una oportunidad única para comprender qué son los Espacios Naturales Protegidos, la importancia de su conservación y cómo cada uno puede contribuir a su cuidado mediante actividades educativas y recreativas diseñadas para todos los públicos. Entre los escenarios de estas experiencias se encuentra el emblemático Parque Natural Lagunas de Ruidera.\nEsta actividad, completamente gratuita, requiere inscripción previa y está pensada para que participen escolares, estudiantes universitarios y grupos organizados. La Red de Áreas Protegidas de Castilla-La Mancha, a través de SACAM, impulsa así una conexión más profunda entre la ciudadanía y su entorno natural.",
-        "titulo": "🌿 𝗣𝗿𝗼𝗴𝗿𝗮𝗺𝗮 “𝗘𝘅𝗽𝗹𝗼𝗿𝗮 𝘁𝘂 𝗲𝘀𝗽𝗮𝗰𝗶𝗼” 𝗲𝗻 𝗹𝗼𝘀 𝗘𝘀𝗽𝗮𝗰𝗶𝗼𝘀 𝗡𝗮𝘁𝘂𝗿𝗮𝗹𝗲𝘀 𝗣𝗿𝗼𝘁𝗲𝗴𝗶�...",
-        "sitio": "Sierra de Alcaraz y Campo de Montiel",
-        "fecha": "2026-03-06",
-        "id": "e9ad278369b953e3dcf603e3ec20ee64",
+        "fuente": "ADEL Sierra Norte (repost de Junta de Comunidades de Castilla-La Mancha)",
+        "resumen": "La Junta de Comunidades de Castilla-La Mancha ha distinguido recientemente a dos importantes iniciativas de la Sierra Norte de Guadalajara en su décima edición de los Reconocimientos a la Iniciativa Social. ADEL Sierra Norte celebra estos galardones que ponen de relieve el compromiso social de la comarca.\nEn la categoría de Acción Social, el reconocimiento es para Juan Antonio Mínguez, párroco de Jadraque. Mínguez es premiado por su constante apoyo a personas en situación de vulnerabilidad, un trabajo que lleva a cabo con profundo compromiso humano y social.\nPor otro lado, en la categoría de Voluntariado, el galardón recae en el Ayuntamiento de Puebla de Valles. Este consistorio ha sido reconocido por su labor impulsando iniciativas solidarias que involucran a toda la comunidad, destacando su organización de la Carrera Rupestre, cuyos beneficios se destinan a enfermedades raras. Estos premios subrayan el valioso trabajo social que se gesta en los pueblos de la Sierra Norte de Guadalajara, contribuyendo a una sociedad más cohesionada y solidaria.",
+        "titulo": "🎉👏 Orgullo de la Sierra Norte de Guadalajara 👏🎉 Desde el Grupo de Desarrollo Rural ADEL Sierra Norte queremos felici...",
+        "sitio": "ADEL Sierra Norte",
+        "fecha": "2026-03-10",
+        "id": "04f50466bdb3fd192a7cc4bf6270d247",
         "es_breve": false,
         "entidades_clave": [
-            "Programa \"Explora tu espacio\"",
-            "Espacios Naturales Protegidos",
+            "Sierra Norte de Guadalajara",
+            "ADEL Sierra Norte",
+            "Iniciativa Social",
+            "Juan Antonio Mínguez",
+            "Ayuntamiento de Jadraque",
+            "Ayuntamiento de Puebla de Valles",
+            "Carrera Rupestre"
+        ]
+    },
+    {
+        "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural (repost de Asociación Campo de Calatrava Grupo Desarrollo Rural)",
+        "resumen": "Aldea del Rey se prepara para el V Encuentro de Bandas “Aldea Cofrade”, un evento que resuena con la pasión de la Semana Santa Aldeana 2026. Nos informan desde la Asociación Campo de Calatrava Grupo Desarrollo Rural que el domingo 15 de marzo de 2026, a las doce y media del mediodía, el Salón de Usos Múltiples del Parque Adolfo Suárez acogerá esta destacada cita musical.\nEste encuentro de cornetas y tambores no solo realza la Semana Santa de Aldea del Rey, reconocida dentro de la Ruta de la Pasión Calatrava, sino que también fortalece el tejido cultural de la comarca. Participarán la Banda de CC. y TT. “Los Armaos” de Aldea del Rey, la Agrupación Musical Sto. Tomás de Villanueva de Ciudad Real, y la Banda de CC. y TT. Stmo. Cristo de la Columna “Los Coloraos” de Daimiel. Será una jornada para vivir la música procesional en su máximo esplendor, conectando a las distintas localidades en una celebración compartida.",
+        "titulo": "🎺🥁 Aldea del Rey acoge el V Encuentro de Bandas “Aldea Cofrade” El domingo 15 de marzo, a las 12:30 h, el Salón de Uso...",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "fecha": "2026-03-10",
+        "id": "10e0520e2d41558b6f7aa7ea424f84a4",
+        "es_breve": false,
+        "entidades_clave": [
+            "V Encuentro de Bandas “Aldea Cofrade”",
+            "Aldea del Rey",
+            "Semana Santa Aldeana 2026",
+            "Ruta de la Pasión Calatrava",
+            "Banda de CC. y TT. “Los Armaos”",
+            "Agrupación Musical Sto. Tomás de Villanueva",
+            "Banda de CC. y TT. Stmo. Cristo de la Columna “Los Coloraos”"
+        ]
+    },
+    {
+        "fuente": "Turismo Provincia Toledo Page (repost de SenderosDeToledo)",
+        "resumen": "Nos informan desde SenderosDeToledo sobre la 'Ruta del Pantano', un recorrido que invita a descubrir la belleza natural del extremo occidental de la Sierra de San Vicente, en la provincia de Toledo. Esta propuesta senderista combina paisajes de montaña con la presencia del agua, ofreciendo amplias panorámicas de la zona.\nEl itinerario comienza en Navamorcuende y asciende por las laderas del Alto de la Mesa. Los excursionistas seguirán un sendero que les llevará hasta un collado clave, separando las vertientes de dos arroyos. El recorrido continúa hacia el impresionante embalse del Guadyerbas, afluente del río Tiétar. Los senderistas bordearán este pantano y cruzarán la presa de Piélago, un punto escénico destacado, antes de emprender el regreso hacia el collado de Navalasierra y finalmente volver al punto de partida en Navamorcuende.\nEsta ruta es una opción ideal para disfrutar de los entornos serranos y fluviales del norte de la provincia de Toledo. Los responsables de SenderosDeToledo advierten de la importancia de prestar atención en los cruces con la carretera TO-1375. Es una oportunidad perfecta para conectar con la naturaleza y explorar los senderos de Toledo.",
+        "titulo": "🌊 Ruta del Pantano – Navamorcuende En el extremo occidental de la Sierra de San Vicente, esta ruta permite descubrir un...",
+        "sitio": "Turismo Provincia Toledo Page",
+        "fecha": "2026-03-10",
+        "id": "82267b7ac8156605fc95c40b0879568a",
+        "es_breve": false,
+        "entidades_clave": [
+            "Ruta del Pantano",
+            "Navamorcuende",
+            "Sierra de San Vicente",
+            "Provincia de Toledo",
+            "Embalse del Guadyerbas",
+            "Presa de Piélago",
+            "Senderos de Toledo"
+        ]
+    },
+    {
+        "fuente": "Adecor Grupo de Desarrollo Rural Campana de Oropesa (repost de Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO))",
+        "resumen": "El Ministerio para la Transición Ecológica y el Reto Demográfico lanza el certamen de microvídeos RE-CREA Rural 2026, buscando historias que resalten el entorno rural como foco de oportunidades.\nHasta el 6 de abril de 2026, personas mayores de 18 años, asociaciones, fundaciones y colectivos culturales pueden presentar sus creaciones. Los vídeos, de un máximo de 90 segundos, deben centrarse en el emprendimiento rural y su riqueza cultural.\nSe premiarán las tres mejores propuestas con 1.500, 1.000 y 500 euros. Para participar, los microvídeos deben compartirse en Instagram etiquetando a @latermicacultural y usando los hashtags #RECREARURAL2026, #DesafíoRedCIT e #InnovaciónTerritorial. Esta iniciativa busca visibilizar el dinamismo del mundo rural a través de la creatividad audiovisual.",
+        "titulo": "📢En nuestra comarca hay talento, creatividad y muchas historias que merecen ser contadas. 🎥Si te gusta grabar vídeos,...",
+        "sitio": "Adecor Grupo de Desarrollo Rural Campana de Oropesa",
+        "fecha": "2026-03-10",
+        "id": "ccca147c418e141c8472219fac7372d4",
+        "es_breve": false,
+        "entidades_clave": [
+            "Certamen microvídeos",
+            "RE-CREA Rural 2026",
+            "Ministerio Transición Ecológica",
+            "entorno rural",
+            "emprendimiento rural",
+            "videos 90 segundos",
+            "Instagram"
+        ]
+    },
+    {
+        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de asociaciondonquijote.org)",
+        "resumen": "La Asociación Don Quijote ha lanzado una plataforma digital para centralizar los eventos culturales y festivos de la Comarca de la Mesa de Ocaña. Desde la web asociaciondonquijote.org, los usuarios pueden consultar la programación completa de actividades que incluyen la Semana de la Mujer, el Mes del Teatro de Villasequilla, el Ciclo de Música Munda de Yepes, así como la Semana Santa y las Pasiones Vivientes de localidades como Villanueva de Bogas, Villatobas y La Guardia. La organización informa que el portal se actualiza semanalmente con novedades en propuestas festivas, culturales, deportivas y de ocio. Esta iniciativa busca facilitar el acceso a la información y promover la participación en las diversas manifestaciones que se desarrollan a lo largo del año en la comarca. La plataforma promete ser un recurso clave para los residentes y visitantes interesados en la agenda de la Mesa de Ocaña.",
+        "titulo": "🧐¿Sabías que en nuestra web puedes encontrar información sobre los eventos que se celebran en los pueblos de nuestra co...",
+        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+        "fecha": "2026-03-10",
+        "id": "3be678979cd2da5f851ad9ba4bb35fd5",
+        "es_breve": false,
+        "entidades_clave": [
+            "Comarca de la Mesa de Ocaña",
+            "Asociación Don Quijote",
+            "Semana de la Mujer",
+            "Mes del Teatro de Villasequilla",
+            "Ciclo de Música Munda de Yepes",
+            "Semana Santa",
+            "Pasiones Vivientes"
+        ]
+    },
+    {
+        "fuente": "Grupo Desarrollo Rural Dulcinea (repost de Grupo Desarrollo Rural Dulcinea)",
+        "resumen": "Grupo Desarrollo Rural Dulcinea nos informa sobre la Estela del Gigüela, un sendero homologado en La Puebla de Almoradiel. Se trata de una ruta de catorce kilómetros, de dificultad baja, que acompaña al río Gigüela. Los visitantes podrán disfrutar de una rica vegetación, puentes, represas, lagunas, restos de molinos y parajes singulares a lo largo del recorrido. Esta iniciativa de senderismo fluvial es una invitación a explorar la belleza natural de la comarca. Como complemento a la experiencia de senderismo, se sugiere una visita a las instalaciones del Observatorio Astronómico La Hita. La Estela del Gigüela forma parte de la red de senderos de Toledo, ofreciendo una actividad ideal para los amantes del senderismo.",
+        "titulo": "🚶Retomamos nuestro recorrido por los senderos homologados de nuestra comarca.  💧Hoy, nos centramos en la Estela del Gi...",
+        "sitio": "Grupo Desarrollo Rural Dulcinea",
+        "fecha": "2026-03-10",
+        "id": "8a201530ded029d0ab8c7fb4804709b8",
+        "es_breve": false,
+        "entidades_clave": [
+            "Estela del Gigüela",
+            "La Puebla de Almoradiel",
+            "senderos homologados",
+            "Observatorio Astronómico La Hita",
+            "senderos de Toledo",
+            "río Gigüela",
+            "senderismo fluvial"
+        ]
+    },
+    {
+        "fuente": "Turismo Castilla La Mancha (repost de Turismo Castilla La Mancha)",
+        "resumen": "La miel de Canalejas del Arroyo se posiciona como una de las mejores del mundo, ofreciendo un sabor auténtico de la Alcarria en Castilla-La Mancha. Esta joya gastronómica, destacada por Turismo Castilla La Mancha, se convierte en un reclamo para el turismo en la región.\nDesde la organización nos informan que este producto representa la riqueza culinaria local y busca atraer visitantes interesados en experiencias auténticas y productos de proximidad. La iniciativa subraya el potencial de la miel como embajadora de la cultura y el territorio manchego, fusionando tradición y calidad para deleitar paladares a nivel internacional. El objetivo es consolidar la marca \"miel del mundo\" asociada a la provincia.",
+        "titulo": "La mejor miel del mundo esta en CANALEJAS DEL ARROYO! Descubre uno de los sabores de la Alcarria en Castilla-La Mancha....",
+        "sitio": "Turismo Castilla La Mancha",
+        "fecha": "2026-03-10",
+        "id": "491c29a5dc9e68f5c2d4b56449009ba8",
+        "es_breve": false,
+        "entidades_clave": [
+            "Canalejas del Arroyo",
+            "miel del mundo",
+            "Alcarria",
             "Castilla-La Mancha",
-            "Red de Áreas Protegidas",
-            "Educación ambiental",
-            "Parque Natural Lagunas de Ruidera",
-            "SACAM"
+            "turismo"
         ]
     },
     {
-        "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
-        "resumen": "En los territorios LEADER de España, el medio rural conmemora activamente el Día Internacional de la Mujer del 8M. Nos informan desde Grupo Campos de Hellin que se están organizando diversas iniciativas, incluyendo carreras solidarias, ferias de emprendimiento femenino y talleres. Estas acciones reflejan el compromiso de los grupos LEADER y del Ministerio de Agricultura con la igualdad y el reconocimiento del valioso papel de las mujeres en las zonas rurales.\nLa Red Rural Nacional destaca cómo estas actividades sirven para visibilizar la contribución femenina y promover mayores oportunidades para quienes residen y trabajan en el campo. En el ámbito del emprendimiento femenino, estos eventos buscan empoderar a las mujeres rurales y fortalecer su presencia en la economía local.\nSegún los comunicados de Grupo Campos de Hellin, el objetivo es doble: celebrar los avances conseguidos y reivindicar la necesidad de seguir trabajando por una igualdad real y efectiva en todas las facetas de la vida rural. El emprendimiento femenino se presenta como una herramienta clave para el desarrollo y la sostenibilidad de estas comunidades.",
-        "titulo": "🏘️🟣El medio rural también celebra el #8M 🪧 En diferentes territorios LEADER 🇪🇺🌿 de España se organizan estos días...",
-        "sitio": "Grupo Campos de Hellin",
-        "fecha": "2026-03-06",
-        "id": "d236147444f8443330f7836bed873eb6",
+        "fuente": "ADR Molina de Aragón Alto Tajo (repost de ADR Molina de Aragón Alto Tajo)",
+        "resumen": "Si gestionas un negocio turístico y buscas mayor visibilidad online, tenemos noticias que te interesan. ADR Molina de Aragón Alto Tajo ha anunciado una formación gratuita diseñada para potenciar tu presencia digital, incluso si partes de cero. La sesión, que se realizará de forma online, está programada para el martes 24 de marzo, comenzando sobre las once de la mañana. Las plazas son limitadas, así que se recomienda reserva anticipada.\nDurante esta sesión formativa se abordarán claves para gestionar tus redes sociales con coherencia y planificación, permitiéndote conectar mejor con tu público. También se ofrecerán herramientas para mejorar tu presencia digital, incluyendo cómo diseñar publicaciones atractivas de forma sencilla con Canva. Se trata de una sesión eminentemente práctica, pensada para que los asistentes puedan aplicar los conocimientos desde el primer día en sus empresas turísticas.",
+        "titulo": "🚀 Dale un impulso digital a tu negocio turístico  Si formas parte del sector turismo y quieres ganar visibilidad online...",
+        "sitio": "ADR Molina de Aragón Alto Tajo",
+        "fecha": "2026-03-10",
+        "id": "cd4e1af0acd948e0623fa34d8ebd0f79",
         "es_breve": false,
         "entidades_clave": [
-            "Medio rural",
-            "8M",
-            "Territorios LEADER",
-            "Emprendimiento femenino",
-            "Día Internacional de la Mujer",
-            "Ministerio de Agricultura",
-            "Red Rural Nacional"
+            "Negocio turístico",
+            "Visibilidad online",
+            "Formación gratuita",
+            "Redes sociales",
+            "Presencia digital",
+            "Canva",
+            "Molina de Aragón"
         ]
     },
     {
-        "fuente": "Asociación de Turismo Rural de la Manchuela (repost de Asociación de Turismo Rural de la Manchuela)",
-        "resumen": "Golosalvo, un municipio clave al noreste de Albacete y corazón de La Manchuela, desvela su profunda Historia. Nos informan desde la Asociación de Turismo Rural de la Manchuela que la tradición sitúa sus orígenes en épocas romana y germánica, con un topónimo que fusiona raíces de ambos periodos. Su economía, históricamente ligada al campo y al cultivo de la vid, se complementa con un valioso patrimonio. Destaca la Iglesia parroquial del siglo XVII, que alberga una impresionante talla policromada de San Jorge ecuestre, obra del renombrado Francisco Salzillo. Junto a esta pieza, se exhiben otras imágenes barrocas como la Virgen del Rosario y San Simeón. Este legado histórico y artístico, combinado con su riqueza natural, posiciona a Golosalvo como un destino de gran interés dentro de La Manchuela.",
-        "titulo": "Golosalvo es un municipio situado al noreste de Albacete, con una posición central dentro de la comarca de La Manchuela....",
-        "sitio": "Asociación de Turismo Rural de la Manchuela",
-        "fecha": "2026-03-06",
-        "id": "2a260050c75d92ee22c5771535f5e9ce",
+        "fuente": "ADR Molina de Aragón Alto Tajo (repost de Asociación Cultural Molina Medieval)",
+        "resumen": "La Asociación Cultural Molina Medieval recibe un importante reconocimiento de la Cátedra Fundación Eurocaja Rural–UCLM. El premio, en la categoría de Cultura, destaca el proyecto \"El Cid y Abengalbón. Relato de una amistad\". Esta iniciativa pone en valor la rica historia y el patrimonio medieval de Molina de Aragón. Nos informan desde la asociación que este proyecto es un claro ejemplo de cómo la cultura puede ser un motor para el desarrollo del medio rural. Este galardón subraya la importancia de preservar y promocionar el patrimonio medieval, demostrando su impacto en la revitalización de estas zonas.",
+        "titulo": "La Asociación Cultural Molina Medieval ha sido reconocida por la Cátedra Fundación Eurocaja Rural–UCLM con el premio en...",
+        "sitio": "ADR Molina de Aragón Alto Tajo",
+        "fecha": "2026-03-09",
+        "id": "f30374fb810ffbe1732c5d1426f180a7",
         "es_breve": false,
         "entidades_clave": [
-            "Golosalvo",
-            "Albacete",
-            "La Manchuela",
-            "Francisco Salzillo",
-            "Iglesia parroquial",
-            "Historia",
-            "Economía"
+            "Asociación Cultural Molina Medieval",
+            "Cátedra Fundación Eurocaja Rural–UCLM",
+            "El Cid y Abengalbón",
+            "Molina de Aragón",
+            "Patrimonio Medieval",
+            "Cultura Rural"
         ]
     },
     {
-        "fuente": "Grupo Campos de Hellin (repost de AECC)",
-        "resumen": "La Asociación Española Contra el Cáncer, la AECC, presenta una exposición fotográfica y audiovisual bajo el título \"20 Años Caminando Juntos\". La inauguración está prevista para el viernes 13 de marzo en el Salón de Plenos del Ayuntamiento de Ontur. El evento comenzará sobre las siete de la tarde. La muestra podrá visitarse posteriormente en horario de mañana, de once de la mañana a una del mediodía, y por las tardes, de cinco a siete. Esta iniciativa, organizada por la junta local de la AECC, se enmarca en las actividades previas a las fiestas de San José.",
-        "titulo": "👉 20 AÑOS CAMINANDO JUNTOS 💚, exposición fotográfica y audiovisual📸, organizada por la junta local de la #AECC . 🗓In...",
-        "sitio": "Grupo Campos de Hellin",
-        "fecha": "2026-03-06",
-        "id": "32db4b45f9e090514e97526fb5d5df36",
+        "fuente": "ADEL Sierra Norte (repost de Junta de Comunidades de Castilla-La Mancha)",
+        "resumen": "Santos Lopez Tabernero, delegado de Agricultura en Guadalajara de la Junta de Comunidades de Castilla-La Mancha, ha participado recientemente en la firma de contratos de ayudas destinadas a la Sierra Norte. Estos fondos europeos, gestionados por ADEL Sierra Norte, representan un impulso crucial para generar oportunidades y empleo en la región.\nLas subvenciones apoyan proyectos que buscan fortalecer el tejido económico y social del territorio, promoviendo el emprendimiento, la innovación y la fijación de población en la Sierra Norte de Castilla-La Mancha. La colaboración entre administraciones y el trabajo del Grupo de Desarrollo Rural ADEL Sierra Norte son fundamentales para que los fondos europeos lleguen directamente a quienes apuestan por vivir, invertir y emprender en los pueblos de la zona. Esta iniciativa subraya el compromiso con el Desarrollo Rural y la revitalización de estas áreas.",
+        "titulo": "📍  El delegado de Consejería de Agricultura, Ganadería y Desarrollo Rural  de la Junta de Comunidades de Castilla-La Ma...",
+        "sitio": "ADEL Sierra Norte",
+        "fecha": "2026-03-09",
+        "id": "7e6c0f2b3ba4fa30dcd248d13ef02682",
         "es_breve": false,
         "entidades_clave": [
-            "AECC",
-            "exposición fotográfica",
-            "Ayuntamiento",
-            "viernes 13 de marzo",
-            "Ontur",
-            "fiestas San José"
+            "Santos Lopez Tabernero",
+            "JCCM Guadalajara",
+            "ADEL Sierra Norte",
+            "fondos europeos",
+            "Sierra Norte",
+            "Desarrollo Rural",
+            "Castilla-La Mancha"
+        ]
+    },
+    {
+        "fuente": "Sierra de Alcaraz y Campo de Montiel (repost de Sierra de Alcaraz y Campo de Montiel)",
+        "resumen": "Desde la Sierra de Alcaraz y Campo de Montiel nos informan de una intensa agenda semanal repleta de propuestas para dinamizar la vida en la comarca. La Asociación Grupo de Desarrollo Rural ha recopilado actividades culturales, eventos deportivos, talleres y formaciones, además de las esperadas fiestas locales.\nEl objetivo es dar visibilidad a la rica oferta de los municipios de la zona y fomentar la participación ciudadana. Se anima a los vecinos y visitantes a disfrutar de estas iniciativas organizadas por los ayuntamientos y colectivos locales. Entre las celebraciones destacadas para el presente año se encuentran eventos como la Feria de Albacete en septiembre, la Batalla de Almansa en abril, o la celebración de San Juan en junio en la capital. También se conmemoran efemérides como la Batalla de Montiel en marzo o la publicación del Quijote en octubre.\nLa agenda completa abarca desde el Día de Castilla-La Mancha a finales de mayo hasta festividades patronales en cada localidad, buscando que todos los rincones de la Sierra de Alcaraz y Campo de Montiel ofrezcan experiencias únicas y enriquezcan la vida comunitaria a lo largo del año 2026.",
+        "titulo": "🗓️ 𝗔𝗴𝗲𝗻𝗱𝗮 𝘀𝗲𝗺𝗮𝗻𝗮𝗹 𝗲𝗻 𝗻𝘂𝗲𝘀𝘁𝗿𝗼𝘀 𝗺𝘂𝗻𝗶𝗰𝗶𝗽𝗶𝗼𝘀 Comienza una nueva semana y los pueblos de la...",
+        "sitio": "Sierra de Alcaraz y Campo de Montiel",
+        "fecha": "2026-03-09",
+        "id": "da595ef0cc7fcd966d45e2c264b924c1",
+        "es_breve": false,
+        "entidades_clave": [
+            "Sierra de Alcaraz",
+            "Campo de Montiel",
+            "Asociación Grupo de Desarrollo Rural",
+            "Agenda semanal",
+            "Actividades culturales",
+            "Eventos deportivos",
+            "Fiestas locales"
         ]
     },
     {
         "fuente": "ADS Valle de Alcudia (repost de ADS Valle de Alcudia)",
-        "resumen": "El proyecto 'Minería y territorio', impulsado desde la Asociación para el Desarrollo Sostenible (ADS) Valle de Alcudia, ha sido destacado recientemente en la televisión de Castilla y León, concretamente en cyltv. Este reconocimiento se produce tras el Intercambio de Experiencias de Proyectos LEADER celebrado en Segovia, donde la iniciativa captó la atención de los periodistas. El Desarrollo Rural de la zona se ve beneficiado al dar visibilidad a estos proyectos que buscan un equilibrio entre la actividad minera y la preservación del entorno natural y su territorio. La cobertura mediática subraya la importancia de estas iniciativas en la región de Castilla y León y su impacto en la promoción de un desarrollo rural sostenible. La ADS Valle de Alcudia agradece la difusión de su trabajo, que permite extender el conocimiento de estas prácticas innovadoras a un público más amplio, fortaleciendo así la apuesta por la sostenibilidad en el ámbito rural.",
-        "titulo": "📺Nuestro proyecto 'Minería y territorio', en la televisión de Castilla y León.  😍Fue una de las iniciativas que llamó...",
+        "resumen": "El Grupo de Desarrollo Rural (GDR) Valle de Alcudia ha dado luz verde a veintisiete proyectos. Estas iniciativas han impulsado una inversión total en el territorio que supera los 4,2 millones de euros. Para hacer posible estas acciones, se han concedido ayudas Leader por un valor superior a los 2,1 millones de euros.\nEstas cifras corresponden al balance de la programación PEPAC 2023-2027, basándose en el último ejercicio financiero completado hasta el 15 de octubre de 2025. Durante los años 2024 y 2025, el GDR Valle de Alcudia ha llevado a cabo siete convocatorias de ayudas Leader. A través de estas, se han puesto a disposición de ayuntamientos, empresas y emprendedores de la comarca cerca de 1,4 millones de euros en concepto de ayuda Leader.\nEn palabras de la propia entidad, el objetivo principal es fomentar el desarrollo rural y crear nuevas oportunidades en la zona. La inversión se destina a proyectos que buscan fortalecer la economía local y mejorar la calidad de vida de los habitantes del Valle de Alcudia y Sierra Morena.",
+        "titulo": "✅El GDR Valle de Alcudia ha aprobado 27 proyectos que han movilizado una inversión total en el territorio de 4,2 millone...",
         "sitio": "ADS Valle de Alcudia",
-        "fecha": "2026-03-06",
-        "id": "6bb13b3fa23b03821aec6a3497ff572b",
+        "fecha": "2026-03-09",
+        "id": "c82d267263577337710a758971c9dc80",
         "es_breve": false,
         "entidades_clave": [
-            "Minería y territorio",
-            "Castilla y León",
-            "Proyectos LEADER",
-            "Segovia",
-            "cyltv",
+            "GDR Valle de Alcudia",
+            "proyectos aprobados",
+            "inversión territorio",
+            "ayudas Leader",
+            "PEPAC 2023/2027",
+            "desarrollo rural"
+        ]
+    },
+    {
+        "fuente": "Sierra de Alcaraz y Campo de Montiel (repost de Sierra de Alcaraz y Campo de Montiel)",
+        "resumen": "Nos informan desde la Sierra de Alcaraz y Campo de Montiel que ya está disponible la newsletter correspondiente al mes pasado. Este boletín detalla las acciones, proyectos y actividades que la organización ha llevado a cabo en la región. La publicación busca destacar las iniciativas en materia de Desarrollo Rural que se están implementando, con especial atención a las zonas de la Sierra de Alcaraz y Campo de Montiel.\nLa entidad SACAM, centrada en el impulso del Medio Rural, ha difundido este resumen de su labor. La newsletter, accesible en un enlace facilitado, representa un esfuerzo por mantener informada a la ciudadanía sobre los avances y el trabajo realizado en estas comarcas. Los lectores podrán encontrar información sobre las diversas acciones que buscan fortalecer el tejido rural y promover su desarrollo.",
+        "titulo": "📬 ¡𝗬𝗮 𝗵𝗲𝗺𝗼𝘀 𝗽𝘂𝗯𝗹𝗶𝗰𝗮𝗱𝗼 𝗹𝗮 𝗻𝗲𝘄𝘀𝗹𝗲𝘁𝘁𝗲𝗿 𝗱𝗲 𝗲𝘀𝘁𝗲 𝗺𝗲𝘀! En ella recopilamos las principal...",
+        "sitio": "Sierra de Alcaraz y Campo de Montiel",
+        "fecha": "2026-03-09",
+        "id": "64d7e6b01a645662f7872e8095c45c4f",
+        "es_breve": false,
+        "entidades_clave": [
+            "Newsletter",
+            "Sierra de Alcaraz",
+            "Campo de Montiel",
             "Desarrollo Rural",
-            "Valle de Alcudia"
+            "SACAM",
+            "Medio Rural"
+        ]
+    },
+    {
+        "fuente": "Sierra de Alcaraz y Campo de Montiel (repost de Sierra de Alcaraz y Campo de Montiel)",
+        "resumen": "Más de setecientos mil euros en ayudas LEADER impulsarán proyectos en la Sierra de Alcaraz y Campo de Montiel. La Asociación Grupo de Desarrollo Rural de esta comarca ha aprobado nuevas convocatorias por un valor total de 748.251 euros. Estos fondos están dirigidos a empresas, administraciones públicas y personas emprendedoras del territorio. Las ayudas se desglosan en 400.000 euros para proyectos empresariales, 267.251 euros para administraciones públicas y 81.000 euros adicionales para emprendimiento, cifra que podría ampliarse en 27.000 euros más. El plazo de solicitud será de dos meses a partir de la publicación oficial, prevista para finales de este mes.\nAdemás de estas subvenciones, la asociación abordó otros proyectos de dinamización territorial. Entre ellos, destaca la participación en ASTRORED: Guardianes del cielo, la próxima Vuelta Ciclista a Castilla-La Mancha, y el proyecto cultural sobre el \"Cielo nocturno como bien cultural\". También se informó sobre la Agenda Escolar 2026-2027, que estará dedicada a las aves de la comarca. Estas iniciativas buscan generar oportunidades y fortalecer el desarrollo de los municipios de la Sierra de Alcaraz y Campo de Montiel, según nos informan desde la propia asociación.",
+        "titulo": "💼 𝗠𝗮́𝘀 𝗱𝗲 𝟳𝟬𝟬.𝟬𝟬𝟬 € 𝗲𝗻 𝗮𝘆𝘂𝗱𝗮𝘀 𝗟𝗘𝗔𝗗𝗘𝗥 𝗽𝗮𝗿𝗮 𝗶𝗺𝗽𝘂𝗹𝘀𝗮𝗿 𝗽𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝘀 𝗲𝗻 𝗹𝗮 𝗦...",
+        "sitio": "Sierra de Alcaraz y Campo de Montiel",
+        "fecha": "2026-03-09",
+        "id": "9f709d080b14776053fe85c3fa88665f",
+        "es_breve": false,
+        "entidades_clave": [
+            "Ayudas LEADER",
+            "Sierra de Alcaraz",
+            "Campo de Montiel",
+            "Asociación Grupo de Desarrollo Rural",
+            "Proyectos empresariales",
+            "Administraciones públicas",
+            "ASTRORED: Guardianes del cielo"
+        ]
+    },
+    {
+        "fuente": "Asociación Mancha Júcar (repost de Asociación Regional ELA CLM - Adelante)",
+        "resumen": "La Asociación Regional ELA CLM - Adelante otorgará un reconocimiento este viernes, 13 de marzo de 2026, a Mancha Júcar-Centro. Esta distinción se otorga como entidad financiadora, valorando la colaboración y el apoyo a través de fondos Leader en iniciativas destinadas a personas afectadas por Esclerosis Lateral Amiotrófica. La noticia, comunicada por la propia Asociación Regional ELA CLM - Adelante, resalta la importancia de sumar esfuerzos para avanzar hacia una sociedad más comprometida con los colectivos vulnerables. Mancha Júcar-Centro ha expresado su ilusión por esta distinción y ha agradecido a la Asociación ADELANTE la labor fundamental que realiza para mejorar la vida de las personas con ELA y sus familias, reconociendo además sus diez años de trayectoria.",
+        "titulo": "😍Mancha Júcar-Centro recibirá este viernes, 13 de marzo, uno de los reconocimientos que entrega la Asociación Regional...",
+        "sitio": "Asociación Mancha Júcar",
+        "fecha": "2026-03-09",
+        "id": "dd81a44c2873933b18cdd4d6b75068d4",
+        "es_breve": false,
+        "entidades_clave": [
+            "Mancha Júcar-Centro",
+            "Asociación Regional ELA CLM - Adelante",
+            "reconocimiento",
+            "fondos Leader",
+            "personas afectadas por ELA",
+            "Asociación ADELANTE"
+        ]
+    },
+    {
+        "fuente": "ADAC Desarrollo Local (repost de ADAC)",
+        "resumen": "Desde ADAC nos informan de un importante impulso a los servicios de proximidad en el medio rural. Se han concedido nuevas ayudas LEADER a cuatro emprendedoras que han decidido establecer servicios de peluquería en pueblos donde su continuidad es cada vez más difícil. Esta iniciativa busca fortalecer la oferta de servicios esenciales en las zonas rurales, garantizando su acceso para los vecinos. Las beneficiarias, que inician ahora esta andadura, reciben un apoyo fundamental para asentar sus negocios y ofrecer así un punto de referencia en sus localidades. ADAC subraya la importancia de estas acciones para fijar población y mejorar la calidad de vida en el entorno rural.",
+        "titulo": "✂️💇‍♀️ ADAC continúa impulsando la continuidad de servicios de proximidad en el medio rural, cada vez más difíciles de...",
+        "sitio": "ADAC Desarrollo Local",
+        "fecha": "2026-03-09",
+        "id": "a4582bbb15d5e56a7333b2d52b3fb60a",
+        "es_breve": false,
+        "entidades_clave": [
+            "ADAC",
+            "servicios de proximidad",
+            "medio rural",
+            "ayudas LEADER",
+            "emprendedoras",
+            "servicios de peluquería"
+        ]
+    },
+    {
+        "fuente": "Fadeta Grupo de Desarrollo Rural (repost de FADETA)",
+        "resumen": "Nos informan desde FADETA que se ha puesto en marcha un proyecto crucial para la sostenibilidad rural y la gastronomía responsable en Castilla-La Mancha. La organización está distribuyendo cincuenta mil envases reciclables entre bares y restaurantes de la comarca. El objetivo principal es reducir el desperdicio alimentario, facilitando que los clientes puedan llevarse a casa los alimentos no consumidos.\nEsta iniciativa, denominada 'Sostenibilidad rural: envases reciclables para gastronomía responsable', no solo ayuda a los establecimientos hosteleros a cumplir con la normativa vigente, sino que también fomenta la gestión sostenible de residuos. Además, impulsa la economía circular y promueve el territorio, visibilizando el compromiso de FADETA con el desarrollo sostenible y el tejido socioeconómico local.\nEl proyecto recibe financiación a través de la Intervención 7119 Leader Castilla-La Mancha, dentro del marco del Plan Estratégico de Participación Ciudadana (PEPAC) 2023-2027. Los fondos provienen de la Unión Europea, con un ochenta por ciento, complementados por la Administración General del Estado y la Junta de Comunidades de Castilla-La Mancha.",
+        "titulo": "👉FADETA ha comenzado a distribuir 50.000 envases reciclables entre bares y restaurantes de la comarca para reducir el d...",
+        "sitio": "Fadeta Grupo de Desarrollo Rural",
+        "fecha": "2026-03-09",
+        "id": "f2174fda7885938d648f4cd4bcb5c76b",
+        "es_breve": false,
+        "entidades_clave": [
+            "FADETA",
+            "envases reciclables",
+            "desperdicio alimentario",
+            "Sostenibilidad rural",
+            "gastronomía responsable",
+            "Castilla-La Mancha",
+            "Unión Europea"
+        ]
+    },
+    {
+        "fuente": "Adiman (repost de ADIMAN)",
+        "resumen": "ADIMAN, el Grupo de Acción Local, ha sellado un importante acuerdo de cooperación transnacional con Pays du Bocage, un grupo similar de Normandía, y otras entidades francesas. Este convenio tiene como finalidad primordial impulsar un modelo de turismo sostenible en territorios con un alto valor natural.\nEl proyecto busca específicamente desarrollar un turismo que sea tanto respetuoso con el medio ambiente como inteligente, con el objetivo de dinamizar la economía local sin menoscabar el valioso patrimonio natural existente. Entre las metas concretas de esta iniciativa se encuentra la significativa reducción de la huella de carbono asociada a la actividad turística.\nAdemás, se pondrá especial énfasis en mejorar la accesibilidad de las infraestructuras turísticas para personas con discapacidad y en garantizar la protección de los recursos naturales. Esta colaboración transnacional permitirá un valioso intercambio de conocimientos y experiencias entre los territorios involucrados. El fin último es optimizar las inversiones y fortalecer iniciativas innovadoras que aporten un valor añadido real al medio rural, fomentando así su desarrollo y preservación.",
+        "titulo": "🤝 ADIMAN ha firmado un acuerdo de cooperación transnacional con el Grupo de Acción Local francés Pays du Bocage y otras...",
+        "sitio": "Adiman",
+        "fecha": "2026-03-09",
+        "id": "e49c91aa05f4733398fe0aeb8d1681a1",
+        "es_breve": false,
+        "entidades_clave": [
+            "ADIMAN",
+            "Grupo de Acción Local",
+            "Pays du Bocage",
+            "Normandía",
+            "turismo sostenible",
+            "huella de carbono",
+            "medio rural"
+        ]
+    },
+    {
+        "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
+        "resumen": "Nos informan desde Campos de Hellín sobre la agenda de actividades previstas en el territorio. Esta iniciativa, enmarcada dentro de las acciones de Desarrollo Rural y del programa Lider, busca potenciar el Medio Rural de Castilla-La Mancha. La agenda semanal ha sido publicada recientemente, detallando los diversos encuentros y eventos programados que se desarrollarán en los próximos días. Estas actividades están diseñadas para fortalecer la cohesión territorial y promover la participación ciudadana en los Campos de Hellín. Se espera que estas acciones contribuyan a dinamizar la economía local y a visibilizar las potencialidades de la región. La información completa sobre la agenda está disponible para consulta.",
+        "titulo": "🗓️ 𝗔𝗴𝗲𝗻𝗱𝗮 𝘀𝗲𝗺𝗮𝗻𝗮𝗹 | 𝗖𝗮𝗺𝗽𝗼𝘀 𝗱𝗲 𝗛𝗲𝗹𝗹𝗶́𝗻 Compartimos la agenda de la semana con algunas de las...",
+        "sitio": "Grupo Campos de Hellin",
+        "fecha": "2026-03-09",
+        "id": "009f867fd933d9952e6f85f0aae5c3d2",
+        "es_breve": false,
+        "entidades_clave": [
+            "Campos de Hellín",
+            "Agenda semanal",
+            "Desarrollo Rural",
+            "Lider (programa)",
+            "Medio Rural",
+            "Castilla-La Mancha"
+        ]
+    },
+    {
+        "fuente": "Grupo Campos de Hellin (repost de REDR)",
+        "resumen": "Desde REDR nos informan del lanzamiento de cuatro talleres presenciales gratuitos diseñados para capacitar en el acceso y la gestión de financiación europea. Esta formación, titulada \"Transformando tu territorio con la UE\", está especialmente pensada para entidades del tercer sector, ayuntamientos y Grupos de Acción Local. Los participantes explorarán de forma práctica programas como el programa Ciudadanos, Igualdad, Derechos y Valores, el Fondo de Asilo, Migración e Integración, Horizonte Europa, y Europa Creativa y Europa Digital.\nLos talleres abordarán convocatorias abiertas y previstas, cómo formular ideas de proyecto, y presentarán casos prácticos adaptados a los territorios, además de ofrecer claves para la participación en consorcios europeos. El primer taller, centrado en el programa CERV, se celebrará en Valencia el 14 de abril, comenzando a las nueve y media de la mañana y extendiéndose hasta la una y cuarenta y cinco del mediodía. Las plazas son limitadas a veinticinco personas por sesión. Este proyecto cuenta con la financiación del Ministerio de Derechos Sociales, Consumo y Agenda 2030, en colaboración con la Unión Europea.",
+        "titulo": "🌍 ¿Quieres impulsar proyectos europeos desde tu territorio? Desde REDR lanzamos 4 talleres presenciales gratuitos para...",
+        "sitio": "Grupo Campos de Hellin",
+        "fecha": "2026-03-09",
+        "id": "39bf7a9cf9fae614912c3a19167e0c57",
+        "es_breve": false,
+        "entidades_clave": [
+            "Talleres presenciales",
+            "Financiación europea",
+            "Grupos de Acción Local",
+            "Programa CERV",
+            "Valencia",
+            "Ministerio de Derechos Sociales",
+            "Unión Europea"
+        ]
+    },
+    {
+        "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
+        "resumen": "Nos informan desde Grupo Campos de Hellin que la región de Castilla-La Mancha aterriza en el universo de Fortnite con un innovador espacio temático. El juego, titulado 'Legends Of Castilla-La Mancha', permite a los usuarios vivir batallas en una isla recreada que emula emblemáticos escenarios manchegos. El punto de partida es la Plaza Mayor de Tembleque, desde donde los jugadores se desplazan a diversas localizaciones de interés.\nLos participantes pueden obtener recompensas a través de desafíos culturales centrados en la propia Castilla-La Mancha. Además, se encontrarán con figuras históricas y literarias como Don Quijote. El contenido se distribuye por toda la geografía regional, incluyendo la provincia de Albacete con lugares como Alcaraz y Alcalá del Júcar; la de Cuenca con Segóbriga y el Castillo de Belmonte; o Toledo con la Sinagoga de Santa María la Blanca. Esta iniciativa busca fomentar el descubrimiento de la región de una forma lúdica y moderna, integrando la cultura y el patrimonio de Castilla-La Mancha en una plataforma de alcance global.",
+        "titulo": "[#TURISMO] 🎮 ‘Legends Of Castilla-La Mancha’ es el nuevo espacio de la región en la plataforma Fortnite. 🕹️El usuario...",
+        "sitio": "Grupo Campos de Hellin",
+        "fecha": "2026-03-09",
+        "id": "ff1c360cc81d854d6b3a59fe33ef1f28",
+        "es_breve": false,
+        "entidades_clave": [
+            "Fortnite",
+            "Legends Of Castilla-La Mancha",
+            "Castilla-La Mancha",
+            "Tembleque",
+            "Don Quijote",
+            "Albacete",
+            "Cuenca"
+        ]
+    },
+    {
+        "fuente": "Grupo Campos de Hellin (repost de Dipualba)",
+        "resumen": "Nos informan desde Dipualba que se destinarán 115.000 euros a los ayuntamientos para la modernización y organización de sus archivos municipales. Estas ayudas se canalizan a través de dos convocatorias. La primera, dotada con 75.000 euros, está enfocada en trabajos de identificación, organización, instalación y descripción de la documentación histórica. La segunda, con 40.000 euros, se destinará a la mejora de instalaciones y equipamiento necesario para la preservación de estos fondos.\nLas solicitudes para acceder a estas subvenciones podrán presentarse a partir del 16 de marzo de 2026 y hasta el 23 de abril de 2026. El proceso se realizará íntegramente a través de la sede electrónica de Dipualba.\nEstas iniciativas refuerzan el compromiso de la institución provincial con la conservación del patrimonio documental de la región. El objetivo es que los archivos municipales sean espacios más organizados, seguros y accesibles. Esto beneficiará no solo al personal técnico de las administraciones, sino también a investigadores y a la ciudadanía en general, permitiendo preservar la historia y la identidad de nuestros pueblos. Dipualba continúa trabajando para que estos archivos sean verdaderos centros de memoria y transparencia al servicio público.",
+        "titulo": "🗃📜 La #Dipualba pone a disposición de los #ayuntamientos 👉🏻 115.000 € para la modernización y organización de los #a...",
+        "sitio": "Grupo Campos de Hellin",
+        "fecha": "2026-03-09",
+        "id": "5a00d6d2e78508a04cbd5c1d43e3bb00",
+        "es_breve": false,
+        "entidades_clave": [
+            "Dipualba",
+            "ayuntamientos",
+            "archivos municipales",
+            "convocatorias de ayudas",
+            "identificación",
+            "organización",
+            "memoria",
+            "transparencia"
+        ]
+    },
+    {
+        "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
+        "resumen": "Grupo Campos de Hellín informa sobre una iniciativa clave para el bienestar ciudadano. El próximo 12 de marzo, a las diez y media de la mañana, el centro juvenil acogerá una charla sobre alimentación saludable. Esta actividad forma parte del programa de envejecimiento activo, estrechamente ligado a los servicios de teleasistencia. La jornada está abierta no solo a los usuarios habituales de teleasistencia, sino a todo el público general interesado en mejorar sus hábitos alimenticios. La nutrición juega un papel fundamental en la calidad de vida, especialmente para nuestros mayores, y esta charla busca proporcionar herramientas prácticas y accesibles. Se espera una alta participación, subrayando la importancia de estos programas de salud preventiva y de fomento de la vida activa en nuestra comunidad.",
+        "titulo": "Programa de envejecimiento activo del programa de Teleasistencia. Charla sobre alimentación saludable: Centro juvenil, j...",
+        "sitio": "Grupo Campos de Hellin",
+        "fecha": "2026-03-09",
+        "id": "c024c9abf692df10d77d0f64bd927db8",
+        "es_breve": false,
+        "entidades_clave": [
+            "Programa envejecimiento activo",
+            "Teleasistencia",
+            "Alimentación saludable",
+            "Centro juvenil",
+            "12 de marzo"
+        ]
+    },
+    {
+        "fuente": "Entreparques Desarrollo Montes Norte Cabañeros (repost de Entreparques Desarrollo Montes Norte Cabañeros)",
+        "resumen": "Nos informan desde Entreparques Desarrollo Montes Norte Cabañeros sobre el lanzamiento de su nueva Plataforma de Formación. Este ambicioso proyecto busca democratizar el acceso al conocimiento sobre Inteligencia Artificial, o IA, para todos los interesados en el desarrollo rural. La iniciativa se presenta como un espacio práctico, sencillo y enfocado en aplicaciones del mundo real, con el objetivo de capacitar a quienes desean seguir viviendo en un pueblo o impulsar proyectos en estas zonas.\nLa plataforma ofrecerá cursos paso a paso, detallando herramientas de IA que están transformando el panorama laboral actual. La formación abarcará todos los niveles, desde principiantes hasta usuarios más avanzados. Con esta propuesta, Entreparques Desarrollo Montes Norte Cabañeros busca dotar a los residentes de áreas rurales de habilidades clave para adaptarse a la era digital y potenciar el desarrollo local. Este esfuerzo subraya la importancia de la formación continua y la adopción de nuevas tecnologías para revitalizar el tejido social y económico de las comunidades rurales.",
+        "titulo": "🚀 ¡Lanzamos nuestra Plataforma de Formación en Inteligencia Artificial! Un espacio donde podrás aprender a utilizar la...",
+        "sitio": "Entreparques Desarrollo Montes Norte Cabañeros",
+        "fecha": "2026-03-09",
+        "id": "b58a782d83699c9371c3f8f890de9d96",
+        "es_breve": false,
+        "entidades_clave": [
+            "Plataforma de Formación",
+            "Inteligencia Artificial",
+            "IA",
+            "Formación",
+            "desarrollo rural",
+            "vivir en un pueblo"
+        ]
+    },
+    {
+        "fuente": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural (repost de RECAMDER)",
+        "resumen": "En el marco del Día Internacional de la Mujer, celebrado el pasado 8 de marzo, RECAMDER ha querido destacar el papel fundamental que las mujeres desempeñan en el desarrollo del medio rural. Ellas han sido históricamente pilares esenciales en la vida de los pueblos, asumiendo responsabilidades clave que han ayudado a fijar población y a mantener la identidad de nuestros territorios. Hoy, además, son motor de proyectos empresariales e iniciativas innovadoras que generan empleo y oportunidades.\nDesde RECAMDER, junto a los Grupos de Desarrollo Rural, se trabaja para que el medio rural sea un espacio de igualdad real de oportunidades. El objetivo es facilitar la participación activa y el liderazgo femenino en todos los ámbitos. Como muestra de este avance, nos informan que de los veintinueve Grupos de Desarrollo Rural que operan en Castilla-La Mancha, diecinueve cuentan con mujeres ocupando puestos de presidencia, gerencia o ambos cargos. Este dato refleja un avance hacia una mayor igualdad de oportunidades en el desarrollo rural de la región.",
+        "titulo": "🟣En el marco del Día Internacional de la Mujer, que se conmemora este domingo 8 de marzo, RECAMDER ha puesto en valor e...",
+        "sitio": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural",
+        "fecha": "2026-03-09",
+        "id": "633da5be07bdf58046e101c877575e19",
+        "es_breve": false,
+        "entidades_clave": [
+            "RECAMDER",
+            "Día Internacional de la Mujer",
+            "medio rural",
+            "mujeres",
+            "Grupos de Desarrollo Rural",
+            "Castilla-La Mancha",
+            "igualdad de oportunidades"
+        ]
+    },
+    {
+        "fuente": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural (repost de Asociación Alto Guadiana Mancha Grupo Desarrollo Rural)",
+        "resumen": "En el Alto Guadiana Mancha, las mujeres rurales se han consolidado como el motor de desarrollo tanto del presente como del futuro. En conmemoración del Día Internacional de la Mujer, es vital reconocer su papel fundamental. Ellas no solo han sido guardianas de la historia en nuestros pueblos, sino que su esfuerzo, a menudo silencioso, ha mantenido viva la esencia de estas comunidades.\nEste legado evoluciona hacia un liderazgo activo. Cada vez más mujeres en la comarca están emprendiendo, creando empresas y liderando proyectos que no solo generan empleo, sino que también revitalizan la economía local. Estos impulsos son posibles gracias al programa LEADER, que apoya iniciativas de mujeres que eligen su pueblo como base para su desarrollo profesional y vital.\nGracias a este emprendimiento femenino, el Alto Guadiana Mancha ahora cuenta con servicios innovadores que mejoran la calidad de vida. Clínicas de bienestar, alojamientos rurales, comercios locales y servicios educativos son algunos ejemplos de cómo estas iniciativas dinamizan la economía y son cruciales para fijar población.\nDesde la Asociación Alto Guadiana Mancha Grupo de Desarrollo Rural, queremos extender nuestro reconocimiento a todas las mujeres que, con su trabajo diario, construyen el presente y aseguran el futuro de nuestros pueblos. Este reconocimiento se hace extensible a las mujeres que forman parte de nuestra Junta Directiva y de nuestro equipo técnico.",
+        "titulo": "🌸 𝗟𝗮𝘀 𝗺𝘂𝗷𝗲𝗿𝗲𝘀 𝗿𝘂𝗿𝗮𝗹𝗲𝘀: 𝗺𝗼𝘁𝗼𝗿 𝗱𝗲𝗹 𝗽𝗿𝗲𝘀𝗲𝗻𝘁𝗲 𝘆 𝗱𝗲𝗹 𝗳𝘂𝘁𝘂𝗿𝗼 𝗲𝗻 𝗔𝗹𝘁𝗼 𝗚𝘂𝗮�...",
+        "sitio": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural",
+        "fecha": "2026-03-09",
+        "id": "55fb9a3fc9d11e0dc9b4c8e45a3ded8b",
+        "es_breve": false,
+        "entidades_clave": [
+            "mujeres rurales",
+            "Alto Guadiana Mancha",
+            "Día Internacional de la Mujer",
+            "emprendimiento femenino",
+            "programa LEADER",
+            "servicios locales",
+            "fijar población"
+        ]
+    },
+    {
+        "fuente": "Entreparques Desarrollo Montes Norte Cabañeros",
+        "resumen": "La Plataforma Entreparques Inteligencia Artificial ha lanzado una iniciativa crucial para democratizar el acceso a esta tecnología. Se trata de una serie de programas diseñados para que cualquier persona pueda aprender a integrar la Inteligencia Artificial en su vida diaria de una manera sencilla y completamente gratuita.\nEl objetivo principal de esta plataforma es eliminar las barreras técnicas y económicas que hasta ahora han limitado el uso generalizado de la Inteligencia Artificial. A través de estos programas, los usuarios podrán adquirir las habilidades necesarias para aprovechar las ventajas de herramientas de IA, facilitando así sus tareas cotidianas y abriendo nuevas posibilidades.\nEsta iniciativa busca fomentar una comprensión más profunda de la Inteligencia Artificial y su potencial transformador. Al hacerla accesible a todos, la Plataforma Entreparques Inteligencia Artificial da un paso importante hacia la creación de una sociedad más preparada para el futuro tecnológico.",
+        "titulo": "Ya está en marcha la Plataforma Entreparques Inteligencia Artificial, una batería de programas para aprender a utilizar...",
+        "sitio": "Entreparques Desarrollo Montes Norte Cabañeros",
+        "fecha": "2026-03-09",
+        "id": "5159d1d5891dd8e0036e5b18a1d6d290",
+        "es_breve": false,
+        "entidades_clave": [
+            "Plataforma Entreparques Inteligencia Artificial",
+            "Inteligencia Artificial",
+            "vida diaria",
+            "programas",
+            "aprender",
+            "fácil",
+            "gratuita"
+        ]
+    },
+    {
+        "fuente": "Sierra de Alcaraz y Campo de Montiel (repost de Diputación de Albacete)",
+        "resumen": "La Diputación de Albacete ha concedido una subvención de 40.000 euros al Grupo de Desarrollo Rural Sierra de Alcaraz y Campo de Montiel. Esta ayuda, confirmada recientemente por la institución provincial, se destina íntegramente al mantenimiento y funcionamiento de la asociación a lo largo del año 2026.\nEste respaldo económico forma parte de una convocatoria provincial dirigida a los Grupos de Acción Local de Albacete. El objetivo principal es respaldar la labor fundamental que desarrollan estas entidades para impulsar proyectos, dinamizar la economía en las zonas rurales y crear oportunidades reales en los pueblos de la región.\nDesde el Grupo de Desarrollo Rural Sierra de Alcaraz y Campo de Montiel han querido expresar su agradecimiento a la Diputación de Albacete por este apoyo. La subvención les permitirá continuar con su trabajo de fomento del emprendimiento, la mejora de servicios y el desarrollo integral del territorio. La continuidad de estas acciones es clave para garantizar un futuro próspero en la Sierra de Alcaraz y el Campo de Montiel.",
+        "titulo": "💶 𝗟𝗮 𝗔𝘀𝗼𝗰𝗶𝗮𝗰𝗶𝗼́𝗻 𝗚𝗿𝘂𝗽𝗼 𝗱𝗲 𝗗𝗲𝘀𝗮𝗿𝗿𝗼𝗹𝗹𝗼 𝗥𝘂𝗿𝗮𝗹 𝗦𝗶𝗲𝗿𝗿𝗮 𝗱𝗲 𝗔𝗹𝗰𝗮𝗿𝗮𝘇 𝘆 𝗖𝗮𝗺...",
+        "sitio": "Sierra de Alcaraz y Campo de Montiel",
+        "fecha": "2026-03-09",
+        "id": "0fd575831ef9fcd01c9029eda58dfbcf",
+        "es_breve": false,
+        "entidades_clave": [
+            "Grupo Desarrollo Rural",
+            "Sierra de Alcaraz",
+            "Campo de Montiel",
+            "Diputación de Albacete",
+            "Subvención 40.000 euros",
+            "Desarrollo rural",
+            "2026"
+        ]
+    },
+    {
+        "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural (repost de Ayuntamiento)",
+        "resumen": "El arte se abre paso en Corral de Calatrava con un nuevo Taller de Arteterapia, una propuesta que busca la expresión y el bienestar a través de la creatividad. Esta actividad, pensada para fomentar la participación social, tendrá lugar el 12 de marzo de 2026, comenzando sobre las cinco y media de la tarde. Será en el Centro Cultural de la Villa donde los interesados podrán explorar las posibilidades de la arteterapia.\nNos informan desde el Ayuntamiento que las inscripciones ya están abiertas y se realizarán en la propia casa consistorial. Este taller se enmarca dentro de las acciones de sensibilización social impulsadas en la comarca del Campo de Calatrava, brindando un espacio para compartir experiencias y disfrutar del proceso creativo.",
+        "titulo": "🗓️ Agenda Comarcal | Corral de Calatrava El arte y la creatividad se convierten en protagonistas en Corral de Calatrava...",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "fecha": "2026-03-09",
+        "id": "cc0d2a5adc9409709df1d9f46d7b0dfc",
+        "es_breve": false,
+        "entidades_clave": [
+            "Taller de Arteterapia",
+            "Corral de Calatrava",
+            "Centro Cultural de la Villa",
+            "Arteterapia",
+            "Sensibilización social",
+            "Participación social",
+            "Campo de Calatrava"
+        ]
+    },
+    {
+        "fuente": "ADAC Desarrollo Local (repost de ADAC Desarrollo Local)",
+        "resumen": "ADAC Desarrollo Local nos informa sobre el impacto positivo de los fondos europeos LEADER en diversos pueblos de Guadalajara. Esta iniciativa representa una inversión estratégica crucial para el desarrollo de estas localidades, fortaleciendo su tejido socioeconómico y mejorando la calidad de vida de sus habitantes. Los fondos LEADER se centran en proyectos innovadores y sostenibles, promoviendo la creación de empleo y el impulso de actividades que revalorizan el entorno rural. Esta inversión, gestionada por ADAC, busca revitalizar la provincia y asegurar un futuro próspero para sus comunidades, demostrando el valor de la cooperación y la planificación a largo plazo para el progreso de estas zonas.",
+        "titulo": "✅ Recapitulemos: estos son los BENEFICIOS de los fondos europeos LEADER en los pueblos de GUADALAJARA ⬇️ Clica: https://...",
+        "sitio": "ADAC Desarrollo Local",
+        "fecha": "2026-03-09",
+        "id": "fa8e67a8de1ad884f8057a9d8d02c93e",
+        "es_breve": false,
+        "entidades_clave": [
+            "Fondos europeos LEADER",
+            "Pueblos de Guadalajara",
+            "ADAC",
+            "Inversión estratégica"
+        ]
+    },
+    {
+        "fuente": "Prodese (repost de Prodese)",
+        "resumen": "Nos informan desde Prodese que la Serranía de Cuenca avanza en su apuesta por la competitividad turística con la presentación de su Plan de Dinamización Digital Estratégico. Este proyecto busca impulsar el crecimiento, atraer nuevos visitantes y consolidar una oferta turística robusta y profesionalizada. El plan contempla un proceso participativo con empresas, la definición de una hoja de ruta clara, la mejora de herramientas digitales y del portal turístico, así como la capacitación en marketing digital.\nEl evento de presentación tuvo lugar en Sotos y contó con la presencia de Víctor Alcocer, gerente de Prodese, y Nuria Illana, alcaldesa de Sotorribas, junto a profesionales del sector. El Grupo Altia también ha estado involucrado en esta iniciativa. La estrategia busca dotar a la Serranía de Cuenca de herramientas digitales más eficaces y una mayor profesionalización en su posicionamiento de marca. Este paso es fundamental para adaptar el turismo de la región a las exigencias actuales del mercado digital.",
+        "titulo": "👉Hace unos días, presentamos al sector turístico de la comarca el Plan de Dinamización Digital Estratégico para mejorar...",
+        "sitio": "Prodese",
+        "fecha": "2026-03-09",
+        "id": "1954f40b58985b709eabdd7fee2e1ba1",
+        "es_breve": false,
+        "entidades_clave": [
+            "Plan de Dinamización Digital Estratégico",
+            "Serranía de Cuenca",
+            "competitividad turística",
+            "Víctor Alcocer",
+            "Nuria Illana",
+            "Grupo Altia",
+            "Sotos"
+        ]
+    },
+    {
+        "fuente": "Turismo Castilla La Mancha",
+        "resumen": "La Plaza Mayor de Alcaraz se consolida como uno de los conjuntos renacentistas más importantes de Castilla-La Mancha. Este núcleo central de la localidad, que fue configurado entre los siglos XVI y XVII, sirve como epicentro administrativo y social. La plaza está flanqueada por edificios porticados y se distingue por la presencia de dos imponentes torres: la Torre del Tardón y la Torre de la Trinidad. Estas estructuras están íntimamente ligadas a la Iglesia de la Santísima Trinidad, definiendo un perfil monumental singular. El trazado urbano y la arquitectura de la época se mantienen intactos, conservando la esencia histórica del municipio. Actualmente, este enclave patrimonial, ubicado en la provincia de Albacete, sigue siendo un punto de encuentro fundamental para la vida local y uno de los puntos de referencia más reconocidos de la Sierra de Alcaraz.",
+        "titulo": "La Plaza Mayor de Alcaraz es uno de los conjuntos renacentistas más representativos de Castilla-La Mancha. Situada en el...",
+        "sitio": "Turismo Castilla La Mancha",
+        "fecha": "2026-03-09",
+        "id": "049a9dfde55216b73b68bd0e8c2082d6",
+        "es_breve": false,
+        "entidades_clave": [
+            "Plaza Mayor de Alcaraz",
+            "Castilla-La Mancha",
+            "Torre del Tardón",
+            "Torre de la Trinidad",
+            "Iglesia de la Santísima Trinidad",
+            "Albacete",
+            "Sierra de Alcaraz"
+        ]
+    },
+    {
+        "fuente": "Asociación de Turismo Rural de la Manchuela (repost de Asociación de Turismo Rural de la Manchuela)",
+        "resumen": "Desde la Asociación de Turismo Rural de La Manchuela nos informan sobre la riqueza histórica y natural de Alborea, una localidad situada al este de la provincia de Albacete. Este municipio se encuentra en plena comarca de La Manchuela, marcado por la cercanía del Río Cabriel, que delimita su frontera con la Comunidad Valenciana. Los orígenes de Alborea se remontan a la época musulmana, con una antigua torre defensiva conocida como Al-Buyarat. Posteriormente fue repoblada y se consolidó como municipio independiente en el siglo XIX.\nSu patrimonio más destacado es la Iglesia de Nuestra Señora de la Natividad, una imponente construcción barroca del siglo XVIII, apodada la \"Catedral de La Manchuela\". La economía local, tradicionalmente agrícola, se centra en el cultivo de la vid, amparada bajo la Denominación de Origen Manchuela, junto a otros cultivos como el cereal, el olivo y el almendro, y un resurgimiento del interés por el azafrán. Alborea es un ejemplo de cómo la historia, el paisaje y la tradición conviven en el día a día de sus habitantes.",
+        "titulo": "Alborea es una localidad situada al este de la provincia de Albacete, en plena comarca de La Manchuela y a unos 700 metr...",
+        "sitio": "Asociación de Turismo Rural de la Manchuela",
+        "fecha": "2026-03-09",
+        "id": "0e4e1b0257c298d77ba53a821bb473f3",
+        "es_breve": false,
+        "entidades_clave": [
+            "Alborea",
+            "La Manchuela",
+            "Albacete",
+            "Río Cabriel",
+            "Iglesia Nuestra Señora Natividad",
+            "Denominación de Origen Manchuela",
+            "Época musulmana"
         ]
     }
 ]
