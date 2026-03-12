@@ -1584,9 +1584,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     noticias_descartadas.append({
                         "titulo": titulo_safe,
                         "sitio": noticia.get('sitio', 'Desconocido'),
-                    "motivo": f"Contenido muy breve ({len(texto_limpio.split())} palabras frente a m\u00ednimo {MIN_WORDS_FOR_AUDIO})"
-                })
-                continue
+                        "motivo": f"Contenido muy breve ({len(texto_limpio.split())} palabras frente a mínimo {MIN_WORDS_FOR_AUDIO})"
+                    })
+                    continue
 
             # === FASE 3: Sentimiento ===
             print(f"      -> Fase 3/3: Analizando sentimiento...")
