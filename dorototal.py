@@ -27,8 +27,8 @@ from src.config.settings import (
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
     NGRAM_N, KEYPHRASE_MIN_COUNT, MIN_NEWS_PER_BLOCK, 
     MAX_DYNAMIC_KEYPHRASES, MIN_WORDS_FOR_AUDIO, AUDIENCE_QUESTIONS_FILE, 
-    SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS_MATRIX
-
+    SPANISH_STOPWORDS, AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, INTERPRET_CTAS_MATRIX,
+    AUDIO_CACHE_DIR
 )
 from src.core.text_processing import (
     strip_accents, reparar_codificacion, normalize_text_for_similarity, tokens, 
@@ -713,126 +713,89 @@ def extraer_nombre_de_url(url: str) -> str:
 # NUEVA FUNCIÓN REFRACTORIZADA PARA GESTIONAR AUDIO Y CTAs
 # =================================================================================
 
-def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
-    """Genera un segmento de audio para una noticia individual. Devuelve (audio, texto)."""
+def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
+    """
+    Wrapper que maneja la generación de audio para una noticia y su almacenamiento en caché (disco).
+    """
+    noticia_id = noticia.get('id', 'unknown')
+    # Usar hash del resumen para el nombre del archivo si no hay ID fiable
+    if noticia_id == 'unknown':
+        noticia_id = calculate_hash(noticia.get('resumen', ''))
     
-    texto_narracion = "" 
+    # Check si ya existe en caché de disco (AUDIO_CACHE_DIR)
+    # Por ahora usamos una carpeta simple 'audio_cache'
+    os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
     
-    fuente = datos.get('fuente', '')
-    resumen = datos.get('resumen', '')
-    es_breve = datos.get('es_breve', False)
-    fecha_noticia = datos.get('fecha', 'Desconocida')
-    print(f"  📰 Generando narración para noticia individual: {fuente}")
+    # El archivo de audio se nombra por su ID para ser único
+    audio_filename = f"news_{noticia_id}.mp3"
+    text_filename = f"news_{noticia_id}.txt"
+    audio_file_path = os.path.join(AUDIO_CACHE_DIR, audio_filename)
+    text_file_path = os.path.join(AUDIO_CACHE_DIR, text_filename)
     
-    if es_breve:
-        print("      -> Noticia breve: manteniendo concisión")
-        texto_narracion = f"Desde {fuente}: {resumen}"
-    else:
-        texto_narracion_generado = generar_texto_con_gemini(
-            mcmcn_prompts.PromptsCreativos.narracion_profesional(
-                fuentes=fuente, 
-                resumen=resumen, 
-                fecha_noticia_str=fecha_noticia,
-                fecha_actual_str=fecha_actual_str,
-                contexto_tematico=None
-            )
-        )        
-        if not texto_narracion_generado:
-            print("      ⚠️ Error generando narración individual. Usando formato simple.")
-            texto_narracion = f"Desde {fuente}, nos llega la noticia de que: {resumen}"
-        else:
-            texto_narracion = texto_narracion_generado
+    # 1. Si existe, cargar audio y texto directamente
+    if os.path.exists(audio_file_path):
+        print(f"      ⏩ Usando audio de noticia en caché: {noticia.get('fuente')}")
+        try:
+            audio = AudioSegment.from_file(audio_file_path, format="mp3")
+            texto = ""
+            if os.path.exists(text_file_path):
+                with open(text_file_path, 'r', encoding='utf-8') as f:
+                    texto = f.read()
+            return audio, texto
+        except Exception as e:
+            print(f"      ⚠️ Error cargando audio caché: {e}")
     
-    if not texto_narracion:
-        print("      ❌ No se pudo generar ninguna narración. Devolviendo silencio.")
-        return AudioSegment.silent(duration=100), ""
+    # 2. Si no existe o falló la carga, generar nuevo
+    print(f"  🎤 Generando nuevo audio para noticia (cambios detectados o no existe): {noticia.get('fuente')}")
+    audio_generado, texto_generado = _generar_audio_noticia(noticia, fecha_actual_str)
     
-    texto_narracion = limpiar_artefactos_ia(texto_narracion)
+    if audio_generado:
+        try:
+            audio_generado.export(audio_file_path, format="mp3")
+            # Guardar también el texto generado
+            if texto_generado:
+                with open(text_file_path, 'w', encoding='utf-8') as f:
+                    f.write(texto_generado)
+            return audio_generado, texto_generado
+        except Exception as e:
+            print(f"      ❌ Error al guardar audio/texto en caché: {e}")
     
-    # --- GENERACIÓN ESTÁNDAR ---
-    # Escapar el texto ANTES de añadir las etiquetas SSML
-    texto_narracion_escapado = html.escape(texto_narracion)
+    return None, ""
 
-    # Dividir el texto en frases para aplicar prosodia variable
-    frases = re.split('([.?!])', texto_narracion_escapado)
+def _sintetizar_con_cache_estructural(texto: str) -> AudioSegment:
+    """
+    Wrapper para sintetizar audio estructural (Intro, Bloques, Cierre) usando caché.
+    Si el texto ya tiene un audio generado con la misma voz, lo reutiliza.
+    """
+    if not texto:
+        return None
+        
+    # Calcular hash del texto + voz actual (para invalidar si cambiamos de voz)
+    unique_key = f"{texto}_{VOICE_NAME}"
+    key_hash = calculate_hash(unique_key)
     
-    # Reconstruir las frases con su puntuación
-    frases_completas = [frases[i] + (frases[i+1] if i+1 < len(frases) else '') for i in range(0, len(frases), 2)]
-
-    texto_narracion_ssml = ""
-    for frase in frases_completas:
-        if frase.strip():
-            # Aplicar una ligera variación aleatoria al ritmo de cada frase
-            rate = f"{random.uniform(0.98, 1.02):.2f}"
-            texto_narracion_ssml += f'<prosody rate="{rate}">{frase.strip()}</prosody><break time="450ms"/>'
+    os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
+    filename = f"struct_{key_hash}.mp3"
+    audio_path = os.path.join(AUDIO_CACHE_DIR, filename)
     
-    print(f"      ✅ Narración generada: '{texto_narracion[:80]}...' ")
-    
-    audio_segment = sintetizar_ssml_a_audio(f"<speak>{texto_narracion_ssml}</speak>")
-    if audio_segment:
-        return audio_segment, texto_narracion
-    return None, texto_narracion
-
-def _generar_resumen_final(noticias_agrupadas: dict) -> str:
-    """Genera un resumen final conciso de todos los temas y noticias cubiertas."""
-    noticias_individuales = noticias_agrupadas.get('noticias_individuales', [])
-    bloques_tematicos = noticias_agrupadas.get('bloques_tematicos', [])
-    
-    contexto = []
-    if bloques_tematicos:
-        contexto.append("Temas tratados:")
-        for bloque in bloques_tematicos:
-            temas = bloque.get('descripcion_tema', 'varios temas')
-            noticias_por_bloque = [n.get('resumen') for n in bloque.get('noticias', [])]
-            contexto.append(f"- {temas}: " + " y ".join(noticias_por_bloque[:2]))
-    if noticias_individuales:
-        contexto.append("También cubrimos noticias individuales sobre:")
-        for noticia in noticias_individuales:
-            contexto.append(f"- {noticia.get('resumen')[:100]}...")
+    # 1. Check Caché
+    if os.path.exists(audio_path):
+        print(f"      ⏩ Usando audio estructural en caché")
+        try:
+            return AudioSegment.from_file(audio_path)
+        except Exception as e:
+            print(f"      ⚠️ Error leyendo audio estructural caché: {e}")
             
-    prompt = mcmcn_prompts.PromptsCreativos.resumen_final(
-        contexto='\n'.join(contexto)
-    )
+    # 2. Generar si no existe
+    audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto)}</speak>")
     
-    texto_resumen_ia = generar_texto_con_gemini(prompt)
-    
-    # <-- LÍNEA AÑADIDA: Limpiamos la salida de la IA antes de devolverla
-    texto_resumen = limpiar_artefactos_ia(texto_resumen_ia) if texto_resumen_ia else ""
-
-    if not texto_resumen:
-        print("      ⚠️ No se pudo generar el resumen final con IA. Usando un resumen simple.")
-        temas_desc = [b.get('descripcion_tema') for b in bloques_tematicos]
-        resumenes_ind = [n.get('resumen') for n in noticias_individuales]
-        texto_resumen = "En resumen, hoy hablamos sobre " + ", ".join(temas_desc)
-        if resumenes_ind:
-            texto_resumen += " y otras noticias como " + ", ".join(resumenes_ind[:2]) + "..."
-    
-    return texto_resumen
-
-def analizar_sentimiento_general_noticias(resumenes: List[Dict[str, Any]]) -> str:
-    """
-    Analiza el sentimiento general de una lista de noticias y devuelve el más común.
-    Para optimizar, solo analiza un máximo de 5 noticias.
-    """
-    if not resumenes:
-        return "neutro"
-
-    sentimientos = []
-    # Para no hacer demasiadas llamadas a la API, analizamos un máximo de 5 noticias
-    # representativas para obtener el tono general.
-    for noticia in resumenes[:5]:
-        texto_resumen = noticia.get('resumen', '')
-        if texto_resumen:
-            prompt = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_resumen)
-            sentimiento = generar_texto_con_gemini(prompt).lower().strip()
-            if sentimiento in ['positivo', 'negativo', 'neutro']:
-                sentimientos.append(sentimiento)
-
-    if not sentimientos:
-        return "neutro"
-
-    # Devolver el sentimiento más común
-    return Counter(sentimientos).most_common(1)[0][0]
+    if audio:
+        try:
+            audio.export(audio_path, format="mp3")
+        except Exception as e:
+            print(f"      ❌ Error guardando caché estructural: {e}")
+            
+    return audio
 
 # =================================================================================
 # FUNCIONES AUXILIARES MEJORADAS
@@ -893,7 +856,7 @@ def _get_cta_text(tipo: str, dia_semana: str, base_dir: str) -> str:
 
 
 def _sintetizar(texto: str) -> AudioSegment:
-    """Sintetiza texto a audio directamente, sin caché."""
+    """Sintetiza texto a audio directamente, sin caché (usa sintetizar_ssml_a_audio)."""
     if not texto:
         return None
     return sintetizar_ssml_a_audio(f"<speak>{html.escape(texto)}</speak>")
@@ -1989,7 +1952,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # Parte 1: Saludo + Resumen
                 if partes[0].strip():
                     # Usar wrapper con caché
-                    audio_p1 = _sintetizar(partes[0].strip())
+                    audio_p1 = _sintetizar_con_cache_estructural(partes[0].strip())
                     if audio_p1:
                         segmentos_audio.append(audio_p1)
                 
@@ -2000,19 +1963,19 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # Insertar el CTA Literal de Inicio si la interpretación está apagada
                 if not debe_interpretar_cta("inicio", dia_semana_str) and cta_inicio_limpio:
                     print("      📢 Insertando CTA Literal de inicio...")
-                    audio_cta_estatico = _sintetizar(cta_inicio_limpio)
+                    audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
                     if audio_cta_estatico:
                         segmentos_audio.append(audio_cta_estatico)
                         segmentos_audio.append(agregar_transicion()) # Transición post-CTA literal
 
                 # Parte 2: CTA + Adivinanza + Cierre
                 if len(partes) > 1 and partes[1].strip():
-                    audio_p2 = _sintetizar(partes[1].strip())
+                    audio_p2 = _sintetizar_con_cache_estructural(partes[1].strip())
                     if audio_p2:
                         segmentos_audio.append(audio_p2)
             else:
                 # Comportamiento normal si no hay marcador (o si lo saltamos aposta por matrix = False)
-                monologo_inicio_audio = _sintetizar(texto_limpio)
+                monologo_inicio_audio = _sintetizar_con_cache_estructural(texto_limpio)
                 if monologo_inicio_audio:
                     segmentos_audio.append(monologo_inicio_audio)
                 
@@ -2024,7 +1987,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         segmentos_audio.append(cortinilla_cta_audio)
                     else:
                         segmentos_audio.append(agregar_transicion())
-                    audio_cta_estatico = _sintetizar(cta_inicio_limpio)
+                    audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
                     if audio_cta_estatico:
                         segmentos_audio.append(audio_cta_estatico)
         else:
@@ -2113,7 +2076,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     for i, parrafo in enumerate(parrafos):
                         # Generamos audio para este párrafo/noticia
                         # Usar wrapper con caché
-                        audio_parrafo = _sintetizar(parrafo)
+                        audio_parrafo = _sintetizar_con_cache_estructural(parrafo)
                         if audio_parrafo:
                             audio_cronica += audio_parrafo
                             # Si NO es el último párrafo, añadimos la cortinilla
@@ -2129,7 +2092,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                     audio_cronica += AudioSegment.silent(duration=600)
                 else:
                     # Fallback: Si solo hay 1 párrafo, lo hacemos todo junto
-                    audio_cronica = _sintetizar(cronica_unificada_texto)
+                    audio_cronica = _sintetizar_con_cache_estructural(cronica_unificada_texto)
                 # ------------------------------------------------------------------
                 sentimiento_bloque = analizar_sentimiento_general_noticias(bloque.get('noticias', []))
                 
@@ -2170,7 +2133,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             texto_cta_reescrito = cta_intermedio_limpio
 
                         if texto_cta_reescrito:
-                            cta_intermedio_audio = _sintetizar(texto_cta_reescrito)
+                            cta_intermedio_audio = _sintetizar_con_cache_estructural(texto_cta_reescrito)
                             if cta_intermedio_audio:
                                 # Insertamos: [Cortinilla] -> [CTA] -> [Transición existente]
                                 # 1. Insertamos el CTA antes de la última transición (index -1)
@@ -2189,8 +2152,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         # 2. Procesar noticias individuales restantes
         for noticia in noticias_individuales:
-            audio_noticia, texto_noticia = _generar_audio_noticia(noticia, fecha_actual_str)
-
+            audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str) # <-- Unpack tuple
             if audio_noticia:
                 transcript_data.append({
                     'type': 'news',
@@ -2296,7 +2258,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                          data_prog = json.loads(json_limpio)
                          intro_txt = data_prog.get("intro", "")
                          outro_txt = data_prog.get("outro", "")
-                     except:
+                     except Exception as e:
                          print(f"      ⚠️ Error parseando JSON de audio programado: {e}")
                  
                  # Si falla la IA, usamos genéricos
@@ -2309,9 +2271,9 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                  
                  transcript_data.append({'type': 'scheduled_audio_intro', 'content': intro_txt})
                  
-                 audio_intro_prog = sintetizar_ssml_a_audio(f"<speak>{html.escape(intro_txt)}</speak>")
+                 audio_intro_prog = _sintetizar_con_cache_estructural(intro_txt)
                  audio_file_prog = AudioSegment.from_file(archivo_programado)
-                 audio_outro_prog = sintetizar_ssml_a_audio(f"<speak>{html.escape(outro_txt)}</speak>")
+                 audio_outro_prog = _sintetizar_con_cache_estructural(outro_txt)
                  
                  if audio_intro_prog and audio_file_prog and audio_outro_prog:
                       # Insertar: Transición -> Intro -> Audio -> Outro -> Transición
@@ -2408,13 +2370,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     texto_reaccion = guion_respuesta # Fallback
                 
                 # 3. Sintetizar y ensamblar
-                audio_intro_oyente = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_intro)}</speak>")
+                audio_intro_oyente = _sintetizar_con_cache_estructural(texto_intro)
                 
                 # Cargar y normalizar audio oyente
                 segmento_oyente = AudioSegment.from_file(audio_oyente_path)
                 segmento_oyente = masterizar_a_lufs(segmento_oyente, TARGET_LUFS)
                 
-                audio_reaccion_oyente = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto_reaccion)}</speak>")
+                audio_reaccion_oyente = _sintetizar_con_cache_estructural(texto_reaccion)
                 
                 if audio_intro_oyente and audio_reaccion_oyente:
                      segmentos_audio.append(agregar_transicion())
@@ -2511,9 +2473,8 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             print(f"      ✅ Monólogo final generado: '{texto_limpio[:100]}...'")
             transcript_data.append({'type': 'outro', 'content': texto_limpio}) # <-- Capturar cierre
             
-            # Insertar CTA Literal de cierre si la matriz dice False
-            interpr_cierre = debe_interpretar_cta("cierre", dia_semana_str)
-            if not interpr_cierre and cta_cierre_limpio:
+            # Insertar el CTA Literal de cierre si la interpretación está apagada
+            if not debe_interpretar_cta("cierre", dia_semana_str) and cta_cierre_limpio:
                 print("      📢 Insertando CTA Literal de cierre...")
                 if cortinilla_cta_audio:
                     segmentos_audio.append(cortinilla_cta_audio)
