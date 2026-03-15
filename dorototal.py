@@ -713,6 +713,67 @@ def extraer_nombre_de_url(url: str) -> str:
 # NUEVA FUNCIÓN REFRACTORIZADA PARA GESTIONAR AUDIO Y CTAs
 # =================================================================================
 
+def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
+    """Genera un segmento de audio para una noticia individual. Devuelve (audio, texto)."""
+    
+    texto_narracion = "" 
+    
+    fuente = datos.get('fuente', '')
+    resumen = datos.get('resumen', '')
+    es_breve = datos.get('es_breve', False)
+    fecha_noticia = datos.get('fecha', 'Desconocida')
+    print(f"  📰 Generando narración para noticia individual: {fuente}")
+    
+    if es_breve:
+        print("      -> Noticia breve: manteniendo concisión")
+        texto_narracion = f"Desde {fuente}: {resumen}"
+    else:
+        texto_narracion_generado = generar_texto_con_gemini(
+            mcmcn_prompts.PromptsCreativos.narracion_profesional(
+                fuentes=fuente, 
+                resumen=resumen, 
+                fecha_noticia_str=fecha_noticia,
+                fecha_actual_str=fecha_actual_str,
+                contexto_tematico=None
+            )
+        )        
+        if not texto_narracion_generado:
+            print("      ⚠️ Error generando narración individual. Usando formato simple.")
+            texto_narracion = f"Desde {fuente}, nos llega la noticia de que: {resumen}"
+        else:
+            texto_narracion = texto_narracion_generado
+    
+    if not texto_narracion:
+        print("      ❌ No se pudo generar ninguna narración. Devolviendo silencio.")
+        return AudioSegment.silent(duration=100), ""
+    
+    texto_narracion = limpiar_artefactos_ia(texto_narracion)
+    
+    # --- GENERACIÓN ESTÁNDAR ---
+    # Escapar el texto ANTES de añadir las etiquetas SSML
+    texto_narracion_escapado = html.escape(texto_narracion)
+
+    # Dividir el texto en frases para aplicar prosodia variable
+    frases = re.split('([.?!])', texto_narracion_escapado)
+    
+    # Reconstruir las frases con su puntuación
+    frases_completas = [frases[i] + (frases[i+1] if i+1 < len(frases) else '') for i in range(0, len(frases), 2)]
+
+    texto_narracion_ssml = ""
+    for frase in frases_completas:
+        if frase.strip():
+            # Aplicar una ligera variación aleatoria al ritmo de cada frase
+            rate = f"{random.uniform(0.98, 1.02):.2f}"
+            texto_narracion_ssml += f'<prosody rate="{rate}">{frase.strip()}</prosody><break time="450ms"/>'
+    
+    print(f"      ✅ Narración generada: '{texto_narracion[:80]}...' ")
+    
+    audio_segment = sintetizar_ssml_a_audio(f"<speak>{texto_narracion_ssml}</speak>")
+    if audio_segment:
+        return audio_segment, texto_narracion
+    return None, texto_narracion
+
+
 def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tuple[AudioSegment | None, str]:
     """
     Wrapper que maneja la generación de audio para una noticia y su almacenamiento en caché (disco).
