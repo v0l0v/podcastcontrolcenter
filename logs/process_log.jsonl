@@ -1,89 +1,36 @@
-{"timestamp": "2026-03-13T01:35:55.288756", "level": "STEP", "message": "Etapa: Inicio del Proceso", "details": {"status": "START"}}
-{"timestamp": "2026-03-13T01:35:55.288846", "level": "INFO", "message": "Directorio de salida: podcast_apg_20260313_013555", "details": {}}
-{"timestamp": "2026-03-13T01:35:55.288899", "level": "STEP", "message": "Etapa: Lectura de Feeds RSS", "details": {"status": "RUNNING"}}
-{"timestamp": "2026-03-13T01:35:55.288990", "level": "INFO", "message": "Configuración efectiva: ventana 48h, máx. 1 noticias", "details": {}}
-{"timestamp": "2026-03-13T01:35:55.289036", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/zF3rkr11LhfodfDK.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:55.634986", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/nZ6YrgAg1JWKbzAV.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:55.949370", "level": "INFO", "message": "Noticia encontrada: 😍Compartimos este interesante ...", "details": {"details": {"source": "Adecor Grupo de Desarrollo Rural Campana de Oropesa"}}}
-{"timestamp": "2026-03-13T01:35:55.949830", "level": "INFO", "message": "Noticia encontrada: 🧐¿Eres persona trabajadora aut...", "details": {"details": {"source": "Adecor Grupo de Desarrollo Rural Campana de Oropesa"}}}
-{"timestamp": "2026-03-13T01:35:55.950156", "level": "INFO", "message": "Noticia encontrada: 🧐¿Aún no tienes planes para es...", "details": {"details": {"source": "Adecor Grupo de Desarrollo Rural Campana de Oropesa"}}}
-{"timestamp": "2026-03-13T01:35:55.950346", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/z6CbMqmjkXKHIq4J.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:56.266964", "level": "INFO", "message": "Noticia encontrada: 🔵En ADC-Tierras de Talavera ge...", "details": {"details": {"source": "Tierras de Talavera"}}}
-{"timestamp": "2026-03-13T01:35:56.267377", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/r2fTCS3vBviYiEp0.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:56.586553", "level": "INFO", "message": "Noticia encontrada: 💡¿Te apetece seguir conociendo...", "details": {"details": {"source": "Asociación Comarcal Don Quijote de la Mancha"}}}
-{"timestamp": "2026-03-13T01:35:56.586860", "level": "INFO", "message": "Noticia encontrada: 📲 Reunión informativa:  Formac...", "details": {"details": {"source": "Asociación Comarcal Don Quijote de la Mancha"}}}
-{"timestamp": "2026-03-13T01:35:56.587009", "level": "INFO", "message": "Noticia encontrada: 👉¡Nuevas ofertas de empleo en ...", "details": {"details": {"source": "Asociación Comarcal Don Quijote de la Mancha"}}}
-{"timestamp": "2026-03-13T01:35:56.587241", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/JPBmhI6urbvEKJ8b.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:56.879858", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/8FeWXz8PghV8HFxI.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:57.218912", "level": "INFO", "message": "Noticia encontrada: 🧐 ¿Eres persona trabajadora au...", "details": {"details": {"source": "Prodese"}}}
-{"timestamp": "2026-03-13T01:35:57.219365", "level": "INFO", "message": "Noticia encontrada: ✅El Centro Social Polivalente ...", "details": {"details": {"source": "Prodese"}}}
-{"timestamp": "2026-03-13T01:35:57.219560", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/mDQuvoIMzcZjfQcm.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:57.578784", "level": "INFO", "message": "Noticia encontrada: 🎨Ya está en marcha el IX Concu...", "details": {"details": {"source": "ADS Valle de Alcudia"}}}
-{"timestamp": "2026-03-13T01:35:57.579246", "level": "INFO", "message": "Noticia encontrada: 🔊Si eres persona trabajadora a...", "details": {"details": {"source": "ADS Valle de Alcudia"}}}
-{"timestamp": "2026-03-13T01:35:57.579460", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/54yTCGGyOMGbdSgO.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:57.907092", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/5LrPxphUyYqzdccb.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:58.186297", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/1iKtqVRtM6WnNFMN.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:58.493385", "level": "INFO", "message": "Noticia encontrada: ⏳ 𝗨́𝗟𝗧𝗜𝗠𝗢𝗦 𝗗𝗜́𝗔𝗦 · 𝗣𝗟𝗔𝗭𝗢 𝗛𝗔𝗦𝗧𝗔...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.493795", "level": "INFO", "message": "Noticia encontrada: ¡𝗙𝗜𝗥𝗠𝗔 𝗘𝗡 𝗗𝗘𝗙𝗘𝗡𝗦𝗔 𝗗𝗘𝗟 𝗠𝗘𝗗𝗜𝗢 𝗥𝗨...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494010", "level": "INFO", "message": "Noticia encontrada: 🌿Cabe destacar que este curso ...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494151", "level": "INFO", "message": "Noticia encontrada: GrupoCamposdeHellin: Estos son...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494339", "level": "INFO", "message": "Noticia encontrada: Taller para descansar mejor y ...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494519", "level": "INFO", "message": "Noticia encontrada: FIESTAS PATRONALES DE ONTUR 20...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494704", "level": "INFO", "message": "Noticia encontrada: [#AUTÓNOMOS] 💻Jornada online d...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.494956", "level": "INFO", "message": "Noticia encontrada: [#TURISMO]  🛻 Ayudas de Junta ...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.495232", "level": "INFO", "message": "Noticia encontrada: 🫟🧩Talleres infantiles de Seman...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.495576", "level": "INFO", "message": "Noticia encontrada: 🍢🍰 IX RUTA DE LA TAPA Y DEL PO...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.496010", "level": "INFO", "message": "Noticia encontrada: ✨ Cartel de la Semana Santa 20...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.496360", "level": "INFO", "message": "Noticia encontrada: ¡𝗙𝗜𝗥𝗠𝗔 𝗘𝗡 𝗗𝗘𝗙𝗘𝗡𝗦𝗔 𝗗𝗘𝗟 𝗠𝗘𝗗𝗜𝗢 𝗥𝗨...", "details": {"details": {"source": "Grupo Campos de Hellin"}}}
-{"timestamp": "2026-03-13T01:35:58.496525", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/cVA0VcRztLrfgRoM.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:58.942253", "level": "INFO", "message": "Noticia encontrada: ▶️Hoy os mostramos un proyecto...", "details": {"details": {"source": "Grupo Desarrollo Rural Dulcinea"}}}
-{"timestamp": "2026-03-13T01:35:58.942514", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/f4juRhi4mbUQoWak.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:59.261149", "level": "INFO", "message": "Noticia encontrada: 🎭🔥 Las tradiciones siguen viva...", "details": {"details": {"source": "ADEL Sierra Norte"}}}
-{"timestamp": "2026-03-13T01:35:59.261600", "level": "INFO", "message": "Noticia encontrada: 📍 Más inversión, más proyectos...", "details": {"details": {"source": "ADEL Sierra Norte"}}}
-{"timestamp": "2026-03-13T01:35:59.261799", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/OoRpa80EvZSa3uwY.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:59.568358", "level": "INFO", "message": "Noticia encontrada: 📌La Diputación de Cuenca incre...", "details": {"details": {"source": "Adi El Záncara"}}}
-{"timestamp": "2026-03-13T01:35:59.568795", "level": "INFO", "message": "Noticia encontrada: Desde A.D.I. El Záncara nos su...", "details": {"details": {"source": "Adi El Záncara"}}}
-{"timestamp": "2026-03-13T01:35:59.569061", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/NwkCRgx017cgTvnw.xml", "details": {}}
-{"timestamp": "2026-03-13T01:35:59.896399", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/QP73IGqub8p5TMRe.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:00.229573", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/4GGooF0wn9wcnVLP.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:00.580922", "level": "INFO", "message": "Noticia encontrada: 📚 Agenda Comarcal | Carrión de...", "details": {"details": {"source": "Asociación Campo de Calatrava Grupo Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:00.581377", "level": "INFO", "message": "Noticia encontrada: 📚✨ Agenda Comarcal | Almagro |...", "details": {"details": {"source": "Asociación Campo de Calatrava Grupo Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:00.581703", "level": "INFO", "message": "Noticia encontrada: 🎼✨ XX Aniversario | Gala-Conci...", "details": {"details": {"source": "Asociación Campo de Calatrava Grupo Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:00.582074", "level": "INFO", "message": "Noticia encontrada: 📚✨ Agenda Comarcal | Calzada d...", "details": {"details": {"source": "Asociación Campo de Calatrava Grupo Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:00.582317", "level": "INFO", "message": "Noticia encontrada: 🎶 Concierto de Semana Santa 20...", "details": {"details": {"source": "Asociación Campo de Calatrava Grupo Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:00.582500", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/w9WU2jMXtPAqAI0p.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:00.888034", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/blP01cfPxYGW0qmt.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:01.213241", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/5jAsbLo6wRk9PArL.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:01.734870", "level": "INFO", "message": "Noticia encontrada: 📢 Jornada informativa para per...", "details": {"details": {"source": "ADR Molina de Aragón Alto Tajo"}}}
-{"timestamp": "2026-03-13T01:36:01.735187", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/wTDSoYH59x4lw0yS.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:02.152936", "level": "INFO", "message": "Noticia encontrada: Gracias a todas las personas q...", "details": {"details": {"source": "Grupo de Desarrollo Rural Montes de Toledo"}}}
-{"timestamp": "2026-03-13T01:36:02.153211", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/JhmXNEJsGhRy6Yxp.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:02.717077", "level": "INFO", "message": "Noticia encontrada: ▶️¿Formas parte de una organiz...", "details": {"details": {"source": "Fadeta Grupo de Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:02.717542", "level": "INFO", "message": "Noticia encontrada: 💄¿Eres empresaria o emprendedo...", "details": {"details": {"source": "Fadeta Grupo de Desarrollo Rural"}}}
-{"timestamp": "2026-03-13T01:36:02.717764", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/u0Vf7JVpmLobQ5i9.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:03.441068", "level": "INFO", "message": "Noticia encontrada: 🧐¿Sabías que las #ayudas #Lead...", "details": {"details": {"source": "Asociación Mancha Júcar"}}}
-{"timestamp": "2026-03-13T01:36:03.441595", "level": "INFO", "message": "Noticia encontrada: ▶️ Desde el GDR Mancha Júcar-C...", "details": {"details": {"source": "Asociación Mancha Júcar"}}}
-{"timestamp": "2026-03-13T01:36:03.441813", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/zQNSu3S0ejA4UQWA.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:04.099506", "level": "INFO", "message": "Noticia encontrada: 💼🚀 La Junta de Castilla-La Man...", "details": {"details": {"source": "Manchanorte"}}}
-{"timestamp": "2026-03-13T01:36:04.099774", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/C7zUsadhVG0uem6R.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:04.703560", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/RF6J188jJezvJy3D.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:05.302995", "level": "INFO", "message": "Noticia encontrada: 🏡 El Alojamiento Rural La Posa...", "details": {"details": {"source": "Adiman"}}}
-{"timestamp": "2026-03-13T01:36:05.303271", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/WaSQqIAi7SRpNN6G.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:05.863457", "level": "INFO", "message": "Noticia encontrada: 🟢 𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼 𝗱𝗲 𝗰𝗼𝗼𝗽𝗲𝗿𝗮𝗰𝗶𝗼́𝗻 𝗰𝗼𝗻...", "details": {"details": {"source": "Sierra de Alcaraz y Campo de Montiel"}}}
-{"timestamp": "2026-03-13T01:36:05.863890", "level": "INFO", "message": "Noticia encontrada: 📢 𝗔𝗱𝗵𝗶𝗲́𝗿𝗲𝘁𝗲 𝗮𝗹 𝗠𝗮𝗻𝗶𝗳𝗶𝗲𝘀𝘁𝗼 𝗲𝗻 ...", "details": {"details": {"source": "Sierra de Alcaraz y Campo de Montiel"}}}
-{"timestamp": "2026-03-13T01:36:05.864130", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/p5hDntLk0fdMAECl.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:06.211313", "level": "INFO", "message": "Noticia encontrada: 🟢 Europa pone el foco en el re...", "details": {"details": {"source": "ADAC Desarrollo Local"}}}
-{"timestamp": "2026-03-13T01:36:06.211600", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/rs7bhu66fskfLSdz.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:06.536575", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/xQwS9d8teF6zSlfk.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:06.952240", "level": "INFO", "message": "Noticia encontrada: El Palacio del Infantado es un...", "details": {"details": {"source": "Turismo Castilla La Mancha"}}}
-{"timestamp": "2026-03-13T01:36:06.952617", "level": "INFO", "message": "Noticia encontrada: La Feria Apícola Internacional...", "details": {"details": {"source": "Turismo Castilla La Mancha"}}}
-{"timestamp": "2026-03-13T01:36:06.952784", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/LlBdkEqvpdbgyCw5.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:07.293659", "level": "INFO", "message": "Noticia encontrada: Ahora puedes explorar los 25 m...", "details": {"details": {"source": "Asociación de Turismo Rural de la Manchuela"}}}
-{"timestamp": "2026-03-13T01:36:07.294076", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/isQf3IY7IdDqJgEM.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:07.650132", "level": "INFO", "message": "Noticia encontrada: 📍 La Sierra del Segura sigue a...", "details": {"details": {"source": "Grupo de Acción Local Sierra del Segura"}}}
-{"timestamp": "2026-03-13T01:36:07.650387", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/xvAcfCd2bWw8kPi8.xml", "details": {}}
-{"timestamp": "2026-03-13T01:36:07.966753", "level": "INFO", "message": "Noticia encontrada: 🌍✨ La provincia de Toledo vuel...", "details": {"details": {"source": "Turismo Provincia Toledo Page"}}}
-{"timestamp": "2026-03-13T01:36:07.967316", "level": "INFO", "message": "Noticia encontrada: 🌍✨ La provincia de Toledo vuel...", "details": {"details": {"source": "Turismo Provincia Toledo Page"}}}
-{"timestamp": "2026-03-13T01:36:07.967890", "level": "INFO", "message": "Noticia encontrada: 🌿🫒🌰 AOVE&NUTS experience 2026 ...", "details": {"details": {"source": "Turismo Provincia Toledo Page"}}}
-{"timestamp": "2026-03-13T01:36:09.465640", "level": "INFO", "message": "Resumiendo: 🌿🫒🌰 AOVE&NUTS experience 2026 Después de...", "details": {"details": {"length": 673}}}
-{"timestamp": "2026-03-13T01:36:11.076674", "level": "STEP", "message": "Etapa: Generación de Guion y Audios", "details": {"status": "RUNNING"}}
+{"timestamp": "2026-03-15T12:33:46.608124", "level": "STEP", "message": "Etapa: Inicio del Proceso", "details": {"status": "START"}}
+{"timestamp": "2026-03-15T12:33:46.608215", "level": "INFO", "message": "Directorio de salida: podcast_apg_20260315_123346", "details": {}}
+{"timestamp": "2026-03-15T12:33:46.608273", "level": "STEP", "message": "Etapa: Lectura de Feeds RSS", "details": {"status": "RUNNING"}}
+{"timestamp": "2026-03-15T12:33:46.608374", "level": "INFO", "message": "Configuración efectiva: ventana 1h, máx. 50 noticias", "details": {}}
+{"timestamp": "2026-03-15T12:33:46.608428", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/zF3rkr11LhfodfDK.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:47.157845", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/nZ6YrgAg1JWKbzAV.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:47.678345", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/z6CbMqmjkXKHIq4J.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:48.208536", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/r2fTCS3vBviYiEp0.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:48.773909", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/JPBmhI6urbvEKJ8b.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:49.288254", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/8FeWXz8PghV8HFxI.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:49.920347", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/mDQuvoIMzcZjfQcm.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:50.533823", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/54yTCGGyOMGbdSgO.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:51.149458", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/5LrPxphUyYqzdccb.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:51.727984", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/1iKtqVRtM6WnNFMN.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:52.343203", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/cVA0VcRztLrfgRoM.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:52.933286", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/f4juRhi4mbUQoWak.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:53.560752", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/OoRpa80EvZSa3uwY.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:54.184684", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/NwkCRgx017cgTvnw.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:54.828535", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/QP73IGqub8p5TMRe.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:55.427322", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/4GGooF0wn9wcnVLP.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:56.010471", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/w9WU2jMXtPAqAI0p.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:56.621661", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/blP01cfPxYGW0qmt.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:57.206636", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/5jAsbLo6wRk9PArL.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:57.741786", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/wTDSoYH59x4lw0yS.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:58.315585", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/JhmXNEJsGhRy6Yxp.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:58.892060", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/u0Vf7JVpmLobQ5i9.xml", "details": {}}
+{"timestamp": "2026-03-15T12:33:59.502374", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/zQNSu3S0ejA4UQWA.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:00.148272", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/C7zUsadhVG0uem6R.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:00.787162", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/RF6J188jJezvJy3D.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:01.397252", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/WaSQqIAi7SRpNN6G.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:02.004841", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/p5hDntLk0fdMAECl.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:02.576126", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/rs7bhu66fskfLSdz.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:03.172117", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/xQwS9d8teF6zSlfk.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:03.726043", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/LlBdkEqvpdbgyCw5.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:04.315795", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/isQf3IY7IdDqJgEM.xml", "details": {}}
+{"timestamp": "2026-03-15T12:34:04.891833", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/xvAcfCd2bWw8kPi8.xml", "details": {}}

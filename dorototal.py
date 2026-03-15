@@ -1457,8 +1457,16 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                     print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
 
         if not noticias_candidatas_totales:
-            print("No se encontraron noticias válidas para procesar. Abortando.")
-            sys.exit(0)
+            if solo_preview:
+                with open("prevision_noticias_resumidas.json", "w", encoding="utf-8") as f:
+                    json.dump([], f)
+                with open("prevision_noticias_descartadas.json", "w", encoding="utf-8") as f:
+                    json.dump([], f)
+                print("⚠️ No se encontraron noticias válidas. Mode PREVIEW: Archivos de previsión vaciados.")
+                sys.exit(0)
+            else:
+                print("No se encontraron noticias válidas para procesar. Abortando.")
+                sys.exit(0)
             
         # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
@@ -1677,8 +1685,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         if not resumenes_finales:
             logger.error("No hay noticias válidas tras el filtrado.")
-            print("No quedan noticias válidas tras el filtrado y resumen. Terminando.")
-            sys.exit(0)
+            if solo_preview:
+                print("⚠️ No quedan noticias válidas tras el filtrado en modo PREVIEW. Los archivos de previsión se han actualizado (vacíos si corresponde).")
+                sys.exit(0)
+            else:
+                print("No quedan noticias válidas tras el filtrado y resumen. Terminando.")
+                sys.exit(0)
             
         logger.step("Generación de Guion y Audios", "RUNNING")
         print("\n--- FASE 2: Agrupación y Guionizado ---")

@@ -362,8 +362,14 @@ elif page == "generar":
 
     if st.button("🔎 ANALIZAR NOTICIAS", type="primary", disabled=not config_checked):
         with st.spinner("Analizando feeds y resumiendo con IA..."):
+            # Limpiar archivos de preview anteriores para evitar datos obsoletos si falla el nuevo análisis
             for f in ["prevision_noticias_resumidas.json", "prevision_noticias_descartadas.json", "seleccion_usuario.json"]:
-                if os.path.exists(f): os.remove(f)
+                if os.path.exists(f): 
+                    try:
+                        os.remove(f)
+                        print(f"🗑️  Archivo antiguo eliminado: {f}")
+                    except Exception as e:
+                        print(f"⚠️ No se pudo eliminar {f}: {e}")
             st.session_state['news_confirmed'] = False
             st.session_state['noticias_editadas_finales'] = []  # Limpiar selección anterior
             _wo = st.session_state.get('window_hours_override')
@@ -419,7 +425,7 @@ elif page == "generar":
             if has_descartadas:
                 with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
                     for n in json.load(f):
-                        n['_selected_default'] = True
+                        n['_selected_default'] = False # NO pre-seleccionar descartadas
                         n['_is_discarded'] = True
                         if 'resumen' not in n: n['resumen'] = ""
                         if 'motivo' not in n: n['motivo'] = "Desconocido"
