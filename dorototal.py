@@ -801,6 +801,32 @@ def _sintetizar_con_cache_estructural(texto: str) -> AudioSegment:
 # FUNCIONES AUXILIARES MEJORADAS
 # =================================================================================
 
+def analizar_sentimiento_general_noticias(resumenes: List[Dict[str, Any]]) -> str:
+    """
+    Analiza el sentimiento general de una lista de noticias y devuelve el más común.
+    Para optimizar, solo analiza un máximo de 5 noticias.
+    """
+    if not resumenes:
+        return "neutro"
+
+    sentimientos = []
+    # Para no hacer demasiadas llamadas a la API, analizamos un máximo de 5 noticias
+    # representativas para obtener el tono general.
+    for noticia in resumenes[:5]:
+        texto_resumen = noticia.get('resumen', '')
+        if texto_resumen:
+            prompt = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_resumen)
+            sentimiento = generar_texto_con_gemini(prompt).lower().strip()
+            if sentimiento in ['positivo', 'negativo', 'neutro']:
+                sentimientos.append(sentimiento)
+
+    if not sentimientos:
+        return "neutro"
+
+    # Devolver el sentimiento más común
+    return Counter(sentimientos).most_common(1)[0][0]
+
+
 def parsear_fecha_segura(entry):
     """Maneja fechas de forma segura con múltiples intentos."""
     import calendar

@@ -5,15 +5,15 @@ import os
 import time
 
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
-# --- CÓDIGOS INE para AEMET ---
-# Los códigos de municipio para la API de AEMET siguen el formato del INE (5 dígitos).
+# --- CÃ“DIGOS INE para AEMET ---
+# Los cÃ³digos de municipio para la API de AEMET siguen el formato del INE (5 dÃ­gitos).
 # Usamos 1 capital + 1 punto representativo por provincia para reducir requests (10 total).
 MUNICIPIOS_AEMET = {
     "Albacete": [
         {"nombre": "Albacete", "ine": "02003", "lat": 38.99, "lon": -1.85},
-        {"nombre": "Hellín", "ine": "02037", "lat": 38.51, "lon": -1.70},
+        {"nombre": "HellÃ­n", "ine": "02037", "lat": 38.51, "lon": -1.70},
         {"nombre": "Villarrobledo", "ine": "02081", "lat": 39.26, "lon": -2.60},
         {"nombre": "Almansa", "ine": "02009", "lat": 38.86, "lon": -1.09},
         {"nombre": "La Roda", "ine": "02069", "lat": 39.20, "lon": -2.15}
@@ -22,33 +22,33 @@ MUNICIPIOS_AEMET = {
         {"nombre": "Ciudad Real", "ine": "13034", "lat": 38.98, "lon": -3.92},
         {"nombre": "Puertollano", "ine": "13071", "lat": 38.68, "lon": -4.10},
         {"nombre": "Tomelloso", "ine": "13082", "lat": 39.15, "lon": -3.02},
-        {"nombre": "Alcázar de San Juan", "ine": "13005", "lat": 39.39, "lon": -3.21},
-        {"nombre": "Almadén", "ine": "13011", "lat": 38.78, "lon": -4.83}
+        {"nombre": "AlcÃ¡zar de San Juan", "ine": "13005", "lat": 39.39, "lon": -3.21},
+        {"nombre": "AlmadÃ©n", "ine": "13011", "lat": 38.78, "lon": -4.83}
     ],
     "Cuenca": [
         {"nombre": "Cuenca", "ine": "16078", "lat": 40.07, "lon": -2.13},
-        {"nombre": "Tarancón", "ine": "16203", "lat": 40.00, "lon": -3.00},
+        {"nombre": "TarancÃ³n", "ine": "16203", "lat": 40.00, "lon": -3.00},
         {"nombre": "Quintanar del Rey", "ine": "16175", "lat": 39.34, "lon": -1.93},
-        {"nombre": "Las Pedroñeras", "ine": "16154", "lat": 39.45, "lon": -2.67},
+        {"nombre": "Las PedroÃ±eras", "ine": "16154", "lat": 39.45, "lon": -2.67},
         {"nombre": "San Clemente", "ine": "16190", "lat": 39.40, "lon": -2.43}
     ],
     "Guadalajara": [
         {"nombre": "Guadalajara", "ine": "19130", "lat": 40.63, "lon": -3.16},
         {"nombre": "Azuqueca de Henares", "ine": "19047", "lat": 40.56, "lon": -3.26},
-        {"nombre": "Sigüenza", "ine": "19301", "lat": 41.06, "lon": -2.64},
-        {"nombre": "Molina de Aragón", "ine": "19190", "lat": 40.84, "lon": -1.88},
+        {"nombre": "SigÃ¼enza", "ine": "19301", "lat": 41.06, "lon": -2.64},
+        {"nombre": "Molina de AragÃ³n", "ine": "19190", "lat": 40.84, "lon": -1.88},
         {"nombre": "Cabanillas del Campo", "ine": "19059", "lat": 40.63, "lon": -3.23}
     ],
     "Toledo": [
         {"nombre": "Toledo", "ine": "45168", "lat": 39.86, "lon": -4.02},
         {"nombre": "Talavera de la Reina", "ine": "45165", "lat": 39.96, "lon": -4.83},
         {"nombre": "Illescas", "ine": "45081", "lat": 40.12, "lon": -3.84},
-        {"nombre": "Seseña", "ine": "45161", "lat": 40.10, "lon": -3.70},
+        {"nombre": "SeseÃ±a", "ine": "45161", "lat": 40.10, "lon": -3.70},
         {"nombre": "Torrijos", "ine": "45174", "lat": 39.98, "lon": -4.28}
     ]
 }
 
-# Alias para compatibilidad con el código existente que usaba POBLACIONES_CLM
+# Alias para compatibilidad con el cÃ³digo existente que usaba POBLACIONES_CLM
 POBLACIONES_CLM = MUNICIPIOS_AEMET
 
 # --- CONSTANTES AEMET ---
@@ -56,12 +56,12 @@ AEMET_BASE_URL = "https://opendata.aemet.es/opendata/api"
 
 
 def obtener_descripcion_temp(temp: float) -> str:
-    """Devuelve una descripción cualitativa basada en la temperatura."""
-    if temp < -5: return "friísimo"
-    if temp < 0: return "mucho frío"
-    if temp < 10: return "frío"
-    if temp < 15: return "algo de frío"
-    if temp < 20: return "poco frío"
+    """Devuelve una descripciÃ³n cualitativa basada en la temperatura."""
+    if temp < -5: return "friÃ­simo"
+    if temp < 0: return "mucho frÃ­o"
+    if temp < 10: return "frÃ­o"
+    if temp < 15: return "algo de frÃ­o"
+    if temp < 20: return "poco frÃ­o"
     if temp < 25: return "agradable"
     if temp < 30: return "calor"
     if temp < 35: return "mucho calor"
@@ -72,15 +72,16 @@ def obtener_descripcion_temp(temp: float) -> str:
 # AEMET - Fuente principal
 # ============================================================
 
-def _aemet_request(endpoint: str, timeout: int = 5) -> dict | None:
+def _aemet_request(endpoint: str, timeout: int = 10) -> dict | None:
     """
-    Realiza una petición a la API de AEMET (doble request).
-    Paso 1: GET al endpoint → JSON con campo 'datos' (URL temporal).
-    Paso 2: GET a esa URL temporal → datos reales.
+    Realiza una peticiÃ³n a la API de AEMET (doble request).
+    Paso 1: GET al endpoint â†’ JSON con campo 'datos' (URL temporal).
+    Paso 2: GET a esa URL temporal â†’ datos reales.
     Retorna el JSON de datos o None si falla.
     """
     api_key = os.getenv("AEMET_API_KEY", "")
     if not api_key:
+        print("      âš ï¸� AEMET: AEMET_API_KEY no encontrada en el entorno.")
         return None
 
     headers = {
@@ -94,34 +95,42 @@ def _aemet_request(endpoint: str, timeout: int = 5) -> dict | None:
         resp1 = requests.get(url, headers=headers, timeout=timeout)
         
         if resp1.status_code != 200:
-            print(f"      ⚠️ AEMET Paso 1 falló (HTTP {resp1.status_code}): {endpoint}")
+            print(f"      âš ï¸� AEMET Paso 1 fallÃ³ (HTTP {resp1.status_code}): {endpoint}")
+            if resp1.status_code == 401:
+                print("      ðŸ”‘ Error de autenticaciÃ³n: Verifica que la AEMET_API_KEY sea vÃ¡lida.")
+            elif resp1.status_code == 429:
+                print("      â�³ LÃ­mite de peticiones (Rate Limit) alcanzado.")
             return None
         
         meta = resp1.json()
+        estado = meta.get("estado")
+        if estado == 401:
+             print("      ðŸ”‘ AEMET reporta Error 401 en el cuerpo del JSON (API Key invÃ¡lida).")
+             return None
+
         url_datos = meta.get("datos")
-        
         if not url_datos:
-            print(f"      ⚠️ AEMET no devolvió URL de datos para: {endpoint}")
+            print(f"      âš ï¸� AEMET no devolviÃ³ URL de datos para: {endpoint}. Respuesta: {meta}")
             return None
         
         # Paso 2: Descargar datos reales
-        resp2 = requests.get(url_datos, headers=headers, timeout=timeout)
+        resp2 = requests.get(url_datos, timeout=timeout)
         
         if resp2.status_code != 200:
-            print(f"      ⚠️ AEMET Paso 2 falló (HTTP {resp2.status_code})")
+            print(f"      ⚠️ AEMET Paso 2 falló (HTTP {resp2.status_code}) al descargar de {url_datos}")
             return None
         
         return resp2.json()
     
     except Exception as e:
-        print(f"      ⚠️ Error AEMET: {e}")
+        print(f"      ⚠️ Error de conexión con AEMET: {e}")
         return None
 
 
 def _parsear_prediccion_aemet(datos_json: list) -> dict | None:
     """
-    Parsea la respuesta de predicción diaria de AEMET.
-    Extrae: temp_max, temp_min, prob_precipitación, estado_cielo para HOY.
+    Parsea la respuesta de predicciÃ³n diaria de AEMET.
+    Extrae: temp_max, temp_min, prob_precipitaciÃ³n, estado_cielo para HOY.
     """
     if not datos_json or not isinstance(datos_json, list):
         return None
@@ -133,7 +142,7 @@ def _parsear_prediccion_aemet(datos_json: list) -> dict | None:
         if not dias:
             return None
         
-        # Hoy es el primer día
+        # Hoy es el primer dÃ­a
         hoy = dias[0]
         
         # Temperaturas
@@ -147,7 +156,7 @@ def _parsear_prediccion_aemet(datos_json: list) -> dict | None:
         t_max = float(t_max)
         t_min = float(t_min)
         
-        # Probabilidad de precipitación (máxima del día)
+        # Probabilidad de precipitaciÃ³n (mÃ¡xima del dÃ­a)
         prob_precip = 0
         periodos_precip = hoy.get("probPrecipitacion", [])
         for periodo in periodos_precip:
@@ -157,14 +166,14 @@ def _parsear_prediccion_aemet(datos_json: list) -> dict | None:
             except (ValueError, TypeError):
                 pass
         
-        # Estado del cielo (descripción del período más representativo)
+        # Estado del cielo (descripciÃ³n del perÃ­odo mÃ¡s representativo)
         estado_cielo = ""
         periodos_cielo = hoy.get("estadoCielo", [])
         for periodo in periodos_cielo:
             desc = periodo.get("descripcion", "")
             if desc:
                 estado_cielo = desc
-                break  # Tomamos la primera descripción disponible
+                break  # Tomamos la primera descripciÃ³n disponible
         
         return {
             "t_max": t_max,
@@ -174,13 +183,13 @@ def _parsear_prediccion_aemet(datos_json: list) -> dict | None:
         }
     
     except Exception as e:
-        print(f"      ⚠️ Error parseando AEMET: {e}")
+        print(f"      âš ï¸� Error parseando AEMET: {e}")
         return None
 
 
 def _obtener_meteo_aemet_regional() -> dict | None:
     """
-    Obtiene datos meteorológicos de AEMET para toda Castilla-La Mancha.
+    Obtiene datos meteorolÃ³gicos de AEMET para toda Castilla-La Mancha.
     Consulta 1 municipio representativo por provincia (5 requests).
     """
     # Solo consultamos las capitales para no saturar la API
@@ -194,7 +203,7 @@ def _obtener_meteo_aemet_regional() -> dict | None:
     
     resultados = []
     
-    print(f"      ☁️  [AEMET] Consultando predicción para {len(capitales)} capitales de provincia...")
+    print(f"      â˜�ï¸�  [AEMET] Consultando predicciÃ³n para {len(capitales)} capitales de provincia...")
     
     for i, (prov, ine) in enumerate(capitales.items()):
         if i > 0:
@@ -220,16 +229,16 @@ def _obtener_meteo_aemet_regional() -> dict | None:
     lluvia_general = any(r['prob_precip'] > 60 for r in resultados)
     t_lluvia = "se esperan lluvias" if lluvia_general else "cielos mayormente despejados"
     
-    # Estado del cielo (tomar el más común o el primero disponible)
+    # Estado del cielo (tomar el mÃ¡s comÃºn o el primero disponible)
     estados_cielo = [r.get('estado_cielo', '') for r in resultados if r.get('estado_cielo')]
     cielo_desc = estados_cielo[0] if estados_cielo else ""
     
     resumen_texto = (
-        f"DATOS METEOROLÓGICOS REGIONALES (AEMET - media): \n"
-        f"- Sensación Térmica General: {desc_general}. \n"
+        f"DATOS METEOROLÃ“GICOS REGIONALES (AEMET - media): \n"
+        f"- SensaciÃ³n TÃ©rmica General: {desc_general}. \n"
         f"- Estado del cielo: {t_lluvia}"
         + (f" ({cielo_desc})" if cielo_desc else "") + ". \n"
-        f"- Temperatura Media Regional: {media_total:.1f}°C."
+        f"- Temperatura Media Regional: {media_total:.1f}Â°C."
     )
     
     return {
@@ -282,8 +291,8 @@ def _obtener_meteo_aemet_provincia(provincia: str) -> dict | None:
 
 def _obtener_meteo_openmeteo_regional() -> dict | None:
     """
-    Fallback: Obtiene el pronóstico meteorológico regional usando Open-Meteo.
-    Lógica original intacta.
+    Fallback: Obtiene el pronÃ³stico meteorolÃ³gico regional usando Open-Meteo.
+    LÃ³gica original intacta.
     """
     url = "https://api.open-meteo.com/v1/forecast"
     resultados = []
@@ -295,7 +304,7 @@ def _obtener_meteo_openmeteo_regional() -> dict | None:
             p_copy['provincia'] = prov
             todas_poblaciones.append(p_copy)
             
-    print(f"      ☁️  [Open-Meteo Fallback] Consultando tiempo para TODA la región ({len(todas_poblaciones)} puntos)...")
+    print(f"      â˜�ï¸�  [Open-Meteo Fallback] Consultando tiempo para TODA la regiÃ³n ({len(todas_poblaciones)} puntos)...")
 
     for pob in todas_poblaciones:
         params = {
@@ -336,10 +345,10 @@ def _obtener_meteo_openmeteo_regional() -> dict | None:
     t_lluvia = "se esperan lluvias" if lluvia_general else "cielos mayormente despejados"
 
     resumen_texto = (
-        f"DATOS METEOROLÓGICOS REGIONALES (media): \n"
-        f"- Sensación Térmica General: {desc_general}. \n"
+        f"DATOS METEOROLÃ“GICOS REGIONALES (media): \n"
+        f"- SensaciÃ³n TÃ©rmica General: {desc_general}. \n"
         f"- Estado del cielo: {t_lluvia}. \n"
-        f"- Temperatura Media Regional: {media_total:.1f}°C."
+        f"- Temperatura Media Regional: {media_total:.1f}Â°C."
     )
     return {
         "texto": resumen_texto,
@@ -352,7 +361,7 @@ def _obtener_meteo_openmeteo_regional() -> dict | None:
 def _obtener_meteo_openmeteo_provincia(provincia: str) -> dict:
     """
     Fallback: Obtiene el clima de Open-Meteo para una provincia.
-    Lógica original intacta.
+    LÃ³gica original intacta.
     """
     poblaciones = MUNICIPIOS_AEMET.get(provincia, [])
     if not poblaciones:
@@ -393,27 +402,27 @@ def _obtener_meteo_openmeteo_provincia(provincia: str) -> dict:
 
 
 # ============================================================
-# Funciones públicas (interfaz que usan dorototal.py y humanization.py)
+# Funciones pÃºblicas (interfaz que usan dorototal.py y humanization.py)
 # ============================================================
 
 def obtener_pronostico_meteo(lat=None, lon=None) -> dict:
     """
-    Obtiene el pronóstico meteorológico regional para Castilla-La Mancha.
+    Obtiene el pronÃ³stico meteorolÃ³gico regional para Castilla-La Mancha.
     Intenta primero con AEMET (oficial). Si falla, usa Open-Meteo como fallback.
     """
     # Intento 1: AEMET (fuente oficial)
     resultado = _obtener_meteo_aemet_regional()
     
     if resultado:
-        print(f"      ✅ Meteo obtenida desde AEMET (temp media {resultado.get('media_temp', '?'):.1f}ºC)")
+        print(f"      âœ… Meteo obtenida desde AEMET (temp media {resultado.get('media_temp', '?'):.1f}ÂºC)")
         return resultado
     
     # Intento 2: Open-Meteo (fallback)
-    print("      ⚠️ AEMET falló, usando Open-Meteo como fallback...")
+    print("      âš ï¸� AEMET fallÃ³, usando Open-Meteo como fallback...")
     resultado = _obtener_meteo_openmeteo_regional()
     
     if resultado:
-        print(f"      ✅ Meteo obtenida desde Open-Meteo (temp media {resultado.get('media_temp', '?'):.1f}ºC)")
+        print(f"      âœ… Meteo obtenida desde Open-Meteo (temp media {resultado.get('media_temp', '?'):.1f}ÂºC)")
         return resultado
     
     return ""
@@ -421,7 +430,7 @@ def obtener_pronostico_meteo(lat=None, lon=None) -> dict:
 
 def obtener_meteo_para_provincia(provincia: str) -> dict:
     """
-    Obtiene el clima de una población representativa de la provincia indicada.
+    Obtiene el clima de una poblaciÃ³n representativa de la provincia indicada.
     Intenta primero con AEMET. Si falla, usa Open-Meteo como fallback.
     """
     # Intento 1: AEMET
