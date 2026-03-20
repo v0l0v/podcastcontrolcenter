@@ -36,20 +36,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     mensaje = update.message.text
     chat_type = update.message.chat.type
 
-    # Lógica de filtrado
+    # Lógica de filtrado (antes se pedía #dorotea en grupos, ahora se procesa todo como antes)
     es_privado = chat_type == 'private'
-    tiene_hashtag = "#dorotea" in mensaje.lower()
-
-    if not es_privado and not tiene_hashtag:
-        # En grupos, ignorar si no tiene el hashtag
-        return
-
-    # Limpiar el hashtag del mensaje
+    # tiene_hashtag = "#dorotea" in mensaje.lower() # Eliminado por petición de restaurar comportamiento anterior
+    
+    # Limpiar el hashtag del mensaje si lo tuviera (por si acaso lo siguen usando)
     import re
     mensaje_limpio = re.sub(r'(?i)#dorotea', '', mensaje).strip()
     
     if not mensaje_limpio:
-        return # Evitar guardar mensajes vacíos si solo ponen el hashtag
+        return # Evitar guardar mensajes vacíos
     
     # Escribir en el archivo de la audiencia con el formato correcto
     from datetime import datetime

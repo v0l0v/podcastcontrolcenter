@@ -123,3 +123,27 @@ texto: Mensaje de vict0rl0pez en Telegram (grupo): te mando un saludo y un agrad
 fecha: 20-01-2026
 autor: vict0rl0pez (Telegram Grupo)
 texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
+
+---
+fecha: 20-03-2026
+autor: vict0rl0pez (Telegram Grupo)
+texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una gran amiga!
+_telegram_chat_id: -1003791334035
+
+---
+fecha: 20-03-2026
+autor: vict0rl0pez (Telegram Grupo)
+texto: Hola, un gran saludo desde Catarroja en Valencia, gracias por tu labor
+_telegram_chat_id: -1003791334035
+
+---
+fecha: 20-03-2026
+autor: vict0rl0pez (Telegram Grupo)
+texto: un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
+_telegram_chat_id: -1003791334035
+
+---
+fecha: 20-03-2026
+autor: vict0rl0pez (Telegram Grupo)
+texto: Saludos desde Catarroja Valencia
+_telegram_chat_id: -1003791334035
