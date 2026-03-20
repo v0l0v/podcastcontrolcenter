@@ -57,7 +57,7 @@ class ConfiguracionPodcast:
     Tu tarea:
     1. Generar una introducción amable para dar paso al audio: "Escuchamos ahora un mensaje de..."
     2. Generar un comentario/reacción POSTERIOR al audio. Debe ser empático, breve y conectado con el sentimiento del oyente.
-    3. NO te despidas del programa todavía, solo reacciona al audio. La despedida vendrá después.
+    3. NO te despidas del programa bajo ningún concepto. No digas "adiós", "hasta mañana" ni "nos escuchamos pronto". La despedida real vendrá después. Limítate a reaccionar y cerrar la intervención.
     
     Formato de Salida (TEXTO PURO, sin markdown de bloques de código):
     INTRO: [Texto de intro]
@@ -565,6 +565,7 @@ class PromptsCreativos:
         - El resultado debe ser un PÁRRAFO ÚNICO Y FLUIDO que integre los tres puntos.
         - Tu tono debe ser cercano, profesional y empático, ajustado al sentimiento general de las noticias.
         - Sé creativa y evita usar las mismas frases de transición todos los días.
+        - **PROHIBICIÓN ABSOLUTA:** No te despidas del oyente ni del programa con frases de cierre final (tipo "hasta mañana", "nos vemos"). Solo cierra este bloque de intervención y prepárate para el final del podcast que viene después.
 
         ENTREGA:
         Devuelve SOLO el texto de tu monólogo, listo para ser locutado, sin encabezados ni anotaciones.

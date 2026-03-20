@@ -2292,7 +2292,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         # Normalizar un poco el audio del oyente si es necesario (opcional)
                         
                         # 3. Generar Reacción al audio
-                        prompt_reaccion = f"Actúa como Dorotea. Has escuchado un audio de {autor} que decía vagamente: '{texto_mensaje}'. Da una respuesta breve, empática y con tu estilo manchego. Máximo 40 palabras."
+                        prompt_reaccion = (
+                            f"Actúa como Dorotea. Has escuchado un audio de {autor} que decía vagamente: '{texto_mensaje}'. "
+                            f"Da una respuesta breve, empática y con tu estilo manchego. Máximo 40 palabras. "
+                            f"IMPORTANTE: No te despidas del oyente ni del programa, la despedida real vendrá después."
+                        )
                         texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
                         audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
                         
