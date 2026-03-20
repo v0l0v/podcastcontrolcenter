@@ -22,6 +22,61 @@ BUZON_DIR = os.path.join(PROJECT_ROOT, 'buzon_del_oyente')
 # Asegurar directorios
 os.makedirs(BUZON_DIR, exist_ok=True)
 
+def registrar_mensaje(fecha: str, autor: str, texto: str, chat_id: int, plataforma: str, tipo: str, audio: str = None):
+    """Guarda un mensaje en el buzón, reemplazando el anterior del mismo usuario para hoy."""
+    nuevo_bloque = (
+        f"---\n"
+        f"fecha: {fecha}\n"
+        f"autor: {autor}\n"
+        f"texto: {texto}\n"
+        f"plataforma: {plataforma}\n"
+        f"tipo: {tipo}\n"
+    )
+    if audio:
+        nuevo_bloque += f"audio: {audio}\n"
+    nuevo_bloque += f"_telegram_chat_id: {chat_id}\n"
+
+    bloques_finales = []
+    if os.path.exists(BUZON_FILE):
+        with open(BUZON_FILE, 'r', encoding='utf-8') as f:
+            contenido = f.read()
+            bloques = contenido.split('---')
+            
+            for b in bloques:
+                b = b.strip()
+                if not b: continue
+                
+                # Parsear campos básicos del bloque existente
+                lineas = b.split('\n')
+                b_fecha = ""
+                b_chat_id = ""
+                b_audio = ""
+                for l in lineas:
+                    if l.startswith("fecha:"): b_fecha = l.split(":", 1)[1].strip()
+                    if l.startswith("_telegram_chat_id:"): b_chat_id = l.split(":", 1)[1].strip()
+                    if l.startswith("audio:"): b_audio = l.split(":", 1)[1].strip()
+                
+                # ¿Es el mismo usuario en la misma fecha?
+                if b_fecha == fecha and str(b_chat_id) == str(chat_id):
+                    # Reemplazamos: eliminar audio previo si existía
+                    if b_audio and os.path.exists(b_audio):
+                        try:
+                            os.remove(b_audio)
+                            logger.info(f"Audio anterior eliminado: {b_audio}")
+                        except Exception as e:
+                            logger.error(f"Error eliminando audio viejo: {e}")
+                    continue # No añadir este bloque a bloques_finales (se reemplaza)
+                
+                bloques_finales.append("---\n" + b + "\n")
+
+    # Añadir el nuevo bloque al final
+    bloques_finales.append(nuevo_bloque)
+    
+    with open(BUZON_FILE, 'w', encoding='utf-8') as f:
+        f.writelines(bloques_finales)
+    
+    logger.info(f"Mensaje de {autor} registrado (reemplazando anterior si existía).")
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Envía un mensaje cuando se emita el comando /start."""
     user = update.effective_user
@@ -56,21 +111,15 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     fecha_actual = datetime.now().strftime("%d-%m-%Y")
     origen = "Grupo" if not es_privado else "Privado"
     
-    chat_id_interno = update.message.chat_id
-    bloque_formateado = (
-        f"\n---\n"
-        f"fecha: {fecha_actual}\n"
-        f"autor: {user.first_name}\n"
-        f"texto: {mensaje_limpio}\n"
-        f"plataforma: Telegram\n"
-        f"tipo: {origen}\n"
-        f"_telegram_chat_id: {chat_id_interno}\n"
+    # Registrar el mensaje con la nueva lógica de reemplazo
+    registrar_mensaje(
+        fecha=fecha_actual,
+        autor=user.first_name,
+        texto=mensaje_limpio,
+        chat_id=chat_id_interno,
+        plataforma="Telegram",
+        tipo=origen
     )
-    
-    with open(BUZON_FILE, 'a', encoding='utf-8') as f:
-        f.write(bloque_formateado)
-    
-    logger.info(f"Mensaje de {user.first_name} guardado con formato de bloque.")
     
     if es_privado:
         await update.message.reply_text("¡Recibido! 📝 Ya está en el buzón con la fecha de hoy.")
@@ -103,30 +152,22 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await new_file.download_to_drive(dest_path)
     logger.info(f"Nota de voz de {user.first_name} descargada en {dest_path}")
 
-    # 3. Registrar en preguntas_audiencia.txt
-    es_privado = update.message.chat.type == 'private'
-    origen = "Grupo" if not es_privado else "Privado"
-    chat_id_interno = update.message.chat_id
-    
-    bloque_formateado = (
-        f"\n---\n"
-        f"fecha: {fecha_str}\n"
-        f"autor: {user.first_name}\n"
-        f"texto: [NOTA DE VOZ]\n"
-        f"audio: {dest_path}\n"
-        f"plataforma: Telegram\n"
-        f"tipo: {origen}\n"
-        f"_telegram_chat_id: {chat_id_interno}\n"
+    # Registrar en preguntas_audiencia.txt (con lógica de reemplazo)
+    registrar_mensaje(
+        fecha=fecha_str,
+        autor=user.first_name,
+        texto="[NOTA DE VOZ]",
+        chat_id=chat_id_interno,
+        plataforma="Telegram",
+        tipo=origen,
+        audio=dest_path
     )
-    
-    with open(BUZON_FILE, 'a', encoding='utf-8') as f:
-        f.write(bloque_formateado)
     
     # 4. Responder al usuario
     if es_privado:
-        await update.message.reply_text("¡He recibido tu nota de voz! 🎙️ Dorotea la escuchará y la incluirá en el próximo episodio.")
+        await update.message.reply_text("¡He recibido tu nota de voz! 🎙️ (He reemplazado tu mensaje anterior de hoy si lo había).")
     else:
-        await update.message.reply_text(f"¡Anotado para hoy, {user.first_name}! 🎙️ (Nota de voz recibida)")
+        await update.message.reply_text(f"¡Anotado para hoy, {user.first_name}! 🎙️ (Mensaje actualizado)")
 
 def main() -> None:
     """Inicia el bot."""
