@@ -1156,6 +1156,16 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
             color: #ffffff;
         }
 
+        .transcript-cta {
+            border-left-color: #00c8ff; /* Azul cian */
+            background-color: #080f14;
+            padding: 15px;
+            border-left-width: 8px;
+        }
+        .transcript-cta h3 {
+            color: #00c8ff;
+        }
+
         .footer-note {
             font-family: 'Courier New', monospace;
             color: #666;
@@ -1288,28 +1298,56 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
                 <p>{contenido_html}</p>
             </div>
             """
-        elif item.get('type') == 'block':
+        elif tipo == 'cta_inicio':
+            html_content += f"""
+            <div class="transcript-section transcript-cta">
+                <h3>📢 Anuncio de Inicio</h3>
+                <p>{contenido_html}</p>
+            </div>
+            """
+        elif tipo == 'block':
             html_content += f"""
             <div class="transcript-section transcript-block">
                 <h3>{html.escape(titulo)}</h3>
                 <p>{contenido_html}</p>
             </div>
             """
-        elif item.get('type') == 'news':
+        elif tipo == 'news':
             html_content += f"""
             <div class="transcript-section transcript-news">
                 <h4>📰 {html.escape(titulo)}</h4>
                 <p>{contenido_html}</p>
             </div>
             """
-        elif item.get('type') == 'audience':
+        elif tipo == 'cta_intermedio':
+            html_content += f"""
+            <div class="transcript-section transcript-cta">
+                <h3>📢 Anuncio Intermedio</h3>
+                <p>{contenido_html}</p>
+            </div>
+            """
+        elif tipo == 'audience':
             html_content += f"""
             <div class="transcript-section transcript-audience">
                 <h3>💬 La Voz de la Audiencia</h3>
                 <p>{contenido_html}</p>
             </div>
             """
-        elif item.get('type') == 'outro':
+        elif tipo in ('scheduled_audio_intro', 'scheduled_audio_outro', 'listener_msg'):
+            html_content += f"""
+            <div class="transcript-section transcript-audience">
+                <h3>🎧 Buzón del Oyente</h3>
+                <p>{contenido_html}</p>
+            </div>
+            """
+        elif tipo == 'cta_cierre':
+            html_content += f"""
+            <div class="transcript-section transcript-cta">
+                <h3>📢 Anuncio de Cierre</h3>
+                <p>{contenido_html}</p>
+            </div>
+            """
+        elif tipo == 'outro':
             html_content += f"""
             <div class="transcript-section transcript-outro">
                 <h3>👋 Despedida</h3>
@@ -2027,6 +2065,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # Insertar el CTA Literal de Inicio si la interpretación está apagada
                 if not debe_interpretar_cta("inicio", dia_semana_str) and cta_inicio_limpio:
                     print("      📢 Insertando CTA Literal de inicio...")
+                    transcript_data.append({'type': 'cta_inicio', 'content': cta_inicio_limpio})
                     audio_cta_estatico = _sintetizar_con_cache_estructural(cta_inicio_limpio)
                     if audio_cta_estatico:
                         segmentos_audio.append(audio_cta_estatico)
@@ -2047,6 +2086,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 # Lo insertamos al final del monologo
                 if not debe_interpretar_cta("inicio", dia_semana_str) and cta_inicio_limpio:
                     print("      📢 Insertando CTA Literal de inicio (sin marcador)...")
+                    transcript_data.append({'type': 'cta_inicio', 'content': cta_inicio_limpio})
                     if cortinilla_cta_audio:
                         segmentos_audio.append(cortinilla_cta_audio)
                     else:
@@ -2199,6 +2239,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         if texto_cta_reescrito:
                             cta_intermedio_audio = _sintetizar_con_cache_estructural(texto_cta_reescrito)
                             if cta_intermedio_audio:
+                                # Registrar en transcript para el HTML
+                                transcript_data.append({
+                                    'type': 'cta_intermedio',
+                                    'content': texto_cta_reescrito
+                                })
                                 # Insertamos: [Cortinilla] -> [CTA] -> [Transición existente]
                                 # 1. Insertamos el CTA antes de la última transición (index -1)
                                 segmentos_audio.insert(-1, cta_intermedio_audio)
@@ -2540,6 +2585,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             # Insertar el CTA Literal de cierre si la interpretación está apagada
             if not debe_interpretar_cta("cierre", dia_semana_str) and cta_cierre_limpio:
                 print("      📢 Insertando CTA Literal de cierre...")
+                transcript_data.append({'type': 'cta_cierre', 'content': cta_cierre_limpio})
                 if cortinilla_cta_audio:
                     segmentos_audio.append(cortinilla_cta_audio)
                 else:
