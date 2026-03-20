@@ -160,10 +160,8 @@ def leer_pregunta_del_dia() -> Dict[str, str] | None:
                     if fecha_mensaje == fecha_hoy:
                         if 'autor' in mensaje and 'texto' in mensaje:
                             print(f"      ✅ Mensaje de la audiencia encontrado para hoy ({fecha_hoy.strftime('%d-%m-%Y')}) de '{mensaje['autor']}'.")
-                            res = {'autor': mensaje['autor'], 'texto': mensaje['texto']}
-                            if '_telegram_chat_id' in mensaje:
-                                res['_telegram_chat_id'] = mensaje['_telegram_chat_id']
-                            return res
+                            # Devolver todos los campos capturados (autor, texto, plataforma, tipo, chat_id...)
+                            return mensaje
                 except ValueError:
                     print(f"      ⚠️ Fecha en formato incorrecto en el bloque: {mensaje.get('fecha')}. Se ignora.")
                     continue

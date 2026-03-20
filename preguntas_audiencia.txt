@@ -129,27 +129,3 @@ fecha: 20-03-2026
 autor: vict0rl0pez (Telegram Grupo)
 texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una gran amiga!
 _telegram_chat_id: -1003791334035
-
----
-fecha: 20-03-2026
-autor: vict0rl0pez (Telegram Grupo)
-texto: Hola, un gran saludo desde Catarroja en Valencia, gracias por tu labor
-_telegram_chat_id: -1003791334035
-
----
-fecha: 20-03-2026
-autor: vict0rl0pez (Telegram Grupo)
-texto: un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
-_telegram_chat_id: -1003791334035
-
----
-fecha: 20-03-2026
-autor: vict0rl0pez (Telegram Grupo)
-texto: Saludos desde Catarroja Valencia
-_telegram_chat_id: -1003791334035
-
----
-fecha: 20-03-2026
-autor: vict0rl0pez (Telegram Grupo)
-texto: Hola Dorotea, saludos desde un pueblo donde los girasoles dan belleza a nuestros campos, tú, eres un girasol, siempre mirando a la información, girando en torno a ella para "convertirla" en podcast, gracias.
-_telegram_chat_id: -1003791334035
