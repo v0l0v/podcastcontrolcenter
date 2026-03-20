@@ -117,3 +117,9 @@ texto: Me emociona el respeto y la dignidad con la que tratáis cada tema y a ca
 fecha: 30-11-2025
 autor: Adrián Soto
 texto: Recta final del mes y seguís al pie del cañón con la misma calidad de siempre. Sois incansables. ¡Enhorabuena por vuestra constancia!
+texto: Mensaje de vict0rl0pez en Telegram (grupo): te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
+
+---
+fecha: 20-03-2026
+autor: vict0rl0pez (Telegram Grupo)
+texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
