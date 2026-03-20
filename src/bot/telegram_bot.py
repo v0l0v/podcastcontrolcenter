@@ -56,7 +56,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     fecha_actual = datetime.now().strftime("%d-%m-%Y")
     origen = "Grupo" if not es_privado else "Privado"
     
-    bloque_formateado = f"\n---\nfecha: {fecha_actual}\nautor: {user.first_name} (Telegram {origen})\ntexto: {mensaje_limpio}\n"
+    chat_id_interno = update.message.chat_id
+    bloque_formateado = f"\n---\nfecha: {fecha_actual}\nautor: {user.first_name} (Telegram {origen})\ntexto: {mensaje_limpio}\n_telegram_chat_id: {chat_id_interno}\n"
     
     with open(BUZON_FILE, 'a', encoding='utf-8') as f:
         f.write(bloque_formateado)

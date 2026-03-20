@@ -160,7 +160,10 @@ def leer_pregunta_del_dia() -> Dict[str, str] | None:
                     if fecha_mensaje == fecha_hoy:
                         if 'autor' in mensaje and 'texto' in mensaje:
                             print(f"      ✅ Mensaje de la audiencia encontrado para hoy ({fecha_hoy.strftime('%d-%m-%Y')}) de '{mensaje['autor']}'.")
-                            return {'autor': mensaje['autor'], 'texto': mensaje['texto']}
+                            res = {'autor': mensaje['autor'], 'texto': mensaje['texto']}
+                            if '_telegram_chat_id' in mensaje:
+                                res['_telegram_chat_id'] = mensaje['_telegram_chat_id']
+                            return res
                 except ValueError:
                     print(f"      ⚠️ Fecha en formato incorrecto en el bloque: {mensaje.get('fecha')}. Se ignora.")
                     continue
@@ -2632,6 +2635,26 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         generar_html_transcripcion(transcript_data, output_dir, timestamp) # <-- Generar HTML
 
         print(f"\n🎉 ¡Podcast generado con éxito! Archivo: {nombre_podcast_final}")
+        
+        # NUEVO: Notificación retroactiva a Telegram
+        if mensaje_del_dia and '_telegram_chat_id' in mensaje_del_dia:
+            chat_id = mensaje_del_dia['_telegram_chat_id']
+            print(f"  🚀 Enviando notificación al usuario de Telegram (ID: {chat_id})...")
+            try:
+                import requests
+                from dotenv import load_dotenv
+                load_dotenv()
+                bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+                if bot_token:
+                    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                    payload = {
+                        "chat_id": chat_id,
+                        "text": "🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena. ¡Ya puedes ir a escucharlo a las plataformas de Micomicona!"
+                    }
+                    requests.post(url, json=payload, timeout=5)
+                    print("  ✅ Notificación enviada exitosamente.")
+            except Exception as e:
+                print(f"  ⚠️ Error enviando notificación a Telegram: {e}")
 
 
     except FileNotFoundError as e:
