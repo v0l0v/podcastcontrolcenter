@@ -130,7 +130,8 @@ _telegram_chat_id: -1003791334035
 ---
 fecha: 20-03-2026
 autor: vict0rl0pez
-texto: Mensaje para Dorotea¡Hola!
+texto: [NOTA DE VOZ]
 plataforma: Telegram
 tipo: Grupo
+audio: /home/victor/proyectos/podcastcontrolcenter/buzon_del_oyente/20260320_232227_vict0rl0pez.ogg
 _telegram_chat_id: -1003791334035
