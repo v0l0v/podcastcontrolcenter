@@ -120,6 +120,6 @@ texto: Recta final del mes y seguís al pie del cañón con la misma calidad de 
 texto: Mensaje de vict0rl0pez en Telegram (grupo): te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
 
 ---
-fecha: 20-03-2026
+fecha: 20-01-2026
 autor: vict0rl0pez (Telegram Grupo)
 texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
