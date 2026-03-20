@@ -4,7 +4,8 @@
         "email_contacto": "contacto@micomicona.com",
         "email_alias_ssml": "contacto arroba micomicona punto com",
         "region": "Castilla la Mancha",
-        "pausa_estandar": "600ms"
+        "pausa_estandar": "600ms",
+        "podcast_url": "https://micomicona.com"
     },
     "audio_config": {
         "voice_name": "es-ES-Chirp3-HD-Sulafat",

@@ -2299,6 +2299,12 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 segmento_audio = sintetizar_ssml_a_audio(segmento_ssml)
                 
                 if segmento_audio:
+                    # NUEVO: Calcular minuto exacto de la mención para Telegram
+                    tiempo_acumulado_ms = sum(len(s) for s in segmentos_audio if s)
+                    minutos = int(tiempo_acumulado_ms // 60000)
+                    segundos = int((tiempo_acumulado_ms % 60000) // 1000)
+                    mensaje_del_dia['timestamp_mencion'] = f"{minutos}:{segundos:02d}"
+                    
                     # 3. Añadimos el audio del segmento y una transición DESPUÉS
                     segmentos_audio.append(segmento_audio)
                     segmentos_audio.append(agregar_transicion())
@@ -2693,12 +2699,25 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
                 if bot_token:
                     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                    
+                    # Enriquecer mensaje con minuto y link
+                    timestamp_mencion = mensaje_del_dia.get('timestamp_mencion', 'el inicio')
+                    podcast_url = CONFIG.get('podcast_info', {}).get('podcast_url', 'https://micomicona.ache.ovh')
+                    
+                    texto_telegram = (
+                        f"🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena.\n\n"
+                        f"🔊 Puedes escucharlo aproximadamente en el **minuto {timestamp_mencion}** del episodio.\n\n"
+                        f"🔗 Enlace para la escucha: {podcast_url}\n\n"
+                        f"¡Gracias por participar! 👋"
+                    )
+                    
                     payload = {
                         "chat_id": chat_id,
-                        "text": "🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena. ¡Ya puedes ir a escucharlo a las plataformas de Micomicona!"
+                        "text": texto_telegram,
+                        "parse_mode": "Markdown"
                     }
                     requests.post(url, json=payload, timeout=5)
-                    print("  ✅ Notificación enviada exitosamente.")
+                    print(f"  ✅ Notificación enviada exitosamente (Minuto {timestamp_mencion}).")
             except Exception as e:
                 print(f"  ⚠️ Error enviando notificación a Telegram: {e}")
 
