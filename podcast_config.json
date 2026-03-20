@@ -7,7 +7,7 @@
         "pausa_estandar": "600ms"
     },
     "audio_config": {
-        "voice_name": "es-ES-Chirp3-HD-Sulafat"
+        "voice_name": "es-US-Chirp3-HD-Sulafat"
 ",
         "target_lufs": -18.0,
         "voice_target_peak_dbfs": -2.0,
