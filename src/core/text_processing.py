@@ -452,6 +452,13 @@ def corregir_decimales_con_coma_tts(texto: str) -> str:
     else:
         return re.sub(pattern, replacer, texto)
 
+def limpiar_texto_para_tts(texto: str) -> str:
+    """Elimina URLs, hashtags y menciones para una locución limpia."""
+    t = URL_RE.sub('', texto)
+    t = HASHTAG_RE.sub('', t)
+    t = MENTION_RE.sub('', t)
+    return t
+
 def limpiar_artefactos_ia(texto: str) -> str:
     texto_limpio = re.sub(
         r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar)[^)]*?\)\s*',
@@ -468,6 +475,9 @@ def limpiar_artefactos_ia(texto: str) -> str:
     texto_limpio = texto_limpio.replace('*', '')
     texto_limpio = re.sub(r'^[A-ZÁÉÍÓÚ\s]+:$', '', texto_limpio, flags=re.MULTILINE)
     texto_limpio = re.sub(r'(\d{4})/(\d{4})', r'\1 a \2', texto_limpio)
+    
+    # NUEVO: Limpieza de URLs, hashtags y arrobas
+    texto_limpio = limpiar_texto_para_tts(texto_limpio)
     
     lineas = []
     for linea in texto_limpio.split('\n'):

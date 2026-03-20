@@ -178,7 +178,8 @@ Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
 **REGLAS DE ORO:**
 1. **INFORMACIÓN SAGRADA:** Es OBLIGATORIO incluir nombres de personas (autores, premiados, etc.), títulos de obras (libros, películas) y lugares específicos mencionados. NO generalices (ej: NO digas "un autor", di "Pedro Martín-Romo").
 2. **FORMATO PLANO:** El resultado debe ser texto puro. NO INCLUYAS NUNCA markdown (ni negritas **, ni cursivas _), ni anotaciones de producción. Eliminamos cualquier asterisco de la respuesta.
-3. **NO** incluyas texto entre paréntesis o corchetes.
+3. **PROHIBICIÓN DE ENLACES Y SÍMBOLOS:** Bajo ninguna circunstancia incluyas direcciones web (URLs), enlaces tipo "http", hashtags (#) o menciones de usuario (@). Si una noticia hace referencia a un sitio web, limítate a decir el nombre del sitio (ej: "en el diario ABC") sin el ".es" o ".com".
+4. **NO** incluyas texto entre paréntesis o corchetes.
 """
 
     @staticmethod
@@ -223,6 +224,7 @@ REGLAS ESTRICTAS:
 - Longitud MÁXIMA: 50 palabras.
 - Sé directo y puramente informativo.
 - NO añadas contexto, opiniones, ni información que no esté en el texto original.
+- **LIMPIEZA TOTAL:** Queda terminantemente prohibido incluir URLs, enlaces, hashtags (#) o arrobas (@).
 - NO intentes explicar el "porqué" de nada. Simplemente informa del hecho.
 {instruccion_fuente}
 
@@ -269,7 +271,7 @@ Debe comenzar directamente con {{ y terminar con }}.
 Estructura obligatoria del JSON:
 {{
   "entidades_clave": ["Entidad 1", "Concepto 2", "Persona 3"], // Array de 3 a 5 palabras clave breves.
-  "resumen": "Tu guion de radio adaptado (respetando los límites de palabras, citando fuentes, con fechas absolutas, etc.)",
+  "resumen": "Tu guion de radio adaptado (respetando los límites de palabras, citando fuentes, con fechas absolutas, etc. NUNCA incluyas URLs, hashtags ni arrobas).",
   "sentimiento": "positivo", // Exclusivamente: 'positivo', 'negativo' o 'neutro'.
   "es_agenda": true, // Booleano: true (evento futuro), false (hecho actual/pasado).
   "fecha_evento": "25 de noviembre" // String breve indicando la fecha si es_agenda=true. Vacío en caso contrario.
