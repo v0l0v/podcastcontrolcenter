@@ -126,23 +126,20 @@ def resumir_noticia_con_google(texto: str, idioma_destino: str, fuente_original:
     )
     return generar_texto_con_gemini(prompt)
 
-def leer_pregunta_del_dia() -> Dict[str, str] | None:
+def leer_pregunta_del_dia() -> List[Dict[str, str]]:
     """
-    Lee los mensajes de la audiencia y devuelve solo el que corresponde al día actual.
-    Formato esperado por mensaje:
-    fecha: DD-MM-YYYY
-    autor: Nombre del Oyente
-    texto: Mensaje del oyente...
+    Lee los mensajes de la audiencia y devuelve una lista de los que corresponden al día actual (máx 2).
     """
     if not os.path.exists(AUDIENCE_QUESTIONS_FILE):
         print(f"      ℹ️ No se encontró el archivo '{AUDIENCE_QUESTIONS_FILE}'. Se omitirá la sección de audiencia.")
-        return None
+        return []
 
     try:
         with open(AUDIENCE_QUESTIONS_FILE, 'r', encoding='utf-8') as f:
             bloques = f.read().split('---')
         
         fecha_hoy = datetime.now().date()
+        mensajes_hoy = []
 
         for bloque in bloques:
             if not bloque.strip():
@@ -160,18 +157,21 @@ def leer_pregunta_del_dia() -> Dict[str, str] | None:
                     if fecha_mensaje == fecha_hoy:
                         if 'autor' in mensaje and 'texto' in mensaje:
                             print(f"      ✅ Mensaje de la audiencia encontrado para hoy ({fecha_hoy.strftime('%d-%m-%Y')}) de '{mensaje['autor']}'.")
-                            # Devolver todos los campos capturados (autor, texto, plataforma, tipo, chat_id...)
-                            return mensaje
+                            mensajes_hoy.append(mensaje)
+                            if len(mensajes_hoy) >= 2:
+                                break # Límite de 2 mensajes
                 except ValueError:
                     print(f"      ⚠️ Fecha en formato incorrecto en el bloque: {mensaje.get('fecha')}. Se ignora.")
                     continue
         
-        print(f"      ℹ️ No se encontró ningún mensaje de la audiencia para la fecha de hoy ({fecha_hoy.strftime('%d-%m-%Y')}).")
-        return None
+        if not mensajes_hoy:
+            print(f"      ℹ️ No se encontró ningún mensaje de la audiencia para la fecha de hoy ({fecha_hoy.strftime('%d-%m-%Y')}).")
+        
+        return mensajes_hoy
         
     except Exception as e:
         print(f"      ❌ Error al leer el archivo de preguntas de la audiencia: {e}")
-        return None
+        return []
 
 
 
@@ -1882,7 +1882,7 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         # Obtener el mensaje de la audiencia antes de generar la introducción,
         # para que la IA pueda tenerlo en cuenta si es necesario para el tono.
-        mensaje_del_dia = leer_pregunta_del_dia()
+        mensajes_hoy = leer_pregunta_del_dia()
 
         # NUEVO: Analizar sentimiento general de las noticias
         sentimiento_general = analizar_sentimiento_general_noticias((resumenes_noticiero + resumenes_agenda))
@@ -2253,65 +2253,78 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                                     # Si no hay cortinilla específica, usamos una transición del pool
                                     segmentos_audio.insert(-2, agregar_transicion())
                                     
-                        print("    ✅ CTA intermedio procesado e insertado (con cortinilla previa).")
-            else:
-                print("      ⚠️ Fallo al generar crónica unificada. Saltando bloque.")
-
-        # 2. Procesar noticias individuales restantes
-        for noticia in noticias_individuales:
-            audio_noticia, texto_noticia = _generar_y_cachear_audio_noticia(noticia, fecha_actual_str) # <-- Unpack tuple
-            if audio_noticia:
-                transcript_data.append({
-                    'type': 'news',
-                    'title': noticia.get('fuente', 'Noticia'),
-                    'content': texto_noticia
-                }) # <-- Capturar noticia
-                sentimiento_noticia = noticia.get('sentimiento', 'neutro')
-                segmentos_audio.append(audio_noticia)
-                segmentos_audio.append(agregar_transicion(sentimiento_noticia))
-
-        # --- FASE 2.5: Procesando sección de la audiencia ---
+                        # --- FASE 2.5: Procesando sección de la audiencia ---
         print("\n--- FASE 2.5: Procesando sección de la audiencia ---")
-        # mensaje_del_dia ya se obtuvo al inicio de la FASE 2
-
-        if mensaje_del_dia:
-            autor = mensaje_del_dia.get('autor', 'un oyente')
-            texto_mensaje = mensaje_del_dia.get('texto', '')
+        
+        if mensajes_hoy:
+            num_mensajes = len(mensajes_hoy)
+            print(f"  -> Procesando {num_mensajes} mensaje(s) de la audiencia.")
             
-            print(f"  -> Generando segmento integrado para el mensaje de: {autor}")
+            # Intro explícita sobre el número de mensajes
+            texto_intro = "Hoy he seleccionado un mensaje de los que nos habéis dejado en el buzón." if num_mensajes == 1 else f"Hoy he seleccionado {num_mensajes} mensajes de los que nos habéis dejado en el buzón."
+            intro_segmento = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
+            if intro_segmento:
+                segmentos_audio.append(intro_segmento)
+                segmentos_audio.append(AudioSegment.silent(duration=800))
 
-            # 1. Llamamos al NUEVO prompt unificado que genera TODO el segmento, pasando el sentimiento general
-            prompt_segmento = mcmcn_prompts.PromptsCreativos.generar_segmento_audiencia_integrado(
-                autor, texto_mensaje,
-                sentimiento_general=sentimiento_general # <-- PASAMOS SENTIMIENTO
-            )
-            texto_segmento_completo = generar_texto_con_gemini(prompt_segmento)
-            
-            if texto_segmento_completo:
-                # 2. Limpiamos y sintetizamos el segmento completo en un único paso
-                segmento_limpio = limpiar_artefactos_ia(texto_segmento_completo)
-                print(f"      ✅ Segmento de audiencia generado: '{segmento_limpio[:90]}...'")
-                transcript_data.append({'type': 'audience', 'content': segmento_limpio}) # <-- Capturar audiencia
+            for i, mensaje_data in enumerate(mensajes_hoy):
+                autor = mensaje_data.get('autor', 'un oyente')
+                texto_mensaje = mensaje_data.get('texto', '')
+                audio_path = mensaje_data.get('audio') # Campo nuevo para notas de voz
                 
-                segmento_ssml = f"<speak>{html.escape(segmento_limpio)}</speak>"
-                segmento_audio = sintetizar_ssml_a_audio(segmento_ssml)
-                
-                if segmento_audio:
-                    # NUEVO: Calcular minuto exacto de la mención para Telegram
-                    tiempo_acumulado_ms = sum(len(s) for s in segmentos_audio if s)
-                    minutos = int(tiempo_acumulado_ms // 60000)
-                    segundos = int((tiempo_acumulado_ms % 60000) // 1000)
-                    mensaje_del_dia['timestamp_mencion'] = f"{minutos}:{segundos:02d}"
-                    
-                    # 3. Añadimos el audio del segmento y una transición DESPUÉS
-                    segmentos_audio.append(segmento_audio)
+                # Calcular minuto de mención para notificaciones posteriores
+                tiempo_acumulado_ms = sum(len(s) for s in segmentos_audio if s)
+                minutos = int(tiempo_acumulado_ms // 60000)
+                segundos = int((tiempo_acumulado_ms % 60000) // 1000)
+                mensaje_data['timestamp_mencion'] = f"{minutos}:{segundos:02d}"
+
+                if audio_path and os.path.exists(audio_path):
+                    # CASO A: NOTA DE VOZ (Audio)
+                    print(f"      🎙️ Procesando nota de voz de: {autor}")
+                    try:
+                        # 1. Generar Intro para el audio
+                        prompt_audio_intro = f"Actúa como Dorotea. Presenta brevemente que vamos a escuchar una nota de voz que nos ha enviado {autor}. Sé natural y cercana. Máximo 20 palabras."
+                        texto_intro_audio = generar_texto_con_gemini(prompt_audio_intro)
+                        audio_intro = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_intro_audio))}</speak>")
+                        
+                        # 2. Cargar el audio original
+                        audio_oyente = AudioSegment.from_file(audio_path)
+                        # Normalizar un poco el audio del oyente si es necesario (opcional)
+                        
+                        # 3. Generar Reacción al audio
+                        prompt_reaccion = f"Actúa como Dorotea. Has escuchado un audio de {autor} que decía vagamente: '{texto_mensaje}'. Da una respuesta breve, empática y con tu estilo manchego. Máximo 40 palabras."
+                        texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
+                        audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
+                        
+                        if audio_intro and audio_oyente and audio_reaccion:
+                            segmentos_audio.append(audio_intro)
+                            segmentos_audio.append(AudioSegment.silent(duration=500))
+                            segmentos_audio.append(audio_oyente)
+                            segmentos_audio.append(AudioSegment.silent(duration=500))
+                            segmentos_audio.append(audio_reaccion)
+                            transcript_data.append({'type': 'audience_audio', 'content': f"Audio de {autor}: {texto_mensaje}"})
+                    except Exception as e:
+                        print(f"      ⚠️ Error procesando nota de voz de {autor}: {e}")
+                else:
+                    # CASO B: MENSAJE DE TEXTO (Sintetizado)
+                    print(f"      📝 Generando segmento de texto para: {autor}")
+                    prompt_segmento = mcmcn_prompts.PromptsCreativos.generar_segmento_audiencia_integrado(
+                        autor, texto_mensaje, sentimiento_general=sentimiento_general
+                    )
+                    texto_segmento = generar_texto_con_gemini(prompt_segmento)
+                    if texto_segmento:
+                        segmento_limpio = limpiar_artefactos_ia(texto_segmento)
+                        segmento_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(segmento_limpio)}</speak>")
+                        if segmento_audio:
+                            segmentos_audio.append(segmento_audio)
+                            transcript_data.append({'type': 'audience', 'content': segmento_limpio})
+
+                # Añadir transición entre mensajes si no es el último
+                if i < num_mensajes - 1:
                     segmentos_audio.append(agregar_transicion())
-            else:
-                print("      ⚠️ No se pudo generar el segmento de la audiencia.")
-        else:
-            print("  -> No hay mensaje de la audiencia programado para hoy.")
-
-
+            
+            # Transición final después de toda la sección
+            segmentos_audio.append(agregar_transicion())
         # --- FASE 2.6: Audio Programado (Mirra/Colaboradores) ---
         print("\n--- FASE 2.6: Buscando audios programados por fecha ---")
         fecha_prefijo = datetime.now().strftime("%Y%m%d") + "_"
@@ -2686,38 +2699,40 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
 
         print(f"\n🎉 ¡Podcast generado con éxito! Archivo: {nombre_podcast_final}")
         
-        # NUEVO: Notificación retroactiva a Telegram
-        if mensaje_del_dia and '_telegram_chat_id' in mensaje_del_dia:
-            chat_id = mensaje_del_dia['_telegram_chat_id']
-            print(f"  🚀 Enviando notificación al usuario de Telegram (ID: {chat_id})...")
-            try:
-                import requests
-                from dotenv import load_dotenv
-                load_dotenv()
-                bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-                if bot_token:
-                    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-                    
-                    # Enriquecer mensaje con minuto y link
-                    timestamp_mencion = mensaje_del_dia.get('timestamp_mencion', 'el inicio')
-                    podcast_url = CONFIG.get('podcast_info', {}).get('podcast_url', 'https://micomicona.ache.ovh')
-                    
-                    texto_telegram = (
-                        f"🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena.\n\n"
-                        f"🔊 Puedes escucharlo aproximadamente en el **minuto {timestamp_mencion}** del episodio.\n\n"
-                        f"🔗 Enlace para la escucha: {podcast_url}\n\n"
-                        f"¡Gracias por participar! 👋"
-                    )
-                    
-                    payload = {
-                        "chat_id": chat_id,
-                        "text": texto_telegram,
-                        "parse_mode": "Markdown"
-                    }
-                    requests.post(url, json=payload, timeout=5)
-                    print(f"  ✅ Notificación enviada exitosamente (Minuto {timestamp_mencion}).")
-            except Exception as e:
-                print(f"  ⚠️ Error enviando notificación a Telegram: {e}")
+        # NUEVO: Notificación retroactiva a Telegram (soporta múltiples mensajes)
+        if mensajes_hoy:
+            for mensaje_data in mensajes_hoy:
+                if '_telegram_chat_id' in mensaje_data:
+                    chat_id = mensaje_data['_telegram_chat_id']
+                    print(f"  🚀 Enviando notificación al usuario de Telegram (ID: {chat_id})...")
+                    try:
+                        import requests
+                        from dotenv import load_dotenv
+                        load_dotenv()
+                        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+                        if bot_token:
+                            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                            
+                            # Enriquecer mensaje con minuto y link
+                            timestamp_mencion = mensaje_data.get('timestamp_mencion', 'el inicio')
+                            podcast_url = CONFIG.get('podcast_info', {}).get('podcast_url', 'https://micomicona.com')
+                            
+                            texto_telegram = (
+                                f"🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena.\n\n"
+                                f"🔊 Puedes escucharlo aproximadamente en el **minuto {timestamp_mencion}** del episodio.\n\n"
+                                f"🔗 Enlace para la escucha: {podcast_url}\n\n"
+                                f"¡Gracias por participar! 👋"
+                            )
+                            
+                            payload = {
+                                "chat_id": chat_id,
+                                "text": texto_telegram,
+                                "parse_mode": "Markdown"
+                            }
+                            requests.post(url, json=payload, timeout=5)
+                            print(f"  ✅ Notificación enviada satisfactoriamente a {mensaje_data.get('autor')} (Minuto {timestamp_mencion}).")
+                    except Exception as e:
+                        print(f"  ⚠️ Error enviando notificación a Telegram: {e}")
 
 
     except FileNotFoundError as e:

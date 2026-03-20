@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 # Archivo donde Dorotea lee las preguntas
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 BUZON_FILE = os.path.join(PROJECT_ROOT, 'preguntas_audiencia.txt')
+BUZON_DIR = os.path.join(PROJECT_ROOT, 'buzon_del_oyente')
+
+# Asegurar directorios
+os.makedirs(BUZON_DIR, exist_ok=True)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Envía un mensaje cuando se emita el comando /start."""
@@ -77,9 +81,52 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Procesa las notas de voz."""
     user = update.effective_user
+    voice = update.message.voice
     
-    # TODO: Integrar la descarga y transcripción del audio.
-    await update.message.reply_text("¡Nota de voz recibida! 🎙️ (El transcriptor de Dorotea está en la fase 2 de desarrollo...)")
+    if not voice:
+        return
+
+    # 1. Preparar metadatos
+    from datetime import datetime
+    ahora = datetime.now()
+    fecha_str = ahora.strftime("%d-%m-%Y")
+    timestamp_file = ahora.strftime("%Y%m%d_%H%M%S")
+    
+    # 2. Descargar el archivo
+    file_id = voice.file_id
+    new_file = await context.bot.get_file(file_id)
+    
+    file_extension = "ogg" # Telegram voice es .ogg (Opus)
+    filename = f"{timestamp_file}_{user.first_name}.{file_extension}"
+    dest_path = os.path.join(BUZON_DIR, filename)
+    
+    await new_file.download_to_drive(dest_path)
+    logger.info(f"Nota de voz de {user.first_name} descargada en {dest_path}")
+
+    # 3. Registrar en preguntas_audiencia.txt
+    es_privado = update.message.chat.type == 'private'
+    origen = "Grupo" if not es_privado else "Privado"
+    chat_id_interno = update.message.chat_id
+    
+    bloque_formateado = (
+        f"\n---\n"
+        f"fecha: {fecha_str}\n"
+        f"autor: {user.first_name}\n"
+        f"texto: [NOTA DE VOZ]\n"
+        f"audio: {dest_path}\n"
+        f"plataforma: Telegram\n"
+        f"tipo: {origen}\n"
+        f"_telegram_chat_id: {chat_id_interno}\n"
+    )
+    
+    with open(BUZON_FILE, 'a', encoding='utf-8') as f:
+        f.write(bloque_formateado)
+    
+    # 4. Responder al usuario
+    if es_privado:
+        await update.message.reply_text("¡He recibido tu nota de voz! 🎙️ Dorotea la escuchará y la incluirá en el próximo episodio.")
+    else:
+        await update.message.reply_text(f"¡Anotado para hoy, {user.first_name}! 🎙️ (Nota de voz recibida)")
 
 def main() -> None:
     """Inicia el bot."""
