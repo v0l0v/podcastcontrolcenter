@@ -125,7 +125,7 @@ autor: vict0rl0pez (Telegram Grupo)
 texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una amiga!
 
 ---
-fecha: 20-03-2026
+fecha: 20-02-2026
 autor: vict0rl0pez (Telegram Grupo)
 texto: te mando un saludo y un agradecimiento por la labor que desarrollas, muchas gracias, tu podcast es una pasada y tú, una gran amiga!
 _telegram_chat_id: -1003791334035
