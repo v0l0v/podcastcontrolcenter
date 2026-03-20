@@ -183,20 +183,24 @@ Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
 
     @staticmethod
     def clasificacion_noticia(texto: str) -> str:
-        """Determina si un texto contiene contenido informativo válido"""
+        """Determina si un texto contiene contenido informativo válido y localiza eventos"""
         criterios_base = PROMPTS_CONFIG.get('analysis_prompts', {}).get('clasificacion_criterios', "")
         if not criterios_base:
             criterios_base = "Clasifica si el texto es INFORMATIVO o IRRELEVANTE."
 
         return f"""{criterios_base}
 
-INSTRUCCIONES:
-- Responde únicamente: 'INFORMATIVO' o 'IRRELEVANTE'
-- No añadas explicaciones adicionales
+INSTRUCCIONES CLAVES PARA CLASIFICAR:
+Debes responder ÚNICAMENTE con UNA de estas tres palabras:
+1. 'AGENDA': Si el texto anuncia un evento futuro, acto, plazo de apertura o algo que el oyente puede hacer/ver próximamente.
+2. 'NOTICIERO': Si el texto anuncia un hecho ya consumado, una medida aprobada, subvención o resumen de situación actual o pasada.
+3. 'IRRELEVANTE': Si es mera publicidad genérica sin fecha ni hechos concretos, saludos o contenido vacío.
+
+No añadas explicaciones ni símbolos adicionales.
 
 TEXTO A ANALIZAR:
 ---
-{{texto}}
+{texto}
 ---"""
     @staticmethod
     def resumen_muy_breve(texto: str, fuente_original: str = "") -> str:
@@ -230,8 +234,50 @@ TEXTO ORIGINAL:
 ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
 
     @staticmethod
+    def procesamiento_noticia_completo(texto: str, fuente_original: str = "", idioma_destino: str = "español", contexto_calendario: str = "") -> str:
+        """
+        Produce simultáneamente el resumen periodístico, la extracción de entidades y
+        el análisis de sentimiento, usando una única llamada estructurada a la API.
+        """
+        instrucciones_base = PROMPTS_CONFIG.get('analysis_prompts', {}).get('resumen_instrucciones', "")
+        if not instrucciones_base:
+            instrucciones_base = "Resume esta noticia de forma periodística y concisa para radio."
+
+        instruccion_fuente = ""
+        if fuente_original:
+            if "PROPIA" in fuente_original.upper():
+                instruccion_fuente = "OBLIGATORIO: Atribuye explícitamente la noticia a 'la organización' o 'el grupo'. NUNCA digas 'PROPIA'."
+            else:
+                instruccion_fuente = f"OBLIGATORIO: Menciona explícitamente que la noticia proviene de '{fuente_original}' de forma natural dentro del locutado."
+
+        return f"""Eres un sistema de periodismo y análisis experto en producción de guiones para podcast.
+
+{instrucciones_base}
+
+{contexto_calendario}
+{instruccion_fuente}
+
+### TEXTO ORIGINAL A PROCESAR:
+---
+{texto}
+---
+
+### REGLA DE FORMATO DE SALIDA DE OBLIGADO CUMPLIMIENTO:
+Devuelve ÚNICAMENTE un objeto JSON válido. NO envuelvas la respuesta en bloques markdown (ni ```json).
+Debe comenzar directamente con {{ y terminar con }}.
+
+Estructura obligatoria del JSON:
+{{
+  "entidades_clave": ["Entidad 1", "Concepto 2", "Persona 3"], // Array de 3 a 5 palabras clave breves.
+  "resumen": "Tu guion de radio adaptado (respetando los límites de palabras, citando fuentes, con fechas absolutas, etc.)",
+  "sentimiento": "positivo", // Exclusivamente: 'positivo', 'negativo' o 'neutro'.
+  "es_agenda": true, // Booleano: true (evento futuro), false (hecho actual/pasado).
+  "fecha_evento": "25 de noviembre" // String breve indicando la fecha si es_agenda=true. Vacío en caso contrario.
+}}
+"""
+    @staticmethod
     def resumen_noticia(texto: str, idioma_destino: str = "español", fuente_original: str = "", contexto_calendario: str = "") -> str:
-        """Genera un resumen periodístico conciso y atractivo"""
+        """Genera un resumen periodístico conciso y atractivo (Deprecated)"""
         
         # Obtenemos las instrucciones base desde la configuración (JSON)
         # Aquí ya están incluidas todas las reglas de estilo, fuentes y fechas.
@@ -255,22 +301,29 @@ TEXTO ORIGINAL A RESUMIR:
 ENTREGA: Solo el resumen final, sin introducciones."""
 
     @staticmethod
-    def agrupacion_logica_temas(noticias_simplificadas: str) -> str:
+    def agrupacion_logica_temas(noticias_simplificadas: str, es_agenda: bool = False) -> str:
         """
-        Identifica temas y agrupa noticias por ID. La salida es un JSON simple.
+        Identifica temas y agrupa noticias por ID. Soporta lógica distintiva si es agenda.
         """
         instrucciones_agrupacion = PROMPTS_CONFIG.get('analysis_prompts', {}).get('agrupacion_instrucciones', "")
         if not instrucciones_agrupacion:
-            instrucciones_agrupacion = """Eres un analista de contenido experto en identificar patrones temáticos.
-TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes.
+            instrucciones_agrupacion = """Eres un analista de contenido experto en identificar patrones temáticos."""
 
-REGLA DE DEDUPLICACIÓN DE EVENTOS (¡MUY IMPORTANTE!):
-Es muy común que varios grupos publiquen noticias distintas que, en realidad, hablan del MISMO EVENTO EXACTO (ej: la misma feria, la misma visita de un político, el mismo proyecto en un punto geográfico).
-Tu misión es detectar estos eventos idénticos. Si dos o más noticias hablan del MISMO evento, DEBES AGRUPARLAS EN EL MISMO TEMA.
-No crees un tema separado para la "Noticia A del evento X" y la "Noticia B del evento X". Mételas todas bajo el tema "Evento X". """
+        instruccion_extra_evento = "Es muy común que varios grupos publiquen noticias distintas que, en realidad, hablan del MISMO EVENTO EXACTO (ej: la misma feria, la misma visita de un político). DEBES AGRUPARLAS obligatoriamente bajo el mismo ID de tema. No crees un tema separado por fuente para el mismo evento."
+
+        if es_agenda:
+            contexto_tipo = "Estas noticias son de AGENDA (eventos futuros). Agrupa los eventos que sean el mismo acto (por ej: ferias iguales), o en su defecto crea bloques por tipo de plan ('Eventos Culturales', 'Cursos y Formación', 'Ferias')."
+        else:
+            contexto_tipo = "Estas noticias conforman el NOTICIERO (hechos pasados y actuales). " + instruccion_extra_evento
 
         return f"""
         {instrucciones_agrupacion}
+        
+        INSTRUCCIONES CLAVE DE NEGOCIO:
+        {contexto_tipo}
+
+        TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes.
+        Devuelve ÚNICAMENTE un JSON válido donde las claves son los temas y el valor es un array con los IDs de las noticias que lo componen. (Ej: {{"Tema 1": ["id1", "id2"]}}). NO uses comillas en markdown.
 
         LISTA DE NOTICIAS (JSON):
         ---
@@ -410,117 +463,58 @@ class PromptsCreativos:
         fecha_actual_str: str = "",
         humanizacion_instruccion: str = "",
         toque_costumbrista: str = "",
-        dato_oficio_hoy: str = ""
+        dato_oficio_hoy: str = "",
+        pueblo_saludo: str = ""
     ) -> str:
         """
-        Genera el monólogo de apertura completo con integración orgánica de todos los datos.
+        Genera el monólogo de apertura simplificado y con saludo aleatorio.
         """
-        # --- Construir el CÓCTEL DE INGREDIENTES ---
         ingredientes = []
         
+        if pueblo_saludo:
+            ingredientes.append(f"📍 SALUDO ESPECIAL HOY: Queremos mandar un abrazo enorme, cercano y empático a los vecinos de {pueblo_saludo}. Hazles sentir especiales por un momento.")
+            
         if dato_meteo:
-            ingredientes.append(f"""🌤️ TIEMPO: {dato_meteo}
-  (Comenta la sensación térmica de forma natural: "hoy toca abrigarse", "qué día tan estupendo"... 
-   PROHIBIDO decir grados exactos ni nombres de poblaciones.)""")
-        
+            ingredientes.append(f"🌤️ TIEMPO (opcional): {dato_meteo}")
         if dato_efemeride:
-            ingredientes.append(f"""📅 EFEMÉRIDES / SANTORAL / FIESTAS:
-{dato_efemeride}
-  (Si hay efeméride histórica: "Tal día como hoy...". Si hay santoral: felicita. 
-   Si hay fiestas de interés turístico: menciónalas con entusiasmo y cariño.
-   Los refranes: úsalos SOLO si encajan perfecto, mejor no forzarlos.)""")
-        
-        if dato_deportes:
-            ingredientes.append(f"""⚽ DEPORTES: {dato_deportes}
-  (Coméntalo con pasión futbolera real: celebra si ganaron, ánimos si perdieron.)""")
-        
-        if humanizacion_instruccion:
-            ingredientes.append(f"""🏘️ TOQUE HUMANO / BINGO DE PUEBLOS:
-{humanizacion_instruccion}""")
-        
-        if toque_costumbrista:
-            ingredientes.append(f"""🌾 COSTUMBRISMO (PLATO PRINCIPAL):
-{toque_costumbrista}
-  (Esta es la base de tu conexión humana hoy. Dedícale tiempo, hazlo tuyo, desarrolla una pequeña historia o empatiza profundamente con esta gente.)""")
-
+            ingredientes.append(f"📅 EFEMÉRIDES / FIESTAS (opcional): {dato_efemeride}")
         if dato_oficio_hoy:
-             ingredientes.append(f"""🌾 OFICIO O TRADICIÓN DEL DÍA:
-{dato_oficio_hoy}
-  (Habla de este oficio o tradición de forma educativa, rindiéndole homenaje. Intégralo de forma natural en el monólogo inicial.)""")
-        
-        ingredientes_texto = "\n\n".join(ingredientes) if ingredientes else "(No hay datos extra hoy, improvisa con tu personalidad.)"
+            ingredientes.append(f"🌾 OFICIO (opcional): {dato_oficio_hoy}")
+        if toque_costumbrista:
+            ingredientes.append(f"Costumbrismo base: {toque_costumbrista}")
+            
+        ingredientes_texto = "\\n".join(ingredientes) if ingredientes else "Improvisa con tu personalidad."
 
-        instrucciones_intro = PROMPTS_CONFIG.get('analysis_prompts', {}).get('intro_instrucciones', "Genera una intro de podcast.")
+        instruccion_cta = f'📢 CTA (Llamada a la acción - OBLIGATORIA):\\n"{texto_cta}"\\n(Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)' if texto_cta else ""
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
-
-        instruccion_cta = ""
-        if texto_cta:
-            instruccion_cta = f"""📢 CTA (Llamada a la acción - OBLIGATORIA):
-        "{texto_cta}"
-        (Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)"""
 
         prompt = f"""
         {persona_base}
         
         ## TU MISIÓN HOY
+        Vas a generar el saludo de apertura del podcast rural. El objetivo es SIMPLIFICAR: no seas redundante y ve más al grano, pero manteniendo SIEMPRE tu inquebrantable cercanía y empatía por el mundo rural.
         
-        Vas a generar el monólogo de apertura del podcast. Pero NO como una lista de datos. 
-        Vas a crear una CONVERSACIÓN con tu audiencia: fluida, natural, con tu humor manchego 
-        y tu personalidad única. Piensa en cómo una presentadora de radio con chispa abre
-        su programa: mezclando temas, haciendo bromas, siendo cercana.
-
-        ## FECHA DE HOY
-        - FECHA: {fecha_actual_str}
-        - **REGLA ABSOLUTA:** Para mencionar qué día es, escribe LITERALMENTE `[FECHA_HUMANIZADA]`. Yo lo sustituiré después.
-        - Ejemplo: "Bienvenidos a este [FECHA_HUMANIZADA]..."
-
-        ## TUS INGREDIENTES (mézclalo todo de forma ORGÁNICA)
+        ## FECHA
+        Para el día de hoy, escribe LITERALMENTE: `[FECHA_HUMANIZADA]` (¡solo usa esta etiqueta!). Ejemplo: "¡Muy buenos días en este [FECHA_HUMANIZADA]!"
         
-        Tienes estos datos para tejer tu monólogo. NO los presentes como una lista.
-        ENTRELÁZALOS como si estuvieras charlando con alguien en un bar:
-        
-        {ingredientes_texto}
-        
-        📰 NOTICIAS DEL DÍA (para el sumario/teaser):
-        {contenido_noticias[:2000]}...
-        (INTRUCCIÓN CRÍTICA: Toma esto SOLO como referencia para dar una pincelada rápida a vista de pájaro sobre 2-3 temas que vertebran el episodio. NO resumas en detalle, solo sobrevuela la actualidad.)
+        ## NOTICIAS DEL DÍA (TEASER SOLO PARA ABRIR APETITO)
+        {contenido_noticias[:1500]}...
+        (Nombra 1 o 2 temas importantes súper por encima para generar intriga).
         
         {instruccion_cta}
         
-        🎭 CONTEXTO:
-        - Sentimiento general: {sentimiento_general}
-        - Saludo base sugerido: "{texto_base_saludo}" (Adáptalo, no lo leas literal.)
+        ## INGREDIENTES PARA DAR COLOR (NO EXAGERES)
+        {ingredientes_texto}
 
-        ## INSTRUCCIÓN MAESTRA DE INTEGRACIÓN
-        
-        {instrucciones_intro}
-        
-        ⚠️ **ANTI-PATRÓN (NO HAGAS ESTO):**
-        "Buenos días. Hoy es jueves. Hace frío. Hoy es San Valentín. Saludamos a Nerpio. 
-        En deportes, el Albacete ganó. Vamos con las noticias."
-        → Esto es una LISTA ABURRIDA. PROHIBIDO.
-        
-        ✅ **PATRÓN IDEAL:**
-        "¡Qué [FECHA_HUMANIZADA] tan fresquito nos ha dejado la noche, ¿eh? Yo que vosotros 
-        me agarraría bien al café... Ojalá tuviéramos al fuego un asadillo manchego como los 
-        agricultores que van ya en el tractor. Un abrazo gigante para ellos. Energía que le 
-        vino bien al Alba el finde... Pero bueno, hoy tenemos un programa con tela que cortar. 
-        Hablaremos por encima de [Tema 1] y de [Tema 2], prestad atención. Pero antes..."
-        → TODO FLUYE. Un tema lleva al otro. Los datos humanos lideran la conversación.
-        
-        **REGLAS FINALES (TU PERSONALIDAD):**
-        1. Escribe un monólogo de extensión MEDIA (250-350 palabras). Tienes tiempo para ambientar, pero sin excederte.
-        2. MANTÉN tu esencia "Dorotea": saluda al pueblo elegido al azar, menciona al gremio de turno. Eso es vital para el ambiente.
-        3. EVITA la redundancia diaria: no te pases todos los días hablando eternamente del tiempo, ni mandando siempre los mismos deseos sobre platos de comida o refranes. Varía tus recursos. Una pincelada basta.
-        4. Sé tú misma: humor manchego, ironía amable, cercanía.
-        5. NO uses markdown (negritas, cursivas). Texto plano para locución.
-        6. NO uses paréntesis ni corchetes (excepto [FECHA_HUMANIZADA] y [CORTINILLA]).
-        7. **HUYE DEL TONO POÉTICO:** No uses frases repipis como "caricia de frío" o "la mañana despunta". Habla del tiempo de forma mundana: "vaya fresco que hace" o "hay que agarrarse al café caliente".
-        8. **CUIDA EL COSTUMBRISMO REAL:** Si mencionas oficios, NO inventes estereotipos erróneos (ej. los queseros no usan harina). Apela a los sentidos reales: el olor a lumbre, las manos frías en el tractor, el pan recién hecho.
-        9. **AVANCE DE NOTICIAS NATURAL:** No leas los titulares institucionales como una nota de prensa. Traduce los temas a lenguaje de calle: "Hoy vamos a hablar de cómo los fondos europeos mantienen vivos los pueblos", en lugar de dictar el nombre completo del programa.
-        7. ENTRELAZA los datos como en una charla natural, no como un informe.
-        
-        RESPUESTA: Únicamente el texto del monólogo.
+        ## REGLAS DE ORO:
+        1. **Simplifica**: Inicia con energía, saluda y manda todo tu cariño a **{pueblo_saludo}** (OBLIGATORIO), añade un solo detalle de color (clima o efeméride) si aporta algo, y da paso a los temas velozmente. Evita repasar todos y cada uno de los ingredientes, eso es aburrido.
+        2. **Cercanía rural**: Que se note tu alma de mujer manchega, curtida pero moderna. 
+        3. No uses lenguaje de telediario ("A continuación desgranamos los sucesos"). Usa lenguaje de calle ("Vamos a ver qué se cuece hoy").
+        4. Extensión CORTA-MEDIA (cerca de 150-180 palabras). Que sea dinámico.
+        5. Texto plano (sin markdown, ni asteriscos). 
+        6. NO uses la etiqueta [CORTINILLA] más de una sola vez.
+
+        TU TEXTO EMPIEZA AQUÍ:
         """
         return prompt
 

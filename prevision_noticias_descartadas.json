@@ -1,1 +1,22 @@
-[]
+[
+    {
+        "titulo": "Tierras de Libertad Posted",
+        "sitio": "Tierras de Libertad",
+        "motivo": "Contenido/summary vacío"
+    },
+    {
+        "titulo": "Asociación Campo de Calatrava. Grupo Desarrollo Rural Posted",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "motivo": "Contenido/summary vacío"
+    },
+    {
+        "titulo": "Asociación Campo de Calatrava. Grupo Desarrollo Rural Posted",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "motivo": "Contenido/summary vacío"
+    },
+    {
+        "titulo": "✨ ¿Te apasiona el turismo, el emprendimiento y el desarrollo local? ✨ Este 23 de marzo tienes una cita imprescindible en...",
+        "sitio": "Grupo de Desarrollo Rural Montes de Toledo",
+        "motivo": "Duplicado detectado (Hash 0118c7fd)"
+    }
+]
