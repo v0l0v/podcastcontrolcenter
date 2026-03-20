@@ -936,6 +936,9 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         CONTEXTO DE LO QUE HAS LEÍDO HOY:
         {contexto_noticias}
         
+        REGLA DE ORO:
+        - El comentario debe ser MUY BREVE, como máximo de 30 segundos al ser locutado (unas 50-60 palabras máximo). ¡NO TE ENROLLES!
+        
         ENTREGA: Solo el texto.
         """
 
