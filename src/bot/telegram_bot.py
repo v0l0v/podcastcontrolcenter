@@ -110,6 +110,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     from datetime import datetime
     fecha_actual = datetime.now().strftime("%d-%m-%Y")
     origen = "Grupo" if not es_privado else "Privado"
+    chat_id_interno = update.message.chat_id
     
     # Registrar el mensaje con la nueva lógica de reemplazo
     registrar_mensaje(
@@ -151,6 +152,10 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     
     await new_file.download_to_drive(dest_path)
     logger.info(f"Nota de voz de {user.first_name} descargada en {dest_path}")
+
+    es_privado = update.message.chat.type == 'private'
+    origen = "Grupo" if not es_privado else "Privado"
+    chat_id_interno = update.message.chat_id
 
     # Registrar en preguntas_audiencia.txt (con lógica de reemplazo)
     registrar_mensaje(
