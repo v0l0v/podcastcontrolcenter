@@ -1560,7 +1560,6 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                 
                 respuesta_json = generar_texto_con_gemini(prompt_ia)
                 try:
-                    import json
                     start_j = respuesta_json.find('{')
                     end_j = respuesta_json.rfind('}')
                     if start_j != -1 and end_j != -1:
