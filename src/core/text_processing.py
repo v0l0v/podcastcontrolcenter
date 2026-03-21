@@ -460,12 +460,14 @@ def limpiar_texto_para_tts(texto: str) -> str:
     return t
 
 def limpiar_artefactos_ia(texto: str) -> str:
+    # Eliminar contenido entre paréntesis que parece una instrucción técnica
     texto_limpio = re.sub(
-        r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar)[^)]*?\)\s*',
+        r'\s*\([^)]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar|apaga|suave|desvanece|entra|sale|funde|fade|cortinilla|sintonía)[^)]*?\)\s*',
         ' ', texto, flags=re.IGNORECASE
     )
+    # Eliminar contenido entre corchetes que parece una instrucción técnica
     texto_limpio = re.sub(
-        r'\s*\[[^\]]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar)[^\]]*?\]\s*',
+        r'\s*\[[^\]]*?(dicho|le[ée]|leer|voz|tono|sonido|efecto|m[úu]sica|respiro|suspiro|risa|llanto|carraspeo|pausa|continuar|apaga|suave|desvanece|entra|sale|funde|fade|cortinilla|sintonía)[^\]]*?\]\s*',
         ' ', texto_limpio, flags=re.IGNORECASE
     )
     patron_sin_parentesis = r'\b(lee|leer|lei|leí|leído)\s+con\s+\w+\b'

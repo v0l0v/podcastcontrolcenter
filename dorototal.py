@@ -2260,12 +2260,13 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
             num_mensajes = len(mensajes_hoy)
             print(f"  -> Procesando {num_mensajes} mensaje(s) de la audiencia.")
             
-            # Intro explícita sobre el número de mensajes
-            texto_intro = "Hoy he seleccionado un mensaje de los que nos habéis dejado en el buzón." if num_mensajes == 1 else f"Hoy he seleccionado {num_mensajes} mensajes de los que nos habéis dejado en el buzón."
-            intro_segmento = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
-            if intro_segmento:
-                segmentos_audio.append(intro_segmento)
-                segmentos_audio.append(AudioSegment.silent(duration=800))
+            # Intro explícita sobre el número de mensajes (Solo si no es una única nota de voz, para evitar redundancia)
+            if num_mensajes > 1 or not mensajes_hoy[0].get('audio'):
+                texto_intro = "Hoy he seleccionado un mensaje de los que nos habéis dejado en el buzón." if num_mensajes == 1 else f"Hoy he seleccionado {num_mensajes} mensajes de los que nos habéis dejado en el buzón."
+                intro_segmento = sintetizar_ssml_a_audio(f"<speak>{texto_intro}</speak>")
+                if intro_segmento:
+                    segmentos_audio.append(intro_segmento)
+                    segmentos_audio.append(AudioSegment.silent(duration=800))
 
             for i, mensaje_data in enumerate(mensajes_hoy):
                 autor = mensaje_data.get('autor', 'un oyente')
@@ -2291,9 +2292,10 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                         audio_oyente = AudioSegment.from_file(audio_path)
                         # Normalizar un poco el audio del oyente si es necesario (opcional)
                         
-                        # 3. Generar Reacción al audio
+                        # 3. Generar Reacción al audio (Reforzando autor para evitar alucinaciones 'Anónimo')
                         prompt_reaccion = (
                             f"Actúa como Dorotea. Has escuchado un audio de {autor} que decía vagamente: '{texto_mensaje}'. "
+                            f"Instrucción Crucial: Asegúrate de que tu respuesta se dirige a {autor} y responde a su energía. "
                             f"Da una respuesta breve, empática y con tu estilo manchego. Máximo 40 palabras. "
                             f"IMPORTANTE: No te despidas del oyente ni del programa, la despedida real vendrá después."
                         )
@@ -2722,19 +2724,22 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
                             podcast_url = CONFIG.get('podcast_info', {}).get('podcast_url', 'https://micomicona.com')
                             
                             texto_telegram = (
-                                f"🎙️ ¡Hola! Soy Dorotea. Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena.\n\n"
-                                f"🔊 Puedes escucharlo aproximadamente en el **minuto {timestamp_mencion}** del episodio.\n\n"
-                                f"🔗 Enlace para la escucha: {podcast_url}\n\n"
+                                f"🎙️ <b>¡Hola! Soy Dorotea.</b> Acabo de terminar de grabar el podcast de hoy y he respondido a tu mensaje en antena.<br><br>"
+                                f"🔊 Puedes escucharlo aproximadamente en el minuto <b>{timestamp_mencion}</b> del episodio.<br><br>"
+                                f"🔗 Enlace para la escucha: {podcast_url}<br><br>"
                                 f"¡Gracias por participar! 👋"
-                            )
+                            ).replace('<br>', '\n')
                             
                             payload = {
                                 "chat_id": chat_id,
                                 "text": texto_telegram,
-                                "parse_mode": "Markdown"
+                                "parse_mode": "HTML"
                             }
-                            requests.post(url, json=payload, timeout=5)
-                            print(f"  ✅ Notificación enviada satisfactoriamente a {mensaje_data.get('autor')} (Minuto {timestamp_mencion}).")
+                            response = requests.post(url, json=payload, timeout=10)
+                            if response.status_code == 200:
+                                print(f"  ✅ Notificación enviada satisfactoriamente a {mensaje_data.get('autor')} (Minuto {timestamp_mencion}).")
+                            else:
+                                print(f"  ⚠️ Error de Telegram (Status {response.status_code}): {response.text}")
                     except Exception as e:
                         print(f"  ⚠️ Error enviando notificación a Telegram: {e}")
 
