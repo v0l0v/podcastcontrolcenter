@@ -49,15 +49,17 @@ def registrar_mensaje(fecha: str, autor: str, texto: str, chat_id: int, platafor
                 # Parsear campos básicos del bloque existente
                 lineas = b.split('\n')
                 b_fecha = ""
+                b_autor = ""
                 b_chat_id = ""
                 b_audio = ""
                 for l in lineas:
                     if l.startswith("fecha:"): b_fecha = l.split(":", 1)[1].strip()
+                    if l.startswith("autor:"): b_autor = l.split(":", 1)[1].strip()
                     if l.startswith("_telegram_chat_id:"): b_chat_id = l.split(":", 1)[1].strip()
                     if l.startswith("audio:"): b_audio = l.split(":", 1)[1].strip()
                 
-                # ¿Es el mismo usuario en la misma fecha?
-                if b_fecha == fecha and str(b_chat_id) == str(chat_id):
+                # ¿Es el mismo usuario en la misma fecha y chat?
+                if b_fecha == fecha and str(b_chat_id) == str(chat_id) and b_autor == autor:
                     # Reemplazamos: eliminar audio previo si existía
                     if b_audio and os.path.exists(b_audio):
                         try:
@@ -104,6 +106,9 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     mensaje_limpio = re.sub(r'(?i)#dorotea', '', mensaje).strip()
     
     if not mensaje_limpio:
+        if not es_privado:
+            # Si en el grupo solo escriben "#dorotea", les avisamos en vez de ignorarlo silenciosamente
+            await update.message.reply_text(f"¡Hola {user.first_name}! He visto que me nombras, pero tu mensaje está vacío. Escribe tu texto a continuación o manda una nota de voz.", reply_to_message_id=update.message.message_id)
         return # Evitar guardar mensajes vacíos
     
     # Escribir en el archivo de la audiencia con el formato correcto
