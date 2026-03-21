@@ -547,12 +547,12 @@ class PromptsCreativos:
         Construye una locución muy concisa siguiendo estos pasos simples:
         1. Menciona rápidamente que tienes un mensaje de {autor} y responde DIRECTAMENTE aportando la información o comentario que corresponda. NO le des las gracias a esta persona en concreto.
         2. Si el mensaje original es largo, no lo recites al pie de la letra, hazle un guiño breve y natural.
-        3. Concluye tu respuesta con un agradecimiento general a toda la audiencia por los mensajes y una pequeña llamada a la acción (CTA) animándoles a seguir escribiendo o mandando audios al bot de Telegram.
+        3. Concluye tu respuesta con un agradecimiento general a la audiencia por los mensajes y una muy breve llamada a la acción (CTA). En ese CTA debes mencionar el grupo de Telegram llamado "Micomicona" y decirles que busquen el enlace en la web de "micomicona.com".
         4. ¡TERMINA EN SECO! Justo después de esa brevísima invitación, pon punto final. NO cierres la sección y NO digas que continuamos con el programa. Tu frase se acaba para dar paso limpio a la cortinilla del siguiente bloque.
 
         REGLAS CLAVE:
         - **LIMITACIÓN DE TIEMPO ESTRICTA:** Tu locución NO DEBE superar los 30 a 45 segundos de audio (aproximadamente unas 50 a 65 palabras totales), a menos que sea EXPRESAMENTE necesario responder algo complejo.
-        - ¡No te enrolles! Sé muy "Dorotea" pero totalmente expeditiva y al grano. Apunta directo a la respuesta + CTA rápida.
+        - ¡No te enrolles! Sé muy "Dorotea" pero totalmente expeditiva y al grano. Apunta directo a la respuesta y a la rápida CTA final a micomicona.com.
         - El resultado debe ser texto plano (PÁRRAFO ÚNICO) listo para ser locutado.
         - **PROHIBICIÓN ESTRICTA DE TRANSICIONES:** NADA de hacer puentes al siguiente bloque. Tienes terminantemente prohibido decir: "bueno", "adiós", "seguimos", "continuamos con más noticias", o "vamos al siguiente tema". La intervención se corta sola en cuanto terminas tu pequeña CTA.
 
