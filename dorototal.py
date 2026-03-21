@@ -2702,6 +2702,11 @@ def procesar_feeds_google(nombre_archivo_feeds: str, idioma_destino: str = 'es',
         
         # Generar transcripción HTML
         generar_html_transcripcion(transcript_data, output_dir, timestamp) # <-- Generar HTML
+        
+        # NUEVO: Publicar automáticamente en WordPress
+        from src.wp_publisher import publish_podcast_to_wp
+        html_path = os.path.join(output_dir, f"podcast_summary_{timestamp}.html")
+        publish_podcast_to_wp(nombre_podcast_final, html_path)
 
         print(f"\n🎉 ¡Podcast generado con éxito! Archivo: {nombre_podcast_final}")
         
