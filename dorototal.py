@@ -1401,81 +1401,6 @@ def obtener_pueblo_aleatorio():
 # FUNCIÓN PRINCIPAL MEJORADA
 
 # =================================================================================
-
-def generar_micropodcast_social(transcript_data: list, output_dir: str, timestamp: str):
-    """
-    Genera un audio resumen de 59 segundos para redes sociales basado en las noticias del día.
-    """
-    try:
-        print("\n📱 Generando Micropodcast para Redes Sociales (59s)...")
-        if not transcript_data:
-            print("      ⚠️ No hay datos de noticias para generar el micropodcast.")
-            return
-            
-        # 1. Preparar el contenido para Gemini (tomar los bloques de noticias generados)
-        contenido_resumido = ""
-        # Filtrar solo los bloques de noticias del noticiero/agenda
-        bloques_validos = [n for n in transcript_data if n.get('type') == 'block']
-        
-        for i, bloque in enumerate(bloques_validos[:12]): # Tomar los 12 bloques más relevantes
-             titulo = bloque.get('title', 'Noticia')
-             texto = bloque.get('content', '')
-             contenido_resumido += f"- {titulo}: {texto}\n"
-             
-        if not contenido_resumido:
-            print("      ⚠️ No hay noticias resumidas para el micropodcast.")
-            return
-
-
-        # 2. Generar el guion
-        prompt = mcmcn_prompts.PromptsCreativos.generar_guion_micropodcast_resumen(contenido_resumido)
-        guion = generar_texto_con_gemini(prompt)
-        
-        if not guion:
-            print("      ⚠️ Fallo al generar el guion del micropodcast.")
-            return
-            
-        guion_limpio = limpiar_artefactos_ia(guion)
-        print(f"      ✅ Guion generado (~{len(guion_limpio.split())} palabras).")
-        
-        # 3. Sintetizar audio
-        # Dividir por párrafos para pausas naturales
-        parrafos = [p.strip() for p in guion_limpio.split('\n') if p.strip()]
-        audio_total = AudioSegment.empty()
-        
-        for p in parrafos:
-            # Escapar para SSML
-            p_esc = html.escape(p)
-            # Limpiar posibles asteriscos que a veces se cuelan
-            p_esc = p_esc.replace('*', '')
-            
-            segmento = sintetizar_ssml_a_audio(f"<speak>{p_esc}<break time='600ms'/></speak>")
-            if segmento:
-                audio_total += segmento
-        
-        if len(audio_total) == 0:
-            print("      ⚠️ No se pudo generar el audio del micropodcast.")
-            return
-            
-        # 4. Masterizar
-        audio_masterizado = masterizar_a_lufs(audio_total, TARGET_LUFS)
-        
-        # 5. Guardar
-        nombre_archivo = f"micropodcast_social_{timestamp}.mp3"
-        ruta_final = os.path.join(output_dir, nombre_archivo)
-        audio_masterizado.export(ruta_final, format="mp3", bitrate=BITRATE)
-        
-        # Guardar también el guion en un txt para referencia
-        with open(os.path.join(output_dir, f"micropodcast_social_{timestamp}.txt"), "w", encoding="utf-8") as f:
-            f.write(guion_limpio)
-            
-        print(f"      ✨ Micropodcast generado con éxito: {nombre_archivo}")
-        
-    except Exception as e:
-        print(f"      ❌ Error en generar_micropodcast_social: {e}")
-        import traceback
-        traceback.print_exc()
-
 def procesar_feeds_google(
 nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None, max_items_override: int = None):
     try:
@@ -2801,9 +2726,6 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         
         # Generar transcripción HTML
         generar_html_transcripcion(transcript_data, output_dir, timestamp) # <-- Generar HTML
-        
-        # NUEVO: Generar Micropodcast de 59 segundos para Redes Sociales
-        generar_micropodcast_social(transcript_data, output_dir, timestamp)
         
         # NUEVO: Publicar automáticamente en WordPress
         from src.wp_publisher import publish_podcast_to_wp
