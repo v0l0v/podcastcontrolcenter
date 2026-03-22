@@ -1412,17 +1412,20 @@ def generar_micropodcast_social(transcript_data: list, output_dir: str, timestam
             print("      ⚠️ No hay datos de noticias para generar el micropodcast.")
             return
             
-        # 1. Preparar el contenido para Gemini (tomar las noticias del noticiero, no las de agenda necesariamente o un mix)
+        # 1. Preparar el contenido para Gemini (tomar los bloques de noticias generados)
         contenido_resumido = ""
-        # Filtrar solo las que tienen resumen (las procesadas con éxito)
-        noticias_validas = [n for n in transcript_data if n.get('resumen')]
+        # Filtrar solo los bloques de noticias del noticiero/agenda
+        bloques_validos = [n for n in transcript_data if n.get('type') == 'block']
         
-        for i, de in enumerate(noticias_validas[:12]): # Tomar las 12 más relevantes
-             contenido_resumido += f"- {de.get('fuente')}: {de.get('resumen')}\n"
+        for i, bloque in enumerate(bloques_validos[:12]): # Tomar los 12 bloques más relevantes
+             titulo = bloque.get('title', 'Noticia')
+             texto = bloque.get('content', '')
+             contenido_resumido += f"- {titulo}: {texto}\n"
              
         if not contenido_resumido:
             print("      ⚠️ No hay noticias resumidas para el micropodcast.")
             return
+
 
         # 2. Generar el guion
         prompt = mcmcn_prompts.PromptsCreativos.generar_guion_micropodcast_resumen(contenido_resumido)
@@ -2324,8 +2327,31 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                                 else:
                                     # Si no hay cortinilla específica, usamos una transición del pool
                                     segmentos_audio.insert(-2, agregar_transicion())
+
+        # 2. Procesar noticias individuales (las que no entraron en ningún bloque temático)
+        if noticias_individuales:
+            print("\n  📌 Procesando noticias individuales sueltas...")
+            for noticia in noticias_individuales:
+                texto_noticia = noticia.get('resumen')
+                if not texto_noticia:
+                    continue
+                
+                print(f"    -> Sintetizando: {noticia.get('titulo', 'Sin título')[:50]}...")
+                audio_noticia = _sintetizar_con_cache_estructural(texto_noticia)
+                
+                if audio_noticia:
+                    segmentos_audio.append(audio_noticia)
+                    segmentos_audio.append(agregar_transicion(noticia.get('sentimiento', 'neutro')))
+                    
+                    # Lo guardamos como 'block' para que el generador del micropodcast lo recoja también
+                    transcript_data.append({
+                        'type': 'block',
+                        'title': noticia.get('titulo', 'Noticia Individual'),
+                        'content': texto_noticia
+                    })
+                    noticias_procesadas += 1
                                     
-                        # --- FASE 2.5: Procesando sección de la audiencia ---
+        # --- FASE 2.5: Procesando sección de la audiencia ---
         print("\n--- FASE 2.5: Procesando sección de la audiencia ---")
         
         if mensajes_hoy:
@@ -2509,8 +2535,9 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         
         hubo_audio_oyente = False
         
-        # Buscar audios (.mp3, .wav, .m4a, .ogg)
-        archivos_buzon = [f for f in os.listdir(buzon_path) if f.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg'))]
+        # Buscar audios (.mp3, .wav, .m4a, .ogg) que correspondan a la fecha de HOY
+        fecha_hoy_str = datetime.now().strftime("%Y%m%d")
+        archivos_buzon = [f for f in os.listdir(buzon_path) if f.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg')) and f.startswith(fecha_hoy_str)]
         
         if archivos_buzon:
             # Tomar el primero (FIFO)

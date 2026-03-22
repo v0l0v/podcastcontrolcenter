@@ -1,36 +1,172 @@
 [
     {
-        "fuente": "CEDER Alcarria Conquense",
-        "resumen": "Recientemente, se ha difundido información sobre las ayudas vigentes destinadas a diversos sectores. Estas subvenciones provienen de múltiples organismos públicos y están dirigidas a entidades locales, asociaciones, pequeñas y medianas empresas, autónomos y personas físicas. La iniciativa busca impulsar el desarrollo y la actividad en la región, ofreciendo un respaldo económico a quienes lo necesiten. El acceso a estos fondos se ha facilitado mediante la publicación de un boletín informativo que centraliza los detalles y los requisitos para solicitar estas ayudas.",
+        "fuente": "Grupo Desarrollo Rural Dulcinea (repost de Grupo Desarrollo Rural Dulcinea)",
+        "resumen": "¡Oiga, que me cuentan desde el Grupo Desarrollo Rural Dulcinea que el pueblo de El Toboso, ese que huele a Dulcinea y a Don Quijote, está que se sale! Las calles blancas, la Casa Museo, el Museo Cervantino con el Quijote en sesenta idiomas, ¡y hasta humor gráfico! Y no se olviden de la Iglesia de San Antonio Abad o los conventos, que eso sí que tiene miga. Y para rematar, que alrededor las lagunas y rutas para dar y tomar. ¡Vamos, que si quieren sentir la esencia cervantina, ya saben dónde tienen que ir!",
+        "titulo": "🏰 El Toboso (Toledo) es el pueblo de Dulcinea y Don Quijote. Sus calles blancas y casas de tapial parecen salidas de la...",
+        "sitio": "Grupo Desarrollo Rural Dulcinea",
+        "fecha": "2026-03-22",
+        "id": "df0ed902a5d8cd0c38db69fe2311731e",
+        "es_breve": false,
+        "entidades_clave": [
+            "El Toboso",
+            "Don Quijote",
+            "Museo Cervantino",
+            "Arquitectura",
+            "Rutas"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "El Toboso",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Fadeta Grupo de Desarrollo Rural (repost de Fadeta Grupo de Desarrollo Rural)",
+        "resumen": "¡Ojo, que en Budia se ha liado buena! Nos cuentan desde Fadeta Grupo de Desarrollo Rural que el pueblo ya tiene supermercado Covirán nuevo. ¡Una alegría para la vida diaria y para el comercio de la zona! Así da gusto, ¿verdad? Con estas cositas, el día a día se hace más llevadero.",
+        "titulo": "Fadeta Grupo de Desarrollo Rural: Budia estrena supermercado.\n\nEl municipio suma un nuevo servicio con la inauguración d...",
+        "sitio": "Fadeta Grupo de Desarrollo Rural",
+        "fecha": "2026-03-20",
+        "id": "a52da80f23ff45938662b69023a52f52",
+        "es_breve": false,
+        "entidades_clave": [
+            "Budia",
+            "Coviran",
+            "Supermercado",
+            "Comercio"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Budia",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Grupo Desarrollo Rural Dulcinea (repost de Grupo Desarrollo Rural Dulcinea)",
+        "resumen": "¡Ojo, que esto interesa a los que aman la naturaleza y los paseos al aire libre! Nos cuentan desde el Grupo Desarrollo Rural Dulcinea que han preparado una ruta medioambiental de las que quitan el hipo por las Tierras de Dulcinea. Imaginaos: humedales, viñedos, senderos y parajes para soñar despiertos. Los pueblos de Villacañas, Turleque, Corral de Almaguer, El Toboso, Madridejos, Villafranca, Quero y Miguel Esteban se ponen guapos para enseñarnos joyas como la Laguna Larga, el embalse de Finisterre, o la reserva de 'Los Charcones'. ¡Un planazo para descubrir nuestra tierra a pie!",
+        "titulo": "▶️Si te gusta la naturaleza, tienes que conocer la Ruta Medioambiental de las Tierras de Dulcinea.  ✅Humedales, viñedos,...",
+        "sitio": "Grupo Desarrollo Rural Dulcinea",
+        "fecha": "2026-03-20",
+        "id": "d7a75a64a942c4e4ce875e4867dd8dd1",
+        "es_breve": false,
+        "entidades_clave": [
+            "Ruta Medioambiental",
+            "Tierras de Dulcinea",
+            "Grupo Desarrollo Rural Dulcinea"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Tierras de Dulcinea",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Fadeta Grupo de Desarrollo Rural (repost de RECAMDER)",
+        "resumen": "¡Ay, Dios mío! Que el agua es vida, y no solo para nosotros, sino para que nuestros pueblos no se nos queden vacíos. Pues mira, desde RECAMDER nos lo recuerdan, sobre todo ahora que se acerca el Día Mundial del Agua. Nos dicen que eso de los trasvases, de mandar el agua para otros lados, pues que no es plan, que nos deja a nosotros más tiesos que la mojama. El agua, dicen ellos, es fundamental para que la gente se quede en el campo, tenga curro y sigamos adelante. Así que piden, con toda la razón del mundo, que no se use nuestro agua para que se desarrollen otros a costa de lo nuestro. ¡Que nos cuidemos lo que es nuestro, oiga!",
+        "titulo": "💧 #RECAMDER reclama una gestión sostenible del agua para no limitar las posibilidades de desarrollo del medio rural de...",
+        "sitio": "Fadeta Grupo de Desarrollo Rural",
+        "fecha": "2026-03-20",
+        "id": "2383db511181cce8384d09342f668c63",
+        "es_breve": false,
+        "entidades_clave": [
+            "RECAMDER",
+            "gestión del agua",
+            "desarrollo rural",
+            "medios rurales",
+            "trasvases"
+        ],
+        "sentimiento": "neutro",
+        "localidad": "Castilla-La Mancha",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Tierras de Talavera (repost de Tierras de Talavera)",
+        "resumen": "¡Ojo avizor, paisanada! Nos llega un llamamiento importante desde Tierras de Talavera, donde la gente se ha puesto las pilas para defender lo nuestro. Resulta que la Comisión Europea quiere meterle mano a los fondos del programa LEADER para el futuro, y desde RECAMDER nos invitan a firmar un manifiesto para que esto no suceda. Nos cuentan que este programa es vital para que en comarcas como la Sierra de San Vicente, La Jara y Talavera siga habiendo curro, se animen los emprendedores y no se nos quede el campo vacío. ¡Una herramienta clave, vamos! Así que, si uno quiere que nuestros pueblos sigan teniendo vida, es buen momento para echar una mano. ¡Que no se nos escape la oportunidad de defender lo que es nuestro!",
+        "titulo": "📢 Nuestras comarcas necesitan que demos un paso al frente. El mundo rural nos reclama. 👉 Si todavía no has apoyado el...",
+        "sitio": "Tierras de Talavera",
+        "fecha": "2026-03-20",
+        "id": "93979db5653c74b750ccd46b91cf90ad",
+        "es_breve": false,
+        "entidades_clave": [
+            "Programa LEADER",
+            "Medio Rural",
+            "Comisión Europea",
+            "Tierras de Talavera",
+            "Manifiesto RECAMDER"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Talavera",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Fadeta Grupo de Desarrollo Rural (repost de Fadeta Grupo de Desarrollo Rural)",
+        "resumen": "¡Ojo, que tenemos noticias importantes para nuestros pueblos! Desde Fadeta Grupo de Desarrollo Rural nos cuentan, y bien que hacen, que su presidente, Jesús Ortega, ha estado charlando en la radio sobre un proyecto que me ha gustado tela: 'Sostenibilidad rural: envases reciclables para gastronomía responsable'. Vamos, que pretenden que en nuestros bares y restaurantes haya menos desperdicio de comida y que todo esté en regla. Además, Ortega ha recordado lo cruciales que son los Grupos de Desarrollo Rural, esos que nos ayudan tanto, y ha pedido a Europa que no nos quiten el dinero para el programa LEADER. ¡Que no nos dejen tirados, vamos!",
+        "titulo": "🎙️Nuestro presidente, Jesús Ortega, pasó por los micrófonos de SER Guadalajara para hablar del proyecto 'Sostenibilidad...",
+        "sitio": "Fadeta Grupo de Desarrollo Rural",
+        "fecha": "2026-03-20",
+        "id": "407a79bc6508414af1b15cd9c4a73b8a",
+        "es_breve": false,
+        "entidades_clave": [
+            "Sostenibilidad rural",
+            "Hostelería",
+            "Fadeta",
+            "LEADER"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Guadalajara",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "ADAC Desarrollo Local (repost de Fundación General de la Universidad de Alcalá Cesefor Fundación)",
+        "resumen": "¡Hola, vecinos! Que sepáis que nos traen una noticia que huele a verde y a futuro. Mirad, la Fundación General de la Universidad de Alcalá Cesefor Fundación nos cuenta que se está currando un proyecto, y de los buenos, eh. El tema va de crear un mercado de carbono voluntario en las zonas de bosques que hay por la zona ADAC. Vamos, que se busca que la naturaleza se cotice un poquito más. Y esto no es cosa de un día, que durará hasta el año 2028, así que tiempo hay para ir enterándonos bien de cómo va esto. ¡A ver si entre todos cuidamos el monte que nos da la vida!",
+        "titulo": "🧑‍🌾🌲 El proyecto busca, entre otros objetivos, avanzar en la creación de un mercado de carbono voluntario en las zona...",
+        "sitio": "ADAC Desarrollo Local",
+        "fecha": "2026-03-20",
+        "id": "d1816c77d9af238c49cf16ff802ebbed",
+        "es_breve": false,
+        "entidades_clave": [
+            "Mercado de carbono",
+            "Bosques",
+            "Fundación General de la Universidad de Alcalá Cesefor Fundación",
+            "ADAC"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Alcalá",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "ADS Valle de Alcudia (repost de Ayuntamiento de Brazatortas)",
+        "resumen": "¡Hola, vecinos! Que alegría os traigo hoy desde Brazatortas, que se está poniendo bien guapo. Según nos cuentan desde el Ayuntamiento de Brazatortas, y con esas ayudas LEADER que gestiona el GDR Valle de Alcudia, han puesto unos murales que, vamos, embellecen el pueblo que da gusto. Y no solo eso, que narran con arte lo nuestro: el Parque Natural, las fiestas y hasta el Fuerte Romano. Además, han sacado un libro, 'Valle de Alcudia. El criadero del Reino', que nos pone en valor la trashumancia, ¡eso tan nuestro que ahora hasta es Patrimonio Mundial! Vamos, que estas cosas ayudan a que nuestra comarca luzca y dé oportunidades.",
+        "titulo": "👉Hoy te acercamos dos proyectos ejecutados por el Ayuntamiento de Brazatortas con #ayudas #Leader gestionadas por el GD...",
+        "sitio": "ADS Valle de Alcudia",
+        "fecha": "2026-03-20",
+        "id": "388eec8454b465d796d6b0cad5de98d8",
+        "es_breve": false,
+        "entidades_clave": [
+            "Ayuntamiento de Brazatortas",
+            "Turismo Rural",
+            "Valle de Alcudia",
+            "Murales",
+            "Libro trashumancia"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Brazatortas",
+        "es_agenda": false,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "CEDER Alcarria Conquense (repost de CEDER Alcarria Conquense)",
+        "resumen": "¡Hola a todos! ¿Qué tal? Pues mirad, que nos cuentan desde Ceder Alcarria Conquense que andan rondando unas ayudas muy interesantes. Están pensadas para echar una mano a las entidades locales, esas asociaciones que tanto hacen, a las pymes, a los autónomos y hasta a nosotros, las personas físicas. Vamos, que si andas metido en algún tinglado y necesitas un empujoncito, es bueno que te enteres. Tienen la información de los distintos organismos públicos, así que es un buen lugar para empezar a mirar. No os quedéis con la duda, que igual hay algo que os viene como anillo al dedo.",
         "titulo": "¡NUEVO BOLETIN INFORMATIVO! 🕵️‍♀️  Rastrea las ayudas vigentes para entidades locales, asociaciones, Pymes, autónomos y...",
         "sitio": "CEDER Alcarria Conquense",
         "fecha": "2026-03-20",
         "id": "60d5182e6a891b2f6778064acdb597d9",
         "es_breve": false,
         "entidades_clave": [
-            "Ayudas públicas",
-            "Organismos públicos",
-            "Entidades locales",
-            "Pymes y autónomos"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Desconocida",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural (repost de Asociación Alto Guadiana Mancha Grupo Desarrollo Rural)",
-        "resumen": "La Asociación Alto Guadiana Mancha Grupo Desarrollo Rural está abriendo una oportunidad única para su comunidad. Ofrecen una formación gratuita con el objetivo de potenciar el desarrollo local y profesional. Esta iniciativa busca capacitar a los asistentes en áreas relevantes para el entorno rural, facilitando así el acceso a nuevas oportunidades laborales. La inscripción se realiza a través de un enlace directo proporcionado por la organización, invitando a todos los interesados a aprovechar esta valiosa capacitación sin coste alguno. Se trata de una apuesta clara por el crecimiento y la cualificación de los habitantes de la comarca.",
-        "titulo": "Asociación Alto Guadiana Mancha. Grupo Desarrollo Rural: Únete a nuestra formación gratuita \n🔗 Pincha en el enlace de l...",
-        "sitio": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural",
-        "fecha": "2026-03-20",
-        "id": "8443527675381ef6b0d378c5ebdb5061",
-        "es_breve": false,
-        "entidades_clave": [
-            "Formación gratuita",
-            "Asociación Alto Guadiana Mancha",
-            "Grupo Desarrollo Rural",
-            "Oportunidad laboral"
+            "Ayudas",
+            "Entidades Locales",
+            "Pymes",
+            "Autónomos"
         ],
         "sentimiento": "positivo",
         "localidad": "Desconocida",
@@ -39,7 +175,7 @@
     },
     {
         "fuente": "Asociación de Turismo Rural de la Manchuela (repost de Asociación de Turismo Rural de la Manchuela)",
-        "resumen": "La Asociación de Turismo Rural de la Manchuela destaca el encanto histórico y paisajístico de Jorquera, un pueblo situado al noreste de Albacete. Enclavado sobre un cerro y rodeado por el Río Júcar y el arroyo de Abengibre, su geografía de cañón revela un pasado defensivo con restos de una muralla almohade del siglo XII. La localidad conserva vestigios de su castillo y antiguos accesos como la Puerta de la Villa. Jorquera combina cultivos de secano con fértiles huertas irrigadas con sistemas de origen árabe, y su término municipal incluye la singular Ribera de Cubas, conocida por sus casas-cueva que bordean la hoz del Júcar. Esta localidad, que alcanzó gran relevancia durante la época musulmana y fue conquistada definitivamente en el siglo XIII, sigue siendo un punto de interés para el turismo rural.",
+        "resumen": "¡Ay, qué maravilla nos cuentan desde la Asociación de Turismo Rural de la Manchuela! Nos hablan de Jorquera, ese pueblo que se esconde al noreste de Albacete, abrazado por el Júcar y el arroyo de Abengibre, con unas vistas que te dejan tonto, ¡cortados que quitan el hipo! Es un lugar donde la historia se respira en cada piedra: murallas de la época almohade, castillos, puertas antiguas... ¡como para echarse a soñar! Y no solo eso, también nos dicen que allí se cultiva de todo, desde la vid hasta los almendros, y se riega con sistemas que vienen de antes de que yo naciera. Dicen que en la época musulmana fue un punto gordo, y luego se convirtió en un concejo importante para toda La Manchuela. Y para rematar, las casas-cueva a la orilla del Júcar, ¡una pasada!",
         "titulo": "Jorquera se sitúa al noreste de Albacete, en un cerro rodeado por el Río Júcar y el arroyo de Abengibre, formando un pai...",
         "sitio": "Asociación de Turismo Rural de la Manchuela",
         "fecha": "2026-03-20",
@@ -47,10 +183,10 @@
         "es_breve": false,
         "entidades_clave": [
             "Jorquera",
-            "Río Júcar",
             "La Manchuela",
-            "Patrimonio Histórico",
-            "Turismo Rural"
+            "Turismo Rural",
+            "Río Júcar",
+            "Patrimonio Histórico"
         ],
         "sentimiento": "positivo",
         "localidad": "Jorquera",
@@ -59,7 +195,7 @@
     },
     {
         "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
-        "resumen": "La Cueva de La Camareta, ubicada en Agramón, pedanía de Hellín en Albacete, es un tesoro patrimonial de Castilla-La Mancha. Este lugar, declarado Bien de Interés Cultural, ha sido testigo de la presencia humana durante más de dos mil años. Lo que probablemente comenzó como un abrigo natural, fue evolucionando hasta convertirse en un eremitorio y un punto de encuentro para diversas culturas. Sus paredes conservan testimonios escritos y dibujos que reflejan su importancia a lo largo del tiempo, abarcando desde la Prehistoria hasta la Edad Contemporánea. Según informa Grupo Campos de Hellín, esta zona arqueológica representa un vínculo tangible con nuestro pasado, evidenciando la rica historia de la región. La cueva, catalogada como Bien Inmueble, abarca un periodo cultural que va de la Época Ibérica hasta el siglo XXI, con una publicación de su protección oficial el 05 de abril de 1990.",
+        "resumen": "¡Ay, qué tesoricos tenemos en nuestra tierra! Nos cuentan desde Grupo Campos de Hellín que en Agramón, pedanía de Hellín, está la Cueva de La Camareta. Esto no es un cueva cualquiera, ¡qué va! Es un Bien de Interés Cultural, una zona arqueológica que nos habla de más de dos mil años de historia. Imaginaos, desde la Prehistoria hasta hoy, ha sido lugar de paso, de descanso, y hasta ermita. Los dibujos y escritos que hay allí son como un libro abierto de nuestra gente. ¡Un patrimonio que hay que cuidar y conocer!",
         "titulo": "👋 ¡HOLA! 👋  ¿Conoces todo el Patrimonio Cultural que tenemos en Castilla-La Mancha? La cueva de La Camareta en Agramón...",
         "sitio": "Grupo Campos de Hellin",
         "fecha": "2026-03-20",
@@ -68,8 +204,7 @@
         "entidades_clave": [
             "Cueva de La Camareta",
             "Agramón",
-            "Hellín",
-            "Castilla-La Mancha",
+            "Patrimonio Cultural",
             "Bien de Interés Cultural"
         ],
         "sentimiento": "positivo",
@@ -78,26 +213,8 @@
         "fecha_evento": ""
     },
     {
-        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Ayuntamiento)",
-        "resumen": "El Ayuntamiento de Santa Cruz de la Zarza ha aprobado las bases para la creación de una bolsa de empleo destinada a la figura de Coordinador/a de Deportes. Esta iniciativa, publicada recientemente en el portal municipal, busca establecer un listado de profesionales cualificados para futuras incorporaciones en el área deportiva. La medida responde a la necesidad de contar con personal especializado que impulse y gestione las actividades deportivas en la localidad. El consistorio señala que este proceso de selección permitirá optimizar los recursos humanos y mejorar la oferta de servicios deportivos para los ciudadanos, garantizando la profesionalidad en la coordinación de los programas e instalaciones deportivas. Los detalles completos de las bases y los requisitos de participación se encuentran disponibles para consulta.",
-        "titulo": "BASES REGULADORAS PARA LA CREACIÓN DE UNA BOLSA DE EMPLEO DE COORDINADOR/A DE DEPORTES. https://www.santacruzdelazarza.e...",
-        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
-        "fecha": "2026-03-20",
-        "id": "f334669503d9002cf2e5f44983d9b320",
-        "es_breve": false,
-        "entidades_clave": [
-            "Ayuntamiento de Santa Cruz de la Zarza",
-            "Bolsa de empleo",
-            "Coordinador/a de Deportes"
-        ],
-        "sentimiento": "neutro",
-        "localidad": "Santa Cruz de la Zarza",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
         "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Asociación Comarcal Don Quijote)",
-        "resumen": "La Asociación Comarcal Don Quijote está impulsando una iniciativa crucial para la defensa del enfoque Leader y el desarrollo local participativo en nuestra comarca. El objetivo es amplificar la voz de la zona en Europa, defendiendo el medio rural como un pilar fundamental de nuestra forma de vida, nuestras raíces y el derecho a vivir y trabajar en nuestros pueblos en igualdad de condiciones. Para ello, invitan a todos los ciudadanos a firmar un manifiesto en defensa del medio rural. La firma se puede realizar de forma online a través de un enlace proporcionado por Recamder, la Consejería de Agricultura, Ganadería y Desarrollo Rural. Esta campaña busca asegurar el futuro de nuestras zonas rurales y mantener su vitalidad. ¡Defendamos Leader, defendamos el futuro rural!",
+        "resumen": "¡Atención, paisanos! Desde la Asociación Comarcal Don Quijote nos cuentan que hay una iniciativa para que se escuche nuestra voz en Europa. Quieren defender el medio rural, nuestras raíces y que podamos vivir y trabajar en nuestros pueblos con las mismas oportunidades. Para que esto salga adelante, nos animan a firmar un manifiesto. Así que, si quieres que la defensa del desarrollo local y del enfoque Leader tenga fuerza, busca cómo apoyarlo. ¡Nuestra forma de vida está en juego!",
         "titulo": "👉Desde la Asociación Comarcal Don Quijote queremos dar visibilidad y difundir en nuestra comarca la defensa que se está...",
         "sitio": "Asociación Comarcal Don Quijote de la Mancha",
         "fecha": "2026-03-20",
@@ -105,10 +222,9 @@
         "es_breve": false,
         "entidades_clave": [
             "Asociación Comarcal Don Quijote",
-            "Desarrollo Local Participativo",
-            "Defensa del Medio Rural",
-            "Programa Leader",
-            "Recamder"
+            "Desarrollo rural",
+            "Europa",
+            "Manifiesto"
         ],
         "sentimiento": "positivo",
         "localidad": "Desconocida",
@@ -116,215 +232,282 @@
         "fecha_evento": ""
     },
     {
-        "fuente": "MonteSur Grupo de Desarrollo Rural (repost de MonteSur Grupo de Desarrollo Rural)",
-        "resumen": "MonteSur Grupo de Desarrollo Rural ha participado recientemente en la presentación de los resultados del programa \"Reto Relevo Generacional\". Esta iniciativa, impulsada por la Cámara de Comercio de Ciudad Real y financiada por la Diputación Provincial, busca garantizar la continuidad de negocios en la provincia. Los datos revelan un impacto significativo: dieciséis negocios han continuado su actividad, sesenta y una empresas fueron identificadas para relevo y más de quinientos emprendedores se han registrado. Siete procesos de relevo están actualmente en marcha, asegurando que decenas de empresas sigan activas, manteniendo servicios y empleos en nuestros pueblos. MonteSur sigue apostando por la colaboración para generar oportunidades y combatir la despoblación rural, reconociendo que apoyar el relevo generacional es invertir en el futuro de estas localidades.",
-        "titulo": "📍 𝗠𝗼𝗻𝘁𝗲𝗦𝘂𝗿, 𝗽𝗿𝗲𝘀𝗲𝗻𝘁𝗲 𝗲𝗻 𝗲𝗹 𝗽𝗿𝗼𝗴𝗿𝗮𝗺𝗮 “𝗥𝗲𝘁𝗼 𝗥𝗲𝗹𝗲𝘃𝗼 𝗚𝗲𝗻𝗲𝗿𝗮𝗰𝗶𝗼𝗻𝗮𝗹” La ger...",
-        "sitio": "MonteSur Grupo de Desarrollo Rural",
-        "fecha": "2026-03-19",
-        "id": "1c8dbb0a30c0690006142304899b769b",
+        "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural (repost de Asociación Campo de Calatrava Grupo Desarrollo Rural)",
+        "resumen": "¡Que se note el arte y la tradición! Ya tenemos cartel para la Ruta de la Pasión Calatrava del 2026. La ilustradora María González, de Bilbao, se ha llevado el concurso con su obra 'Rojo Calatrava', que pone a nuestros armaos en el centro, conectando con esa memoria que tanto nos dice de nuestra Semana Santa. Nos lo contaron en Calzada de Calatrava, y fue como el pistoletazo de salida para esta ruta que es un orgullo para nuestra comarca. Hasta allí se acercaron el presidente de la Asociación Campo de Calatrava Grupo Desarrollo Rural, David Triguero, que alabó el esfuerzo de tanta gente que hace que esto sea único, y otros representantes importantes. Esta nueva imagen, 'Rojo Calatrava', va a proyectar fuera la fuerza de una tradición que compartimos entre diez pueblos y que es el fruto del compromiso de todos.",
+        "titulo": "La Ruta de la Pasión Calatrava 2026 ya tiene cartel oficial. La ganadora del concurso ha sido la ilustradora María Gonzá...",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "fecha": "2026-03-22",
+        "id": "7b62879951424d9347df69bbb67ad16e",
         "es_breve": false,
         "entidades_clave": [
-            "MonteSur Grupo de Desarrollo Rural",
-            "Reto Relevo Generacional",
-            "Cámara de Comercio de Ciudad Real",
-            "Diputación Provincial de Ciudad Real",
-            "Continuidad de negocios rurales"
+            "Ruta de la Pasión Calatrava",
+            "María González",
+            "Calzada de Calatrava",
+            "Semana Santa"
         ],
         "sentimiento": "positivo",
-        "localidad": "Ciudad Real",
-        "es_agenda": false,
-        "fecha_evento": ""
+        "localidad": "Calzada de Calatrava",
+        "es_agenda": true,
+        "fecha_evento": "la Semana Santa de 2026"
     },
     {
-        "fuente": "ADEL Sierra Norte (repost de ADEL Sierra Norte)",
-        "resumen": "Recientemente, Sigüenza acogió la presentación de 'Acelera Pyme', una iniciativa que impulsa la digitalización de empresas y autónomos. Desde ADEL Sierra Norte, se ha brindado asesoramiento gratuito a más de quinientas cincuenta pequeñas y medianas empresas para facilitar su transformación digital. Este programa busca potenciar el crecimiento en el medio rural a través de la adopción de nuevas tecnologías. La presentación, que tuvo lugar en Sigüenza, subraya el compromiso de ADEL Sierra Norte con la modernización del tejido empresarial de la zona.",
-        "titulo": "💻 Así fue la presentación de Acelera Pyme en Sigüenza Empresas y autónomos dando el paso hacia la digitalización 🚀 Des...",
-        "sitio": "ADEL Sierra Norte",
-        "fecha": "2026-03-19",
-        "id": "879e072de1be8ab917c68062811a588b",
+        "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural (repost de Ayuntamiento de Almagro)",
+        "resumen": "¡Atención, amantes de las letras! Que se enteren todos en Almagro y alrededores, porque el Ayuntamiento nos cuenta que ya está en marcha el III Certamen Literario “Manolita Espinosa”. Esta vez, para que nadie se quede con las ganas, hay dos modalidades: poesía, para los que se expresan con versos, y relato corto, para los que hilvanan historias. Pueden participar mayores de 18 años, siempre que las obras sean originales, inéditas y escritas en castellano. Los de poesía, entre 20 y 50 versos; los relatos, hasta cinco folios. El premio es jugoso, ¡mil euros por modalidad! Tenéis hasta el 30 de abril de 2026 para presentar vuestras creaciones, y el fallo se hará público el 29 de mayo de 2026, coincidiendo con la celebración de la recuperación del Corral de Comedias. ¡A ver si sale algún Quijote de por aquí!",
+        "titulo": "📚✍️ Agenda Comarcal | Almagro El Ayuntamiento de Almagro, a través de su Concejalía de Cultura, convoca el III Certamen...",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "fecha": "2026-03-21",
+        "id": "c39f66f89498bc9e931421a0e539e16b",
         "es_breve": false,
         "entidades_clave": [
-            "ADEL Sierra Norte",
-            "Acelera Pyme",
-            "Digitalización Rural",
-            "Empresas y Autónomos",
-            "Sigüenza"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Sigüenza",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural (repost de Asociación Alto Guadiana Mancha Grupo Desarrollo Rural)",
-        "resumen": "Recientemente, la Asociación Alto Guadiana Mancha Grupo Desarrollo Rural participó en la presentación del balance del programa \"Reto Relevo Generacional\" en la Diputación de Ciudad Real. Esta iniciativa, en colaboración con la Cámara de Comercio de Ciudad Real, busca asegurar la continuidad de negocios rurales y conectar emprendedores para evitar el cierre de empresas en los municipios de la zona. Los resultados son alentadores: dieciséis negocios han continuado su actividad, se identificaron sesenta y una empresas para relevo, más de quinientos emprendedores se registraron y siete procesos están actualmente en marcha. La asociación destaca que mantener abiertos estos negocios es vital para la vida de los pueblos, ya que generan empleo, garantizan servicios y ayudan a fijar población. Desde Alto Guadiana Mancha, reafirman su compromiso con el trabajo en red para impulsar oportunidades en el medio rural y afrontar el reto demográfico.",
-        "titulo": "📍 𝗔𝗹𝘁𝗼 𝗚𝘂𝗮𝗱𝗶𝗮𝗻𝗮 𝗠𝗮𝗻𝗰𝗵𝗮, 𝗽𝗿𝗲𝘀𝗲𝗻𝘁𝗲 𝗲𝗻 𝗲𝗹 𝗽𝗿𝗼𝗴𝗿𝗮𝗺𝗮 “𝗥𝗲𝘁𝗼 𝗥𝗲𝗹𝗲𝘃𝗼 𝗚𝗲𝗻𝗲𝗿...",
-        "sitio": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural",
-        "fecha": "2026-03-19",
-        "id": "ad6e0a642f3dd059bc63f1cfbe00cb14",
-        "es_breve": false,
-        "entidades_clave": [
-            "Alto Guadiana Mancha",
-            "Reto Relevo Generacional",
-            "Diputación de Ciudad Real",
-            "Cámara de Comercio",
-            "emprendedores rurales"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Ciudad Real",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Tierras de Talavera (repost de ASAJA mujeres)",
-        "resumen": "ASAJA mujeres está impulsando el proyecto FEAST, una iniciativa europea enfocada en la reducción del desperdicio alimentario. Este programa se basa en la educación, la sensibilización y la formación gratuita para lograr sus objetivos. Desde ADC-Tierras de Talavera se está brindando apoyo a esta propuesta, animando a la participación ciudadana. FEAST busca crear conciencia sobre el impacto del desperdicio de alimentos y proporcionar herramientas prácticas para combatirlo, ofreciendo recursos didácticos y talleres a quienes deseen unirse a este esfuerzo colectivo. El proyecto se alinea con las metas europeas de sostenibilidad y consumo responsable, buscando un impacto significativo en la comunidad.",
-        "titulo": "ASAJA mujeres está promoviendo el proyecto FEAST  (Food Education and Sustainable Training), una iniciativa europea orie...",
-        "sitio": "Tierras de Talavera",
-        "fecha": "2026-03-19",
-        "id": "cb929b79fe9a142ad6900d9492616c7a",
-        "es_breve": false,
-        "entidades_clave": [
-            "ASAJA mujeres",
-            "Proyecto FEAST",
-            "Desperdicio alimentario",
-            "Educación alimentaria",
-            "Formación gratuita"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Talavera",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Grupo Desarrollo Rural Dulcinea (repost de ASAJA mujeres)",
-        "resumen": "El proyecto FEAST, impulsado por ASAJA Mujeres, ofrece formación gratuita y recursos educativos para combatir el desperdicio alimentario. Esta iniciativa europea pone a disposición del público cursos online que abordan la planificación de menús, técnicas de conservación de alimentos y cocina de aprovechamiento. Los materiales descargables incluyen recetarios, guías prácticas para hogares y calendarios de productos de temporada, facilitando la reducción del desperdicio en casa. El proyecto también proporciona información sobre la Ley de Prevención de las Pérdidas y el Desperdicio Alimentario vigente en España. FEAST busca sensibilizar y empoderar a los ciudadanos para un consumo más responsable y sostenible en el ámbito alimentario, con el objetivo de que la comida no acabe en la basura.",
-        "titulo": "🧐¿Conoces el proyecto FEAST que está impulsando ASAJA mujeres? Es una iniciativa europea orientada a reducir el desperd...",
-        "sitio": "Grupo Desarrollo Rural Dulcinea",
-        "fecha": "2026-03-19",
-        "id": "2ab0740d74d8bb851ef5c475b669b784",
-        "es_breve": false,
-        "entidades_clave": [
-            "ASAJA Mujeres",
-            "Proyecto FEAST",
-            "Desperdicio alimentario",
-            "Cursos online",
-            "Educación alimentaria"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Desconocida",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Grupo de Acción Local Sierra del Segura (repost de SEPE)",
-        "resumen": "El futuro de la Sierra del Segura se está moldeando a través de un enfoque estratégico y colaborativo. Recientemente, se llevó a cabo un encuentro de trabajo con el director general del SEPE para evaluar el impacto del Plan de Sostenibilidad Turística en Destino. Esta iniciativa, según informan desde el SEPE, es crucial para impulsar la competitividad, la digitalización y el desarrollo sostenible en la comarca. El plan ya está generando nuevas oportunidades de empleo, mejorando infraestructuras clave y fortaleciendo el posicionamiento turístico de la zona. El objetivo principal es conectar personas, empleo y territorio, promoviendo un modelo de desarrollo sólido y alineado con la identidad de la región.",
-        "titulo": "El futuro de la Sierra del Segura se construye con estrategia, colaboración y oportunidades 🌿✨ Hoy hemos compartido un...",
-        "sitio": "Grupo de Acción Local Sierra del Segura",
-        "fecha": "2026-03-19",
-        "id": "000c3e0d4d4af7235dc090115c8b10ed",
-        "es_breve": false,
-        "entidades_clave": [
-            "Sierra del Segura",
-            "SEPE",
-            "Plan de Sostenibilidad Turística"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Sierra del Segura",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Prodese (repost de Prodese)",
-        "resumen": "La organización Prodese hace un llamado urgente a la defensa del medio rural, particularmente en la Serranía de Cuenca. Se insta a firmar el Manifiesto de RECAMDER para enviar un mensaje contundente a la Comisión Europea. El objetivo es evitar el recorte previsto en los fondos del programa LEADER para el periodo 2028-2034. Según Prodese, este programa es vital para la generación de empleo, el emprendimiento, la fijación de población y el desarrollo de territorios rurales. La eliminación de estos fondos representaría la pérdida de una herramienta fundamental para la supervivencia y el crecimiento de zonas como la Serranía de Cuenca. Se subraya la importancia de sumar apoyos para que la voz llegue con más fuerza a Europa y se insta a compartir el manifiesto para maximizar su alcance.",
-        "titulo": "📢¡Defiende el futuro de la Serranía de Cuenca! ¡Defiende el medio rural! 👉Si aún no has firmado el Manifiesto de #RECA...",
-        "sitio": "Prodese",
-        "fecha": "2026-03-19",
-        "id": "92ede3af9066a8e6ebae4193ef192492",
-        "es_breve": false,
-        "entidades_clave": [
-            "Comisión Europea",
-            "Fondos Leader",
-            "Serranía de Cuenca",
-            "Desarrollo Rural",
-            "RECAMDER"
-        ],
-        "sentimiento": "neutro",
-        "localidad": "Serranía de Cuenca",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "ADEL Sierra Norte (repost de ADEL Sierra Norte)",
-        "resumen": "Empresarios, autónomos y emprendedores de Sigüenza han conocido las herramientas digitales para mejorar la competitividad de sus negocios. La jornada, celebrada en la Hospedería Porta Coeli, ha contado con la presentación de la Oficina AceleraPyme Guadalajara. María Jesús Merino, presidenta de ADEL Sierra Norte, ha destacado esta iniciativa como una apuesta estratégica para el futuro económico del territorio, acercando la digitalización al tejido empresarial desde el medio rural. Desde ADEL Sierra Norte se sigue impulsando este servicio gratuito que asesorará a más de quinientas cincuenta pymes en los próximos dos años. La iniciativa también ha sido presentada a medios de comunicación.",
-        "titulo": "📸 Presentación de la Oficina @acelerapymeguadalajara  en Sigüenza Así fue la jornada celebrada en la Hospedería Porta C...",
-        "sitio": "ADEL Sierra Norte",
-        "fecha": "2026-03-19",
-        "id": "db055fae16a74f3f8d0e555b6b1b01da",
-        "es_breve": false,
-        "entidades_clave": [
-            "AceleraPyme",
-            "ADEL Sierra Norte",
-            "Sigüenza",
-            "digitalización",
-            "empresarios"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Sigüenza",
-        "es_agenda": false,
-        "fecha_evento": ""
-    },
-    {
-        "fuente": "Turismo Castilla La Mancha",
-        "resumen": "La berenjena de Almagro, un emblema de la gastronomía de Castilla-La Mancha, es un encurtido tradicional elaborado con la variedad Dealmagro. Cocinada y aliñada con vinagre, aceite, ajo, comino, pimentón y especias, destaca por su sabor intenso y textura firme. Este producto cuenta con Indicación Geográfica Protegida, garantizando su origen y método de elaboración ligados al territorio de la provincia de Ciudad Real. Presente en bares y mesas familiares, la berenjena de Almagro es parte fundamental de la identidad culinaria manchega, invitando a descubrir los sabores tradicionales de la región.",
-        "titulo": "La berenjena de Almagro es uno de los productos gastronómicos más reconocibles de Castilla-La Mancha. Este encurtido tra...",
-        "sitio": "Turismo Castilla La Mancha",
-        "fecha": "2026-03-19",
-        "id": "2216d83b3db1ca518e9ef8bf310f95db",
-        "es_breve": false,
-        "entidades_clave": [
-            "Berenjena de Almagro",
-            "Indicación Geográfica Protegida",
-            "Gastronomía Manchega",
-            "Castilla-La Mancha"
+            "Certamen Literario Manolita Espinosa",
+            "Almagro",
+            "Poesía y Relato Corto",
+            "Ayuntamiento de Almagro"
         ],
         "sentimiento": "positivo",
         "localidad": "Almagro",
-        "es_agenda": false,
+        "es_agenda": true,
+        "fecha_evento": "30 de abril de 2026"
+    },
+    {
+        "fuente": "ADR Molina de Aragón Alto Tajo (repost de ADR Molina de Aragón – Alto Tajo)",
+        "resumen": "¡Hola a todos! Que no se nos pasen estas cosas importantes, ¿eh? Resulta que desde ADR Molina de Aragón – Alto Tajo, nos han contado que ya está abierta la convocatoria para unas ayudas bien interesantes. Se trata de mejorar la videovigilancia y los sistemas digitales en los pueblos que están más poquitos habitados. Es una subvención a fondo perdido para los ayuntamientos y otras entidades públicas del territorio, una mano tendida para que la seguridad y la gestión de los servicios vayan mejor. El plazo para presentar lo que haga falta es hasta el 20 de abril de 2026. ¡A ver si sacamos partido de esto!",
+        "titulo": "📢 Nueva convocatoria de ayudas LEADER 2026 Desde ADR Molina de Aragón – Alto Tajo lanzamos la convocatoria 👉 “Infraest...",
+        "sitio": "ADR Molina de Aragón Alto Tajo",
+        "fecha": "2026-03-20",
+        "id": "e1016809ede9bd861a6b55ab2419bcfd",
+        "es_breve": false,
+        "entidades_clave": [
+            "ADR Molina de Aragón – Alto Tajo",
+            "Ayuntamientos",
+            "Seguridad digital",
+            "Municipios despoblados"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Molina de Aragón",
+        "es_agenda": true,
+        "fecha_evento": "20 de abril de 2026"
+    },
+    {
+        "fuente": "Adecor Grupo de Desarrollo Rural Campana de Oropesa (repost de Adecor Grupo de Desarrollo Rural Campana de Oropesa)",
+        "resumen": "¡Buenos días a todos! Hoy nos vamos de ruta, y es que desde Adecor Grupo de Desarrollo Rural Campana de Oropesa nos invitan a conocer Segurilla, un tesoro en plena Sierra del Berrocal. Dicen que sus parajes invitan a disfrutar de la naturaleza y del río Guadyerbas, ¡vamos, que es un gusto para los sentidos! Su joya es la Atalaya, una torre islámica de principios del siglo X, declarada Bien de Interés Cultural, que vigila el paisaje como una abuela sabia. Pero no os quedéis solo ahí, que la Iglesia de San Juan Bautista o la Ermita de la Soledad también tienen su encanto, como para echarnos atrás en el tiempo. ¡Y ojo a los antiguos molinos y lavaderos, que parecen sacados de otra época! Que sepáis que si vais, no podéis iros sin probar su vino de pitarra, que seguro que sienta de maravilla después de un buen paseo. ¡Nos esperan en Segurilla, uno de sus 23 destinos para soñar!",
+        "titulo": "🧐¿Quieres seguir conociendo destinos para disfrutar de la comarca de la Campana de Oropesa?  👉Hoy te proponemos #Segur...",
+        "sitio": "Adecor Grupo de Desarrollo Rural Campana de Oropesa",
+        "fecha": "2026-03-20",
+        "id": "188165780517c9d70fe29d292f899df4",
+        "es_breve": false,
+        "entidades_clave": [
+            "Segurilla",
+            "Sierra del Berrocal",
+            "Atalaya islámica",
+            "turismo rural",
+            "gastronomía local"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Segurilla",
+        "es_agenda": true,
         "fecha_evento": ""
     },
     {
-        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Asociación Comarcal Don Quijote de la Mancha)",
-        "resumen": "La Asociación Comarcal Don Quijote de la Mancha está impulsando el desarrollo en la comarca de la Mesa de Ocaña a través de proyectos financiados con fondos LEADER. Recientemente, han puesto el foco en un nuevo lavadero de vehículos de autoservicio en Villasequilla. Esta iniciativa empresarial local ofrece a los usuarios diversos programas de lavado, incluyendo limpieza profunda y abrillantado, además de servicios de aspirado y máquinas de venta de productos. La asociación destaca que este tipo de proyectos no solo cubren necesidades básicas y mejoran los servicios en los pueblos, sino que también contribuyen a dinamizar la economía local y a fijar población. El apoyo a emprendedores es clave para construir el futuro de la región. La Asociación Comarcal Don Quijote de la Mancha continúa así visibilizando y fortaleciendo iniciativas que nacen y crecen en su territorio.",
-        "titulo": "✅Seguimos dando visibilidad a los proyectos que nacen y crecen en nuestro territorio gracias a los fondos #Leader que ge...",
-        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
-        "fecha": "2026-03-19",
-        "id": "5591bb5a609fc75e484d24105c2062dc",
+        "fuente": "Asociación Mancha Júcar (repost de Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO))",
+        "resumen": "¡Ojo, que el Ministerio para la Transición Ecológica y el Reto Demográfico, también conocido como MITECO, nos trae una iniciativa que me ha gustado mucho! Se llama 'RE-CREA Rural 2026' y es un certamen de microvídeos. ¿Para quién? Pues para todos los que tengáis más de dieciocho años y para asociaciones, cooperativas, universidades, vamos, gente con chispa. La idea es que nos mandéis vídeos de hasta noventa segundos que muestren lo bueno que tiene nuestro campo, que es mucho, ¿eh? Que se vea que es un lugar de oportunidades y de cultura. ¡Y hay premios! Mil quinientos euros para el primero. Tenéis hasta el 6 de abril para presentar vuestras obras maestras. ¡A ver si animamos el cotarro rural!",
+        "titulo": "📹¿Te gusta el mundo audiovisual y quieres colaborar dando visibilidad al dinamismo de la España rural? 👉Certamen de mi...",
+        "sitio": "Asociación Mancha Júcar",
+        "fecha": "2026-03-20",
+        "id": "d8c18750a3a2564e22ad5e0669a94953",
         "es_breve": false,
         "entidades_clave": [
-            "Fondo LEADER",
-            "Lavadero autoservicio",
-            "Villasequilla",
-            "Comarca de la Mesa de Ocaña",
-            "Asociación Comarcal Don Quijote de la Mancha"
+            "Certamen de microvídeos RE-CREA Rural",
+            "Ministerio para la Transición Ecológica",
+            "España rural",
+            "Concurso audiovisual"
         ],
         "sentimiento": "positivo",
-        "localidad": "Villasequilla",
-        "es_agenda": false,
+        "localidad": "Desconocida",
+        "es_agenda": true,
+        "fecha_evento": "6 de abril"
+    },
+    {
+        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Asociación Comarcal Don Quijote de la Mancha)",
+        "resumen": "¡Ojo, que nos dan una idea genial desde la Asociación Comarcal Don Quijote de la Mancha! Si andáis dándole vueltas a dónde ir a desconectar el cuerpo, nos recomiendan Huerta de Valdecarábanos. Dicen que tiene de todo: restos de un castillo, una ermita modernista, hasta un cementerio mozárabe y manantiales. ¡Casi nada! Y todo esto, por la comarca de la Mesa de Ocaña. Parece un planazo para quien busca aire fresco y cosas bonitas.",
+        "titulo": "🧳¿Planificando tu próxima escapada rural? 👉Te proponemos una idea: Huerta de Valdecarábanos.  😍Ven y déjate sorprende...",
+        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+        "fecha": "2026-03-20",
+        "id": "2995aaafae4ca3677ac7c6c44dc39f66",
+        "es_breve": false,
+        "entidades_clave": [
+            "Huerta de Valdecarábanos",
+            "Turismo rural",
+            "Mesa de Ocaña"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Huerta de Valdecarábanos",
+        "es_agenda": true,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Turismo Provincia Toledo Page (repost de Turismo Provincia Toledo Page)",
+        "resumen": "¡Qué buena noticia nos traen desde Turismo Provincia Toledo Page! En Villanueva de Bogas, la Semana Santa se va a vivir con una emoción especial. Van a representar 'La Pasión: Muerte y Resurrección de Nuestro Señor Jesucristo', que ya es Fiesta de Interés Turístico Regional. Ya van por la XXV edición, y más de cien vecinos se dejan la piel para que esto salga bien, con gente actuando, escenarios, vestuario y hasta música. ¡Transforman el pueblo en un escenario bíblico! Esto va a ser el 21, 22, 28 y 29 de marzo, y el 4 de abril de 2026, todas las tardes a las seis. ¡Un planazo para vivirlo!",
+        "titulo": "✨ La emoción de #LaPasión vuelve a la provincia de Toledo ✨ 📍 En Villanueva de Bogas la Semana Santa se vive de una for...",
+        "sitio": "Turismo Provincia Toledo Page",
+        "fecha": "2026-03-20",
+        "id": "310b196717d823a193e62057b7134e65",
+        "es_breve": false,
+        "entidades_clave": [
+            "La Pasión de Villanueva de Bogas",
+            "Semana Santa",
+            "Provincia de Toledo",
+            "Fiesta de Interés Turístico Regional"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Villanueva de Bogas",
+        "es_agenda": true,
+        "fecha_evento": "21 de marzo de 2026"
+    },
+    {
+        "fuente": "ADEL Sierra Norte (repost de ADEL Sierra Norte)",
+        "resumen": "¡Qué alegría nos da que en Puebla de Valles celebren el Día del Olivo el próximo sábado, 21 de marzo! Según nos cuentan desde ADEL Sierra Norte, la fiesta empieza a las doce del mediodía. Preparad el gaznate, que habrá paella popular y música de la charanga \"Los Klandestinos\", ¡y hasta un DJ para animar la tarde! Será un día para reencontrarnos con nuestras raíces, homenajear a ese olivo que tanto nos da y, sobre todo, disfrutar de estar juntos. ¡No se lo pierdan, que seguro que habrá sorpresas!",
+        "titulo": "🌿✨ Puebla de Valles celebra el Día del Olivo 📅 Sábado, 21 de marzo 🕛 Desde las 12:00 h Un día para disfrutar de nuest...",
+        "sitio": "ADEL Sierra Norte",
+        "fecha": "2026-03-20",
+        "id": "83054da53a668c2beb400d1984aa290e",
+        "es_breve": false,
+        "entidades_clave": [
+            "Puebla de Valles",
+            "Día del Olivo",
+            "Tradiciones manchegas"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Puebla de Valles",
+        "es_agenda": true,
+        "fecha_evento": "21 de marzo"
+    },
+    {
+        "fuente": "Adasur (repost de diputación de Guadalajara)",
+        "resumen": "¡Buenas noticias para nuestros emprendedores y los que tienen pequeños negocios en pueblos de menos de 5.000 habitantes de Guadalajara! Mirad qué bien, porque desde la diputación de Guadalajara nos cuentan que han sacado una línea de ayudas con 700.000 euros. ¡Ahí es nada! Si sois autónomos o tenéis una microempresa, podéis pedir hasta 2.500 euros para invertir en vuestros negocios. El plazo para apuntarse es hasta el 14 de abril. Si necesitáis una mano con los papeles o tenéis alguna duda, ya sabéis, preguntad sin miedo. ¡Que las cosas buenas lleguen a todos los rincones!",
+        "titulo": "📢 NUEVA CONVOCATORIA DE AYUDAS de@diputacion_guadalajara. ✔Dotada con 700.000 € ✔Dirigida a autónomos y microempresas d...",
+        "sitio": "Adasur",
+        "fecha": "2026-03-20",
+        "id": "d44c3aba90918946c06dbbe98823b2a5",
+        "es_breve": false,
+        "entidades_clave": [
+            "Ayudas",
+            "Autónomos",
+            "Guadalajara",
+            "Pequeñas empresas"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Mondéjar",
+        "es_agenda": true,
+        "fecha_evento": "14 de abril"
+    },
+    {
+        "fuente": "Adi El Záncara (repost de Adi El Záncara)",
+        "resumen": "¡Ojo al dato, que ya nos llega el último boletín de cultura y ocio de la comarca El Záncara! Según nos cuentan desde allí mismo, viene cargado de planes para no aburrirnos. Hablan de actividades, eventos y un montón de cosas que han preparado nuestros pueblos. Así que, si queréis estar al día de todo lo que pasa cerca, este es vuestro papel. ¡A disfrutar de la cultura como Dios manda!",
+        "titulo": "📣 Ya está disponible el nuevo número del Boletín de Cultura y Ocio de la comarca El Záncara. Descubre todas las activid...",
+        "sitio": "Adi El Záncara",
+        "fecha": "2026-03-20",
+        "id": "3c6d879847738af2178542815b536c33",
+        "es_breve": false,
+        "entidades_clave": [
+            "Cultura",
+            "Ocio",
+            "Comarca El Záncara"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Desconocida",
+        "es_agenda": true,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural (repost de Asociación Campo de Calatrava Grupo Desarrollo Rural)",
+        "resumen": "¡Qué buena noticia nos llega desde Calzada de Calatrava! Nos cuentan desde la Asociación Campo de Calatrava Grupo Desarrollo Rural que el domingo 22 de marzo de 2026 van a tener una cita muy especial con la música cofrade. Se celebrará el XXIII Certamen de Bandas en la Plaza de España, un evento que siempre llena de emoción y tradición nuestras calles, y que se complementa con un pasacalles a las once de la mañana saliendo del Patio San Francisco. Participarán varias bandas, como la de Nuestro Padre Jesús Nazareno o la de San Juan Evangelista, entre otras. Es una maravilla ver cómo se prepara ya la cuenta atrás para vivir la Semana Santa en el Campo de Calatrava con tanto arte.",
+        "titulo": "🎺 Calzada de Calatrava se prepara para vivir una gran cita con la música cofrade. El próximo domingo 22 de marzo de 202...",
+        "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+        "fecha": "2026-03-20",
+        "id": "eacb30df3f96b6a7ffe5cd42ae30f58c",
+        "es_breve": false,
+        "entidades_clave": [
+            "Música cofrade",
+            "Calzada de Calatrava",
+            "Certamen de Bandas",
+            "Semana Santa"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Calzada de Calatrava",
+        "es_agenda": true,
+        "fecha_evento": "22 de marzo"
+    },
+    {
+        "fuente": "Grupo de Desarrollo Rural Montes de Toledo",
+        "resumen": "¡Ojo, que tenemos una iniciativa que huele a bueno y a aprovechamiento! Se llama FEAST y viene directa desde la Unión Europea para echarnos un cable con eso del desperdicio de alimentos, que mira que tiramos cosas que ya ni te cuento, ¡más de ochenta y ocho millones de toneladas al año en Europa! Lo hacen dándonos a conocer el tema en redes y, lo mejor, con dos cursos gratuitos y con acreditación oficial. Así que si eres de los que te gusta aprender cómo planificar, conservar y aprovechar hasta la última miga, esto es para ti. Todo es online, para que lo hagas desde donde quieras y cuando quieras. ¡Un curso con propósito, vamos!",
+        "titulo": "El proyecto FEAST (Food Education and Sustainable Training) nace para ayudar a reducir el desperdicio de alimentos (más...",
+        "sitio": "Grupo de Desarrollo Rural Montes de Toledo",
+        "fecha": "2026-03-20",
+        "id": "4ce0fd536d97be989e0d5a50fbaa359b",
+        "es_breve": false,
+        "entidades_clave": [
+            "Desperdicio alimentario",
+            "Educación",
+            "Formación online",
+            "Unión Europea",
+            "Proyecto FEAST"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Desconocida",
+        "es_agenda": true,
+        "fecha_evento": ""
+    },
+    {
+        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Ayuntamiento de Noblejas)",
+        "resumen": "¡Ojo, que en Noblejas no nos vamos a aburrir en Semana Santa de 2026! Nos cuentan desde el Ayuntamiento de Noblejas, concretamente desde su Concejalía de Juventud y Festejos, que han preparado un buen puñado de actividades en la Bodega Grande. Del lunes 30 de marzo al miércoles 1 de abril, tendremos hinchables, talleres de lo más 'brilli-brilli' y hasta consolas para los más jugones. El martes 31 de marzo, además, se atreven con un taller de elaboración de quesos a las doce y media. ¡Ojo que son solo 48 plazas! Y el miércoles 1 de abril, preparaos para un torneo de FIFA FC26 a las once de la mañana. Las inscripciones, ya sabéis, con el código QR que veáis por ahí. ¡Que no pare la fiesta!",
+        "titulo": "¡Actividades de entretenimiento en Semana Santa de 2026 en Noblejas! Desde la Concejalía de Juventud y Festejos del Ayun...",
+        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+        "fecha": "2026-03-20",
+        "id": "8535fea8e9bbd89cfb225ad80a16f5fc",
+        "es_breve": false,
+        "entidades_clave": [
+            "Noblejas",
+            "Semana Santa 2026",
+            "Actividades Juveniles",
+            "Ayuntamiento de Noblejas"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Noblejas",
+        "es_agenda": true,
+        "fecha_evento": "30 de marzo"
+    },
+    {
+        "fuente": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural (repost de Asociación Alto Guadiana Mancha Grupo Desarrollo Rural)",
+        "resumen": "¡Buenas, paisanos! Que os traigo una buena noticia, cortesía de la Asociación Alto Guadiana Mancha, ese grupo de desarrollo rural que tanto se curra las cosas. Pues nos cuentan que van a ofrecer una formación que, oiga, es totalmente gratuita. Yo me imagino que será algo bueno para todos, para aprender y para que la tierra siga tirando para adelante. Así que si os pilla cerca o si tenéis tiempo y ganas, apuntaros, que nunca está de más. Ya sabéis, que la vida es eso de estar siempre un poquito al día, ¿verdad? ¡Así que aprovechadla!",
+        "titulo": "Asociación Alto Guadiana Mancha. Grupo Desarrollo Rural: Únete a nuestra formación gratuita \n🔗 Pincha en el enlace de l...",
+        "sitio": "Asociación Alto Guadiana Mancha Grupo Desarrollo Rural",
+        "fecha": "2026-03-20",
+        "id": "8443527675381ef6b0d378c5ebdb5061",
+        "es_breve": false,
+        "entidades_clave": [
+            "Asociación Alto Guadiana Mancha",
+            "Formación gratuita",
+            "Desarrollo Rural"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Desconocida",
+        "es_agenda": true,
         "fecha_evento": ""
     },
     {
         "fuente": "Grupo Campos de Hellin (repost de Grupo Campos de Hellin)",
-        "resumen": "Una nueva oportunidad para los emprendedores de la comarca de Campos de Hellín ha sido anunciada recientemente. El Grupo Campos de Hellín informa sobre la apertura del plazo para solicitar ayudas destinadas a impulsar el trabajo autónomo en Castilla-La Mancha, con beneficios adicionales para quienes desarrollen su actividad en zonas rurales. Estas subvenciones incluyen una cuota cero durante el primer año, que puede extenderse al segundo con la Tarifa Plana Plus. Además, se ofrece ayuda directa para quienes inician su actividad y apoyo específico para la consolidación de negocios con hasta tres años de vida. El objetivo es fomentar la creación de empleo y asentar población en la región. Los interesados pueden consultar todos los detalles y realizar la tramitación a través del portal adelante-empresas.castillalamancha.es.",
+        "resumen": "¡Buenas noticias para los que tengan una idea y quieran poner en marcha un negocio en nuestros pueblos! Mira, según nos cuentan desde el Grupo de Acción Local Campos de Hellín, se han abierto las puertas para nuevas ayudas al trabajo autónomo aquí en Castilla-La Mancha. Y atención, que si tu pueblo está en zona rural, ¡las cuantías son aún mayores! Es decir, que nos sale más a cuenta emprender por aquí. Nos hablan de una cuota de cero euros durante el primer año, que incluso se puede ampliar, y de ayudas económicas directas para quienes empiezan o llevan hasta tres años con su proyecto. El plazo para apuntarse ya está abierto. Es una buena oportunidad para que el talento se quede en nuestra tierra y genere empleo. ¡A ver si animamos esto un poco más!",
         "titulo": "¡𝗔𝗧𝗘𝗡𝗖𝗜𝗢́𝗡 𝗘𝗠𝗣𝗥𝗘𝗡𝗗𝗘𝗗𝗢𝗥𝗘𝗦 𝗗𝗘 𝗡𝗨𝗘𝗦𝗧𝗥𝗔 𝗖𝗢𝗠𝗔𝗥𝗖𝗔! 🚀 Si tienes una idea de negocio o aca...",
         "sitio": "Grupo Campos de Hellin",
         "fecha": "2026-03-20",
         "id": "f68074212db2ddf1353ae528f85696fb",
         "es_breve": false,
         "entidades_clave": [
-            "Castilla-La Mancha",
-            "Emprendedores rurales",
-            "Grupo Campos de Hellín",
-            "Ayudas autónomos"
+            "Ayudas autónomos",
+            "Campos de Hellín",
+            "Emprendimiento rural",
+            "Tarifa plana"
         ],
         "sentimiento": "positivo",
         "localidad": "Campos de Hellín",
@@ -333,27 +516,27 @@
     },
     {
         "fuente": "Grupo Campos de Hellin (repost de Recamder)",
-        "resumen": "Recamder impulsa un manifiesto en defensa del medio rural, una iniciativa ciudadana para reforzar el reconocimiento de quienes viven y trabajan en nuestros pueblos. Esta propuesta subraya que el medio rural representa vida, oportunidades, cultura y un futuro vital para la cohesión territorial y el desarrollo equilibrado de Castilla-La Mancha. Se anima a todos los ciudadanos y organizaciones a adherirse para construir un medio rural más fuerte y con mayor proyección. La iniciativa busca dar voz y apoyo a estas áreas, consideradas esenciales para el progreso regional. La información detallada y el formulario de adhesión se encuentran disponibles en la página oficial de Recamder.",
+        "resumen": "¡Atención, paisanos! Que aquí en Recamder nos cuentan que hay una iniciativa muy bonita para darle voz a nuestros pueblos. Es un manifiesto en defensa del medio rural, para que se sepa que lo nuestro no es solo paisaje bonito, que es vida, cultura y futuro. Dicen que defenderlo es defender la unión de toda nuestra región y que crezcamos todos por igual. Si te animas a firmar, que se sepa que el medio rural está más vivo que nunca, que es una maravilla lo que tenemos.\nAdemás, recordad que el 31 de mayo de 2026 celebramos nuestro Día de Castilla-La Mancha, una fecha para acordarnos de lo que somos. ¡Entre todos, a seguir construyendo un campo fuerte y lleno de vida!",
         "titulo": "¡𝗙𝗜𝗥𝗠𝗔 𝗘𝗡 𝗗𝗘𝗙𝗘𝗡𝗦𝗔 𝗗𝗘𝗟 𝗠𝗘𝗗𝗜𝗢 𝗥𝗨𝗥𝗔𝗟!🌾  Nuestros pueblos necesitan voz, compromiso y apoyo. Por...",
         "sitio": "Grupo Campos de Hellin",
         "fecha": "2026-03-20",
         "id": "d05111800932ce14f864a7537e0ca0f4",
         "es_breve": false,
         "entidades_clave": [
-            "Medio Rural",
+            "Medio rural",
             "Manifiesto",
+            "Cohesión territorial",
             "Castilla-La Mancha",
-            "Recamder",
-            "Desarrollo Rural"
+            "Recamder"
         ],
         "sentimiento": "positivo",
-        "localidad": "Campos de Hellín",
+        "localidad": "Hellín",
         "es_agenda": true,
-        "fecha_evento": ""
+        "fecha_evento": "31 de mayo de 2026"
     },
     {
         "fuente": "Grupo Campos de Hellin (repost de FEDA)",
-        "resumen": "Una nueva oportunidad de formación gratuita llega a Albacete, impulsada por FEDA y destinada a profesionales de la comarca de Campos de Hellín. Se trata de un curso presencial de Contratación Laboral, con una duración de sesenta horas, diseñado para emprendedores, autónomos y trabajadores que necesiten actualizarse en materia legal. El curso, identificado con el código UF0341, dará inicio el 23 de marzo de 2026 y se impartirá en la sede de FEDA en Albacete, en horario de lunes a jueves, desde las seis y cuarto de la tarde hasta las nueve de la noche. Para acceder, se requiere un nivel 3 de estudios, como Bachiller o equivalente. Los participantes aprenderán a gestionar contratos, aplicar la normativa vigente y comprender los procesos fundamentales de la relación laboral en el entorno empresarial. Las plazas son limitadas, y esta iniciativa busca fortalecer el tejido empresarial de la región.",
+        "resumen": "¡Atención, vecinos de la comarca! Que se enteren todos los emprendedores, autónomos y trabajadores. Desde el Grupo de Acción Local Campos de Hellín nos llega una buena nueva cortesía de FEDA: ¡un curso gratuito y presencial de contratación laboral! Va a ser en la sede de FEDA en Albacete, un total de sesenta horas para que aprendamos a gestionar contratos y a estar al día con las leyes, que esto cambia más que el tiempo. Empieza el 23 de marzo de 2026 y será de lunes a jueves, desde las seis y cuarto hasta las nueve de la noche. ¡Ojo! Que las plazas son limitadas, así que si os interesa, no os durmáis en los laureles. Es una oportunidad de oro para actualizarse y fortalecer nuestro tejido empresarial, como bien dicen ellos.",
         "titulo": "¡𝗡𝗨𝗘𝗩𝗔 𝗢𝗣𝗢𝗥𝗧𝗨𝗡𝗜𝗗𝗔𝗗 𝗗𝗘 𝗙𝗢𝗥𝗠𝗔𝗖𝗜𝗢́𝗡 𝗘𝗡 𝗔𝗟𝗕𝗔𝗖𝗘𝗧𝗘! 🎓💼 ¿Quieres dominar la normativa de...",
         "sitio": "Grupo Campos de Hellin",
         "fecha": "2026-03-20",
@@ -361,9 +544,9 @@
         "es_breve": false,
         "entidades_clave": [
             "FEDA",
+            "Contratación Laboral",
             "Albacete",
-            "Formación Laboral",
-            "Campos de Hellín"
+            "Formación Gratuita"
         ],
         "sentimiento": "positivo",
         "localidad": "Albacete",
@@ -372,18 +555,16 @@
     },
     {
         "fuente": "Grupo Campos de Hellin (repost de Federación de Hermandades y Cofradías de la Semana Santa de Tobarra)",
-        "resumen": "La Federación de Hermandades y Cofradías de la Semana Santa de Tobarra anuncia la celebración del primer Pregón Infantil-Juvenil. Este acto tendrá lugar el domingo 22 de marzo de 2026, a las doce del mediodía, en el Convento Franciscano de San José. Será una ocasión especial donde los jóvenes, representados en esta edición por la Hermandad de La Caída de Jesús y Cristo Resucitado \"Paso Gordo\", tendrán la oportunidad de expresar la rica tradición cofrade de la localidad. La iniciativa busca involucrar a las nuevas generaciones en la vivencia y difusión de la Semana Santa.",
+        "resumen": "¡Buenas, paisanos! Que alegría os traigo hoy. Mirad qué cosa tan bonita se está organizando en Tobarra. La Federación de Hermandades y Cofradías de la Semana Santa de Tobarra nos cuenta que el próximo domingo 22 de marzo de 2026, a las doce del mediodía, tendrán un acto muy especial en el Convento Franciscano de San José: el primer Pregón Infantil-Juvenil. Los peques de la Hermandad de La Caída de Jesús y Cristo Resucitado, el 'Paso Gordo', serán los protagonistas, dándole voz a nuestra tradición. ¡Qué bonito es ver a la juventud ilusionada con nuestras costumbres!",
         "titulo": "🟤 I Pregón Infantil-Juvenil – Semana Santa Tobarra 2026  El próximo 🗓domingo 22 de marzo a las 🕣12:00 horas en el 📍C...",
         "sitio": "Grupo Campos de Hellin",
         "fecha": "2026-03-20",
         "id": "4beba008d9a2165ee29e240af428d352",
         "es_breve": false,
         "entidades_clave": [
-            "Pregón Infantil-Juvenil",
             "Semana Santa Tobarra",
-            "Hermandad La Caída",
-            "Convento Franciscano",
-            "22 de marzo de 2026"
+            "Pregón Infantil-Juvenil",
+            "Hermandad La Caída"
         ],
         "sentimiento": "positivo",
         "localidad": "Tobarra",
@@ -392,7 +573,7 @@
     },
     {
         "fuente": "Ceder Monte Ibérico Corredor de Almansa (repost de Comisión Europea)",
-        "resumen": "La Comisión Europea ha lanzado la Plataforma de Mujeres en la Agricultura, una iniciativa destinada a potenciar el liderazgo femenino en el medio rural. Este programa busca ofrecer mentoría a mujeres del sector, crear una red de contactos y aumentar su visibilidad. Las inscripciones para formar parte de esta plataforma estarán abiertas hasta el 30 de abril de 2026, marcando un paso importante hacia un futuro agrícola más equitativo y con mayor representación femenina. Desde la Comisión Europea señalan que este es un esfuerzo clave para el desarrollo del campo.",
+        "resumen": "¡Qué buena noticia nos llega! Veréis, la Comisión Europea, que son los de Bruselas, ¿sabéis?, ha puesto en marcha una cosa que se llama la Plataforma de Mujeres en la Agricultura. La idea es que las mujeres que están ahí al pie del cañón en el campo tengan más apoyo, más visibilidad y puedan hacer contactos. Dicen que las inscripciones están abiertas hasta el 30 de abril. Y es que, de verdad, el campo se beneficia un montón cuando las mujeres toman las riendas. ¡Así que vamos animando a todas las que quieran a apuntarse!",
         "titulo": "🌱💜 Más mujeres liderando el campo La Comisión Europea lanza la Plataforma de Mujeres en la Agricultura para impulsar e...",
         "sitio": "Ceder Monte Ibérico Corredor de Almansa",
         "fecha": "2026-03-20",
@@ -400,57 +581,73 @@
         "es_breve": false,
         "entidades_clave": [
             "Comisión Europea",
-            "Mujeres en Agricultura",
+            "Mujeres en la Agricultura",
             "Liderazgo femenino",
             "Medio rural"
         ],
         "sentimiento": "positivo",
         "localidad": "Desconocida",
         "es_agenda": true,
-        "fecha_evento": "30 de abril de 2026"
+        "fecha_evento": "30 de abril"
     },
     {
         "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Ayuntamiento)",
-        "resumen": "El Ayuntamiento de La Guardia ha publicado las bases para su Plan de Empleo previsto para el año 2026. La información completa, detallando los requisitos y procedimientos, ya está disponible para consulta en la Sede Electrónica oficial del consistorio. Este plan busca dinamizar el mercado laboral local, ofreciendo nuevas oportunidades para los residentes de la localidad. Los interesados pueden acceder a toda la documentación necesaria a través del enlace facilitado en la Sede Electrónica, que especifica las convocatorias y los perfiles que se buscarán para las diversas vacantes que se ofrecerán a lo largo del año 2026. Se recomienda a todos los ciudadanos interesados en participar que revisen detenidamente las bases para asegurar el cumplimiento de todos los requisitos antes de presentar sus candidaturas.",
+        "resumen": "¡Atención, vecinos! Que se enteren todos, desde el Ayuntamiento de La Guardia nos cuentan que ya podemos consultar las bases para el Plan de Empleo de 2026. ¡Sí, sí, para el año que viene! Ya sabéis que estas cosas se preparan con tiempo. Así que, si estáis con ganas de mejorar, de pillar un curro nuevo o simplemente de curiosear qué nos ofrecen, id echando un ojo a lo que publican en su Sede Electrónica. ¡A ver si sale algo bueno para todos y para que la cosa tire para adelante como Dios manda!",
         "titulo": "📝Consulta aquí las bases del PLAN DE EMPLEO 2026 publicada en la Sede Electrónica👇🏻 🔗https://ayuntamientolaguardia.s...",
         "sitio": "Asociación Comarcal Don Quijote de la Mancha",
         "fecha": "2026-03-20",
         "id": "6492ac3c8bd7f79d5b26559c7c5ed88b",
         "es_breve": false,
         "entidades_clave": [
-            "Ayuntamiento",
             "Plan de Empleo",
-            "Sede Electrónica",
-            "La Guardia"
+            "Ayuntamiento de La Guardia",
+            "Oportunidades laborales"
         ],
-        "sentimiento": "neutro",
-        "localidad": "La Guardia",
+        "sentimiento": "positivo",
+        "localidad": "Laguardia",
         "es_agenda": true,
-        "fecha_evento": "01 de enero de 2026"
+        "fecha_evento": "2026"
+    },
+    {
+        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Ayuntamiento)",
+        "resumen": "¡Ojo, vecinos! Que en el Ayuntamiento de Santa Cruz de la Zarza se han puesto las pilas y nos anuncian algo interesante. Están preparando una bolsa de empleo para Coordinador/a de Deportes. Vamos, que si os va el tema deportivo y tenéis tablas para organizar, ¡atentos a las bases! Lo cuentan ellos mismos, y parece que quieren que la cosa funcione bien. Así que, id echando un ojo si esto os suena a vuestro rollo.",
+        "titulo": "BASES REGULADORAS PARA LA CREACIÓN DE UNA BOLSA DE EMPLEO DE COORDINADOR/A DE DEPORTES. https://www.santacruzdelazarza.e...",
+        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+        "fecha": "2026-03-20",
+        "id": "f334669503d9002cf2e5f44983d9b320",
+        "es_breve": false,
+        "entidades_clave": [
+            "Bolsa de empleo",
+            "Coordinador/a Deportes",
+            "Santa Cruz de la Zarza"
+        ],
+        "sentimiento": "positivo",
+        "localidad": "Santa Cruz de la Zarza",
+        "es_agenda": true,
+        "fecha_evento": ""
     },
     {
         "fuente": "Grupo de Desarrollo Rural Montes de Toledo (repost de Grupo de Desarrollo Rural Montes de Toledo)",
-        "resumen": "El próximo 23 de marzo de 2026, Los Navalmorales será sede de un evento de networking crucial para el impulso del turismo y el emprendimiento en la comarca de Montes de Toledo. La iniciativa, organizada por el Grupo de Desarrollo Rural Montes de Toledo, congregará a empresarios, emprendedores y profesionales del sector turístico. La jornada incluirá mesas de diálogo centradas en la identidad territorial y la planificación turística, así como la presentación de estrategias de promoción con casos de éxito reales. Los asistentes podrán participar en sesiones de networking que incluirán una degustación de productos locales y compartirán experiencias inspiradoras que realzan el valor del territorio. Este encuentro representa una oportunidad única para aprender, conectar y colaborar en la construcción del futuro del turismo rural en la región.",
+        "resumen": "¡Hola, qué alegría verte por aquí! Que sepas que el 23 de marzo tenemos una cita importante en Los Navalmorales, para los que nos tira el turismo y el emprender. Desde el Grupo de Desarrollo Rural Montes de Toledo nos cuentan que va a haber un evento para juntarnos todos los que estamos en esto del turismo, para compartir ideas, hacer contactos y darle una vuelta al futuro de la comarca. Habrá charlas sobre nuestra tierra, cómo venderla mejor con ejemplos reales, y para rematar, un buen rato de 'tapeo' con productos de aquí mismo. ¡Una oportunidad de oro para aprender y tejer lazos con gente que está creando el turismo de mañana! ¡No te lo pierdas y ven a ser parte del cambio!",
         "titulo": "✨ ¿Te apasiona el turismo, el emprendimiento y el desarrollo local? ✨ Este 23 de marzo tienes una cita imprescindible en...",
         "sitio": "Grupo de Desarrollo Rural Montes de Toledo",
         "fecha": "2026-03-20",
         "id": "0118c7fd4538b1d88ab79738763037fe",
         "es_breve": false,
         "entidades_clave": [
-            "Networking",
-            "Turismo Rural",
+            "Turismo",
+            "Emprendimiento",
             "Montes de Toledo",
-            "Emprendimiento Local",
             "Los Navalmorales"
         ],
         "sentimiento": "positivo",
         "localidad": "Los Navalmorales",
         "es_agenda": true,
-        "fecha_evento": "23 de marzo de 2026"
+        "fecha_evento": "23 de marzo"
     },
     {
         "fuente": "Ceder Monte Ibérico Corredor de Almansa (repost de Ceder Monte Ibérico Corredor de Almansa)",
-        "resumen": "La Plaza del Altozano en Albacete será el escenario de FARCAMA Primavera 2026, la Feria de Artesanía regional que se celebrará entre el 14 y el 17 de mayo de 2026. Este evento busca ofrecer una plataforma para que artesanos y artesanas muestren sus creaciones, conecten con otros profesionales y ganen visibilidad ante el público. Las inscripciones para participar permanecen abiertas hasta el 8 de abril de 2026. Desde el Grupo de Desarrollo Rural Monte Ibérico – Corredor de Almansa, se anima a los artesanos de la comarca a aprovechar esta oportunidad para impulsar sus proyectos y destacar su talento.",
+        "resumen": "¡Atención, manchegos con manos de oro! Que se preparen los delantalillos y los cinceles, porque llega FARCAMA Primavera 2026 a Albacete, concretamente a la Plaza del Altozano. Será entre el 14 y el 17 de mayo, un buen rato para que todos los artesanos y artesanas de nuestra tierra, y en especial de la comarca del Monte Ibérico – Corredor de Almansa, muestren todo lo que saben hacer. Es una ocasión estupenda para darse a conocer, y como nos cuentan desde la organización, las inscripciones están abiertas hasta el 8 de abril. ¡No lo dejéis pasar, que lo bueno se acaba pronto!",
         "titulo": "✨ Artesanía, talento y oportunidad en nuestra tierra Si eres artesano o artesana, esto te interesa 👇 Llega FARCAMA Prim...",
         "sitio": "Ceder Monte Ibérico Corredor de Almansa",
         "fecha": "2026-03-20",
@@ -458,18 +655,18 @@
         "es_breve": false,
         "entidades_clave": [
             "FARCAMA Primavera 2026",
-            "Artesanos de Castilla-La Mancha",
+            "Artesanía regional",
             "Albacete",
-            "Grupo de Desarrollo Rural Monte Ibérico – Corredor de Almansa"
+            "Monte Ibérico – Corredor de Almansa"
         ],
         "sentimiento": "positivo",
         "localidad": "Albacete",
         "es_agenda": true,
-        "fecha_evento": "14 de mayo de 2026"
+        "fecha_evento": "14 al 17 de mayo"
     },
     {
         "fuente": "Entreparques Desarrollo Montes Norte Cabañeros (repost de Ayuntamiento de Piedrabuena)",
-        "resumen": "El Ayuntamiento de Piedrabuena ha convocado una reunión con la juventud local. Este encuentro se llevará a cabo el lunes, 30 de marzo de 2026, a las siete de la tarde en la sala de exposiciones del Centro Cultural. Desde la administración municipal se busca escuchar activamente las ideas y propuestas de los jóvenes. Esta iniciativa subraya la importancia de la participación juvenil en las decisiones que afectan a la comunidad. La organización invita a todos los jóvenes a asistir y expresar su voz, destacando el valor de sus opiniones para el desarrollo del municipio.",
+        "resumen": "¡Atención, gente de Piedrabuena! Que el Ayuntamiento nos ha contado que el próximo lunes, 30 de marzo de 2026, a las siete de la tarde, habrá una reunión muy interesante en la sala de exposiciones del Centro Cultural. Dicen que quieren escuchar a los jóvenes, conocer sus ideas y propuestas. Vamos, que quieren saber de qué va la cosa, y eso es bueno, ¿verdad? Así que ya sabéis, si tenéis algo que decir, ¡este es vuestro momento!",
         "titulo": "📝 Desde el Ayuntamiento de Piedrabuena les informamos de la reunión con jóvenes que se va a llevar a cabo  🗓️Lunes, 30...",
         "sitio": "Entreparques Desarrollo Montes Norte Cabañeros",
         "fecha": "2026-03-19",
@@ -477,69 +674,14 @@
         "es_breve": false,
         "entidades_clave": [
             "Ayuntamiento de Piedrabuena",
-            "Jóvenes",
+            "jóvenes",
             "Centro Cultural",
-            "Propuestas"
+            "ideas",
+            "propuestas"
         ],
         "sentimiento": "positivo",
         "localidad": "Piedrabuena",
         "es_agenda": true,
         "fecha_evento": "30 de marzo de 2026"
-    },
-    {
-        "fuente": "CEDER Alcarria Conquense (repost de CEDER Alcarria Conquense)",
-        "resumen": "CEDER Alcarria Conquense se prepara para una importante cita en Bruselas. Durante el mes de abril de 2026, representantes de la entidad participarán en reuniones clave en la sede del Parlamento Europeo. El objetivo principal será defender la continuidad del enfoque LEADER, un programa de desarrollo rural ampliamente reconocido, y asegurar la estabilidad de los Grupos de Desarrollo Rural en toda la región. Estos encuentros contarán con la participación de eurodiputados y personal técnico de la Comisión Europea, subrayando la relevancia de la iniciativa para el futuro de las zonas rurales. La presencia de CEDER Alcarria Conquense en Bruselas reafirma su compromiso con la promoción y el fortalecimiento de las políticas de desarrollo rural a nivel europeo.",
-        "titulo": "CEDER Alcarria Conquense estará presente en las reuniones que se celebrarán durante el mes de abril en Bruselas en la se...",
-        "sitio": "CEDER Alcarria Conquense",
-        "fecha": "2026-03-19",
-        "id": "c4be9fc80dbd1d6b2a528046cf9ca7d0",
-        "es_breve": false,
-        "entidades_clave": [
-            "CEDER Alcarria Conquense",
-            "Parlamento Europeo",
-            "Grupos de Desarrollo Rural",
-            "Enfoque LEADER"
-        ],
-        "sentimiento": "neutro",
-        "localidad": "Desconocida",
-        "es_agenda": true,
-        "fecha_evento": "abril de 2026"
-    },
-    {
-        "fuente": "ADR Molina de Aragón Alto Tajo (repost de ADR Molina de Aragón Alto Tajo)",
-        "resumen": "Desde ADR Molina de Aragón – Alto Tajo se ha lanzado una nueva convocatoria de ayudas destinadas a la \"Activación del tejido empresarial. Reactivación empresarial rural\". Estas subvenciones, a fondo perdido, buscan impulsar, modernizar y diversificar empresas ubicadas en municipios de extrema despoblación dentro de la comarca. La financiación puede cubrir hasta el sesenta y cinco por ciento de la inversión, con un máximo de doscientos treinta mil euros. Están dirigidas a autónomos, micro y pequeñas empresas, cooperativas y promotores. El plazo para presentar solicitudes se extiende hasta el diecisiete de abril de dos mil veintiséis.",
-        "titulo": "📢 Nueva convocatoria de ayudas LEADER 2026 Desde ADR Molina de Aragón – Alto Tajo lanzamos la convocatoria 👉 “Activaci...",
-        "sitio": "ADR Molina de Aragón Alto Tajo",
-        "fecha": "2026-03-19",
-        "id": "3573f4da7291c28c3100c8c3a3e6708e",
-        "es_breve": false,
-        "entidades_clave": [
-            "ADR Molina de Aragón – Alto Tajo",
-            "Ayudas LEADER",
-            "Reactivación empresarial rural"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Molina de Aragón",
-        "es_agenda": true,
-        "fecha_evento": "17 de abril de 2026"
-    },
-    {
-        "fuente": "Asociación Comarcal Don Quijote de la Mancha (repost de Ayuntamiento)",
-        "resumen": "El municipio de Santa Cruz se prepara para acoger el VII Trofeo Don Quijote de Patinaje Artístico, una competición de Grupos Show y Cuartetos que se desarrollará el 21 y 22 de marzo de 2026. El Pabellón Iñaki Sáez será el escenario de este evento, que atraerá a patinadores de toda España y convertirá a la localidad en un punto de referencia para el patinaje artístico. Para facilitar la asistencia y el disfrute de participantes y visitantes, el Ayuntamiento ha organizado autobuses gratuitos que conectarán el pabellón con zonas turísticas y de restauración. Además, en las inmediaciones del recinto deportivo se celebrará la II Feria de Mercado Local, donde comerciantes locales expondrán sus productos de las diez de la mañana a las dos de la tarde. El Ayuntamiento agradece al Club Dragón su labor en la organización de esta cita deportiva que sigue ganando relevancia.",
-        "titulo": "⛸️ VII Trofeo Don Quijote de Patinaje Artístico El 21 y 22 de marzo, el Pabellón Iñaki Sáez será escenario del VII Trofe...",
-        "sitio": "Asociación Comarcal Don Quijote de la Mancha",
-        "fecha": "2026-03-19",
-        "id": "ab24e86d1297740a6e6f8fa59a7e5258",
-        "es_breve": false,
-        "entidades_clave": [
-            "Patinaje Artístico",
-            "Trofeo Don Quijote",
-            "Santa Cruz",
-            "Mercado Local"
-        ],
-        "sentimiento": "positivo",
-        "localidad": "Santa Cruz",
-        "es_agenda": true,
-        "fecha_evento": "21 y 22 de marzo de 2026"
     }
 ]
