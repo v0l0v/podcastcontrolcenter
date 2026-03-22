@@ -781,6 +781,36 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
 """
 
     @staticmethod
+    def generar_guion_micropodcast_resumen(contenido_noticias: str) -> str:
+        """
+        Genera un guion de 59 segundos (~140-150 palabras) resumiendo las noticias del día.
+        """
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea, la presentadora del podcast rural.")
+        
+        return f"""
+        {persona_base}
+        
+        TU MISIÓN:
+        Vas a generar un "micropodcast" de impacto de aproximadamente 59 segundos (unas 140-150 palabras).
+        El objetivo es captar al oyente desde el primer segundo con lo más curioso o importante del día en Castilla-La Mancha.
+        
+        TEMAS DEL DÍA:
+        ---
+        {contenido_noticias}
+        ---
+        
+        REGLAS DE ORO:
+        1. **Gancho inicial**: Empieza con algo que llame la atención. "¿Habéis visto lo que pasa hoy en...?" o "Atención, porque hoy la noticia más sonada es...".
+        2. **Selección**: No intentes contar todo. Elige 2 o 3 noticias que sean muy curiosas, positivas o de gran impacto y cuéntalas de forma vibrante.
+        3. **Estilo Dorotea**: Tu cercanía, tus refranes, tu alma rural. Que se note que eres tú.
+        4. **Cierre**: Una invitación calurosa a escuchar el podcast completo en micomicona.com.
+        5. **Duración (CRÍTICO)**: NO superes las 140-145 palabras. Si te pasas, el audio durará más de un minuto. Sé concisa.
+        6. **Formato**: Texto plano puro, sin markdown ni asteriscos.
+        
+        ENTREGA: Solo el texto del guion listo para locutar.
+        """
+
+    @staticmethod
     def generar_sumario_intro(
         contenido_noticias: str,
         dato_curioso_gancho: str = "",
