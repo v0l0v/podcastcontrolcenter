@@ -161,7 +161,11 @@ class PromptsAnalisis:
 ### TAREA
 Crear un guion de resumen optimizado para formato audio, respetando reglas estrictas de duración y contenido."""
 
-        return f"""{instrucciones_base}
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
+        return f"""{persona_base}
+
+{instrucciones_base}
 
 {instruccion_entidades}
 {instruccion_fuente}
@@ -252,7 +256,11 @@ ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
             else:
                 instruccion_fuente = f"OBLIGATORIO: Menciona explícitamente que la noticia proviene de '{fuente_original}' de forma natural dentro del locutado."
 
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
         return f"""Eres un sistema de periodismo y análisis experto en producción de guiones para podcast.
+
+{persona_base}
 
 {instrucciones_base}
 
@@ -289,7 +297,11 @@ Estructura obligatoria del JSON:
             # Fallback mínimo por seguridad
             instrucciones_base = "Resume esta noticia de forma periodística y concisa para radio."
 
-        return f"""{instrucciones_base}
+        persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
+
+        return f"""{persona_base}
+
+{instrucciones_base}
 
 CONTEXTO ADICIONAL:
 - Fuente Original: {fuente_original}
