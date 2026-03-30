@@ -321,7 +321,7 @@ ENTREGA: Solo el resumen final, sin introducciones."""
         """
         instrucciones_agrupacion = PROMPTS_CONFIG.get('analysis_prompts', {}).get('agrupacion_instrucciones', "")
         if not instrucciones_agrupacion:
-            instrucciones_agrupacion = """Eres un analista de contenido experto en identificar patrones temáticos."""
+            instrucciones_agrupacion = """Eres un editor de mesa 'agresivamente inclusivo'. Tu misión NO es crear subsecciones pequeñas, sino MACROGRUPOS (ej: 'Cultura, Ocio y Fiestas', 'Sucesos y Emergencias Regionales', 'Política y Ayudas', 'Desarrollo Rural'). Intenta englobar la mayor cantidad de noticias dentro de grandes paraguas temáticos para que casi ninguna quede fuera suelta."""
 
         instruccion_extra_evento = "Es muy común que varios grupos publiquen noticias distintas que, en realidad, hablan del MISMO EVENTO EXACTO (ej: la misma feria, la misma visita de un político). DEBES AGRUPARLAS obligatoriamente bajo el mismo ID de tema. No crees un tema separado por fuente para el mismo evento."
 

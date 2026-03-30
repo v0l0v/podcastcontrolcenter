@@ -473,11 +473,12 @@ elif page == "generar":
                         
                     with st.expander(exp_title, expanded=(i == 0)):
                         col_chk, col_cnt = st.columns([0.08, 0.92])
+                        nid = news.get("id", i)
                         with col_chk:
                             st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
-                            incluir = st.checkbox("Incluir", value=news['_selected_default'], key=f"v2_chk_{i}")
+                            incluir = st.checkbox("Incluir", value=news['_selected_default'], key=f"v2_chk_{nid}")
                         with col_cnt:
-                            new_titulo = st.text_input("Título", value=titulo_show, key=f"v2_tit_{i}")
+                            new_titulo = st.text_input("Título", value=titulo_show, key=f"v2_tit_{nid}")
                             nh = max(4, len(resumen_raw) // 60)
                             if news['_is_discarded'] and not resumen_raw:
                                 st.info("ℹ️ El resumen no se ha generado para ahorrar costes (Pipeline Zero-Cost). Si marcas 'Incluir' y lo dejas en blanco, la IA lo generará en el Paso 3, o puedes escribirlo tú mismo.")
@@ -485,7 +486,7 @@ elif page == "generar":
                             else:
                                 placeholder_txt = "Escribe el resumen de la noticia..."
                                 
-                            new_res = st.text_area("Resumen", value=resumen_raw, height=max(150, nh * 22), key=f"v2_res_{i}", placeholder=placeholder_txt)
+                            new_res = st.text_area("Resumen", value=resumen_raw, height=max(150, nh * 22), key=f"v2_res_{nid}", placeholder=placeholder_txt)
                             if news['_is_discarded']:
                                 st.warning(f"Motivo descarte original: {news['motivo']}")
                             st.caption(f"Fuente: {sitio} | Fecha: {news.get('fecha', '—')}")
