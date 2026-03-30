@@ -228,10 +228,23 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
                 "motivo": f"Duplicado detectado (Hash {h[:8]})"
             })
             eliminados += 1
+            # Guardamos la fuente para no perder de vista a quién atribuir la información
+            for unica in noticias_unicas:
+                if unica.get('id') == h:
+                    if 'fuentes_adicionales' not in unica:
+                        unica['fuentes_adicionales'] = []
+                    unica['fuentes_adicionales'].append({
+                        "sitio": noticia.get('sitio', ''),
+                        "fuente": noticia.get('fuente', noticia.get('sitio', '')),
+                        "url": noticia.get('url', '')
+                    })
+                    break
             continue
 
         noticia_copia = noticia.copy()
         noticia_copia['id'] = h
+        if 'fuentes_adicionales' not in noticia_copia:
+            noticia_copia['fuentes_adicionales'] = []
         noticias_unicas.append(noticia_copia)
         hashes_vistos.add(h)
 
@@ -441,7 +454,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list, es_agenda: bool = False
             [{"id": n.get("id"), "resumen": n.get("resumen")} for n in noticias_unicas],
             ensure_ascii=False, indent=2
         )
-        prompt_agrupacion = mcmcn_prompts.PromptsAnalisis.agrupacion_logica_temas(noticias_simplificadas)
+        prompt_agrupacion = mcmcn_prompts.PromptsAnalisis.agrupacion_logica_temas(noticias_simplificadas, es_agenda=es_agenda)
         respuesta_grupos = generar_texto_con_gemini(prompt_agrupacion)
         
         # Limpiar y parsear la respuesta del paso 1
@@ -590,7 +603,7 @@ def fusionar_bloques_similares(bloques: list, umbral_similitud: float = 0.75) ->
 # ** LÓGICA MEJORADA PARA PRIORIZAR NOTICIAS RECIENTES **
 # =================================================================================
 
-def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str) -> str:
+def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str, es_agenda: bool = False) -> str:
     """
     **NUEVA LÓGICA MEJORADA**
     Genera una única crónica consolidada para un bloque temático, en lugar de
@@ -616,12 +629,20 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
     resumenes_para_prompt = []
     fuentes = []
     for i, n in enumerate(noticias_ordenadas):
-        resumenes_para_prompt.append(f"Noticia {i+1} (Fuente: {n.get('fuente', 'desconocida')}): \"{n.get('resumen', '')}\"")
-        fuentes.append(n.get('fuente', ''))
+        # Recopilar fuente principal y adicionales
+        fuentes_de_esta_noticia = [n.get('fuente', 'desconocida')]
+        for fa in n.get('fuentes_adicionales', []):
+            f_add = fa.get('fuente')
+            if f_add and f_add not in fuentes_de_esta_noticia:
+                fuentes_de_esta_noticia.append(f_add)
+                
+        fuente_nombres = " y ".join(fuentes_de_esta_noticia)
+        resumenes_para_prompt.append(f"Noticia {i+1} (Fuentes que reportan esto: {fuente_nombres}): \"{n.get('resumen', '')}\"")
+        fuentes.extend(fuentes_de_esta_noticia)
     
     lista_de_noticias_str = "\n".join(resumenes_para_prompt)
     
-    # Limpiar y obtener fuentes únicas
+    # Limpiar y obtener fuentes únicas para el fallback
     fuentes_unicas = sorted(list(set(f for f in fuentes if f)))
 
     # 2. Calcular longitud deseada
@@ -631,7 +652,15 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
     longitud_deseada = 70 + (num_noticias * 80)
 
     # 3. Construir el prompt para la IA
+    tipo_narrativa = ""
+    if es_agenda:
+        tipo_narrativa = "ATENCIÓN: Estas noticias son una AGENDA DE EVENTOS FUTUROS (planes, ferias, cursos). Usa un tono animado y prospectivo, invitando a la audiencia a participar."
+    else:
+        tipo_narrativa = "ATENCIÓN: Estas noticias son un REPORTE DE HECHOS (Noticiero). Nárralo en estilo periodístico, narrando lo ocurrido o anunciado."
+
     prompt = f"""Eres un editor y guionista de radio experto en sintetizar múltiples noticias sobre un mismo tema para crear una única crónica consolidada, coherente y fluida para un podcast.
+
+**{tipo_narrativa}**
 
 **Tema principal:** "{tema}"
 
@@ -1708,29 +1737,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
             print(f"❌ Error al guardar archivo de descartes: {e}")
 
         # Agrupamos temáticamente las noticias resumidas
-        # --- MODO PREVIEW (Post-Resumen): GUARDAR Y SALIR ---
-        if solo_preview:
-            print("👀 MODO PREVIEW ACTIVADO: Guardando noticias resumidas y saliendo...")
-            archivo_preview = "prevision_noticias_resumidas.json"
-            
-            # Serializar fechas para JSON
-            export_data = []
-            for n in (resumenes_noticiero + resumenes_agenda):
-                n_copy = n.copy()
-                # Asegurar que no hay objetos datetime
-                if 'fecha' in n_copy and isinstance(n_copy['fecha'], datetime):
-                     n_copy['fecha'] = n_copy['fecha'].strftime("%Y-%m-%d")
-                export_data.append(n_copy)
-                
-            with open(archivo_preview, 'w', encoding='utf-8') as f:
-                json.dump(export_data, f, indent=4, ensure_ascii=False)
-                
-            print(f"✅ Preview resumida guardada en: {archivo_preview}")
-            try:
-                os.rmdir(output_dir)
-            except:
-                pass 
-            sys.exit(0)
+        # (Modo preview movido abajo, después de la agrupación)
 
 
         debug_noticias_antes_agrupacion(resumenes_noticiero + resumenes_agenda)
@@ -1751,6 +1758,33 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
             'noticias_individuales': noticias_agrupadas_noticiero.get('noticias_individuales', []) + noticias_agrupadas_agenda.get('noticias_individuales', [])
         }
         # --- FIN DEL NUEVO PASO ---
+
+        # --- MODO PREVIEW (Post-Resumen y Agrupación): GUARDAR Y SALIR ---
+        if solo_preview:
+            print("👀 MODO PREVIEW ACTIVADO: Guardando noticias AL AGRUPAR y saliendo...")
+            archivo_preview = "prevision_noticias_resumidas.json"
+            
+            # Helper para formatear fechas
+            def format_fechas_noticias(lista):
+                for n_c in lista:
+                    if 'fecha' in n_c and isinstance(n_c['fecha'], datetime):
+                         n_c['fecha'] = n_c['fecha'].strftime("%Y-%m-%d")
+            
+            # Serializar fechas de bloques y noticias sueltas
+            for bloque in noticias_agrupadas['bloques_tematicos']:
+                format_fechas_noticias(bloque.get('noticias', []))
+            
+            format_fechas_noticias(noticias_agrupadas['noticias_individuales'])
+
+            with open(archivo_preview, 'w', encoding='utf-8') as f:
+                json.dump(noticias_agrupadas, f, indent=4, ensure_ascii=False)
+                
+            print(f"✅ Preview ESTRUCTURADA guardada en: {archivo_preview}")
+            try:
+                os.rmdir(output_dir)
+            except:
+                pass 
+            sys.exit(0)
 
         # INICIO DE LOS CAMBIOS DE NORMALIZACIÓN
         print("\n--- FASE 2: Generando audio con la nueva introducción estructurada ---")
@@ -2155,7 +2189,8 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 tema = bloque.get('descripcion_tema')
                 print(f"   Bloque '{tema}': Generando narración consolidada...")
                 logger.info(f"Narrando bloque: {tema}")
-                cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str)
+                is_agenda_block = any(n.get('es_agenda', False) for n in bloque.get('noticias', []))
+                cronica_unificada_texto = generar_narracion_fluida_bloque(bloque, fecha_actual_str, es_agenda=is_agenda_block)
 
                 if cronica_unificada_texto:
                     cache_content(f"block_{block_hash}", {"text": cronica_unificada_texto})

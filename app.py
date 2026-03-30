@@ -418,15 +418,32 @@ elif page == "generar":
             news_candidates = []
             if has_resumidas:
                 with open("prevision_noticias_resumidas.json", "r", encoding="utf-8") as f:
-                    for n in json.load(f):
-                        n['_selected_default'] = True
-                        n['_is_discarded'] = False
-                        news_candidates.append(n)
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        for n in data:
+                            n['_selected_default'] = True
+                            n['_is_discarded'] = False
+                            n['_bloque_padre'] = None
+                            news_candidates.append(n)
+                    else:
+                        for bloque in data.get('bloques_tematicos', []):
+                            titulo_bloque = f"🎯 Bloque Temático: {bloque.get('descripcion_tema', 'Tema Varios').title()}"
+                            for n in bloque.get('noticias', []):
+                                n['_selected_default'] = True
+                                n['_is_discarded'] = False
+                                n['_bloque_padre'] = titulo_bloque
+                                news_candidates.append(n)
+                        for n in data.get('noticias_individuales', []):
+                            n['_selected_default'] = True
+                            n['_is_discarded'] = False
+                            n['_bloque_padre'] = None
+                            news_candidates.append(n)
             if has_descartadas:
                 with open("prevision_noticias_descartadas.json", "r", encoding="utf-8") as f:
                     for n in json.load(f):
                         n['_selected_default'] = False # NO pre-seleccionar descartadas
                         n['_is_discarded'] = True
+                        n['_bloque_padre'] = "🗑️ Descartadas por el Sistema"
                         if 'resumen' not in n: n['resumen'] = ""
                         if 'motivo' not in n: n['motivo'] = "Desconocido"
                         news_candidates.append(n)
@@ -435,7 +452,14 @@ elif page == "generar":
 
             with st.form("form_edicion_v2"):
                 edited_list = []
+                ultimo_bloque = "XYZ_NONE"
                 for i, news in enumerate(news_candidates):
+                    current_block = news.get('_bloque_padre')
+                    if current_block != ultimo_bloque:
+                        ultimo_bloque = current_block
+                        title_str = current_block if current_block else "📄 Noticias Individuales"
+                        st.markdown(f"<div class='pcc-section-title' style='color:var(--g-dark); margin-top:15px; border-bottom:2px solid var(--g-dark); padding-bottom:5px;'>{title_str}</div>", unsafe_allow_html=True)
+
                     titulo_raw = news.get("titulo", "")
                     sitio = news.get("sitio", "")
                     titulo_show = titulo_raw if (titulo_raw and titulo_raw != "None" and len(titulo_raw) > 3) else f"Noticia de {sitio}"
