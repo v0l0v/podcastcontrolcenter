@@ -86,7 +86,7 @@ def extraer_localidad_con_ia(texto_noticia: str) -> str:
     
     LOCALIDAD:
     """
-    localidad = generar_texto_con_gemini(prompt).strip()
+    localidad = generar_texto_con_gemini(prompt, model_type="flash").strip()
     # Pequeña limpieza por si la IA añade comillas
     localidad = localidad.replace('"', '').replace("'", "")
     
@@ -98,7 +98,7 @@ def es_noticia_valida(texto: str) -> bool:
         print(f"      🕵️‍♂️ Ignorando por ser demasiado corto (menos de 16 palabras).")
         return False
     prompt = mcmcn_prompts.PromptsAnalisis.clasificacion_noticia(texto=texto)
-    respuesta = generar_texto_con_gemini(prompt)
+    respuesta = generar_texto_con_gemini(prompt, model_type="flash")
     if not respuesta:
         return False
     print(f"      🕵️‍♂️ IA ha clasificado el texto '{texto[:70].strip()}...' como: {respuesta.upper()}")
@@ -124,7 +124,7 @@ def resumir_noticia_con_google(texto: str, idioma_destino: str, fuente_original:
         fuente_original=fuente_original,
         contexto_calendario=obtener_festividades_contexto()
     )
-    return generar_texto_con_gemini(prompt)
+    return generar_texto_con_gemini(prompt, model_type="pro")
 
 def leer_pregunta_del_dia() -> List[Dict[str, str]]:
     """
@@ -200,7 +200,7 @@ def identificar_fuente_original(texto: str) -> str:
     ---
 
     RESPUESTA (Solo el nombre o "PROPIA" o "Desconocida"):"""
-    respuesta = generar_texto_con_gemini(prompt)
+    respuesta = generar_texto_con_gemini(prompt, model_type="flash")
     if respuesta and respuesta.strip() != "Desconocida":
         print(f"      ✅ Fuente original identificada: {respuesta.strip()}")
         return respuesta.strip()
@@ -455,7 +455,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list, es_agenda: bool = False
             ensure_ascii=False, indent=2
         )
         prompt_agrupacion = mcmcn_prompts.PromptsAnalisis.agrupacion_logica_temas(noticias_simplificadas, es_agenda=es_agenda)
-        respuesta_grupos = generar_texto_con_gemini(prompt_agrupacion)
+        respuesta_grupos = generar_texto_con_gemini(prompt_agrupacion, model_type="flash")
         
         # Limpiar y parsear la respuesta del paso 1
         start_idx = respuesta_grupos.find('{')
@@ -488,7 +488,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list, es_agenda: bool = False
             resumenes_json = json.dumps(lista_resumenes, indent=2, ensure_ascii=False)
 
             prompt_enriquecimiento = mcmcn_prompts.PromptsCreativos.enriquecimiento_creativo_tema(tema, resumenes_json)
-            respuesta_creativa = generar_texto_con_gemini(prompt_enriquecimiento)
+            respuesta_creativa = generar_texto_con_gemini(prompt_enriquecimiento, model_type="pro")
             # --- NUEVA LÓGICA DE LIMPIEZA ---
             # Elimina el bloque de código Markdown si la IA lo añade
             json_limpio = respuesta_creativa
@@ -702,7 +702,7 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 """
 
     # 4. Generar el texto con Gemini
-    cronica_generada = generar_texto_con_gemini(prompt)
+    cronica_generada = generar_texto_con_gemini(prompt, model_type="pro")
 
     # 5. Fallback por si la IA falla
     if not cronica_generada:
@@ -765,8 +765,9 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
                 fecha_noticia_str=fecha_noticia,
                 fecha_actual_str=fecha_actual_str,
                 contexto_tematico=None
-            )
-        )        
+            ),
+            model_type="pro"
+        )
         if not texto_narracion_generado:
             print("      ⚠️ Error generando narración individual. Usando formato simple.")
             texto_narracion = f"Desde {fuente}, nos llega la noticia de que: {resumen}"
@@ -907,7 +908,7 @@ def analizar_sentimiento_general_noticias(resumenes: List[Dict[str, Any]]) -> st
         texto_resumen = noticia.get('resumen', '')
         if texto_resumen:
             prompt = mcmcn_prompts.PromptsAnalisis.analizar_sentimiento_texto(texto=texto_resumen)
-            sentimiento = generar_texto_con_gemini(prompt).lower().strip()
+            sentimiento = generar_texto_con_gemini(prompt, model_type="flash").lower().strip()
             if sentimiento in ['positivo', 'negativo', 'neutro']:
                 sentimientos.append(sentimiento)
 
@@ -1626,7 +1627,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                     texto_crudo, fuente_original, idioma_destino, obtener_festividades_contexto()
                 )
                 
-                respuesta_json = generar_texto_con_gemini(prompt_ia)
+                respuesta_json = generar_texto_con_gemini(prompt_ia, model_type="pro")
                 try:
                     start_j = respuesta_json.find('{')
                     end_j = respuesta_json.rfind('}')
@@ -2051,7 +2052,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 dato_oficio_hoy=dato_oficio_hoy,
                 pueblo_saludo=obtener_pueblo_aleatorio()
             )
-            texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado)
+            texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado, model_type="pro")
             
             # --- FIX: Inyección determinista de fecha ---
             if texto_monologo_inicio:
@@ -2263,7 +2264,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                             if cached_cta:
                                 texto_cta_reescrito = cached_cta['text']
                             else:
-                                texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio)
+                                texto_cta_reescrito = generar_texto_con_gemini(prompt_cta_intermedio, model_type="pro")
                                 if texto_cta_reescrito: cache_content(f"cta_{cta_hash}", {"text": texto_cta_reescrito})
                         else:
                             print("      📢 Usando CTA Literal intermedio...")
@@ -2343,7 +2344,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                     try:
                         # 1. Generar Intro para el audio
                         prompt_audio_intro = f"Actúa como Dorotea. Presenta brevemente que vamos a escuchar una nota de voz que nos ha enviado {autor}. Sé natural y cercana. Máximo 20 palabras."
-                        texto_intro_audio = generar_texto_con_gemini(prompt_audio_intro)
+                        texto_intro_audio = generar_texto_con_gemini(prompt_audio_intro, model_type="pro")
                         audio_intro = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_intro_audio))}</speak>")
                         
                         # 2. Cargar el audio original
@@ -2357,7 +2358,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                             f"Da una respuesta breve, empática y con tu estilo manchego. Máximo 40 palabras. "
                             f"IMPORTANTE: No te despidas del oyente ni del programa, la despedida real vendrá después."
                         )
-                        texto_reaccion = generar_texto_con_gemini(prompt_reaccion)
+                        texto_reaccion = generar_texto_con_gemini(prompt_reaccion, model_type="pro")
                         audio_reaccion = sintetizar_ssml_a_audio(f"<speak>{html.escape(limpiar_artefactos_ia(texto_reaccion))}</speak>")
                         
                         if audio_intro and audio_oyente and audio_reaccion:
@@ -2375,7 +2376,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                     prompt_segmento = mcmcn_prompts.PromptsCreativos.generar_segmento_audiencia_integrado(
                         autor, texto_mensaje, sentimiento_general=sentimiento_general
                     )
-                    texto_segmento = generar_texto_con_gemini(prompt_segmento)
+                    texto_segmento = generar_texto_con_gemini(prompt_segmento, model_type="pro")
                     if texto_segmento:
                         segmento_limpio = limpiar_artefactos_ia(texto_segmento)
                         segmento_audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(segmento_limpio)}</speak>")
@@ -2546,7 +2547,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                     nombre_oyente=nombre_oyente,
                     tema_principal=tema_oyente
                 )
-                guion_respuesta = generar_texto_con_gemini(prompt_respuesta)
+                guion_respuesta = generar_texto_con_gemini(prompt_respuesta, model_type="pro")
                 
                 # Parsear INTRO y REACCION
                 texto_intro = ""
@@ -2654,7 +2655,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 sentimiento_general=sentimiento_general
             )
             
-            texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado)
+            texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado, model_type="pro")
             if texto_monologo_cierre:
                 cache_content(f"outro_{outro_hash}", {"text": texto_monologo_cierre})
         
@@ -2699,7 +2700,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         try:
              # Usamos el contexto de cierre para que comente sobre algo real
              prompt_comentario = mcmcn_prompts.PromptsCreativos.generar_comentario_post_creditos(contexto_cierre_str)
-             texto_comentario = generar_texto_con_gemini(prompt_comentario)
+             texto_comentario = generar_texto_con_gemini(prompt_comentario, model_type="pro")
              
              if texto_comentario:
                  texto_comentario = limpiar_artefactos_ia(texto_comentario)

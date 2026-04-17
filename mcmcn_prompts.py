@@ -172,18 +172,21 @@ Crear un guion de resumen optimizado para formato audio, respetando reglas estri
 
 {contexto_calendario}
 
+### REGLA DE ORO: FUSIÓN DE EVENTOS (CRÍTICO)
+- Si este texto contiene información sobre el MISMO EVENTO reportado por diferentes fuentes, FUSIÓNALOS en un solo relato coherente.
+- CITA explícitamente a todas las fuentes (ej: 'según informa el Ayuntamiento y recoge el diario Lanza').
+
 ### TEXTO ORIGINAL A RESUMIR
 ---
 {texto}
 ---
 
 ### ENTREGA
-Devuelve ÚNICAMENTE el texto del guion final, listo para ser locutado.
+Devuelve ÚNICAMENTE el texto del guion final.
 **REGLAS DE ORO:**
-1. **INFORMACIÓN SAGRADA:** Es OBLIGATORIO incluir nombres de personas (autores, premiados, etc.), títulos de obras (libros, películas) y lugares específicos mencionados. NO generalices (ej: NO digas "un autor", di "Pedro Martín-Romo").
-2. **FORMATO PLANO:** El resultado debe ser texto puro. NO INCLUYAS NUNCA markdown (ni negritas **, ni cursivas _), ni anotaciones de producción. Eliminamos cualquier asterisco de la respuesta.
-3. **PROHIBICIÓN DE ENLACES Y SÍMBOLOS:** Bajo ninguna circunstancia incluyas direcciones web (URLs), enlaces tipo "http", hashtags (#) o menciones de usuario (@). Si una noticia hace referencia a un sitio web, limítate a decir el nombre del sitio (ej: "en el diario ABC") sin el ".es" o ".com".
-4. **NO** incluyas texto entre paréntesis o corchetes.
+1. **INFORMACIÓN SAGRADA:** Incluye nombres propios, títulos y lugares.
+2. **FORMATO PLANO:** Sin markdown ni asteriscos.
+3. **CERO ENLACES:** Sin URLs ni hashtags.
 """
 
     @staticmethod
@@ -335,9 +338,11 @@ ENTREGA: Solo el resumen final, sin introducciones."""
         
         INSTRUCCIONES CLAVE DE NEGOCIO:
         {contexto_tipo}
+        
+        - REGLA CRÍTICA: Si varias noticias hablan del MISMO EVENTO, júntalas en el mismo grupo. Es vital para que luego Dorotea pueda fusionarlas en un solo texto.
 
         TAREA: Analiza la siguiente lista de noticias y agrupa los IDs por temas comunes.
-        Devuelve ÚNICAMENTE un JSON válido donde las claves son los temas y el valor es un array con los IDs de las noticias que lo componen. (Ej: {{"Tema 1": ["id1", "id2"]}}). NO uses comillas en markdown.
+        Devuelve ÚNICAMENTE un JSON válido: {{"Tema": ["id1", "id2"]}}
 
         LISTA DE NOTICIAS (JSON):
         ---

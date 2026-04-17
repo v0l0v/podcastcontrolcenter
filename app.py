@@ -635,7 +635,7 @@ elif page == "mediateca":
                                                 with open(json_path, 'r', encoding='utf-8') as f:
                                                     transcript = json.load(f)
                                                 full_text = "\n".join([i['content'] for i in transcript if i.get('type') in ['block', 'news', 'intro']])
-                                                resp = generar_texto_con_gemini(PromptsCreativos.generar_social_pack(full_text))
+                                                resp = generar_texto_con_gemini(PromptsCreativos.generar_social_pack(full_text), model_type="pro")
                                                 clean = resp.replace("```json", "").replace("```", "").strip()
                                                 st.session_state[f'social_result_{p_dir}'] = json.loads(clean)
                                                 st.rerun()
@@ -882,7 +882,7 @@ elif page == "config":
                     with st.spinner("Redactando..."):
                         try:
                             analisis_str = "TABLA (ordenada por semana):\n" + df.sort_values('7d',ascending=False).to_string(index=False)
-                            guion = generar_texto_con_gemini(PromptsCreativos.generar_analisis_fuentes(analisis_str))
+                            guion = generar_texto_con_gemini(PromptsCreativos.generar_analisis_fuentes(analisis_str), model_type="pro")
                             clean = guion.replace("```txt","").replace("```","").strip()
                             ts = datetime.datetime.now().strftime("%d-%m-%y_%H-%M")
                             fname = f"EE_analisis_semanal - {ts}.txt"
@@ -1126,7 +1126,7 @@ elif page == "extras":
                         if modo_od == "Guion Fiel (íntegro)":
                             regla_longitud = "REGLA DE LONGITUD: NO RESUMAS. Transforma y transcribe el contenido íntegro del texto proporcionado, manteniendo todos los puntos, ideas y diálogos (en formato adaptado), sin importar la longitud final. Todo el contenido original debe estar presente."
                             
-                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {regla_longitud} {tone} TEXTO PLANO. REGLA OBLIGATORIA: Si el tema incluye un diálogo o entrevista, ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores. Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez. GUION:')
+                        script = generar_texto_con_gemini(f'Eres Dorotea. Guion sobre "{topic_od}". {regla_longitud} {tone} TEXTO PLANO. REGLA OBLIGATORIA: Si el tema incluye un diálogo o entrevista, ignora TODAS las marcas de tiempo (ej. [00:00:00]) y NO leas los nombres de los interlocutores. Transforma el texto en una narración fluida o una conversación natural sin anunciar al hablante cada vez. GUION:', model_type="pro")
                         if not script: st.error("Error generando guion.")
                         else:
                             with st.expander("Revisar lo que IA ha escrito (Guion)"): st.write(script)
@@ -1205,7 +1205,7 @@ elif page == "extras":
                         
                         if demo_instant:
                             st.write("✍️ Redactando audio paralelo en el acto...")
-                            guion = generar_texto_con_gemini(ConfiguracionPodcast.PROMPT_RESPUESTA_OYENTE.format(nombre_oyente=nombre,tema_principal=tema))
+                            guion = generar_texto_con_gemini(ConfiguracionPodcast.PROMPT_RESPUESTA_OYENTE.format(nombre_oyente=nombre,tema_principal=tema), model_type="pro")
                             if "INTRO:" in guion and "REACCION:" in guion:
                                 partes=guion.split("REACCION:"); intro_txt=partes[0].replace("INTRO:","").strip(); reac_txt=partes[1].strip()
                             else: intro_txt=f"Escuchamos ahora a {nombre}."; reac_txt=guion

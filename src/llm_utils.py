@@ -38,13 +38,16 @@ def retry_on_failure(retries=3, delay=5, backoff=2):
         return wrapper
     return decorator
 
-# =================================================================================
+# 41. # =================================================================================
 # INICIALIZACIÓN DE GEMINI
 # =================================================================================
 import warnings
 
-model = None
-USE_NEW_SDK = False # Flag para diferenciar comportamientos sutiles si fuera necesario
+model_flash = None
+model_pro = None
+
+MODEL_NAME_FLASH = "gemini-2.0-flash"
+MODEL_NAME_PRO = "gemini-2.5-pro"
 
 # 1. Intentar usar Google Generative AI (AI Studio) si hay API KEY
 # ----------------------------------------------------------------
@@ -52,17 +55,16 @@ if os.getenv("GOOGLE_API_KEY"):
     try:
         import google.generativeai as genai
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        model = genai.GenerativeModel("gemini-2.5-flash-lite")
-        print("✅ [llm_utils] Usando SDK Google Generative AI (AI Studio).")
+        model_flash = genai.GenerativeModel(MODEL_NAME_FLASH)
+        model_pro = genai.GenerativeModel(MODEL_NAME_PRO)
+        print(f"✅ [llm_utils] Usando SDK Google Generative AI. Flash: {MODEL_NAME_FLASH}, Pro: {MODEL_NAME_PRO}")
     except ImportError:
         print("❌ [llm_utils] GOOGLE_API_KEY encontrada, pero 'google-generativeai' no está instalado.")
 
 # 2. Si no, intentar usar Vertex AI (Google Cloud)
 # ----------------------------------------------------------------
-if model is None:
+if model_flash is None or model_pro is None:
     try:
-        # Suprimir advertencia de deprecación de Vertex AI SDK hasta junio 2026
-        # Usamos simplefilter para asegurar que ignoramos todo lo relacionado con este bloque
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning)
             try:
@@ -74,38 +76,44 @@ if model is None:
                 
                 if gcp_project_id:
                     vertexai.init(project=gcp_project_id, location=gcp_location)
-                    model = GenerativeModel("gemini-2.5-flash-lite")
-                    print("⚠️ [llm_utils] Usando SDK VertexAI (deprecado en 2026, advertencia silenciada).")
+                    if model_flash is None: model_flash = GenerativeModel(MODEL_NAME_FLASH)
+                    if model_pro is None: model_pro = GenerativeModel(MODEL_NAME_PRO)
+                    print(f"⚠️ [llm_utils] Usando SDK VertexAI. Flash: {MODEL_NAME_FLASH}, Pro: {MODEL_NAME_PRO}")
                 else:
-                    print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
+                    if model_flash is None:
+                        print("❌ [llm_utils] No se encontró GOOGLE_API_KEY ni GCP_PROJECT_ID. Gemini no funcionará.")
             except Exception as e:
                  print(f"❌ [llm_utils] Error crítico inicializando Vertex AI: {e}")
-                 model = None
             
     except ImportError:
         print("❌ [llm_utils] No se pudo importar ningún SDK de Gemini (ni generativeai ni vertexai).")
-        model = None
 
 # --- Wrapper unificado ---
 @retry_on_failure(retries=3, delay=5, backoff=2)
-def generar_texto_con_gemini(prompt: str) -> str:
-    if model is None:
-        print("❌ Error: Modelo no inicializado.")
+def generar_texto_con_gemini(prompt: str, model_type: str = "pro") -> str:
+    """
+    Genera texto usando Gemini. 
+    model_type: 'pro' (mejor calidad, más lento) o 'flash' (más rápido, más barato).
+    """
+    selected_model = model_pro if model_type == "pro" else model_flash
+    
+    if selected_model is None:
+        # Fallback si el pro no está pero el flash sí
+        selected_model = model_flash if model_flash else model_pro
+        
+    if selected_model is None:
+        print("❌ Error: Modelos no inicializados.")
         return ""
         
     try:
-        # Tanto vertexai como google.generativeai soportan .generate_content() y .text
-        response = model.generate_content(prompt)
+        response = selected_model.generate_content(prompt)
         text = response.text.strip() if response and hasattr(response, 'text') and response.text else ""
         
         # --- TRACKING ---
-        # Estimación simple (tipo Flash: caracteres / 4) o uso real si disponible
         input_tokens = len(prompt) // 4 
         output_tokens = len(text) // 4
         if hasattr(response, 'usage_metadata'):
-            # Si el SDK devuelve metadata real, usarla
             try:
-                # Adaptar según estructura de objeto response (Vertex vs AI Studio)
                 if hasattr(response.usage_metadata, 'prompt_token_count'):
                     input_tokens = response.usage_metadata.prompt_token_count
                 if hasattr(response.usage_metadata, 'candidates_token_count'):
@@ -113,12 +121,11 @@ def generar_texto_con_gemini(prompt: str) -> str:
             except:
                 pass
         
-        tracker.track_gemini(input_tokens, output_tokens, model="flash-lite")
+        tracker.track_gemini(input_tokens, output_tokens, model=f"gemini-1.5-{model_type}")
         return text
             
     except Exception as e:
-        # Fallback para estructuras antiguas o errores de bloqueos
-        print(f"❌ Error en generación Gemini: {e}")
+        print(f"❌ Error en generación Gemini ({model_type}): {e}")
         return ""
 
 @retry_on_failure(retries=3, delay=5, backoff=2)
@@ -126,29 +133,20 @@ def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_ty
     """
     Genera texto a partir de una imagen y un prompt usando Gemini Pro Vision (o Flash).
     """
-    if model is None:
-        print("❌ Error: Modelo no inicializado.")
+    if model_pro is None:
+        print("❌ Error: Modelo Pro no inicializado.")
         return ""
         
     try:
         from vertexai.generative_models import Part, Image
 
-        # Construir la parte de imagen
-        # Detectamos si estamos usando vertexai o google.generativeai (AI Studio)
-        # Por simplicidad, asumimos que 'model' ya está configurado.
-        
-        # En la versión unificada, intentamos pasar la lista [texto, imagen]
-        # Dependiendo del SDK, la imagen se pasa diferente.
-        
         # CASO 1: SDK google.generativeai (AI Studio)
         if 'google.generativeai' in sys.modules and hasattr(sys.modules['google.generativeai'], 'GenerativeModel'):
-             # En este SDK, a menudo se pasa PIL.Image o bytes envueltos
-             # Vamos a intentar pasar un objeto simple compatible
              try:
                  import PIL.Image
                  import io
                  img = PIL.Image.open(io.BytesIO(image_bytes))
-                 response = model.generate_content([prompt, img])
+                 response = model_pro.generate_content([prompt, img])
                  return response.text.strip() if response and hasattr(response, 'text') else ""
              except ImportError:
                  print("⚠️ PIL no instalado, no se puede procesar imagen en AI Studio mode.")
@@ -157,11 +155,11 @@ def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_ty
         # CASO 2: SDK Vertex AI
         else:
             image_part = Part.from_data(data=image_bytes, mime_type=mime_type)
-            response = model.generate_content([prompt, image_part])
+            response = model_pro.generate_content([prompt, image_part])
             text = response.text.strip() if response and hasattr(response, 'text') else ""
             
             # Tracking Multimodal (Estimación básica)
-            tracker.track_gemini(len(prompt)//4 + 258, len(text)//4, model="gemini-pro-vision") # +258 tokens por imagen aprox
+            tracker.track_gemini(len(prompt)//4 + 258, len(text)//4, model="gemini-1.5-pro") # +258 tokens por imagen aprox
             return text
 
     except Exception as e:
@@ -173,8 +171,8 @@ def generar_texto_multimodal_audio_con_gemini(prompt: str, audio_bytes: bytes, m
     """
     Genera texto a partir de un audio y un prompt usando Gemini Pro Vision / Flash.
     """
-    if model is None:
-        print("❌ Error: Modelo no inicializado.")
+    if model_pro is None:
+        print("❌ Error: Modelo Pro no inicializado.")
         return ""
         
     try:
@@ -184,13 +182,13 @@ def generar_texto_multimodal_audio_con_gemini(prompt: str, audio_bytes: bytes, m
         if 'google.generativeai' in sys.modules and hasattr(sys.modules['google.generativeai'], 'GenerativeModel'):
              # AI Studio acepta diccionarios con 'mime_type' y 'data'
              blob = {'mime_type': mime_type, 'data': audio_bytes}
-             response = model.generate_content([prompt, blob])
+             response = model_pro.generate_content([prompt, blob])
              return response.text.strip() if response and hasattr(response, 'text') else ""
 
         # CASO 2: SDK Vertex AI
         else:
             audio_part = Part.from_data(data=audio_bytes, mime_type=mime_type)
-            response = model.generate_content([prompt, audio_part])
+            response = model_pro.generate_content([prompt, audio_part])
             return response.text.strip() if response and hasattr(response, 'text') else ""
 
     except Exception as e:
