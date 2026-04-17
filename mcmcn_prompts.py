@@ -243,6 +243,38 @@ TEXTO ORIGINAL:
 ENTREGA: Solo la frase final, sin introducciones ni explicaciones."""
 
     @staticmethod
+    def seleccionar_puntos_clave_dia(contexto_completo: str) -> str:
+        """
+        Actúa como un EDITOR DE MESA. Filtra el ruido y elige los 3 puntos más interesantes.
+        Diseñado para Gemini Flash.
+        """
+        return f"""
+        Actúa como el Editor Jefe de una radio local. Tienes una montaña de datos sobre el día de hoy. 
+        Tu misión es filtrar el ruido y seleccionar los 3 puntos más "jugosos" para que la presentadora (Dorotea) abra el programa.
+
+        DATOS DISPONIBLES:
+        ---
+        {contexto_completo}
+        ---
+
+        TAREA:
+        Selecciona los 3 elementos con más "gancho" emocional o informativo. Prioriza:
+        1. Un dato meteorológico si es extremo o muy relevante para el campo.
+        2. Un resultado deportivo o efeméride muy local.
+        3. El titular más curioso de las noticias del día.
+
+        FORMATO DE SALIDA (JSON):
+        {{
+            "punto_1": "Breve descripción informativa del punto 1",
+            "punto_2": "Breve descripción informativa del punto 2",
+            "punto_3": "Breve descripción informativa del punto 3",
+            "sentimiento_dominante": "positivo/negativo/neutro"
+        }}
+
+        REGLA: Devuelve SOLO el JSON, sin texto adicional.
+        """
+
+    @staticmethod
     def procesamiento_noticia_completo(texto: str, fuente_original: str = "", idioma_destino: str = "español", contexto_calendario: str = "") -> str:
         """
         Produce simultáneamente el resumen periodístico, la extracción de entidades y
@@ -466,70 +498,53 @@ class PromptsCreativos:
     # Las siguientes 3 funciones ahora están correctamente indentadas como métodos estáticos
     # dentro de la clase `PromptsCreativos`.
 
-    # REEMPLAZA las funciones respuesta_pregunta_compleja, respuesta_comentario_opinion,
-    # respuesta_felicitacion y respuesta_audiencia por esta ÚNICA función.
-
-    @staticmethod
+    # REEMPLAZA    @staticmethod
     def generar_monologo_inicio_unificado(
-        contenido_noticias: str,
-        texto_cta: str,
-        texto_base_saludo: str = "",
-        dato_efemeride: str = "",
-        dato_meteo: str = "",
-        dato_deportes: str = "",
-        dato_curioso_gancho: str = "",
-        sentimiento_general: str = "neutro",
-        fecha_actual_str: str = "",
-        humanizacion_instruccion: str = "",
-        toque_costumbrista: str = "",
-        dato_oficio_hoy: str = "",
-        pueblo_saludo: str = ""
+        puntos_clave: Dict[str, str],
+        pueblo_saludo: str = "",
+        texto_cta: str = ""
     ) -> str:
         """
-        Genera el monólogo de apertura simplificado y con saludo aleatorio.
+        Genera el monologo de apertura usando los puntos clave seleccionados por el editor.
+        Usa PLACEHOLDERS deterministas para evitar alucinaciones.
         """
-        ingredientes = []
+        p1 = puntos_clave.get("punto_1", "")
+        p2 = puntos_clave.get("punto_2", "")
+        p3 = puntos_clave.get("punto_3", "")
         
-        if pueblo_saludo:
-            ingredientes.append(f"📍 SALUDO ESPECIAL HOY: Queremos mandar un abrazo enorme, cercano y empático a los vecinos de {pueblo_saludo}. Hazles sentir especiales por un momento.")
-            
-        if dato_meteo:
-            ingredientes.append(f"🌤️ TIEMPO (opcional): {dato_meteo}")
-        if dato_efemeride:
-            ingredientes.append(f"📅 EFEMÉRIDES / FIESTAS (opcional): {dato_efemeride}")
-        if dato_oficio_hoy:
-            ingredientes.append(f"🌾 OFICIO (opcional): {dato_oficio_hoy}")
-        if toque_costumbrista:
-            ingredientes.append(f"Costumbrismo base: {toque_costumbrista}")
-            
-        ingredientes_texto = "\\n".join(ingredientes) if ingredientes else "Improvisa con tu personalidad."
-
-        instruccion_cta = f'📢 CTA (Llamada a la acción - OBLIGATORIA):\\n"{texto_cta}"\\n(Antes de la CTA, escribe `[CORTINILLA]`. Luego di la frase de forma natural.)' if texto_cta else ""
+        instruccion_cta = f'\n📢 CTA (OBLIGATORIA):\n"{texto_cta}"\n(Antes de la CTA, escribe `[CORTINILLA]`)' if texto_cta else ""
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
 
-        prompt = f"""
+        return f"""
         {persona_base}
         
-        ## TU MISIÓN HOY
-        Vas a generar el saludo de apertura del podcast rural. El objetivo es SIMPLIFICAR: no seas redundante y ve más al grano, pero manteniendo SIEMPRE tu inquebrantable cercanía y empatía por el mundo rural.
-        
-        ## FECHA
-        Para el día de hoy, escribe LITERALMENTE: `[FECHA_HUMANIZADA]` (¡solo usa esta etiqueta!). Ejemplo: "¡Muy buenos días en este [FECHA_HUMANIZADA]!"
-        
-        ## NOTICIAS DEL DÍA (TEASER SOLO PARA ABRIR APETITO)
-        {contenido_noticias[:1500]}...
-        (Nombra 1 o 2 temas importantes súper por encima para generar intriga).
-        
-        {instruccion_cta}
-        
-        ## INGREDIENTES PARA DAR COLOR (NO EXAGERES)
-        {ingredientes_texto}
+        ## TU MISIÓN
+        Eres la locutora estrella. Vas a abrir el podcast con energía. 
+        El "Editor de Mesa" te ha pasado estos 3 puntos clave para hoy:
+        1. {p1}
+        2. {p2}
+        3. {p3}
 
-        ## REGLAS DE ORO:
-        1. **Simplifica**: Inicia con energía, saluda y manda todo tu cariño a **{pueblo_saludo}** (OBLIGATORIO), añade un solo detalle de color (clima o efeméride) si aporta algo, y da paso a los temas velozmente. Evita repasar todos y cada uno de los ingredientes, eso es aburrido.
-        2. **Cercanía rural**: Que se note tu alma de mujer manchega, curtida pero moderna. 
-        3. No uses lenguaje de telediario ("A continuación desgranamos los sucesos"). Usa lenguaje de calle ("Vamos a ver qué se cuece hoy").
-        4. Extensión CORTA-MEDIA (cerca de 150-180 palabras). Que sea dinámico.
+        ## INSTRUCCIONES DE PLACEHOLDERS (CRÍTICO)
+        Para que no te equivoques con los datos, USA ESTOS MARCADORES EXACTOS donde corresponda:
+        - `[FECHA_HOY]`: Para la fecha de hoy.
+        - `[DATO_1]`: Para comentar el punto 1.
+        - `[DATO_2]`: Para comentar el punto 2.
+        - `[DATO_3]`: Para comentar el punto 3.
+        - `[PUEBLO_SALUDO]`: Para el saludo especial a {pueblo_saludo}.
+
+        Ejemplo de estilo: "¡Buenos días! En este [FECHA_HOY], mandamos un abrazo a la gente de [PUEBLO_SALUDO]... y ojo con [DATO_1] que viene fuerte..."
+
+        {instruccion_cta}
+
+        ## REGLAS DE ESTILO:
+        1. **Lenguaje Oral**: Escribe para ser leído. Usa frases cortas, cercanía manchega y mucha empatía.
+        2. **Brevedad**: No te enrolles. Tienes 45-60 segundos de gloria.
+        3. **No inventes**: Si no hay datos, no los rellenes. Ciñete a los marcadores.
+
+        Devuelve SOLO el texto de la locución.
+        """
+mico.
         5. Texto plano (sin markdown, ni asteriscos). 
         6. NO uses la etiqueta [CORTINILLA] más de una sola vez.
 
@@ -937,7 +952,7 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         {instrucciones_despedida}
 
         CONTEXTO:
-        - Sentimiento general hoy: {sentimiento_general}
+        - Sentimiento general hoy (determinará la música final): {sentimiento_general}
         
         ESTRUCTURA VARIABLE (Usa si aplica):
         1.  **Reflexión Final (Resumen):** "{contexto}" (Úsalo solo para dar una pincelada de cierre, NO para volver a contar las noticias).
