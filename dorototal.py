@@ -1767,23 +1767,40 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 transiciones[sent] = pool_universal
                 print(f"    ℹ️ Sentimiento '{sent}' usará el pool universal (clickrozalen).")
         # --------------------------------------------------------------------
+        
+        # --- RASTREO DE PISTAS PARA EVITAR REPETICIONES EN EL MISMO PODCAST ---
+        pistas_usadas = set()
+
         def agregar_transicion(sentimiento: str = 'neutro') -> AudioSegment:
             pool_sentimiento = transiciones.get(sentimiento, transiciones.get('neutro'))
             if not pool_sentimiento: return AudioSegment.silent(duration=1000)
 
-            path = random.choice(list(pool_sentimiento.keys()))
+            # Filtrar pistas no usadas
+            disponibles = [p for p in pool_sentimiento.keys() if p not in pistas_usadas]
+            
+            # Si se acaban las pistas nuevas, resetear el pool para esta sesión
+            if not disponibles:
+                print(f"      🔄 Reiniciando pool de transiciones (todas las {len(pistas_usadas)} pistas han sido usadas).")
+                pistas_usadas.clear()
+                disponibles = list(pool_sentimiento.keys())
+
+            path = random.choice(disponibles)
+            pistas_usadas.add(path)
+            
             filename = os.path.basename(path)
             audio = pool_sentimiento[path]
 
-            # Si tenemos metadatos, usamos un segmento pre-calculado
+            # Si tenemos metadatos, usamos un segmento pre-calculado AL AZAR de la lista
             if filename in audio_meta and audio_meta[filename]:
                 seg_info = random.choice(audio_meta[filename])
+                print(f"      🎵 Transición: {filename} (segmento {seg_info['start']//1000}s-{seg_info['end']//1000}s)")
                 segmento = audio[seg_info["start"]:seg_info["end"]]
                 return segmento.fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
 
-            # Fallback a la lógica antigua si no hay metadatos
+            # Fallback a la lógica antigua si no hay metadatos (10s aleatorios sin silencio garantizado)
             max_start = max(0, len(audio) - SEGMENT_DURATION_MS)
             start = random.randint(0, max_start)
+            print(f"      🎵 Transición (fallback): {filename} (inicio aleatorio {start//1000}s)")
             return audio[start:start+SEGMENT_DURATION_MS].fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
         print("\n🎤 Ensamblando introducción profesional por segmentos...")
         todos_los_resumenes = [n['resumen'] for n in (resumenes_noticiero + resumenes_agenda)]
@@ -1882,12 +1899,10 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
             cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})
 
         
-        # 3. Añadir la sintonía de inicio ANTES del monólogo.
-        # 3. Sintonía de inicio dinámica por sentimiento
-        ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, f"{sentimiento_general}_inicio.mp3")
-        if not os.path.exists(ruta_sintonia_inicio):
-            ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
-    
+        # 3. Añadir la sintonía de inicio (siempre inicio.mp3)
+        ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
+        if os.path.exists(ruta_sintonia_inicio):
+            print("      🎵 Añadiendo sintonía de inicio estándar...")
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_inicio))
         
         # 4. Limpiar, sintetizar y añadir el monólogo de inicio.
@@ -2507,12 +2522,10 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 if despedida_audio_fallback:
                     segmentos_audio.append(despedida_audio_fallback)
 
-        # 4. Sintonía de cierre dinámica por sentimiento
-        ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, f"{sentimiento_general}_cierre.mp3")
-        if not os.path.exists(ruta_sintonia_cierre):
-            ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
-    
+        # 4. Sintonía de cierre (siempre cierre.mp3)
+        ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
         if os.path.exists(ruta_sintonia_cierre):
+            print("      🎵 Añadiendo sintonía de cierre estándar...")
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_cierre))
             
         # 5. BONUS: Comentario Post-Créditos (Engage)
