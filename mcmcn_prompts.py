@@ -544,12 +544,6 @@ class PromptsCreativos:
 
         Devuelve SOLO el texto de la locución.
         """
-mico.
-        5. Texto plano (sin markdown, ni asteriscos). 
-        6. NO uses la etiqueta [CORTINILLA] más de una sola vez.
-
-        TU TEXTO EMPIEZA AQUÍ:
-        """
         return prompt
 
     @staticmethod

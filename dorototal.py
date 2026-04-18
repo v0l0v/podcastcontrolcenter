@@ -1017,290 +1017,6 @@ def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp
         print(f"      ✅ HTML generado correctamente en: {output_path}")
     except Exception as e:
         print(f"      ❌ Error al generar HTML con Jinja2: {e}")
-    except Exception as e:
-        print(f"      ❌ Error al generar HTML con Jinja2: {e}")
-      .transcript-section p {
-            font-size: 1.1em;
-            color: #e0e0e0;
-            margin: 0;
-        }
-        
-        /* Estilos específicos por sección */
-        .transcript-intro {
-            border-left-color: #ffff00; /* Amarillo */
-        }
-        .transcript-intro h3 {
-            color: #ffff00;
-        }
-
-        .transcript-block {
-            border-left-color: #00ff00; /* Verde */
-        }
-        .transcript-block h3 {
-            color: #00ff00;
-            background: #000;
-            display: inline-block;
-        }
-
-        .transcript-news {
-            border-left-color: #00ff00; /* Verde */
-            margin-left: 20px; /* Indentar noticias dentro de bloques si se quiere */
-        }
-        .transcript-news h4 {
-            color: #ffffff;
-            background-color: #000000;
-            border-bottom: 2px solid #00ff00;
-            display: inline;
-            padding-right: 10px;
-        }
-
-        .transcript-audience {
-            border-left-color: #ff4d00; /* Naranja */
-            background-color: #111;
-            padding: 20px;
-            border-left-width: 10px;
-        }
-        .transcript-audience h3 {
-            color: #ff4d00;
-        }
-
-        .transcript-outro {
-            border-left-color: #ffffff;
-            border-bottom: 4px solid #ffffff;
-            padding-bottom: 20px;
-        }
-        .transcript-outro h3 {
-            color: #ffffff;
-        }
-
-        .transcript-cta {
-            border-left-color: #00c8ff; /* Azul cian */
-            background-color: #080f14;
-            padding: 15px;
-            border-left-width: 8px;
-        }
-        .transcript-cta h3 {
-            color: #00c8ff;
-        }
-
-        .footer-note {
-            font-family: 'Courier New', monospace;
-            color: #666;
-            font-size: 0.8em;
-            text-align: right;
-            margin-top: 20px;
-        }
-        
-
-    </style>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const audio = document.getElementById('podcast-audio');
-            const playBtn = document.getElementById('play-btn');
-            const playIcon = document.getElementById('play-icon');
-            const pauseIcon = document.getElementById('pause-icon');
-            const progressBarBg = document.getElementById('progress-bar-bg');
-            const progressBarFill = document.getElementById('progress-bar-fill');
-            const timeDisplay = document.getElementById('time-display');
-            
-            // Toggle Play/Pause
-            playBtn.addEventListener('click', function() {
-                if (audio.paused) {
-                    audio.play();
-                    playBtn.classList.add('playing');
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = 'block';
-                } else {
-                    audio.pause();
-                    playBtn.classList.remove('playing');
-                    playIcon.style.display = 'block';
-                    pauseIcon.style.display = 'none';
-                }
-            });
-            
-            // Update Progress Bar
-            audio.addEventListener('timeupdate', function() {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                progressBarFill.style.width = percent + '%';
-                
-                // Update Time
-                const current = formatTime(audio.currentTime);
-                const duration = formatTime(audio.duration || 0);
-                timeDisplay.textContent = `${current} / ${duration}`;
-            });
-            
-            // Click on Progress Bar
-            progressBarBg.addEventListener('click', function(e) {
-                const rect = progressBarBg.getBoundingClientRect();
-                const pos = (e.clientX - rect.left) / rect.width;
-                audio.currentTime = pos * audio.duration;
-            });
-            
-            function formatTime(seconds) {
-                if (isNaN(seconds)) return "0:00";
-                const m = Math.floor(seconds / 60);
-                const s = Math.floor(seconds % 60);
-                return `${m}:${s.toString().padStart(2, '0')}`;
-            }
-        });
-    </script>
-    """
-    
-    # SVG Icons
-    icon_play = '<svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
-    icon_pause = '<svg id="pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
-    
-    html_content = f"""
-    {css_styles}
-    <div class="podcast-transcript">
-        <h2>Podcast Micomicona</h2>
-        <span class="meta">Emitido el {fecha_emision} </span>
-        
-        <!-- CUSTOM AUDIO PLAYER -->
-        <div class="audio-player-container">
-            <audio id="podcast-audio" src="{audio_url}"></audio>
-            
-            <button id="play-btn" class="play-btn">
-                {icon_play}
-                {icon_pause}
-            </button>
-            
-            <div class="progress-container">
-                <div class="player-label">ESCUCHAR PODCAST</div>
-                <div id="progress-bar-bg" class="progress-bar-bg">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                </div>
-            </div>
-            
-            <div id="time-display" class="time-display">0:00 / --:--</div>
-        </div>
-        <!-- END PLAYER -->
-        
-        <hr style="border-color: #333; margin-bottom: 40px;">
-    """
-    
-    for item in transcript_data:
-        tipo = item.get('type')
-        titulo = item.get('title', '')
-        contenido = item.get('content', '')
-        
-        # Limpieza básica de HTML en el contenido
-        contenido_html = html.escape(contenido).replace('\n', '<br>')
-        
-        # Formatear enlaces en el HTML para que resalten (redes sociales y webs)
-        import re
-        def format_url(match):
-            url = match.group(1)
-            icon = "🔗"
-            color = "#00aaff"
-            if "instagram.com" in url:
-                icon = "📸"
-                color = "#ff4d00"
-            elif "youtube.com" in url or "youtu.be" in url:
-                icon = "▶️"
-                color = "#ff0000"
-            elif "facebook.com" in url or "fb.com" in url or "fb.watch" in url:
-                icon = "📘"
-                color = "#005ce6"
-            return f'<strong>{icon} <a href="{url}" target="_blank" style="color: {color}; text-decoration: underline; word-break: break-all;">{url}</a></strong>'
-
-        url_pattern = re.compile(r'(https?://[^\s<]+)')
-        contenido_html = url_pattern.sub(format_url, contenido_html)
-        
-        if tipo == 'intro':
-            html_content += f"""
-            <div class="transcript-section transcript-intro">
-                <h3>🎙️ Introducción</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'cta_inicio':
-            html_content += f"""
-            <div class="transcript-section transcript-cta">
-                <h3>📢 Anuncio de Inicio</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'block':
-            html_content += f"""
-            <div class="transcript-section transcript-block">
-                <h3>{html.escape(titulo)}</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'news':
-            html_content += f"""
-            <div class="transcript-section transcript-news">
-                <h4>📰 {html.escape(titulo)}</h4>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'cta_intermedio':
-            html_content += f"""
-            <div class="transcript-section transcript-cta">
-                <h3>📢 Anuncio Intermedio</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'audience':
-            html_content += f"""
-            <div class="transcript-section transcript-audience">
-                <h3>💬 La Voz de la Audiencia</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo in ('scheduled_audio_intro', 'scheduled_audio_outro', 'listener_msg'):
-            html_content += f"""
-            <div class="transcript-section transcript-audience">
-                <h3>🎧 Buzón del Oyente</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'cta_cierre':
-            html_content += f"""
-            <div class="transcript-section transcript-cta">
-                <h3>📢 Anuncio de Cierre</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-        elif tipo == 'outro':
-            html_content += f"""
-            <div class="transcript-section transcript-outro">
-                <h3>👋 Despedida</h3>
-                <p>{contenido_html}</p>
-            </div>
-            """
-            
-    html_content += """
-        <div class="footer-note">
-            <p>Generado automáticamente por Dorotea • con mucho amor</p>
-        </div>
-    </div>
-    """
-    
-    # Guardar transcripción en JSON para usos futuros (Social Pack, etc)
-    json_filename = f"transcript.json"
-    json_filepath = os.path.join(output_dir, json_filename)
-    try:
-        with open(json_filepath, 'w', encoding='utf-8') as f:
-            json.dump(transcript_data, f, indent=4, ensure_ascii=False)
-        print(f"✅ Transcripción JSON guardada en: {json_filepath}")
-    except Exception as e:
-        print(f"❌ Error al guardar transcripción JSON: {e}")
-
-    filename = f"podcast_summary_{timestamp}.html"
-
-    filepath = os.path.join(output_dir, filename)
-    
-    try:
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        print(f"✅ Transcripción estilizada con reproductor guardada en: {filepath}")
-    except Exception as e:
-        print(f"❌ Error al guardar transcripción: {e}")
-
-
 def obtener_pueblo_aleatorio():
     import csv, random, os
     try:
@@ -1332,7 +1048,7 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
             os.makedirs(dir_path, exist_ok=True)
         # --- CARGAR METADATOS DE AUDIO ---
         audio_meta = {}
-        meta_path = os.path.join(audio_assets_dir, "audio_meta.json")
+        meta_path = os.path.join(AUDIO_ASSETS_DIR, "audio_meta.json")
         if os.path.exists(meta_path):
             with open(meta_path, "r") as f: audio_meta = json.load(f)
             print("    ✅ Metadatos de audio cargados para transiciones instantáneas.")
@@ -1696,6 +1412,10 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         cta_intermedio_text = _get_cta_text("intermedio", dia_semana_str, cta_texts_dir)
         cta_cierre_text = _get_cta_text("cierre", dia_semana_str, cta_texts_dir)
         
+        cta_inicio_limpio = convertir_ssml_a_texto_plano(cta_inicio_text)
+        cta_intermedio_limpio = convertir_ssml_a_texto_plano(cta_intermedio_text)
+        cta_cierre_limpio = convertir_ssml_a_texto_plano(cta_cierre_text)
+        
         segmentos_audio = []
         temp_audio_files = []
         def _flush_segments(segs, temp_list):
@@ -1896,6 +1616,8 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
             print("      ✅ Marcadores inyectados correctamente.")
             
             # Guardar en caché
+            import hashlib
+            intro_hash = hashlib.md5(texto_monologo_inicio.encode()).hexdigest()[:10]
             cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})
 
         

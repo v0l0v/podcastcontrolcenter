@@ -46,8 +46,8 @@ import warnings
 model_flash = None
 model_pro = None
 
-MODEL_NAME_FLASH = "gemini-2.0-flash"
-MODEL_NAME_PRO = "gemini-2.5-pro"
+MODEL_NAME_FLASH = "gemini-flash-latest"
+MODEL_NAME_PRO = "gemini-pro-latest"
 
 # 1. Intentar usar Google Generative AI (AI Studio) si hay API KEY
 # ----------------------------------------------------------------
