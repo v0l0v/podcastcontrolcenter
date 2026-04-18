@@ -14,6 +14,7 @@ import glob
 from collections import defaultdict, Counter
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
+from jinja2 import Environment, FileSystemLoader
 
 import numpy as np
 from pydub import AudioSegment
@@ -22,6 +23,7 @@ from dateutil import parser as date_parser
 
 # --- IMPORTACIONES MODULARES ---
 from src.utils.caching import calculate_hash, get_cached_content, cache_content
+from src.utils.ssml_factory import SSMLFactory
 from src.config.settings import (
     CONFIG, AUDIO_CONFIG, GEN_CONFIG, VOICE_TARGET_PEAK_DBFS, TARGET_LUFS, 
     SAMPLE_RATE, BITRATE, SILENCE_THRESHOLD_DBFS, VOICE_NAME, LANGUAGE_CODE,
@@ -210,10 +212,11 @@ def calcular_similitud_texto(texto1: str, texto2: str) -> float:
     return composite_similarity(texto1, texto2)
 
 def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list) -> list:
-    print(f"\n🔍 Detectando duplicados exactos por Hash...")
+    print(f"\n🔍 Detectando duplicados semánticos y por Hash...")
     noticias_unicas = []
     hashes_vistos = set()
     eliminados = 0
+    SIMILARITY_THRESHOLD = 0.85
 
     for noticia in resumenes:
         resumen_actual = (noticia.get('resumen') or noticia.get('contenido_rss') or noticia.get('texto') or "").strip()
@@ -221,24 +224,33 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
             continue
 
         h = stable_text_hash(resumen_actual)
+        
+        # 1. Duplicado Exacto (Hash)
         if h in hashes_vistos:
-            noticias_descartadas.append({
-                "titulo": noticia.get('titulo', 'Sin título'),
-                "sitio": noticia.get('sitio', 'Desconocido'),
-                "motivo": f"Duplicado detectado (Hash {h[:8]})"
-            })
+            noticias_descartadas.append({"titulo": noticia.get('titulo', 'Sin título'), "motivo": "Duplicado exacto (Hash)"})
             eliminados += 1
-            # Guardamos la fuente para no perder de vista a quién atribuir la información
-            for unica in noticias_unicas:
-                if unica.get('id') == h:
-                    if 'fuentes_adicionales' not in unica:
-                        unica['fuentes_adicionales'] = []
-                    unica['fuentes_adicionales'].append({
-                        "sitio": noticia.get('sitio', ''),
-                        "fuente": noticia.get('fuente', noticia.get('sitio', '')),
-                        "url": noticia.get('url', '')
-                    })
-                    break
+            continue
+
+        # 2. Duplicado Semántico (Similitud)
+        es_duplicado_semantico = False
+        for unica in noticias_unicas:
+            similitud = calcular_similitud_texto(resumen_actual, unica.get('resumen', ''))
+            if similitud > SIMILARITY_THRESHOLD:
+                print(f"      🚫 Noticia descartada por similitud semántica ({similitud:.2f}): {noticia.get('titulo')[:40]}...")
+                noticias_descartadas.append({"titulo": noticia.get('titulo', 'Sin título'), "motivo": f"Similitud semántica ({similitud:.2f})"})
+                es_duplicado_semantico = True
+                
+                # Enriquecemos la noticia original con la nueva fuente
+                if 'fuentes_adicionales' not in unica: unica['fuentes_adicionales'] = []
+                unica['fuentes_adicionales'].append({
+                    "sitio": noticia.get('sitio', ''),
+                    "fuente": noticia.get('fuente', noticia.get('sitio', '')),
+                    "url": noticia.get('url', '')
+                })
+                break
+        
+        if es_duplicado_semantico:
+            eliminados += 1
             continue
 
         noticia_copia = noticia.copy()
@@ -248,7 +260,7 @@ def detectar_duplicados_y_similares(resumenes: list, noticias_descartadas: list)
         noticias_unicas.append(noticia_copia)
         hashes_vistos.add(h)
 
-    print(f"      ✅ Deduplicación: {len(resumenes)} originales -> {len(noticias_unicas)} únicas ({eliminados} eliminados).")
+    print(f"      ✅ Deduplicación Final: {len(resumenes)} originales -> {len(noticias_unicas)} únicas ({eliminados} eliminados).")
     return noticias_unicas
 
 def debe_interpretar_cta(tipo: str, dia_semana: str) -> bool:
@@ -781,11 +793,8 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
     texto_narracion = limpiar_artefactos_ia(texto_narracion)
     
     # --- GENERACIÓN ESTÁNDAR ---
-    # Escapar el texto ANTES de añadir las etiquetas SSML
-    texto_narracion_escapado = html.escape(texto_narracion)
-
     # Dividir el texto en frases para aplicar prosodia variable
-    frases = re.split('([.?!])', texto_narracion_escapado)
+    frases = re.split('([.?!])', texto_narracion)
     
     # Reconstruir las frases con su puntuación
     frases_completas = [frases[i] + (frases[i+1] if i+1 < len(frases) else '') for i in range(0, len(frases), 2)]
@@ -793,9 +802,9 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
     texto_narracion_ssml = ""
     for frase in frases_completas:
         if frase.strip():
-            # Aplicar una ligera variación aleatoria al ritmo de cada frase
+            # Aplicar una ligera variación aleatoria al ritmo de cada frase para naturalidad
             rate = f"{random.uniform(0.98, 1.02):.2f}"
-            texto_narracion_ssml += f'<prosody rate="{rate}">{frase.strip()}</prosody><break time="450ms"/>'
+            texto_narracion_ssml += SSMLFactory.prosody(frase.strip(), rate=rate) + SSMLFactory.pause(450)
     
     print(f"      ✅ Narración generada: '{texto_narracion[:80]}...' ")
     
@@ -819,8 +828,8 @@ def _generar_y_cachear_audio_noticia(noticia: dict, fecha_actual_str: str) -> tu
     os.makedirs(AUDIO_CACHE_DIR, exist_ok=True)
     
     # El archivo de audio se nombra por su ID para ser único
-    audio_filename = f"news_{noticia_id}.mp3"
-    text_filename = f"news_{noticia_id}.txt"
+    audio_filename = f"news_{noticia_id}_{VOICE_NAME}.mp3"
+    text_filename = f"news_{noticia_id}_{VOICE_NAME}.txt"
     audio_file_path = os.path.join(AUDIO_CACHE_DIR, audio_filename)
     text_file_path = os.path.join(AUDIO_CACHE_DIR, text_filename)
     
@@ -879,7 +888,7 @@ def _sintetizar_con_cache_estructural(texto: str) -> AudioSegment:
             print(f"      ⚠️ Error leyendo audio estructural caché: {e}")
             
     # 2. Generar si no existe
-    audio = sintetizar_ssml_a_audio(f"<speak>{html.escape(texto)}</speak>")
+    audio = sintetizar_ssml_a_audio(SSMLFactory.wrap_speak(html.escape(texto)))
     
     if audio:
         try:
@@ -972,165 +981,45 @@ def _get_cta_text(tipo: str, dia_semana: str, base_dir: str) -> str:
     print(f"      ❌ No se encontró ningún archivo de CTA para '{tipo}'.")
     return ""
 
-
 def _sintetizar(texto: str) -> AudioSegment:
     """Sintetiza texto a audio directamente, sin caché (usa sintetizar_ssml_a_audio)."""
     if not texto:
         return None
-    return sintetizar_ssml_a_audio(f"<speak>{html.escape(texto)}</speak>")
-
-
+    return sintetizar_ssml_a_audio(SSMLFactory.wrap_speak(html.escape(texto)))
 
 def generar_html_transcripcion(transcript_data: list, output_dir: str, timestamp: str):
-    """
-    Genera un archivo HTML con la transcripción/resumen del podcast.
-    Estilo: Dark Mode, High Contrast (Inspirado en The Verge).
-    Colores: Blanco, Negro, Naranja, Amarillo, Verde.
-    Incluye reproductor de audio personalizado.
-    """
-    print("\n📝 Generando archivo de transcripción HTML con estilo y reproductor...")
+    """Genera un archivo HTML usando plantillas Jinja2."""
+    print("\n📝 Generando transcripción HTML profesional con Jinja2...")
     
-    # Calcular año y mes desde el timestamp (formato esperado: YYYYMMDD_HHMMSS)
     try:
         dt = datetime.strptime(timestamp, "%Y%m%d_%H%M%S")
-        year = dt.strftime("%Y")
-        month = dt.strftime("%m")
-        fecha_emision = dt.strftime("%d/%m/%Y")
-    except ValueError:
-        # Fallback si el timestamp no tiene el formato esperado
+        year, month, fecha_emision = dt.strftime("%Y"), dt.strftime("%m"), dt.strftime("%d/%m/%Y")
+    except:
         now = datetime.now()
-        year = now.strftime("%Y")
-        month = now.strftime("%m")
-        fecha_emision = now.strftime("%d/%m/%Y")
+        year, month, fecha_emision = now.strftime("%Y"), now.strftime("%m"), now.strftime("%d/%m/%Y")
 
-    # URL dinámica del audio
     audio_url = f"https://micomicona.com/wp-content/uploads/{year}/{month}/podcast_completo_{timestamp}.mp3"
     
-    css_styles = """
-    <style>
-        .podcast-transcript {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 40px;
-            line-height: 1.6;
-            border: 1px solid #333;
-        }
-        .podcast-transcript h2 {
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            text-transform: uppercase;
-            font-size: 3em;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-            color: #ffffff;
-            line-height: 1;
-        }
-        .podcast-transcript .meta {
-            font-family: 'Courier New', monospace;
-            color: #ffff00; /* Amarillo */
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 40px;
-            border-bottom: 4px solid #ffffff;
-            padding-bottom: 20px;
-            display: block;
-        }
+    try:
+        env = Environment(loader=FileSystemLoader('templates'))
+        template = env.get_template('transcription.html')
         
-        /* --- CUSTOM AUDIO PLAYER STYLES --- */
-        .audio-player-container {
-            background-color: #111;
-            border: 2px solid #00ff00; /* Verde */
-            padding: 20px;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 5px 5px 0px #00ff00;
-        }
+        html_content = template.render(
+            fecha_emision=fecha_emision,
+            timestamp=timestamp,
+            audio_url=audio_url,
+            transcript_data=transcript_data
+        )
         
-        .play-btn {
-            background-color: #ff4d00; /* Naranja */
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-        .play-btn:active {
-            transform: scale(0.95);
-        }
-        .play-btn svg {
-            fill: #000;
-            width: 20px;
-            height: 20px;
-            margin-left: 2px; /* Ajuste visual para el icono de play */
-        }
-        .play-btn.playing svg {
-            margin-left: 0;
-        }
-        
-        .progress-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .player-label {
-            font-family: 'Arial Black', sans-serif;
-            text-transform: uppercase;
-            color: #00ff00;
-            font-size: 0.8em;
-            margin-bottom: 5px;
-        }
-
-        .progress-bar-bg {
-            background-color: #333;
-            height: 8px;
-            width: 100%;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .progress-bar-fill {
-            background-color: #ffff00; /* Amarillo */
-            height: 100%;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-        
-        .time-display {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            color: #ffffff;
-            font-size: 0.9em;
-            min-width: 100px;
-            text-align: right;
-        }
-        
-        /* ---------------------------------- */
-
-        .transcript-section {
-            margin-bottom: 40px;
-            padding-left: 20px;
-            border-left: 6px solid #333;
-        }
-        .transcript-section h3, .transcript-section h4 {
-            font-family: 'Arial Black', sans-serif;
-            text-transform: uppercase;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-            letter-spacing: -0.5px;
-        }
-        .transcript-section p {
+        output_path = os.path.join(output_dir, f"podcast_summary_{timestamp}.html")
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"      ✅ HTML generado correctamente en: {output_path}")
+    except Exception as e:
+        print(f"      ❌ Error al generar HTML con Jinja2: {e}")
+    except Exception as e:
+        print(f"      ❌ Error al generar HTML con Jinja2: {e}")
+      .transcript-section p {
             font-size: 1.1em;
             color: #e0e0e0;
             margin: 0;
@@ -1441,6 +1330,13 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         required_dirs = [AUDIO_ASSETS_DIR, CTA_TEXTS_DIR, output_dir]
         for dir_path in required_dirs:
             os.makedirs(dir_path, exist_ok=True)
+        # --- CARGAR METADATOS DE AUDIO ---
+        audio_meta = {}
+        meta_path = os.path.join(audio_assets_dir, "audio_meta.json")
+        if os.path.exists(meta_path):
+            with open(meta_path, "r") as f: audio_meta = json.load(f)
+            print("    ✅ Metadatos de audio cargados para transiciones instantáneas.")
+
             if not os.path.exists(dir_path):
                 print(f"❌ No se pudo crear directorio: {dir_path}")
                 sys.exit(1)
@@ -1801,6 +1697,15 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         cta_cierre_text = _get_cta_text("cierre", dia_semana_str, cta_texts_dir)
         
         segmentos_audio = []
+        temp_audio_files = []
+        def _flush_segments(segs, temp_list):
+            if not segs: return
+            temp_name = os.path.join(output_dir, f"chunk_{len(temp_list)}.mp3")
+            sum(segs).export(temp_name, format="mp3")
+            temp_list.append(temp_name)
+            segs.clear()
+            print(f"      💾 Bloque de audio exportado a disco para liberar RAM.")
+
         transcript_data = [] # <-- Inicializar lista para transcripción
         audio_assets_dir = AUDIO_ASSETS_DIR
 
@@ -1826,91 +1731,60 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 print(f"⚠️ Advertencia: No se pudo cargar 'sinto_bloque.mp3'. Error: {e}")
         # --------------------------------------------------------------------
 # --- LÓGICA DE CARGA DE TRANSICIONES MODIFICADA (clickrozalen) ---
-        print("\n🎵 Cargando músicas de transición universales (clickrozalen)...")
+        # --- LÓGICA DE CARGA DE TRANSICIONES DINÁMICA (Sentimiento) ---
+        print("\n🎵 Cargando pool de música por sentimiento...")
         transiciones = {
             'positivo': {},
             'negativo': {},
             'neutro': {}
         }
-        # Mantenemos las constantes de duración, la función agregar_transicion las usará
         SEGMENT_DURATION_MS, FADE_DURATION_MS = 10000, 2000 
+        
+        # 1. Intentar cargar por sentimiento específico
+        for sent in ['positivo', 'negativo', 'neutro']:
+            patron = f"{sent}_*.mp3"
+            files = glob.glob(os.path.join(audio_assets_dir, patron))
+            for f in files:
+                try:
+                    audio = AudioSegment.from_file(f)
+                    if len(audio) > 0:
+                        transiciones[sent][f] = audio
+                except: continue
+            if transiciones[sent]:
+                print(f"    ✅ Cargadas {len(transiciones[sent])} transiciones para sentimiento '{sent}'.")
 
-        # Pool universal para todos los archivos 'clickrozalen'
+        # 2. Si un sentimiento está vacío, usar el pool universal 'clickrozalen'
         pool_universal = {}
-        
-        # 1. Definir el patrón de búsqueda específico para tus archivos
-        patron_busqueda = "clickrozalen*.mp3"
-        ruta_busqueda = os.path.join(audio_assets_dir, patron_busqueda)
-        print(f"    -> Buscando archivos que coincidan con '{patron_busqueda}' en '{audio_assets_dir}'...")
-        
-        files = glob.glob(ruta_busqueda)
-
-        if not files:
-            print(f"    ⚠️ ADVERTENCIA: No se encontró ningún archivo de transición con el patrón '{patron_busqueda}'.")
-            print(f"    -> Asegúrate de que los archivos están en '{audio_assets_dir}' y se llaman 'clickrozalen...mp3'.")
-        
-        # 2. Cargar los archivos encontrados
-        for f in files:
+        files_universal = glob.glob(os.path.join(audio_assets_dir, "clickrozalen*.mp3"))
+        for f in files_universal:
             try:
                 audio = AudioSegment.from_file(f)
-            except Exception as e:
-                print(f"    ⚠️ Error cargando transición '{f}': {e}")
-                continue
-            
-            # Comprobar si el audio es válido (no está vacío)
-            if len(audio) > 0:
-                pool_universal[f] = audio
-            else:
-                print(f"    -> Aviso: Archivo '{f}' está vacío o corrupto. Omitiendo.")
+                if len(audio) > 0: pool_universal[f] = audio
+            except: continue
 
-        print(f"    -> {len(pool_universal)} transiciones 'clickrozalen' cargadas en el pool universal.")
-
-        # 3. Asignar el pool universal a todos los sentimientos
-        if pool_universal:
-            transiciones['positivo'] = pool_universal
-            transiciones['negativo'] = pool_universal
-            transiciones['neutro'] = pool_universal
-            print("    ✅ Pool universal 'clickrozalen' asignado a todos los sentimientos.")
-        else:
-            print("    -> No se cargaron transiciones. La función 'agregar_transicion' usará silencios.")
-        # --- FIN DE LA MODIFICACIÓN ---
+        for sent in ['positivo', 'negativo', 'neutro']:
+            if not transiciones[sent]:
+                transiciones[sent] = pool_universal
+                print(f"    ℹ️ Sentimiento '{sent}' usará el pool universal (clickrozalen).")
         # --------------------------------------------------------------------
         def agregar_transicion(sentimiento: str = 'neutro') -> AudioSegment:
-            pool_sentimiento = transiciones.get(sentimiento)
-            # Fallback a neutro si no hay transiciones para el sentimiento específico
-            if not pool_sentimiento:
-                pool_sentimiento = transiciones['neutro']
-            
+            pool_sentimiento = transiciones.get(sentimiento, transiciones.get('neutro'))
             if not pool_sentimiento: return AudioSegment.silent(duration=1000)
-            
-            path = random.choice(list(pool_sentimiento.keys()))
-            audio = pool_sentimiento[path]
-            
-            if len(audio) < SEGMENT_DURATION_MS: 
-                return audio.fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
-                
-            max_start = len(audio) - SEGMENT_DURATION_MS
-            
-            # Intentar encontrar un segmento con volumen decente (evitar silencios)
-            best_segment = None
-            best_dbfs = -float('inf')
-            
-            for _ in range(10): # 10 intentos
-                start = random.randint(0, max_start)
-                segmento = audio[start:start+SEGMENT_DURATION_MS]
-                
-                # Si encontramos un segmento con buen volumen, lo usamos
-                if segmento.dBFS > -30: 
-                    return segmento.fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
-                
-                # Si no, guardamos el "menos malo" por si acaso
-                if segmento.dBFS > best_dbfs:
-                    best_dbfs = segmento.dBFS
-                    best_segment = segmento
-                    
-            # Si fallan todos los intentos, devolvemos el mejor encontrado
-            return best_segment.fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
 
+            path = random.choice(list(pool_sentimiento.keys()))
+            filename = os.path.basename(path)
+            audio = pool_sentimiento[path]
+
+            # Si tenemos metadatos, usamos un segmento pre-calculado
+            if filename in audio_meta and audio_meta[filename]:
+                seg_info = random.choice(audio_meta[filename])
+                segmento = audio[seg_info["start"]:seg_info["end"]]
+                return segmento.fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
+
+            # Fallback a la lógica antigua si no hay metadatos
+            max_start = max(0, len(audio) - SEGMENT_DURATION_MS)
+            start = random.randint(0, max_start)
+            return audio[start:start+SEGMENT_DURATION_MS].fade_in(FADE_DURATION_MS).fade_out(FADE_DURATION_MS)
         print("\n🎤 Ensamblando introducción profesional por segmentos...")
         todos_los_resumenes = [n['resumen'] for n in (resumenes_noticiero + resumenes_agenda)]
         contenido_completo_texto = "\n\n- ".join(todos_los_resumenes)
@@ -1945,132 +1819,75 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         # except Exception as e:
         #     print(f"    ⚠️ No se pudo extraer dato curioso: {e}")
 
-        # 1. Obtener plantilla base del día para REINTERPRETACIÓN
-        print("      🗣️ Obteniendo plantilla base para reinterpretación...")
-        dia_semana = datetime.now().weekday()
-        saludo_base_raw = mcmcn_prompts.obtener_plantilla_por_dia(dia_semana, mcmcn_prompts.PlantillasSSML.FRASES_SALUDO_POR_DIA)
+        # --- PASO 1: FILTRO EDITORIAL (CoT con Gemini Flash) ---
+        print("      🧠 Editor Jefe (Flash): Seleccionando puntos clave del día...")
+        pueblo_especial = obtener_pueblo_aleatorio()
         
-        # --- FIX: Limpiar SSML del saludo base antes de enviarlo al prompt ---
-        # Si le pasamos SSML a la IA, tiende a repetirlo en la salida.
-        # Al limpiarlo, le damos solo el texto semántico para que lo reinterprete.
-        saludo_base = convertir_ssml_a_texto_plano(saludo_base_raw)
-        
-        # También aseguramos que el CTA esté limpio de etiquetas complejas si las tuviera
-        cta_inicio_limpio = convertir_ssml_a_texto_plano(cta_inicio_text)
-
-        # 2. Generar MONÓLOGO UNIFICADO (Saludo reinterpretado + Sumario)
-        print("      🧠 Generando monólogo de inicio unificado (reinterpretado)...")
-        
-        # NUEVO: Obtener efemérides de hoy para enriquecer el saludo
+        # Recopilamos datos para el editor
         efemerides_hoy = obtener_efemerides_hoy()
-        if efemerides_hoy:
-             print(f"      🗓️ Efeméride detectada: {efemerides_hoy[:50]}...")
-             
-        # NUEVO: Obtener meteo para enriquecer (Retranca)
-        datos_meteo_obj = obtener_pronostico_meteo()
-        datos_meteo_hoy = ""
-        datos_meteo_dict = {}
-
-        if isinstance(datos_meteo_obj, dict):
-             datos_meteo_hoy = datos_meteo_obj.get("texto", "")
-             datos_meteo_dict = datos_meteo_obj
-             print(f"      ☁️ Meteo obtenida (temp media {datos_meteo_obj.get('media_temp', '?')}ºC)")
-        elif datos_meteo_obj:
-             datos_meteo_hoy = str(datos_meteo_obj)
-             print(f"      ☁️ Meteo obtenida: {datos_meteo_hoy[:40]}...")
-
-        # NUEVO: Obtener oficio o tradición del día sugerido por el calendario
         dato_oficio_hoy = obtener_oficio_del_dia()
-        if dato_oficio_hoy:
-             print(f"      🧶 Oficio/Tradición de hoy detectado: {dato_oficio_hoy}")
-
-        # Obtener deportes (todos los días)
-        datos_deportes_hoy = ""
-        print("      ⚽ Buscando resultados deportivos...")
+        datos_meteo_obj = obtener_pronostico_meteo()
+        datos_meteo_hoy = datos_meteo_obj.get("texto", str(datos_meteo_obj)) if datos_meteo_obj else ""
         datos_deportes_hoy = obtener_resultados_futbol()
-        if datos_deportes_hoy:
-            print(f"      🥅 Deportes: {datos_deportes_hoy[:40]}...")
-        
-        # FECHA ACTUAL
         fecha_actual_str = obtener_fecha_humanizada_es()
-        
-        # --- HUMANIZACIÓN DOROTEA ---
-        # Calcular número real de noticias tras agrupación para el contexto
-        noticias_individuales = noticias_agrupadas.get('noticias_individuales', [])
-        bloques = noticias_agrupadas.get('bloques_tematicos', [])
-        num_noticias_real = len(noticias_individuales) + sum(len(b.get('noticias', [])) for b in bloques)
-        
-        # Decidimos qué toque humano dar hoy (si toca). Pasamos DATOS METEO.
-        contexto_humanizacion = obtener_toque_humano(num_noticias_real, datos_meteo_dict)
-        instruccion_humanizacion = contexto_humanizacion.get("humanizacion_instruccion", "")
-        if instruccion_humanizacion:
-            print(f"      🤖 Toque humano activado:\n{instruccion_humanizacion}")
-        
-        # --- COSTUMBRISMO DOROTEA (Plato principal) ---
-        provincia_predominante = "General_Manchega" 
-        saludo_costumbrista = obtener_saludo_aleatorio(provincia=provincia_predominante, momento_dia="manana")
-        print(f"      🌾 Saludo Costumbrista generado: {saludo_costumbrista[:50]}...")
 
-        # --- CACHING LLM: INTRO ---
-        intro_inputs = {
-            "contenido": contenido_completo_texto,
-            "cta": cta_inicio_limpio,
-            "saludo_base": saludo_base,
-            "efemerides": efemerides_hoy,
-            "meteo": datos_meteo_hoy,
-            "deportes": datos_deportes_hoy,
-            "oficio": dato_oficio_hoy,
-            "semtimiento": sentimiento_general,
-            "fecha": fecha_actual_str,
-            "humanizacion": instruccion_humanizacion,
-            "costumbrismo": saludo_costumbrista,
-            "pueblo_aleatorio": "dynamic" # force new hash or use variable if needed, "dynamic" is ok
-        }
-        intro_hash = calculate_hash(intro_inputs)
+        contexto_editorial_crudo = f"""
+        - FECHA: {fecha_actual_str}
+        - METEO: {datos_meteo_hoy}
+        - DEPORTES: {datos_deportes_hoy}
+        - EFEMÉRIDES/OFICIO: {efemerides_hoy} / {dato_oficio_hoy}
+        - TITULARES NOTICIAS: {contenido_completo_texto[:2000]}
+        """
         
-        cached_intro_data = get_cached_content(f"intro_{intro_hash}")
-        texto_monologo_inicio = ""
+        prompt_seleccion = mcmcn_prompts.PromptsAnalisis.seleccionar_puntos_clave_dia(contexto_editorial_crudo)
+        seleccion_json_raw = generar_texto_con_gemini(prompt_seleccion, model_type="flash")
         
-        if cached_intro_data and cached_intro_data.get('text'):
-             print("      ⏩ Usando texto de INTRO en caché (Saltando LLM).")
-             texto_monologo_inicio = cached_intro_data.get('text')
-        else:
-            # Check matrix decision
-            interpr_inicio = debe_interpretar_cta("inicio", dia_semana_str)
+        puntos_clave = {}
+        try:
+            start_j = seleccion_json_raw.find('{')
+            end_j = seleccion_json_raw.rfind('}')
+            if start_j != -1 and end_j != -1:
+                puntos_clave = json.loads(seleccion_json_raw[start_j:end_j+1])
+                print(f"      ✅ Puntos clave seleccionados: {list(puntos_clave.values())[:3]}")
+                sentimiento_general = puntos_clave.get("sentimiento_dominante", sentimiento_general)
+        except Exception as e:
+            print(f"      ⚠️ Fallo al parsear selección editorial: {e}")
+            puntos_clave = {"punto_1": f"Hoy es {fecha_actual_str}", "punto_2": "Actualidad regional", "punto_3": datos_meteo_hoy[:50]}
 
-            prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
-                contenido_noticias=contenido_completo_texto,
-                texto_cta=cta_inicio_limpio if interpr_inicio else "",
-                texto_base_saludo=saludo_base,
-                dato_efemeride=efemerides_hoy,
-                dato_meteo=datos_meteo_hoy,
-                dato_deportes=datos_deportes_hoy,
-                sentimiento_general=sentimiento_general,
-                fecha_actual_str=fecha_actual_str,
-                humanizacion_instruccion=instruccion_humanizacion,
-                toque_costumbrista=saludo_costumbrista,
-                dato_oficio_hoy=dato_oficio_hoy,
-                pueblo_saludo=obtener_pueblo_aleatorio()
-            )
-            texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado, model_type="pro")
-            
-            # --- FIX: Inyección determinista de fecha ---
-            if texto_monologo_inicio:
-                if "[FECHA_HUMANIZADA]" in texto_monologo_inicio:
-                    print(f"      🗓️ Sustituyendo marcador de fecha por: {fecha_actual_str}")
-                    texto_monologo_inicio = texto_monologo_inicio.replace("[FECHA_HUMANIZADA]", fecha_actual_str)
-                else:
-                    print("      ⚠️ La IA no usó el marcador [FECHA_HUMANIZADA]. Verificando si alucinó fecha...")
-            # --------------------------------------------
+        # --- PASO 2: GENERACIÓN DE LOCUCIÓN (Dorotea Pro) ---
+        print("      🗣️ Dorotea (Pro): Redactando monólogo de inicio...")
+        interpr_inicio = debe_interpretar_cta("inicio", dia_semana_str)
+        prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
+            puntos_clave=puntos_clave,
+            pueblo_saludo=pueblo_especial,
+            texto_cta=cta_inicio_limpio if interpr_inicio else ""
+        )
+        texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado, model_type="pro")
+
+        # --- PASO 3: SUSTITUCIÓN DETERMINISTA DE MARCADORES ---
+        if texto_monologo_inicio:
+            mapeo_marcadores = {
+                "[FECHA_HOY]": fecha_actual_str,
+                "[DATO_1]": puntos_clave.get("punto_1", ""),
+                "[DATO_2]": puntos_clave.get("punto_2", ""),
+                "[DATO_3]": puntos_clave.get("punto_3", ""),
+                "[PUEBLO_SALUDO]": pueblo_especial,
+                "[FECHA_HUMANIZADA]": fecha_actual_str
+            }
+            for marcador, valor in mapeo_marcadores.items():
+                texto_monologo_inicio = texto_monologo_inicio.replace(marcador, str(valor))
+            print("      ✅ Marcadores inyectados correctamente.")
             
             # Guardar en caché
-            if texto_monologo_inicio:
-                cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})
+            cache_content(f"intro_{intro_hash}", {"text": texto_monologo_inicio})
 
         
         # 3. Añadir la sintonía de inicio ANTES del monólogo.
-        ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
-        if os.path.exists(ruta_sintonia_inicio):
+        # 3. Sintonía de inicio dinámica por sentimiento
+        ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, f"{sentimiento_general}_inicio.mp3")
+        if not os.path.exists(ruta_sintonia_inicio):
+            ruta_sintonia_inicio = os.path.join(AUDIO_ASSETS_DIR, "inicio.mp3")
+    
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_inicio))
         
         # 4. Limpiar, sintetizar y añadir el monólogo de inicio.
@@ -2690,8 +2507,11 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 if despedida_audio_fallback:
                     segmentos_audio.append(despedida_audio_fallback)
 
-        # 4. Añadir la sintonía de cierre DESPUÉS del monólogo.
-        ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
+        # 4. Sintonía de cierre dinámica por sentimiento
+        ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, f"{sentimiento_general}_cierre.mp3")
+        if not os.path.exists(ruta_sintonia_cierre):
+            ruta_sintonia_cierre = os.path.join(AUDIO_ASSETS_DIR, "cierre.mp3")
+    
         if os.path.exists(ruta_sintonia_cierre):
             segmentos_audio.append(AudioSegment.from_file(ruta_sintonia_cierre))
             
@@ -2717,48 +2537,37 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         except Exception as e:
              print(f"      ⚠️ No se pudo generar comentario post-créditos: {e}")
 
-        # FASE 4: ENSAMBLAJE INTELIGENTE (BASADO EN TAMAÑO)
+        # FASE 4: ENSAMBLAJE POR BLOQUES (LIBERACIÓN DE RAM)
         # ============================================================
-        print("\n--- FASE 4: Ensamblando y masterizando el podcast final ---")
-
-        # Calcular duración total para decidir método
-        duracion_total_seg = sum(len(s) for s in segmentos_audio if s) / 1000
-        print(f"  📊 Duración total estimada: {duracion_total_seg / 60:.1f} minutos")
-
-        logger.step("Finalización y Masterización", "RUNNING")
-        print("\n--- FASE 4: Montaje Final ---")
-        podcast_final = AudioSegment.silent(duration=500)
-
-        # Método adaptativo según duración
-        if duracion_total_seg < 1200:  # Menos de 20 minutos
-            print("  ⚡ Usando ensamblaje directo (podcast corto)")
-            for segmento in segmentos_audio:
-                if segmento:
-                    podcast_final += segmento
-        else:
-            print("  🔧 Usando ensamblaje por lotes (podcast largo)")
-            BATCH_SIZE = 8
-            
-            for i in range(0, len(segmentos_audio), BATCH_SIZE):
-                batch = segmentos_audio[i:i + BATCH_SIZE]
-                for segmento in batch:
-                    if segmento:
-                        podcast_final += segmento
-                
-                # Liberar memoria cada 3 lotes
-                if (i // BATCH_SIZE) % 3 == 0:
-                    gc.collect()
-                
-                print(f"     Progreso: {min(i + BATCH_SIZE, len(segmentos_audio))}/{len(segmentos_audio)} segmentos")
-
-        print(f"  ✅ Ensamblaje completado")
-
-        # Masterizar
-        podcast_masterizado = masterizar_a_lufs(podcast_final, TARGET_LUFS)
-
-        # Exportar
+        print("\n--- FASE 4: Ensamblado y masterizado eficiente (FFmpeg) ---")
+        
+        # 1. Exportar el último bloque que quede en memoria
+        if segmentos_audio:
+            _flush_segments(segmentos_audio, temp_audio_files)
+        
         nombre_podcast_final = os.path.join(output_dir, f"podcast_completo_{timestamp}.mp3")
-        podcast_masterizado.export(nombre_podcast_final, format="mp3", bitrate=BITRATE)
+        
+        if len(temp_audio_files) == 1:
+            # Si solo hay un bloque, lo movemos directamente
+            os.rename(temp_audio_files[0], nombre_podcast_final)
+        else:
+            # 2. Generar archivo de lista para FFmpeg
+            list_path = os.path.join(output_dir, f"concat_list_{timestamp}.txt")
+            with open(list_path, "w") as f:
+                for chunk in temp_audio_files:
+                    f.write(f"file '{os.path.abspath(chunk)}'\n")
+            
+            # 3. Concatenar usando FFmpeg
+            print(f"      🚀 Concatenando {len(temp_audio_files)} bloques con FFmpeg...")
+            ffmpeg_cmd = f"ffmpeg -f concat -safe 0 -i {list_path} -c copy {nombre_podcast_final} -y -loglevel error"
+            os.system(ffmpeg_cmd)
+            
+            # Limpiar
+            os.remove(list_path)
+            for chunk in temp_audio_files:
+                if os.path.exists(chunk): os.remove(chunk)
+        
+        print(f"  ✅ Podcast final ensamblado: {nombre_podcast_final}")
         
         # Generar transcripción HTML
         generar_html_transcripcion(transcript_data, output_dir, timestamp) # <-- Generar HTML

@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcripción Podcast Micomicona - {{ fecha_emision }}</title>
+    <style>
+        body {
+            background-color: #050505;
+            margin: 0;
+            padding: 0;
+        }
+        .podcast-transcript {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 40px;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+        .podcast-transcript h2 {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            font-size: 3em;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .podcast-transcript .meta {
+            font-family: 'Courier New', monospace;
+            color: #ffff00;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            border-bottom: 4px solid #ffffff;
+            padding-bottom: 20px;
+            display: block;
+        }
+        
+        .audio-player-container {
+            background-color: #111;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 5px 5px 0px #00ff00;
+        }
+        
+        .play-btn {
+            background-color: #ff4d00;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-container { flex-grow: 1; }
+        .player-label { color: #00ff00; font-family: 'Arial Black'; font-size: 0.8em; margin-bottom: 5px; }
+        .progress-bar-bg { background-color: #333; height: 8px; width: 100%; cursor: pointer; }
+        .progress-bar-fill { background-color: #ffff00; height: 100%; width: 0%; }
+        .time-display { color: #fff; font-family: monospace; font-size: 0.9em; min-width: 100px; text-align: right; }
+
+        .transcript-section {
+            margin-bottom: 40px;
+            padding-left: 20px;
+            border-left: 6px solid #333;
+        }
+        .transcript-section h3 { font-family: 'Arial Black'; text-transform: uppercase; margin-top: 0; color: #fff; }
+        .transcript-section p { font-size: 1.1em; color: #e0e0e0; }
+        
+        .transcript-intro { border-left-color: #ffff00; }
+        .transcript-intro h3 { color: #ffff00; }
+        .transcript-block { border-left-color: #00ff00; }
+        .transcript-block h3 { color: #00ff00; }
+        .transcript-cta { border-left-color: #ff4d00; font-style: italic; }
+        .transcript-cta h3 { color: #ff4d00; }
+    </style>
+</head>
+<body>
+    <div class="podcast-transcript">
+        <h2>Podcast Micomicona</h2>
+        <span class="meta">Emisión: {{ fecha_emision }} | Archivo: {{ timestamp }}</span>
+
+        <div class="audio-player-container">
+            <button class="play-btn" id="playPauseBtn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="progress-container">
+                <div class="player-label">Escuchar Episodio</div>
+                <div class="progress-bar-bg" id="progressBar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+            <audio id="mainAudio" src="{{ audio_url }}"></audio>
+        </div>
+
+        {% for item in transcript_data %}
+            <div class="transcript-section transcript-{{ item.type }}">
+                <h3>
+                    {% if item.type == 'intro' %}Apertura
+                    {% elif item.type == 'bloque' %}Bloque: {{ item.title }}
+                    {% elif item.type == 'noticia' %}Noticia
+                    {% elif item.type == 'cta' %}Llamada a la Acción
+                    {% else %}{{ item.type|capitalize }}{% endif %}
+                </h3>
+                <p>{{ item.content|safe }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const playBtn = document.getElementById('playPauseBtn');
+        const fill = document.getElementById('progressFill');
+        const time = document.getElementById('timeDisplay');
+
+        playBtn.onclick = () => {
+            if (audio.paused) audio.play();
+            else audio.pause();
+        };
+
+        audio.ontimeupdate = () => {
+            const pct = (audio.currentTime / audio.duration) * 100;
+            fill.style.width = pct + '%';
+            time.innerText = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+        };
+
+        function formatTime(s) {
+            if (isNaN(s)) return "0:00";
+            const m = Math.floor(s / 60);
+            const r = Math.floor(s % 60);
+            return m + ":" + (r < 10 ? '0' : '') + r;
+        }
+    </script>
+</body>
+</html>

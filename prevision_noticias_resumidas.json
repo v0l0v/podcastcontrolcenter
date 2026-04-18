@@ -1,0 +1,652 @@
+{
+    "bloques_tematicos": [
+        {
+            "tema": "clave:desarrollo rural",
+            "descripcion_tema": "desarrollo rural",
+            "transicion_elegante": "En torno a «desarrollo rural», varias noticias coinciden",
+            "noticias": [
+                {
+                    "fuente": "ADS Valle de Alcudia",
+                    "resumen": "Cambiamos de tercio y nos vamos a Brazatortas, donde se ha inaugurado la tercera Feria de la Caza. Según informan desde el Grupo de Desarrollo Rural del Valle de Alcudia y Sierra Madrona, esta es una cita clave para la comarca. Y conviene prestar atención a esto, porque no hablamos solo de una afición. Lo que se pone sobre la mesa es el valor de una actividad profundamente arraigada que funciona como motor económico. Para que nos entendamos: cuando se organiza un evento así, se mueve la hostelería, el comercio local y el turismo rural. En la inauguración estuvieron presentes Estela Pavón, presidenta del GDR, junto al alcalde de Brazatortas, Pablo Toledano, y otros regidores de la comarca. El programa incluye exhibiciones de rehalas, maquinaria, gastronomía y charlas técnicas. Es, en definitiva, una manera de demostrar que nuestras tradiciones también construyen futuro.",
+                    "titulo": "👉Nuestra presidenta, Estela Pavón, ha asistido hoy en Brazatortas a la inauguración de la III Feria de la Caza, una cit...",
+                    "sitio": "ADS Valle de Alcudia",
+                    "fecha": "2026-04-17",
+                    "id": "b99f561de5b6486c656f8e88b18222d3",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Feria de la Caza",
+                        "Brazatortas",
+                        "Desarrollo Rural",
+                        "Valle de Alcudia"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "CEDER Alcarria Conquense",
+                    "resumen": "Esto merece que nos paremos un momento. A veces, para que te escuchen, hay que coger los bártulos e ir a tocar a la puerta de donde se toman las decisiones. Y eso es lo que va a hacer RECAMDER, la red que agrupa a nuestros Grupos de Desarrollo Rural. Según informan desde la propia organización, casi un centenar de representantes de los 29 grupos de la región se van a plantar en Bruselas. No van de turismo, no. Llevan en la maleta el peso de más de 4.000 firmas para pedir algo que nos afecta a todos: que se mantenga la financiación del programa LEADER. Para que nos entendamos, ese programa es el dinero que a menudo permite que una quesería artesana, una casa rural o un taller en un pueblo puedan salir adelante. Es una defensa en toda regla del futuro de nuestra gente y nuestra tierra, llevada directamente al corazón de Europa. Veremos si allí, entre tanto edificio de cristal, saben escuchar la voz del campo.",
+                    "titulo": "👉RECAMDER llevará la voz del medio rural de Castilla-La Mancha a Bruselas para exigir que se mantenga la financiación d...",
+                    "sitio": "CEDER Alcarria Conquense",
+                    "fecha": "2026-04-17",
+                    "id": "d636d7d10dd8261a203d80a4b9973ebc",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "RECAMDER",
+                        "Desarrollo Rural",
+                        "Bruselas",
+                        "Programa LEADER"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Manchanorte",
+                    "resumen": "Hay temas que en La Mancha son sagrados: el vino, el queso... y el agua. Sobre todo el agua. Por eso, conviene prestar atención a lo que ha ocurrido durante el XVI Congreso Nacional de Comunidades de Regantes en Ciudad Real. El estand de la comarca Mancha Norte se convirtió en un verdadero punto de encuentro. A ver, seamos claros, no todos los días se junta en el mismo espacio al presidente de la Junta, Emiliano García-Page; a la secretaria de Estado de Agricultura, Begoña García Bernal; y a toda la plana mayor del desarrollo rural. Para que nos entendamos, es una señal potente. Según explican desde la propia Mancha Norte, lo que esto significa en la práctica es que la voz de nuestros regantes se está escuchando en los despachos importantes. No es solo una foto de familia, es asegurarse de que los problemas y las soluciones de nuestra tierra están sobre la mesa. Y eso, la verdad, es fundamental.",
+                    "titulo": "💧 El estand de Mancha Norte en el XVI Congreso Nacional de Comunidades de Regantes ha recibido hoy una visita instituci...",
+                    "sitio": "Manchanorte",
+                    "fecha": "2026-04-17",
+                    "id": "e2e3eb25577ff1624c6a5fe48692b732",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Mancha Norte",
+                        "Congreso de Regantes",
+                        "Política Hídrica",
+                        "Emiliano García-Page",
+                        "Desarrollo Rural"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Entreparques Desarrollo Montes Norte Cabañeros",
+                    "resumen": "Uno piensa en el campo y se le vienen a la cabeza imágenes de siempre: la siembra, la vendimia, el ganado... pero a lo mejor va siendo hora de añadir a esa lista los algoritmos. Y no es una cosa del futuro, no. El Grupo de Desarrollo Rural Entrepárques acaba de poner en marcha una plataforma de asesoramiento sobre inteligencia artificial. Para que nos entendamos, es una herramienta pensada para la gente de nuestros pueblos, para las pequeñas empresas y organizaciones. La idea es sencilla: ayudarles a usar esta tecnología para ahorrar tiempo, mejorar el negocio y, en definitiva, tomar mejores decisiones sin tener que volverse locos con tecnicismos. Porque esto va de que la innovación no es patrimonio exclusivo de las grandes ciudades. Conviene prestar atención a estas iniciativas que demuestran que el futuro rural no solo es posible, sino que ya se está construyendo.",
+                    "titulo": "🤖🌾 ¿Y si te dijera que la inteligencia artificial ya está transformando el mundo rural? No es el futuro. Es AHORA. El...",
+                    "sitio": "Entreparques Desarrollo Montes Norte Cabañeros",
+                    "fecha": "2026-04-17",
+                    "id": "4bd3e057cdb44cb195887fc17fbfd30e",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Entrepárques",
+                        "Inteligencia Artificial",
+                        "Desarrollo Rural",
+                        "Innovación"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "CEDER Alcarria Conquense",
+                    "resumen": "A ver, seamos claros. Pedir una ayuda o una subvención a veces se parece más a una carrera de obstáculos que a un trámite. Que si el boletín oficial, que si los plazos, que si el anexo B... un lío que acaba desanimando a cualquiera. Por eso, esto merece que nos paremos un momento. Desde la Asociación de Desarrollo Rural Alcarria Conquense han lanzado un boletín informativo que, para que nos entendamos, es como un mapa del tesoro de las ayudas públicas. Recopila todas las convocatorias vigentes para ayuntamientos, asociaciones, pymes, autónomos y también para particulares. Pensemos por un momento en lo que esto significa: todo ese tejido que mantiene vivos nuestros pueblos, con una herramienta clara para encontrar financiación. Lo que esto significa en la práctica es que ponen en un solo sitio la información que suele estar dispersa por mil despachos. Una iniciativa de servicio público de las que de verdad importan, porque ahorra tiempo y, sobre todo, muchos quebraderos de cabeza. Ya era hora de poner un poco de orden en este laberinto.",
+                    "titulo": "¡NUEVO BOLETIN INFORMATIVO! 🕵️‍♀️  Rastrea las ayudas vigentes para entidades locales, asociaciones, Pymes, autónomos y...",
+                    "sitio": "CEDER Alcarria Conquense",
+                    "fecha": "2026-04-17",
+                    "id": "3bb5584424fe3d05612c57a8cfac94cd",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Alcarria Conquense",
+                        "Ayudas públicas",
+                        "Subvenciones",
+                        "Desarrollo rural"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación Comarcal Don Quijote de la Mancha",
+                    "resumen": "Conviene prestar atención a esas reuniones que, sin hacer mucho ruido, definen el futuro de nuestros pueblos. Varios Grupos de Desarrollo Rural de la región, entre ellos el de la comarca de la Mesa de Ocaña, han participado en un encuentro telemático con el equipo que evalúa los fondos agrarios europeos. Sobre la mesa, el impacto del programa Leader. Para que nos entendamos: se ha analizado cómo ese dinero está ayudando a crear empleo, a que pequeños empresarios se lancen y, en definitiva, a mantener la cohesión social en el medio rural. Según informa la Asociación Comarcal Don Quijote, los grupos han vuelto a reivindicar su papel como entidades de confianza, cercanas al terreno. Y, claro, han puesto sobre la mesa la necesidad de que la financiación no falle, que es la gasolina para que todas estas buenas intenciones se conviertan en realidades. Habrá que estar atentos.",
+                    "titulo": "👉Ayer participamos, junto a otros Grupos de Desarrollo Rural de la provincia y de la región, en una reunión online con...",
+                    "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+                    "fecha": "2026-04-17",
+                    "id": "20bae15bceea4f4197c6dcf328604654",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Desarrollo Rural",
+                        "Programa Leader",
+                        "GDR Don Quijote",
+                        "Fondos Europeos"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                }
+            ]
+        },
+        {
+            "tema": "clave:merece paremos",
+            "descripcion_tema": "merece paremos",
+            "transicion_elegante": "En torno a «merece paremos», varias noticias coinciden",
+            "noticias": [
+                {
+                    "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+                    "resumen": "Cambiamos de tercio para hablar de algo que nos toca la fibra: el teatro. Y es que el Festival Internacional de Teatro Clásico de Almagro ha elegido un escenario muy especial para su presentación: Pozuelo de Calatrava, en el entorno de la ermita de la Virgen de los Santos. Esto merece que nos paremos un momento. Según informan desde el propio Ayuntamiento, la directora del festival, Irene Pardo, y el alcalde, David Triguero, subrayaron una idea clave. Para que nos entendamos: que la cultura no es un lujo, sino una herramienta para dar vida a nuestros pueblos. Lo que esto significa en la práctica es que un evento de esta envergadura, un referente en toda España, apuesta por el territorio, por el Campo de Calatrava. Es la demostración de que la colaboración entre municipios funciona y que los clásicos resuenan con la misma fuerza en el corazón del mundo rural que en cualquier otro lugar. Una iniciativa que, sin duda, fortalece nuestra identidad.",
+                    "titulo": "🎭 Pozuelo de Calatrava, escenario de la presentación del Festival Internacional de Teatro Clásico de Almagro Pozuelo de...",
+                    "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+                    "fecha": "2026-04-17",
+                    "id": "918c55332b151147b0ea3e0a48be01f6",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Festival de Almagro",
+                        "Pozuelo de Calatrava",
+                        "Cultura rural",
+                        "Teatro Clásico"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "ADAC Desarrollo Local",
+                    "resumen": "A veces pasas por la carretera, ves un campo de vides o una llanura que se pierde en el horizonte y piensas... qué paz, qué sencillez. Y es verdad que hay paz, pero de sencillo, nada. Detrás de cada hectárea hay un saber hacer que viene de lejos, y un montón de gente pensando en el futuro. Por eso me ha gustado tanto una frase de María José Murciano, vicepresidenta de la Asociación Europea LEADER. Decía algo que merece que nos paremos un momento: \"El medio rural no necesita compasión: necesita reconocimiento, respeto y confianza\". Y es que es justo eso. No se trata de mirar al pueblo con nostalgia o paternalismo. Se trata de entender que aquí se innova y se vive con una riqueza enorme. Para que nos entendamos: la confianza es darle herramientas para que sigan adelante, el respeto es valorar su trabajo sin idealizarlo, y el reconocimiento es, simplemente, admitir que el motor de esta tierra está, y ha estado siempre, en sus pueblos. No es un dato menor. Habrá que recordarlo más a menudo.",
+                    "titulo": "🗣️ María José Murciano, vicepresidenta de ELARD aisbl (La Asociación Europea de Grupos LEADER): \"El medio rural no nece...",
+                    "sitio": "ADAC Desarrollo Local",
+                    "fecha": "2026-04-17",
+                    "id": "64e7960c211e87fa57387f866277f5e4",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Medio Rural",
+                        "María José Murciano",
+                        "Grupos LEADER",
+                        "Desarrollo Rural",
+                        "Reconocimiento"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "ADR Molina de Aragón Alto Tajo",
+                    "resumen": "A veces se habla mucho de la España vacía, como si en nuestros pueblos solo quedara el eco y el recuerdo. Pero la verdad es que hay una vida bullendo que a menudo pasa desapercibida. Por eso es una alegría cuando alguien de fuera pone el foco donde debe. El reconocido espacio gastronómico El Comidista, del diario El País, ha destacado al Restaurante Corrinche, en Alcoroches, como un ejemplo de que en el mundo rural hay talento y futuro. Esto merece que nos paremos un momento. No es solo un buen reportaje, es el reconocimiento a un proyecto valiente que apuesta por el producto local y la cercanía. Lo que esto significa en la práctica es que iniciativas así generan empleo, atraen visitantes y mantienen viva la comarca de Molina de Aragón y el Alto Tajo. Es la demostración de que emprender aquí no solo es posible, sino que puede ser un éxito. Historias que demuestran que el talento no entiende de códigos postales.",
+                    "titulo": "🍽️ El reconocido espacio gastronómico El Comidista de El País destaca al Restaurante Corrinche, en Alcoroches, como uno...",
+                    "sitio": "ADR Molina de Aragón Alto Tajo",
+                    "fecha": "2026-04-17",
+                    "id": "7551353ccee49b4768e7e2500c028529",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Restaurante Corrinche",
+                        "Gastronomía Rural",
+                        "Alcoroches",
+                        "Molina de Aragón",
+                        "El Comidista"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": false,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                }
+            ]
+        },
+        {
+            "tema": "clave:conviene prestar",
+            "descripcion_tema": "conviene prestar",
+            "transicion_elegante": "En torno a «conviene prestar», varias noticias coinciden",
+            "noticias": [
+                {
+                    "fuente": "La Manchuela",
+                    "resumen": "Hay fines de semana que tienen un sabor especial, de los que se quedan en el recuerdo. Y en la comarca de La Manchuela parece que han preparado uno de esos. Lo cuentan desde la agenda cultural de CEDER La Manchuela. Vayamos por partes. En Madrigueras, la cita es con la gastronomía más nuestra: los gazpachos manchegos. Conviene prestar atención, que no hablamos de sopa fría, sino de ese guiso contundente que levanta el ánimo a cualquiera. Es una de esas tradiciones que nos unen a la tierra. Y para completar el plan, en Villamalea, la música la pondrá Sylvia Pantoja con un concierto que promete emoción. Así que tenemos cultura, gastronomía y reencuentros. Pensemos por un momento en la importancia de estos eventos, que mantienen vivos nuestros pueblos y nos dan una excusa perfecta para juntarnos. El plan, desde luego, suena bien.",
+                    "titulo": "📣 AGENDA CULTURAL · LA MANCHUELA Este fin de semana la comarca vuelve a latir con fuerza ❤️ 🥘 Madrigueras nos reúne al...",
+                    "sitio": "La Manchuela",
+                    "fecha": "2026-04-17",
+                    "id": "53e5ea616bcdba7715791043994e622e",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "La Manchuela",
+                        "Madrigueras",
+                        "Villamalea",
+                        "Gazpachos Manchegos",
+                        "Sylvia Pantoja"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "Próximo fin de semana",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Fadeta Grupo de Desarrollo Rural",
+                    "resumen": "Conviene prestar atención a lo que ocurrirá en Bruselas el próximo 20 de abril. Desde la federación FADETA, que trabaja por el desarrollo de la Sierra y la Mancha Conquense, su presidente, Jesús Ortega, y la gerente, Ana Terol, viajan para defender algo que nos toca muy de cerca: el presupuesto del programa LEADER. Para que nos entendamos, estos fondos europeos son el motor de muchos proyectos en el medio rural. Hablamos del dinero que permite a un emprendedor abrir una casa rural o a una cooperativa modernizar sus instalaciones. Lo que esto significa en la práctica es creación de empleo y, sobre todo, una razón más para que la gente no tenga que marcharse. Según informa la propia FADETA, se reunirán con eurodiputados para explicarles por qué este modelo es vital para el futuro de nuestras comarcas. Es una de esas batallas que se libran en despachos lejanos pero cuyo resultado lo vemos en el día a día de nuestros pueblos.",
+                    "titulo": "🗣️FADETA pedirá este lunes, 20 de abril, en Bruselas que Europa mantenga el presupuesto de LEADER para garantizar el fu...",
+                    "sitio": "Fadeta Grupo de Desarrollo Rural",
+                    "fecha": "2026-04-17",
+                    "id": "e07fc97dc8057e8a113ebc4f814c8794",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "FADETA",
+                        "Desarrollo Rural",
+                        "Fondos LEADER",
+                        "Bruselas"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "20 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación de Turismo Rural de la Manchuela",
+                    "resumen": "Conviene prestar atención a las citas que nos recuerdan de dónde venimos, y la que proponen en Abengibre es una de ellas. Coincidiendo con el Día del Libro, el 23 de abril, la Biblioteca Municipal acoge la presentación de una obra que suena a homenaje. Se llama 'Protabgonistas' y, según nos informan desde el consistorio, reúne historias y perfiles de gente imprescindible de la provincia de Albacete. A ver, seamos claros, esto es más que presentar un libro. Es un acto de memoria colectiva, de poner en valor a quienes construyen el día a día. La cita es a las siete de la tarde y prometen que no será un evento cualquiera: habrá literatura, por supuesto, pero también conversación y música. Es la demostración de que nuestras bibliotecas son espacios vivos, puntos de encuentro donde la cultura se siente y se comparte. Una excusa perfecta para acercarse a La Manchuela y celebrar como se merece.",
+                    "titulo": "📚 Día del Libro en Abengibre Una cita con la cultura y el talento local 👇 📍 Biblioteca Municipal de Abengibre 🗓️ Jue...",
+                    "sitio": "Asociación de Turismo Rural de la Manchuela",
+                    "fecha": "2026-04-17",
+                    "id": "bf8ee9bbef1ed52224bd123dd94eae58",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Día del Libro",
+                        "Abengibre",
+                        "Cultura local",
+                        "Literatura",
+                        "Albacete"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "23 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "MonteSur Grupo de Desarrollo Rural",
+                    "resumen": "A veces, para defender lo de casa, hay que hacer las maletas e irse lejos, hasta el corazón mismo de Europa. Y eso es lo que van a hacer el 20 de abril los representantes de los Grupos de Desarrollo Rural de la región, organizados por RECAMDER. Se plantan en Bruselas. Conviene prestar atención a esto, porque van a defender la continuidad de los fondos LEADER. Para que nos entendamos, es ese dinero que permite que nazcan pequeños negocios o que se mejoren servicios en nuestros pueblos. El problema es que en el borrador de la nueva Política Agrícola Común, el presupuesto específico para LEADER parece haberse esfumado, generando una incertidumbre tremenda. Llevan bajo el brazo un manifiesto con más de 3.000 firmas para que en el Parlamento Europeo se escuche la voz de la gente. Porque defender estos fondos no es una cuestión de papeleo, es defender las oportunidades y la vida en el medio rural. Habrá que estar atentos.",
+                    "titulo": "✅  El próximo lunes, 20 de abril, MonteSur y  los Grupos de Desarrollo Rural defenderemos en Bruselas la importancia de...",
+                    "sitio": "MonteSur Grupo de Desarrollo Rural",
+                    "fecha": "2026-04-17",
+                    "id": "6fe7561a5626224f748db7a8bc2aacbf",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Fondos LEADER",
+                        "Desarrollo Rural",
+                        "RECAMDER",
+                        "Bruselas",
+                        "PAC"
+                    ],
+                    "sentimiento": "neutro",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "20 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Adecor Grupo de Desarrollo Rural Campana de Oropesa",
+                    "resumen": "Conviene prestar atención a esto, sobre todo si eres autónomo o autónoma. La verdad es que cuando lo piensas, lidiar con el papeleo fiscal es una de esas carreras de obstáculos que aparecen cada año y que quitan el sueño a más de uno. Para que nos entendamos, es un mundo con sus propias reglas, y un error pequeño puede acabar costando caro. Por eso, desde la asociación ADECOR en la comarca de la Campana de Oropesa han organizado una jornada online, completamente gratuita, para aclarar dudas sobre el IRPF y la Declaración de la Renta de 2025. Será el 28 de abril, por la mañana, de nueve y media a once. Lo que esto significa en la práctica es que tendrás un espacio para preguntar y evitar los errores más comunes. La inscripción hay que solicitarla antes del 24 de abril enviando un correo a la dirección que facilita la Junta de Comunidades. Una buena oportunidad para que los números, al menos por una vez, estén de nuestra parte.",
+                    "titulo": "🔎¿Eres autónomo/a y quieres preparar correctamente tu Declaración de la Renta 2025?  ▶️Jornada online para autónomos: I...",
+                    "sitio": "Adecor Grupo de Desarrollo Rural Campana de Oropesa",
+                    "fecha": "2026-04-17",
+                    "id": "9585adbb3ed7e955b9ff65aa35269602",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Autónomos",
+                        "Declaración de la Renta",
+                        "Formación online",
+                        "ADECOR"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "28 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Tierras de Talavera",
+                    "resumen": "Hay palabras que suenan a tierra y a tiempo, y 'trashumancia' es una de ellas. Nos habla de caminos antiguos, de un ritmo de vida marcado por las estaciones y no por el reloj. Pues bien, conviene prestar atención porque esta tradición vuelve a cobrar vida el 25 de abril de 2026. Según nos cuentan desde el Ayuntamiento de Almendral de la Cañada, este municipio y el de Navamorcuende se unen para celebrar su Feria de la Trashumancia y Oficios Tradicionales. La idea es sencilla y profunda: un homenaje a los pastores y a nuestra herencia rural, reviviendo la ruta por la Cañada Real. Para que nos entendamos, no es solo una fiesta, sino una forma de recordar que nuestras raíces están ahí, firmes. Una cita importante en las Tierras de Talavera para conectar con la historia y, por qué no, con nosotros mismos.",
+                    "titulo": "Nuestras tradiciones vuelven a cobrar vida El sábado 25 de abril de 2026, los municipios de Navamorcuende y Almendral de...",
+                    "sitio": "Tierras de Talavera",
+                    "fecha": "2026-04-17",
+                    "id": "567f6dd5ff6673d78b435b68dd6f0aa6",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Trashumancia",
+                        "Oficios Tradicionales",
+                        "Navamorcuende",
+                        "Almendral de la Cañada"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "25 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Adasur",
+                    "resumen": "Conviene prestar atención a esas noticias que, sin hacer mucho ruido, nos mejoran el día a día. A partir del mes de mayo, los vecinos de Pioz y Pozo de Guadalajara van a tener más fácil moverse entre los dos municipios. El servicio de autobuses lanzadera Astra se amplía con 22 nuevas expediciones diarias: once de ida y once de vuelta. Para que nos entendamos, esto significa más horarios, más flexibilidad y menos dependencia del coche para trabajar, estudiar o hacer un recado. No es un dato menor la inversión, de casi 430.000 euros, financiada en su mayor parte por el Ayuntamiento de Pioz. Esto nos afecta porque, cuando se invierte en transporte público en nuestras comarcas, se está invirtiendo directamente en la calidad de vida de la gente. Son esas pequeñas conexiones las que, al final, tejen la red que nos mantiene unidos. Habrá que estar atentos a cómo funciona.",
+                    "titulo": "🚌 Nuevas lanzaderas Astra entre Pioz y Pozo de Guadalajara a partir de mayo El servicio de lanzadera Astra ampliará su...",
+                    "sitio": "Adasur",
+                    "fecha": "2026-04-17",
+                    "id": "44bd494ebced507e1526453cb0f366de",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Transporte público",
+                        "Pioz",
+                        "Pozo de Guadalajara",
+                        "Movilidad rural",
+                        "Servicio Astra"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "A partir de mayo",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "La Manchuela",
+                    "resumen": "Conviene prestar atención a esto, sobre todo si formáis parte del tejido que mantiene vivos nuestros pueblos. El Grupo de Desarrollo Rural de La Manchuela, el CEDER, ha abierto una convocatoria de ayudas para entidades locales y sociales. Para que nos entendamos: ayuntamientos, pero también asociaciones de vecinos, clubs deportivos, colectivos culturales... toda esa gente que se mueve para que haya vida más allá del trabajo y la casa. Lo que esto significa en la práctica es que si tenéis un proyecto en la cabeza, una idea para mejorar la vida en vuestro entorno dentro de la comarca, ahora puede ser el momento de buscar ese empujón económico que a veces falta. Son estas pequeñas iniciativas las que, sumadas, marcan una diferencia real en el día a día. Habrá que estar atentos a las buenas ideas que florecen gracias a este apoyo, porque a menudo de aquí salen los proyectos que de verdad importan.",
+                    "titulo": "Convocatoria de ayudas a Entidades Locales y a Entidades Sociales. Para más información llame al teléfono 967472500 o en...",
+                    "sitio": "La Manchuela",
+                    "fecha": "2026-04-17",
+                    "id": "d77d3e9611597c50be7166091e914cd0",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "CEDER La Manchuela",
+                        "Ayudas rurales",
+                        "Asociaciones locales",
+                        "Desarrollo Rural"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación Comarcal Don Quijote de la Mancha",
+                    "resumen": "Vamos con una de esas noticias que son un servicio público en toda regla y que, ojalá, le sirvan a alguien. Nos avisan desde el Ayuntamiento de Santa Cruz de la Zarza que una empresa privada busca contratar un Auxiliar de Ayuda a Domicilio en la localidad. Conviene prestar atención a cómo funciona esto: tanto el consistorio como el Centro de Desarrollo Juvenil están echando una mano para difundir la oferta, pero ellos no se encargan de la selección. Dicho de otro modo, son el altavoz, pero las preguntas y las solicitudes van directamente a la empresa. Si te interesa, puedes encontrar toda la información sobre requisitos y condiciones en la publicación oficial que ha compartido el ayuntamiento en sus canales. Es una oportunidad para trabajar en un sector tan necesario como el de los cuidados. Mucha suerte a todas las personas que se presenten.",
+                    "titulo": "📢 Oferta de empleo en Santa Cruz de la Zarza Una empresa privada ha publicado una oferta para la contratación de Auxili...",
+                    "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+                    "fecha": "2026-04-17",
+                    "id": "bf2338c0ef59205474db6968e44f72bb",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Santa Cruz de la Zarza",
+                        "Oferta de empleo",
+                        "Ayuda a Domicilio",
+                        "Servicio público"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación Comarcal Don Quijote de la Mancha",
+                    "resumen": "Conviene prestar atención a esto si tienes una empresa en la región o estás pensando en poner una en marcha. La Junta de Comunidades ha puesto sobre la mesa 40 millones de euros con su programa Adelante Inversión, una línea de ayudas que busca dar un empujón a los proyectos que generan riqueza en nuestra tierra. No es un dato menor el cambio que han introducido: se eleva el límite de la inversión que apoyan, pasando de 900.000 euros a 1,2 millones. Dicho de otro modo: ahora se da cabida a proyectos más ambiciosos, de mayor envergadura. El plazo para presentar las solicitudes está abierto hasta el 15 de marzo de 2027 y toda la tramitación se realiza a través de la sede electrónica de la Junta. Es un respaldo importante para quienes apuestan por quedarse y crecer aquí. Ya tendremos ocasión de ver qué iniciativas interesantes surgen de este apoyo.",
+                    "titulo": "[#EMPRESAS] 🔺Ayudas de Junta de Comunidades de Castilla-La Mancha del programa Adelante Inversión 🔶 Dotación: 40 M€ 📅...",
+                    "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+                    "fecha": "2026-04-17",
+                    "id": "0c5bdf19fe154938ed454dd03588fd92",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Junta de Comunidades de Castilla-La Mancha",
+                        "Adelante Inversión",
+                        "Ayudas a empresas",
+                        "Inversión empresarial"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "Hasta el 15 de marzo de 2027",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación Comarcal Don Quijote de la Mancha",
+                    "resumen": "A veces, las noticias no son sobre algo que ha pasado, sino sobre algo que no queremos que deje de pasar, como la vida en nuestros pueblos. Conviene prestar atención a una llamada que nos hace la Asociación Comarcal Don Quijote, en sintonía con Recamder. Están defendiendo el enfoque 'Leader'. Para que nos entendamos, esta es una iniciativa europea que en la práctica significa que los proyectos para mejorar una comarca se deciden sobre el terreno, por la propia gente. Han lanzado un manifiesto para que esta forma de trabajar no se pierda y la voz del mundo rural se escuche fuerte y claro. Lo que esto significa es defender nuestras raíces y el derecho a tener un futuro aquí, en igualdad de condiciones. Piden el apoyo de todos a través de una firma por internet. Es una forma de decir que el futuro no se decide en un despacho lejano, sino en cada pueblo.",
+                    "titulo": "👉Desde la Asociación Comarcal Don Quijote queremos dar visibilidad y difundir en nuestra comarca la defensa que se está...",
+                    "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+                    "fecha": "2026-04-17",
+                    "id": "6f0861f8b3b53cccceff1957819698e3",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Desarrollo Rural",
+                        "Enfoque Leader",
+                        "Recamder",
+                        "Asociación Don Quijote"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                }
+            ]
+        },
+        {
+            "tema": "clave:dia dia",
+            "descripcion_tema": "dia dia",
+            "transicion_elegante": "En torno a «dia dia», varias noticias coinciden",
+            "noticias": [
+                {
+                    "fuente": "Adasur",
+                    "resumen": "A veces, las noticias que de verdad importan no son las que hacen más ruido, sino las que cambian el día a día de la gente. Pensemos por un momento en la Residencia Alcarria de Fuentelencina. Según informa el grupo de desarrollo rural ADASUR, han modernizado su mobiliario. Para que nos entendamos: esto no es solo cambiar unas sillas, es mejorar la seguridad y el bienestar de nuestros mayores. No es un dato menor. Esta mejora es un ejemplo práctico de cómo los fondos europeos del programa LEADER, cuando se gestionan bien sobre el terreno, se convierten en algo tangible. Por eso, el próximo 20 de abril, el equipo de ADASUR viajará a Bruselas. Van a pedir una financiación específica para seguir impulsando estas iniciativas y entregarán las firmas del manifiesto en defensa del medio rural que promueve RECAMDER. Es la demostración de que desde lo pequeño, desde nuestros pueblos, se puede construir algo grande.",
+                    "titulo": "Gracias al impulso del programa #LEADER🌿🇪🇺 y al compromiso con el desarrollo rural, desde #ADASUR seguimos apoyando p...",
+                    "sitio": "Adasur",
+                    "fecha": "2026-04-17",
+                    "id": "389009753a950b6eca485296f01013fa",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "ADASUR",
+                        "Desarrollo Rural",
+                        "Fondos Europeos LEADER",
+                        "Fuentelencina"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "20 de abril",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "La Manchuela",
+                    "resumen": "Vamos con una de esas noticias que, aunque no abren los grandes informativos, son las que de verdad mueven el día a día de nuestros pueblos. El Ayuntamiento de Fuentealbilla ha anunciado una oferta de empleo para personal de limpieza. A ver, seamos claros, no es un puesto de alta dirección, pero un trabajo en un pueblo es vida. Es una familia que se puede quedar, es un servicio que se mantiene, es la rueda que sigue girando. Pensemos por un momento en esas labores que solo se notan cuando faltan, como mantener limpios los espacios que todos usamos. Eso también es construir comunidad. Lo que esto significa en la práctica es una oportunidad laboral concreta en La Manchuela. Así que, para quien esté buscando, que sepa que la información detallada sobre los requisitos y el plazo de solicitud está disponible en las oficinas municipales. A veces, las noticias que importan no llevan fuegos artificiales, pero encienden una luz en una casa.",
+                    "titulo": "Oferta de empleo como personal de limpieza en Fuentealbilla",
+                    "sitio": "La Manchuela",
+                    "fecha": "2026-04-17",
+                    "id": "5d499ef20b7ef18afc22f5750c210dc8",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Empleo",
+                        "Fuentealbilla",
+                        "Servicios públicos",
+                        "Mundo rural"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "Plazo abierto",
+                    "fuentes_adicionales": []
+                }
+            ]
+        },
+        {
+            "tema": "clave:seamos claros",
+            "descripcion_tema": "seamos claros",
+            "transicion_elegante": "En torno a «seamos claros», varias noticias coinciden",
+            "noticias": [
+                {
+                    "fuente": "Grupo de Acción Local Sierra del Segura",
+                    "resumen": "Hay viajes que no son de placer, sino de necesidad. Y a uno de esos se van desde el Grupo de Acción Local Sierra del Segura. Destino: Bruselas. Según informa la propia entidad, su presidente, Federico Moreno, participará en varias reuniones para defender la importancia de los fondos LEADER. Para que nos entendamos, es ese dinero que viene de Europa y que ayuda a que en los pueblos se pongan en marcha pequeños negocios o se mejore la calidad de vida. La petición es clara: que se mantenga esta financiación para el periodo 2028-2034. A ver, seamos claros, a veces parece que Bruselas está en otro planeta, pero el futuro de nuestros pueblos se juega, en parte, en esos despachos. Esto merece que nos paremos un momento a pensar en la importancia de tener una voz allí donde se toman las grandes decisiones. Habrá que estar atentos a cómo evoluciona.",
+                    "titulo": "👉El Grupo de Acción Local Sierra del Segura defenderá en Bruselas la importancia estratégica de los fondos LEADER para...",
+                    "sitio": "Grupo de Acción Local Sierra del Segura",
+                    "fecha": "2026-04-17",
+                    "id": "78bf799ac243385db1162b8f6016b3b8",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Sierra del Segura",
+                        "Fondos LEADER",
+                        "Desarrollo Rural",
+                        "Bruselas"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Turismo Castilla La Mancha",
+                    "resumen": "A ver, seamos claros, vivimos con una prisa que no es normal. Siempre corriendo a todas partes. Por eso, cuando surge una propuesta para bajar el ritmo, conviene prestarle atención. Durante todo el mes de mayo, se pone en marcha una iniciativa para recorrer Castilla-La Mancha en tren. No hablo del tren que coges para llegar a una reunión, sino de esos trenes turísticos pensados para disfrutar del viaje. Para que nos entendamos, son rutas que enlazan el patrimonio, la cultura y nuestros paisajes, permitiéndote redescubrir la tierra desde la ventanilla, sin el agobio del volante. Es una invitación a viajar de otra manera, más reposada, viendo cómo cambia el campo de un pueblo a otro. La verdad es que, cuando lo piensas, tiene su encanto eso de dejar que te lleven. Toda la información sobre estas rutas se puede consultar en los canales de Renfe, que es quien organiza esta escapada sobre raíles.",
+                    "titulo": "- AGENDA DE MAYO - Castilla-La Mancha se recorre en tren. Rutas que conectan patrimonio, cultura y territorio a través d...",
+                    "sitio": "Turismo Castilla La Mancha",
+                    "fecha": "2026-04-17",
+                    "id": "46b0afbd861b6068726a58efc5c353e4",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Trenes turísticos",
+                        "Renfe",
+                        "Turismo",
+                        "Castilla-La Mancha",
+                        "Patrimonio"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "Durante el mes de mayo",
+                    "fuentes_adicionales": []
+                },
+                {
+                    "fuente": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+                    "resumen": "A ver, seamos claros, ¿alguna vez has mirado la portada de un libro y has pensado 'ese podría ser yo'? Pues en Pozuelo de Calatrava te lo han puesto fácil. La Biblioteca Pública Municipal ha convocado el primer concurso 'Bookface' para celebrar el Día del Libro. Para que nos entendamos, se trata de hacer una fotografía donde la portada de un libro se funda con la realidad, contigo, con el paisaje... una de esas cosas ingeniosas que te sacan una sonrisa. Pueden participar todos los que tengan carné de lector de cualquier biblioteca de la provincia de Ciudad Real. Hay categoría juvenil y de adultos, y el plazo para enviar las propuestas está abierto hasta el 21 de abril de 2026. La verdad es que es una de esas ideas sencillas y brillantes que nos recuerdan que los libros no son solo para leerlos, sino también para jugar con ellos. Una gran ocasión para unir lectura y creatividad en el Campo de Calatrava.",
+                    "titulo": "📚✨ Pozuelo de Calatrava celebra el Día del Libro con creatividad e imaginación La Biblioteca Pública Municipal “José Ma...",
+                    "sitio": "Asociación Campo de Calatrava Grupo Desarrollo Rural",
+                    "fecha": "2026-04-17",
+                    "id": "2570ac52517901d931ca255233a4ce03",
+                    "es_breve": false,
+                    "entidades_clave": [
+                        "Pozuelo de Calatrava",
+                        "Día del Libro",
+                        "Concurso Bookface",
+                        "Fotografía",
+                        "Bibliotecas"
+                    ],
+                    "sentimiento": "positivo",
+                    "localidad": "Desconocida",
+                    "es_agenda": true,
+                    "fecha_evento": "Hasta el 21 de abril",
+                    "fuentes_adicionales": []
+                }
+            ]
+        }
+    ],
+    "noticias_individuales": [
+        {
+            "fuente": "Entreparques Desarrollo Montes Norte Cabañeros",
+            "resumen": "A ver, seamos claros, esto de la inteligencia artificial sonaba a cosa de otro planeta hasta hace nada. Algo para grandes empresas en ciudades con rascacielos. Pues parece que la cosa está cambiando. La asociación Entreparques acaba de lanzar una plataforma para acercar estas herramientas a nuestros pueblos. Para que nos entendamos: es una iniciativa para que cualquiera, desde un agricultor a la dueña de una casa rural, pueda usar la tecnología para ahorrar tiempo y hacer crecer su proyecto, sin necesidad de ser un experto en informática. Lo que esto significa en la práctica es un intento de que la innovación no se quede solo en las capitales. Porque el futuro, al final, no es un sitio al que se va, sino algo que se construye. Y se está construyendo, también, desde aquí. Veremos qué pasa con esto, pero la idea es, cuanto menos, interesante.",
+            "titulo": "ESTO VA A CAMBIAR EL MUNDO RURAL Sí, hablamos de inteligencia artificial. Entreparques acaba de lanzar una plataforma pa...",
+            "sitio": "Entreparques Desarrollo Montes Norte Cabañeros",
+            "fecha": "2026-04-17",
+            "id": "29afa9d7bf970f0f10a4a963f36eedff",
+            "es_breve": false,
+            "entidades_clave": [
+                "Entreparques",
+                "Inteligencia Artificial",
+                "Desarrollo Rural",
+                "Innovación"
+            ],
+            "sentimiento": "positivo",
+            "localidad": "Desconocida",
+            "es_agenda": false,
+            "fecha_evento": "",
+            "fuentes_adicionales": []
+        },
+        {
+            "fuente": "Adasur",
+            "resumen": "A veces pensamos en el campo como algo anclado en el pasado, pero la realidad es mucho más interesante. En Loranca de Tajuña, por ejemplo, la empresa Fidelco está combinando lo mejor de la tradición aceitera con tecnología punta. Según informan desde ADASUR, y recoge también el periódico Nueva Alcarria, han incorporado un equipo de espectroscopía de infrarrojo cercano. Dicho de otro modo: una máquina que analiza la pasta de la aceituna al momento para sacar un aceite de oliva virgen extra de la máxima calidad. Esta inversión ha sido posible gracias al programa europeo LEADER, que busca precisamente eso: dar herramientas a nuestros pueblos para que generen riqueza y futuro. No es un dato menor, porque el 20 de abril, la propia gente de ADASUR estará en Bruselas defendiendo que se destinen más fondos a estas iniciativas que, en la práctica, son las que mantienen vivos nuestros territorios. Veremos qué pasa con esto.",
+            "titulo": "🌿 🇪🇺Gracias al programa #LEADER, desde #ADASUR seguimos impulsando proyectos que generan oportunidades reales en nues...",
+            "sitio": "Adasur",
+            "fecha": "2026-04-17",
+            "id": "ff2b94f8adcd7872349ff6d200994a81",
+            "es_breve": false,
+            "entidades_clave": [
+                "ADASUR",
+                "Programa LEADER",
+                "Innovación Rural",
+                "Fidelco",
+                "Aceite de Oliva"
+            ],
+            "sentimiento": "positivo",
+            "localidad": "Desconocida",
+            "es_agenda": true,
+            "fecha_evento": "20 de abril",
+            "fuentes_adicionales": []
+        },
+        {
+            "fuente": "CEDER Alcarria Conquense",
+            "resumen": "A veces el cuerpo te pide caminar sin rumbo, ¿verdad? Solo por el placer de poner un pie delante del otro y dejar que la cabeza se ventile. Pues para esos momentos, llega una propuesta que suena de maravilla desde la Alcarria Conquense. Han creado una ruta audioguiada en Moncalvillo de Huete para descubrir las Estepas Yesosas. Para que nos entendamos, es como ir de paseo con un experto que te va susurrando al oído los secretos del paisaje. Este rincón forma parte de la Red Natura 2000, lo que significa que es un tesoro que debemos cuidar. Allí puedes caminar a tu ritmo entre formaciones geológicas singulares, observar aves y, sobre todo, disfrutar de un silencio que ya casi no se encuentra. Es una oportunidad para desconectar de verdad y recordar cómo la naturaleza y la historia han tejido juntas un paisaje único. Una idea estupenda para quien busque un plan diferente el fin de semana.",
+            "titulo": "🌿✨ Naturaleza en estado puro en plena Alcarria Conquense ¿Sin planes para este fin de semana? Te proponemos descubrir a...",
+            "sitio": "CEDER Alcarria Conquense",
+            "fecha": "2026-04-17",
+            "id": "394053699594e7464d2a30726358b338",
+            "es_breve": false,
+            "entidades_clave": [
+                "Alcarria Conquense",
+                "Rutas Natura",
+                "Moncalvillo de Huete",
+                "Turismo rural",
+                "Red Natura 2000"
+            ],
+            "sentimiento": "positivo",
+            "localidad": "Desconocida",
+            "es_agenda": true,
+            "fecha_evento": "Fin de semana",
+            "fuentes_adicionales": []
+        },
+        {
+            "fuente": "Tierras de Talavera",
+            "resumen": "Pensemos por un momento en lo que es una romería de verdad. No es solo una fiesta en el calendario, es otra cosa. Es el olor a campo, es reencontrarse con gente que hace tiempo que no ves, es una de esas cosas que nos anclan a la tierra. Pues bien, desde la mancomunidad Tierras de Talavera nos llega una invitación para una de las buenas: la romería de la Virgen de Valdelenguas, en Pepino. Lo que proponen es precisamente eso: un día para compartir, para sentir el orgullo por lo nuestro, por ese entorno rural que a veces damos por sentado pero que es la base de todo. Es una llamada abierta a vecinos y a cualquiera que quiera acercarse a vivir una jornada que es, más que una celebración, una de nuestras señas de identidad. Para que nos entendamos, es una oportunidad de conectar con nuestras raíces. La cita ya está en el horizonte.",
+            "titulo": "🌿 ROMERÍA VIRGEN DE VALDELENGUAS – PEPINO 2026 🌿 En Tierras de Talavera seguimos celebrando lo que nos une: nuestras r...",
+            "sitio": "Tierras de Talavera",
+            "fecha": "2026-04-17",
+            "id": "9d03f50f411f0ad1777aa7318be8bb44",
+            "es_breve": false,
+            "entidades_clave": [
+                "Romería Virgen de Valdelenguas",
+                "Pepino",
+                "Tierras de Talavera",
+                "Tradiciones rurales"
+            ],
+            "sentimiento": "positivo",
+            "localidad": "Desconocida",
+            "es_agenda": true,
+            "fecha_evento": "Sin fecha confirmada",
+            "fuentes_adicionales": []
+        },
+        {
+            "fuente": "Asociación Comarcal Don Quijote de la Mancha",
+            "resumen": "Hay una edad en la que uno se siente como en medio del campo una noche sin luna. Tienes que ir a algún sitio, pero no sabes muy bien ni dónde estás. Y en esos momentos, tener una brújula o a alguien que te alumbre el camino es fundamental. De eso va, en el fondo, el Día Europeo de la Información Juvenil, que se celebra el 17 de abril. Esto merece que nos paremos un momento, porque no hablamos solo de informar sobre becas o cursos, que también. Hablamos de algo más profundo: de dar herramientas a nuestros jóvenes para que tomen sus propias decisiones en un mundo lleno de ruido. Para que nos entendamos, es el trabajo que se hace en las oficinas de juventud de nuestros pueblos, a menudo con más voluntad que medios, para orientar y escuchar. Es un servicio público de primera necesidad, porque ayudar a un joven a encontrar su norte es, sencillamente, construir futuro.",
+            "titulo": "17 de abril, Día Europeo de la Información Juvenil",
+            "sitio": "Asociación Comarcal Don Quijote de la Mancha",
+            "fecha": "2026-04-17",
+            "id": "8e3f4cd0141311bbf58704464a8c5dae",
+            "es_breve": false,
+            "entidades_clave": [
+                "Día Europeo de la Información Juvenil",
+                "Juventud",
+                "Orientación",
+                "Servicios Públicos"
+            ],
+            "sentimiento": "positivo",
+            "localidad": "Desconocida",
+            "es_agenda": true,
+            "fecha_evento": "17 de abril",
+            "fuentes_adicionales": []
+        }
+    ]
+}

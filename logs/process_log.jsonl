@@ -74,3 +74,5 @@
 {"timestamp": "2026-04-18T00:55:18.387136", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/isQf3IY7IdDqJgEM.xml", "details": {}}
 {"timestamp": "2026-04-18T00:55:18.851297", "level": "INFO", "message": "Noticia encontrada: 👉El Grupo de Acción Local Sier...", "details": {"details": {"source": "Grupo de Acción Local Sierra del Segura"}}}
 {"timestamp": "2026-04-18T00:55:18.851765", "level": "INFO", "message": "Leyendo feed: https://rss.app/feeds/xvAcfCd2bWw8kPi8.xml", "details": {}}
+{"timestamp": "2026-04-18T01:59:21.039663", "level": "STEP", "message": "Etapa: Generación de Guion y Audios", "details": {"status": "RUNNING"}}
+{"timestamp": "2026-04-18T02:02:35.555796", "level": "STEP", "message": "Etapa: Generación de Guion y Audios", "details": {"status": "RUNNING"}}
