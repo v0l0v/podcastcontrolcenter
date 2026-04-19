@@ -126,7 +126,7 @@ def resumir_noticia_con_google(texto: str, idioma_destino: str, fuente_original:
         fuente_original=fuente_original,
         contexto_calendario=obtener_festividades_contexto()
     )
-    return generar_texto_con_gemini(prompt, model_type="pro")
+    return generar_texto_con_gemini(prompt, model_type="flash")
 
 def leer_pregunta_del_dia() -> List[Dict[str, str]]:
     """
@@ -500,7 +500,7 @@ def agrupar_noticias_por_temas_mejorado(resumenes: list, es_agenda: bool = False
             resumenes_json = json.dumps(lista_resumenes, indent=2, ensure_ascii=False)
 
             prompt_enriquecimiento = mcmcn_prompts.PromptsCreativos.enriquecimiento_creativo_tema(tema, resumenes_json)
-            respuesta_creativa = generar_texto_con_gemini(prompt_enriquecimiento, model_type="pro")
+            respuesta_creativa = generar_texto_con_gemini(prompt_enriquecimiento, model_type="flash")
             # --- NUEVA LÓGICA DE LIMPIEZA ---
             # Elimina el bloque de código Markdown si la IA lo añade
             json_limpio = respuesta_creativa
@@ -714,7 +714,7 @@ def generar_narracion_fluida_bloque(bloque_tematico: dict, fecha_actual_str: str
 """
 
     # 4. Generar el texto con Gemini
-    cronica_generada = generar_texto_con_gemini(prompt, model_type="pro")
+    cronica_generada = generar_texto_con_gemini(prompt, model_type="flash")
 
     # 5. Fallback por si la IA falla
     if not cronica_generada:
@@ -778,7 +778,7 @@ def _generar_audio_noticia(datos: dict, fecha_actual_str: str) -> tuple[AudioSeg
                 fecha_actual_str=fecha_actual_str,
                 contexto_tematico=None
             ),
-            model_type="pro"
+            model_type="flash"
         )
         if not texto_narracion_generado:
             print("      ⚠️ Error generando narración individual. Usando formato simple.")

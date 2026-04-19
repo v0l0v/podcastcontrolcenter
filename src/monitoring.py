@@ -49,14 +49,74 @@ class UsageTracker:
                 pass
 
     def save_stats(self):
+        self.calculate_cost()
         with open(USAGE_LOG_FILE, 'w') as f:
             json.dump(self.stats, f, indent=4)
+
+    def calculate_cost(self):
+        """
+        Calcula el coste estimado basado en los precios actuales (Pay-as-you-go).
+        Precios aproximados en USD.
+        """
+        # --- GEMINI (Precios por millón de tokens) ---
+        FLASH_INPUT_PRICE = 0.075 / 1_000_000
+        FLASH_OUTPUT_PRICE = 0.30 / 1_000_000
+        PRO_INPUT_PRICE = 3.50 / 1_000_000
+        PRO_OUTPUT_PRICE = 10.50 / 1_000_000
+
+        # --- TTS (Precios por millón de caracteres) ---
+        TTS_STANDARD_PRICE = 4.0 / 1_000_000
+        TTS_NEURAL_PRICE = 16.0 / 1_000_000
+        TTS_CHIRP_PRICE = 30.0 / 1_000_000  # Chirp 3 HD estimado
+
+        # Estimación simplificada: asumimos que todos los tokens flash son input/output balanceado 
+        # Pero como los guardamos por separado, podemos ser precisos si registramos qué modelo hizo qué.
+        # Por ahora, como track_gemini no separa input/output por modelo en el histórico, 
+        # usaremos una aproximación basada en el número de llamadas o guardaremos los tokens por modelo.
+        
+        # MEJORA: Para ser precisos, el tracker debería guardar tokens_flash y tokens_pro por separado.
+        # Como no quiero romper la estructura actual del JSON drásticamente, haré una estimación
+        # basada en que la mayoría de tokens ahora son Flash.
+        
+        cost = 0.0
+        
+        # Si queremos ser precisos, necesitamos cambiar cómo guardamos los tokens.
+        # Vamos a añadir campos ocultos para el cálculo si no existen.
+        ti_flash = self.stats.get("tokens_input_flash", 0)
+        to_flash = self.stats.get("tokens_output_flash", 0)
+        ti_pro = self.stats.get("tokens_input_pro", 0)
+        to_pro = self.stats.get("tokens_output_pro", 0)
+        
+        cost += (ti_flash * FLASH_INPUT_PRICE) + (to_flash * FLASH_OUTPUT_PRICE)
+        cost += (ti_pro * PRO_INPUT_PRICE) + (to_pro * PRO_OUTPUT_PRICE)
+        
+        # TTS
+        chars = self.stats.get("tts_chars", 0)
+        # Aproximación por el tipo de llamadas mayoritario
+        calls = self.stats.get("api_calls", {})
+        if calls.get("tts_chirp", 0) > 0 or calls.get("tts_journey", 0) > 0:
+            cost += chars * TTS_CHIRP_PRICE
+        elif calls.get("tts_neural2", 0) > 0:
+            cost += chars * TTS_NEURAL_PRICE
+        else:
+            cost += chars * TTS_STANDARD_PRICE
+            
+        self.stats["estimated_cost"] = round(cost, 4)
 
     def track_gemini(self, input_tokens: int, output_tokens: int, model: str = "flash"):
         self.stats["gemini_input_tokens"] += input_tokens
         self.stats["gemini_output_tokens"] += output_tokens
         
-        service = ServiceType.GEMINI_FLASH if "flash" in model.lower() else ServiceType.GEMINI_PRO
+        # Guardar tokens por modelo para cálculo exacto
+        if "flash" in model.lower():
+            service = ServiceType.GEMINI_FLASH
+            self.stats["tokens_input_flash"] = self.stats.get("tokens_input_flash", 0) + input_tokens
+            self.stats["tokens_output_flash"] = self.stats.get("tokens_output_flash", 0) + output_tokens
+        else:
+            service = ServiceType.GEMINI_PRO
+            self.stats["tokens_input_pro"] = self.stats.get("tokens_input_pro", 0) + input_tokens
+            self.stats["tokens_output_pro"] = self.stats.get("tokens_output_pro", 0) + output_tokens
+
         self.stats["api_calls"][service.value] += 1
         self.save_stats()
 

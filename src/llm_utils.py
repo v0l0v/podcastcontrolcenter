@@ -90,7 +90,7 @@ if model_flash is None or model_pro is None:
 
 # --- Wrapper unificado ---
 @retry_on_failure(retries=3, delay=5, backoff=2)
-def generar_texto_con_gemini(prompt: str, model_type: str = "pro") -> str:
+def generar_texto_con_gemini(prompt: str, model_type: str = "flash") -> str:
     """
     Genera texto usando Gemini. 
     model_type: 'pro' (mejor calidad, más lento) o 'flash' (más rápido, más barato).
