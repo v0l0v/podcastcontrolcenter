@@ -16,3 +16,4 @@ requests
 beautifulsoup4
 Pillow
 holidays
+edge-tts

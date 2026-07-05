@@ -20,6 +20,7 @@ class ServiceType(Enum):
     TTS_NEURAL2 = "tts_neural2"
     TTS_JOURNEY = "tts_journey"
     TTS_CHIRP = "tts_chirp"
+    TTS_EDGE = "tts_edge"
 
 class UsageTracker:
     _instance = None
@@ -31,8 +32,10 @@ class UsageTracker:
                 "gemini_input_tokens": 0,
                 "gemini_output_tokens": 0,
                 "tts_chars": 0,
+                "tts_edge_chars": 0,
                 "api_calls": {s.value: 0 for s in ServiceType},
-                "estimated_cost": 0.0
+                "estimated_cost": 0.0,
+                "daily_usage": {}
             }
             cls._instance.load_stats()
         return cls._instance
@@ -42,9 +45,12 @@ class UsageTracker:
             try:
                 with open(USAGE_LOG_FILE, 'r') as f:
                     data = json.load(f)
-                    # Resetear si es un nuevo mes o día (lógica simple por ahora: carga histórico)
-                    # Podríamos implementar reset diario aquí.
                     self.stats.update(data)
+                    # Asegurar que api_calls tenga todas las claves del enum ServiceType
+                    if "api_calls" in self.stats:
+                        for s in ServiceType:
+                            if s.value not in self.stats["api_calls"]:
+                                self.stats["api_calls"][s.value] = 0
             except Exception:
                 pass
 
@@ -118,23 +124,43 @@ class UsageTracker:
             self.stats["tokens_output_pro"] = self.stats.get("tokens_output_pro", 0) + output_tokens
 
         self.stats["api_calls"][service.value] += 1
+        
+        # Registrar consumo diario
+        today = datetime.now().strftime("%Y-%m-%d")
+        daily = self.stats.setdefault("daily_usage", {})
+        day_stats = daily.setdefault(today, {"tokens": 0, "google_tts_chars": 0, "edge_tts_chars": 0})
+        day_stats["tokens"] = day_stats.get("tokens", 0) + input_tokens + output_tokens
+        
         self.save_stats()
 
     def track_tts(self, chars: int, voice_name: str):
-        self.stats["tts_chars"] += chars
+        # Detectar si es una voz de Edge-TTS
+        is_edge = "edge" in voice_name.lower() or ("neural" in voice_name and "neural2" not in voice_name.lower())
         
-        if "Standard" in voice_name:
-            service = ServiceType.TTS_STANDARD
-        elif "Wavenet" in voice_name:
-            service = ServiceType.TTS_WAVENET
-        elif "Neural2" in voice_name:
-            service = ServiceType.TTS_NEURAL2
-        elif "Journey" in voice_name:
-            service = ServiceType.TTS_JOURNEY
-        elif "Chirp" in voice_name:
-            service = ServiceType.TTS_CHIRP
+        today = datetime.now().strftime("%Y-%m-%d")
+        daily = self.stats.setdefault("daily_usage", {})
+        day_stats = daily.setdefault(today, {"tokens": 0, "google_tts_chars": 0, "edge_tts_chars": 0})
+        
+        if is_edge:
+            self.stats["tts_edge_chars"] = self.stats.get("tts_edge_chars", 0) + chars
+            day_stats["edge_tts_chars"] = day_stats.get("edge_tts_chars", 0) + chars
+            service = ServiceType.TTS_EDGE
         else:
-            service = ServiceType.TTS_STANDARD
+            self.stats["tts_chars"] += chars
+            day_stats["google_tts_chars"] = day_stats.get("google_tts_chars", 0) + chars
+            
+            if "Standard" in voice_name:
+                service = ServiceType.TTS_STANDARD
+            elif "Wavenet" in voice_name:
+                service = ServiceType.TTS_WAVENET
+            elif "Neural2" in voice_name:
+                service = ServiceType.TTS_NEURAL2
+            elif "Journey" in voice_name:
+                service = ServiceType.TTS_JOURNEY
+            elif "Chirp" in voice_name:
+                service = ServiceType.TTS_CHIRP
+            else:
+                service = ServiceType.TTS_STANDARD
             
         self.stats["api_calls"][service.value] += 1
         self.save_stats()

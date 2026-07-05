@@ -1,19 +1,28 @@
 {
-    "gemini_input_tokens": 1969037,
-    "gemini_output_tokens": 121147,
-    "tts_chars": 66803,
+    "gemini_input_tokens": 2169747,
+    "gemini_output_tokens": 134022,
+    "tts_chars": 84041,
+    "tts_edge_chars": 15067,
     "api_calls": {
-        "gemini_flash": 1142,
+        "gemini_flash": 1249,
         "gemini_pro": 79,
         "tts_standard": 0,
         "tts_wavenet": 0,
         "tts_neural2": 1,
         "tts_journey": 0,
-        "tts_chirp": 73
+        "tts_chirp": 91,
+        "tts_edge": 7
     },
-    "estimated_cost": 6.6496,
-    "tokens_input_flash": 784037,
-    "tokens_output_flash": 81647,
+    "estimated_cost": 7.1857,
+    "daily_usage": {
+        "2026-07-05": {
+            "tokens": 213585,
+            "google_tts_chars": 17238,
+            "edge_tts_chars": 15067
+        }
+    },
+    "tokens_input_flash": 984747,
+    "tokens_output_flash": 94522,
     "tokens_input_pro": 1185000,
     "tokens_output_pro": 39500
 }

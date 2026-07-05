@@ -864,6 +864,28 @@ with tab_audio:
     
     with col1:
         voice_options = [
+                # --- MICROSOFT EDGE-TTS (100% GRATUITO) ---
+                "es-ES-ElviraNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-AlvaroNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-AbrilNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-ArnauNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-DarioNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-EliasNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-EstrellaNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-IreneNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-LaiaNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-LiaNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-ES-NilNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-SaulNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-TeoNeural [Edge-TTS - MALE - Gratis]",
+                "es-ES-TrianaNeural [Edge-TTS - FEMALE - Gratis]",
+                "es-MX-DaliaNeural [Edge-TTS - FEMALE (MX) - Gratis]",
+                "es-MX-JorgeNeural [Edge-TTS - MALE (MX) - Gratis]",
+
+                # --- NEURAL2 (High Quality) ---
+                "es-ES-Neural2-A [FEMALE]", "es-ES-Neural2-E [FEMALE]", "es-ES-Neural2-H [FEMALE]",
+                "es-ES-Neural2-F [MALE]", "es-ES-Neural2-G [MALE]",
+
                 # --- CHIRP 3 HD (Generative, Ultra-Realistic) ---
                 "es-ES-Chirp3-HD-Achernar [FEMALE]", "es-ES-Chirp3-HD-Aoede [FEMALE]", 
                 "es-ES-Chirp3-HD-Autonoe [FEMALE]", "es-ES-Chirp3-HD-Callirrhoe [FEMALE]", 
@@ -885,10 +907,6 @@ with tab_audio:
                 # --- CHIRP HD (Previous Gen) ---
                 "es-ES-Chirp-HD-F [FEMALE]", "es-ES-Chirp-HD-O [FEMALE]", 
                 "es-ES-Chirp-HD-D [MALE]",
-
-                # --- NEURAL2 (High Quality) ---
-                "es-ES-Neural2-A [FEMALE]", "es-ES-Neural2-E [FEMALE]", "es-ES-Neural2-H [FEMALE]",
-                "es-ES-Neural2-F [MALE]", "es-ES-Neural2-G [MALE]",
 
                 # --- STUDIO (Professional) ---
                 "es-ES-Studio-C [FEMALE]", "es-ES-Studio-F [MALE]",

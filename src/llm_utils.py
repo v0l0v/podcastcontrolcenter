@@ -46,8 +46,8 @@ import warnings
 model_flash = None
 model_pro = None
 
-MODEL_NAME_FLASH = "gemini-flash-latest"
-MODEL_NAME_PRO = "gemini-pro-latest"
+MODEL_NAME_FLASH = "gemini-2.5-flash"
+MODEL_NAME_PRO = "gemini-2.5-flash"
 
 # 1. Intentar usar Google Generative AI (AI Studio) si hay API KEY
 # ----------------------------------------------------------------
@@ -121,7 +121,7 @@ def generar_texto_con_gemini(prompt: str, model_type: str = "flash") -> str:
             except:
                 pass
         
-        tracker.track_gemini(input_tokens, output_tokens, model=f"gemini-1.5-{model_type}")
+        tracker.track_gemini(input_tokens, output_tokens, model="gemini-2.5-flash")
         return text
             
     except Exception as e:
@@ -159,7 +159,7 @@ def generar_texto_multimodal_con_gemini(prompt: str, image_bytes: bytes, mime_ty
             text = response.text.strip() if response and hasattr(response, 'text') else ""
             
             # Tracking Multimodal (Estimación básica)
-            tracker.track_gemini(len(prompt)//4 + 258, len(text)//4, model="gemini-1.5-pro") # +258 tokens por imagen aprox
+            tracker.track_gemini(len(prompt)//4 + 258, len(text)//4, model="gemini-2.5-flash") # +258 tokens por imagen aprox
             return text
 
     except Exception as e:

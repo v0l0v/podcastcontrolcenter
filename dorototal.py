@@ -1033,8 +1033,169 @@ def obtener_pueblo_aleatorio():
     return "un pueblo de nuestra tierra"
 
 # =================================================================================
-# FUNCIÓN PRINCIPAL MEJORADA
+# FUNCIÓN DE GENERACIÓN DE PORTADA CORPORATIVA PREMIUM
+# =================================================================================
+def generar_portada_podcast_pillow(output_dir: str, fecha_dt=None) -> str:
+    """
+    Genera una portada de podcast espectacular con diseño corporativo premium,
+    onda de audio abstracta en el centro y sistema de numeración CLM-YY.DDD basado en la fecha.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+    import datetime
+    import shutil
+    
+    if fecha_dt is None:
+        fecha_dt = datetime.datetime.now()
+        
+    # 1. Sistema original de numeración basado en el día del año
+    year_short = fecha_dt.strftime("%y") # Ej: "26"
+    day_of_year = fecha_dt.timetuple().tm_yday # Ej: 186
+    numero_edicion = f"CLM-{year_short}.{day_of_year:03d}"
+    volumen_str = f"VOL. {fecha_dt.year}"
+    fecha_legible = fecha_dt.strftime("%d / %m / %Y")
+    
+    # 2. Configurar lienzo (1000x1000 píxeles, estándar de podcast premium)
+    width, height = 1000, 1000
+    # Fondo Crema Premium: #F4F6F0 (RGB: 244, 246, 240)
+    bg_color = (244, 246, 240)
+    # Oro Trigo: #8E701D (RGB: 142, 112, 29)
+    gold_color = (142, 112, 29)
+    # Carbón Profundo: #121810 (RGB: 18, 24, 16)
+    charcoal_color = (18, 24, 16)
+    # Verde Bosque Suave: #52604F (RGB: 82, 96, 79)
+    forest_color = (82, 96, 79)
+    
+    image = Image.new("RGB", (width, height), bg_color)
+    draw = ImageDraw.Draw(image)
+    
+    # 3. Dibujar marcos dobles premium (estilo editorial de lujo)
+    # Marco exterior
+    draw.rectangle([40, 40, width-40, height-40], outline=gold_color, width=4)
+    # Marco interior fino
+    draw.rectangle([52, 52, width-52, height-52], outline=gold_color, width=1)
+    
+    # 4. Intentar cargar fuentes TrueType del sistema (con fallbacks robustos)
+    font_bold = None
+    font_regular = None
+    font_serif = None
+    
+    rutas_fuentes = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+        "/usr/share/fonts/X11/OTF/DejaVuSans-Bold.otf",
+    ]
+    rutas_reg = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/X11/OTF/DejaVuSans.otf",
+    ]
+    
+    for r in rutas_fuentes:
+        if os.path.exists(r):
+            try:
+                font_bold = ImageFont.truetype(r, 64)
+                font_serif = ImageFont.truetype(r.replace("Sans", "Serif"), 52) if "Sans" in r else ImageFont.truetype(r, 52)
+                break
+            except:
+                pass
+                
+    for r in rutas_reg:
+        if os.path.exists(r):
+            try:
+                font_regular = ImageFont.truetype(r, 32)
+                break
+            except:
+                pass
+                
+    # Fallbacks si no se encuentran las fuentes premium del sistema
+    if font_bold is None:
+        font_bold = ImageFont.load_default()
+    if font_regular is None:
+        font_regular = ImageFont.load_default()
+    if font_serif is None:
+        font_serif = ImageFont.load_default()
+        
+    # 5. Escribir textos en la parte superior
+    # "PODCAST CONTROL CENTER"
+    try:
+        title_font = ImageFont.truetype(rutas_fuentes[0], 56) if font_bold else ImageFont.load_default()
+        draw.text((width/2, 140), "PODCAST CONTROL CENTER", fill=charcoal_color, font=title_font, anchor="mm")
+    except:
+        draw.text((width/2, 140), "PODCAST CONTROL CENTER", fill=charcoal_color, anchor="mm")
+        
+    # Línea horizontal separadora sutil
+    draw.line([300, 200, 700, 200], fill=gold_color, width=2)
+    
+    # Subtítulo: "BOLETÍN DIARIO DE ACTUALIDAD RURAL"
+    try:
+        sub_font = ImageFont.truetype(rutas_reg[0], 24) if font_regular else ImageFont.load_default()
+        draw.text((width/2, 235), "BOLETÍN DIARIO DE ACTUALIDAD RURAL", fill=forest_color, font=sub_font, anchor="mm")
+    except:
+        draw.text((width/2, 235), "BOLETÍN DIARIO DE ACTUALIDAD RURAL", fill=forest_color, anchor="mm")
+        
+    # 6. Dibujar elemento gráfico central: ONDA DE SONIDO VECTORIAL MINIMALISTA
+    # Vamos a dibujar 21 barras verticales de grosores variables formando una onda simétrica
+    center_x, center_y = width/2, height/2
+    barras_alturas = [15, 25, 45, 80, 130, 210, 290, 230, 160, 95, 60, 110, 190, 260, 310, 220, 140, 75, 40, 20, 10]
+    num_barras = len(barras_alturas)
+    spacing = 16
+    bar_width = 8
+    start_x = center_x - ((num_barras - 1) * spacing) / 2
+    
+    for i, h_bar in enumerate(barras_alturas):
+        x = start_x + (i * spacing)
+        y0 = center_y - h_bar / 2
+        y1 = center_y + h_bar / 2
+        color = gold_color if i % 2 == 0 else forest_color
+        # Pillow rounded_rectangle requiere PIL >= 8.2.0, si falla usamos rectangle común
+        try:
+            draw.rounded_rectangle([x - bar_width/2, y0, x + bar_width/2, y1], radius=4, fill=color)
+        except:
+            draw.rectangle([x - bar_width/2, y0, x + bar_width/2, y1], fill=color)
+        
+    # 7. Escribir textos en la parte inferior
+    # Número de edición y volumen: "VOL. 2026 · EDICIÓN CLM-26.186"
+    num_edicion_full = f"{volumen_str}   ·   EDICIÓN {numero_edicion}"
+    try:
+        ed_font = ImageFont.truetype(rutas_fuentes[0], 34) if font_bold else ImageFont.load_default()
+        draw.text((width/2, 730), num_edicion_full, fill=charcoal_color, font=ed_font, anchor="mm")
+    except:
+        draw.text((width/2, 730), num_edicion_full, fill=charcoal_color, anchor="mm")
+        
+    # Fecha: "05 / 07 / 2026"
+    try:
+        date_font = ImageFont.truetype(rutas_reg[0], 28) if font_regular else ImageFont.load_default()
+        draw.text((width/2, 790), fecha_legible, fill=forest_color, font=date_font, anchor="mm")
+    except:
+        draw.text((width/2, 790), fecha_legible, fill=forest_color, anchor="mm")
+        
+    # Sello / Badge inferior: "VOZ NEURONAL • CLM"
+    try:
+        badge_font = ImageFont.truetype(rutas_reg[0], 18) if font_regular else ImageFont.load_default()
+        try:
+            draw.rounded_rectangle([center_x - 120, 845, center_x + 120, 885], radius=15, outline=gold_color, width=1)
+        except:
+            draw.rectangle([center_x - 120, 845, center_x + 120, 885], outline=gold_color, width=1)
+        draw.text((center_x, 865), "VOZ NEURONAL • CLM", fill=gold_color, font=badge_font, anchor="mm")
+    except:
+        draw.text((center_x, 865), "VOZ NEURONAL • CLM", fill=gold_color, anchor="mm")
+        
+    # Guardar carátula
+    cover_path = os.path.join(output_dir, "cover.png")
+    image.save(cover_path, "PNG")
+    print(f"      🎨 Portada corporativa autogenerada: {cover_path} ({numero_edicion})")
+    
+    # También la guardamos en la raíz si es modo preview, para que la interfaz pueda acceder fácilmente
+    try:
+        shutil.copy(cover_path, "prevision_portada.png")
+    except:
+        pass
+    
+    return cover_path
 
+# =================================================================================
+# FUNCIÓN PRINCIPAL MEJORADA
 # =================================================================================
 def procesar_feeds_google(
 nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_preview: bool = False, archivo_entrada_json: str = None, window_hours_override: int = None, max_items_override: int = None):
@@ -1058,6 +1219,13 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 sys.exit(1)
                 
         print(f"Directorio de salida creado: {output_dir}")
+        
+        # Generar portada corporativa premium
+        try:
+            generar_portada_podcast_pillow(output_dir)
+        except Exception as e_cover:
+            print(f"⚠️ No se pudo generar la portada: {e_cover}")
+            
         logger.clear_logs() # Limpiar logs anteriores al iniciar uno nuevo
         logger.step("Inicio del Proceso", "START")
         logger.info(f"Directorio de salida: {output_dir}")
@@ -1142,14 +1310,16 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
 
                         noticia_hash = stable_text_hash(contenido)
 
-                        logger.info(f"Noticia encontrada: {titulo_reparado[:30]}...", details={"source": sitio})
+                        img_url = extract_image_url(contenido)
+                        logger.info(f"Noticia encontrada: {titulo_reparado[:30]}...", details={"source": sitio, "img": img_url})
                         noticias_candidatas_totales.append({
                             'sitio': sitio, 
                             'contenido_rss': contenido, 
                             'fecha': fecha_pub, 
                             'hash': noticia_hash,
                             'titulo': titulo_reparado,
-                            'link': entry.get('link', '')
+                            'link': entry.get('link', ''),
+                            'imagen_url': img_url
                         })
                 except Exception as e:
                     print(f"Advertencia: No se pudo procesar el feed '{url}'. Error: {e}")
@@ -1169,18 +1339,58 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         # Si venimos de JSON, quizás ya estén ordenadas, pero no está de más
         noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
 
-        # --- Aplicar límite máximo (solo en modo RSS, no en JSON manual) ---
+        # --- Aplicar límite máximo balanceado por fuentes (solo en modo RSS, no en JSON manual) ---
         if not archivo_entrada_json:
             if len(noticias_candidatas_totales) > max_noticias:
-                excedentes = noticias_candidatas_totales[max_noticias:]
-                for ne in excedentes:
-                    noticias_descartadas.append({
-                        "titulo": ne.get('titulo', 'Sin título'),
-                        "sitio": ne.get('sitio', 'Desconocido'),
-                        "motivo": f"Fuera del límite máximo ({max_noticias} noticias más recientes)"
-                    })
-                noticias_candidatas_totales = noticias_candidatas_totales[:max_noticias]
-            print(f"      📋 Noticias dentro de la ventana tras filtros: {len(noticias_candidatas_totales)}")
+                print(f"      ⚖️ Aplicando selección inteligente balanceada por fuentes para limitar a {max_noticias} noticias...")
+                # 1. Agrupar noticias por fuente (sitio)
+                noticias_por_fuente = {}
+                for n in noticias_candidatas_totales:
+                    sitio = n.get('sitio', 'Desconocido')
+                    if sitio not in noticias_por_fuente:
+                        noticias_por_fuente[sitio] = []
+                    noticias_por_fuente[sitio].append(n)
+                
+                # 2. Ordenar las noticias de cada fuente por fecha (de más reciente a más antigua)
+                for sitio in noticias_por_fuente:
+                    noticias_por_fuente[sitio].sort(key=lambda x: x['fecha'], reverse=True)
+                
+                # 3. Selección round-robin por rondas
+                seleccionadas = []
+                seleccionadas_hashes = set()
+                
+                # Fuentes representadas
+                fuentes = list(noticias_por_fuente.keys())
+                
+                # Mientras no hayamos alcanzado el máximo y queden noticias disponibles
+                continua = True
+                ronda = 0
+                while len(seleccionadas) < max_noticias and continua:
+                    continua = False
+                    for f in fuentes:
+                        if ronda < len(noticias_por_fuente[f]):
+                            n = noticias_por_fuente[f][ronda]
+                            seleccionadas.append(n)
+                            seleccionadas_hashes.add(n['hash'])
+                            continua = True
+                            if len(seleccionadas) >= max_noticias:
+                                break
+                    ronda += 1
+                
+                # 4. Enviar los excedentes de noticias a descartadas
+                for n in noticias_candidatas_totales:
+                    if n['hash'] not in seleccionadas_hashes:
+                        noticias_descartadas.append({
+                            "titulo": n.get('titulo', 'Sin título'),
+                            "sitio": n.get('sitio', 'Desconocido'),
+                            "motivo": f"Fuera del límite máximo balanceado ({max_noticias} noticias representadas)"
+                        })
+                
+                noticias_candidatas_totales = seleccionadas
+            
+            # Ordenamos la selección final de vuelta por fecha descendente global
+            noticias_candidatas_totales.sort(key=lambda x: x['fecha'], reverse=True)
+            print(f"      📋 Noticias dentro de la ventana tras filtros (balanceadas): {len(noticias_candidatas_totales)}")
 
         # --- Deduplicación ---
         if archivo_entrada_json:
@@ -1296,7 +1506,8 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 'sentimiento': sentimiento_noticia,
                 'localidad': localidad_extraida,
                 'es_agenda': es_agenda,
-                'fecha_evento': fecha_evento
+                'fecha_evento': fecha_evento,
+                'imagen_url': noticia.get('imagen_url', '')
             }
             
             if es_agenda:
@@ -1394,7 +1605,8 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
                 
             print(f"✅ Preview ESTRUCTURADA guardada en: {archivo_preview}")
             try:
-                os.rmdir(output_dir)
+                import shutil
+                shutil.rmtree(output_dir)
             except:
                 pass 
             sys.exit(0)

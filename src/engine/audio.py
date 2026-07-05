@@ -2,6 +2,8 @@ import os
 import io
 import sys
 import json
+import asyncio
+import edge_tts
 import numpy as np
 from pydub import AudioSegment
 from pydub.effects import normalize
@@ -49,6 +51,32 @@ def get_tts_client():
     except Exception as e:
         print(f"Error al inicializar cliente TTS: {e}")
         return None
+
+# =================================────────────────================================
+# HELPERS PARA EDGE-TTS
+# =================================================================================
+async def sintetizar_edge_tts_async(texto: str, voz_id: str) -> bytes:
+    communicate = edge_tts.Communicate(texto, voz_id)
+    audio_data = b""
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_data += chunk["data"]
+    return audio_data
+
+def sintetizar_edge_tts(texto: str, voz_id: str) -> bytes:
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+    if loop.is_running():
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(lambda: asyncio.run(sintetizar_edge_tts_async(texto, voz_id)))
+            return future.result()
+    else:
+        return asyncio.run(sintetizar_edge_tts_async(texto, voz_id))
 
 # =================================================================================
 # MASTERIZACIÓN Y AUDIO
@@ -101,9 +129,8 @@ def masterizar_a_lufs(audio_segment: AudioSegment, target_lufs: float = TARGET_L
 
 @retry_on_failure(retries=3, delay=3, backoff=2)
 def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
-    client = get_tts_client()
-    if not client:
-        raise RuntimeError("Cliente TTS no inicializado.")
+    # 1. Determinar si es voz de Edge-TTS (ej. es-ES-ElviraNeural)
+    is_edge = "edge" in voz.lower() or ("neural" in voz.lower() and "neural2" not in voz.lower())
 
     ssml_corregido = preprocesar_texto_para_tts(ssml)
     ssml_corregido = limpiar_markdown_audio(ssml_corregido)
@@ -112,10 +139,29 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
     ssml_corregido = corregir_numeros_con_puntos_tts(ssml_corregido)
     ssml_corregido = corregir_decimales_con_coma_tts(ssml_corregido)
     
-    if ssml_corregido != ssml:
-        # print(f"      ✅ Texto preprocesado para pronunciación.") # Verbose off? 
-        pass
-    
+    if is_edge:
+        # Edge-TTS no soporta SSML de Google Cloud, usamos texto plano
+        texto_plano = convertir_ssml_a_texto_plano(ssml_corregido)
+        nombre_voz_limpio = voz.split(" [")[0].strip()
+        print(f"      🎙️ Sintetizando con Edge-TTS (Gratuito) | Voz: {nombre_voz_limpio}")
+        
+        try:
+            audio_bytes = sintetizar_edge_tts(texto_plano, nombre_voz_limpio)
+            audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes), format="mp3")
+            print(f"      Volumen generado (Edge-TTS): {audio_segment.max_dBFS:.2f} dBFS")
+            
+            # --- TRACKING ---
+            tracker.track_tts(len(texto_plano), voz)
+            return audio_segment
+        except Exception as e:
+            print(f"❌ Error en síntesis Edge-TTS: {e}")
+            raise e
+
+    # De lo contrario, usar Google Cloud TTS
+    client = get_tts_client()
+    if not client:
+        raise RuntimeError("Cliente Google TTS no inicializado y voz de Google seleccionada.")
+
     try:
         if "Journey" in voz or "Chirp" in voz:
             texto_plano = convertir_ssml_a_texto_plano(ssml_corregido)
@@ -142,9 +188,6 @@ def sintetizar_ssml_a_audio(ssml: str, voz: str = VOICE_NAME) -> AudioSegment:
         print(f"      Volumen generado ({'Texto' if 'Journey' in voz else 'SSML'}): {audio_segment.max_dBFS:.2f} dBFS")
         
         # --- TRACKING ---
-        # Contamos caracteres del texto procesado
-        # Si es SSML, lo ideal sería contar solo el texto 'hablable', pero Google cobra por el input SSML completo (tags incluidos) en muchos casos,
-        # o texto plano. Para simplificar y ser conservadores, contamos el length del input enviado.
         input_len = len(texto_plano) if "Journey" in voz or "Chirp" in voz else len(ssml_corregido)
         tracker.track_tts(input_len, voz)
         
