@@ -1806,10 +1806,44 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
         # --- PASO 2: GENERACIÓN DE LOCUCIÓN (Dorotea Pro) ---
         print("      🗣️ Dorotea (Pro): Redactando monólogo de inicio...")
         interpr_inicio = debe_interpretar_cta("inicio", dia_semana_str)
+        
+        # Extraer provincia para inyección costumbrista
+        pueblo_nombre = pueblo_especial
+        provincia_nombre = "General_Manchega"
+        if "(" in pueblo_especial and ")" in pueblo_especial:
+            parts = pueblo_especial.split("(")
+            pueblo_nombre = parts[0].strip()
+            provincia_nombre = parts[1].replace(")", "").strip()
+            
+        # Obtener contexto costumbrista regional sugerido de costumbrismo.py
+        contexto_cost_sug = ""
+        try:
+            import costumbrismo
+            comidas = costumbrismo.comidas_provincias.get(provincia_nombre, costumbrismo.comidas_provincias["General_Manchega"])
+            climas = costumbrismo.clima_local.get(provincia_nombre, costumbrismo.clima_local["La Mancha"])
+            oficios = costumbrismo.oficios_madrugadores
+            
+            comida_sug = random.choice(comidas)
+            clima_sug = random.choice(climas)
+            oficio_sug = random.choice(oficios)
+            
+            contexto_cost_sug = f"Oficio del amanecer: {oficio_sug}. Clima de la zona: {clima_sug}. Plato típico de la comarca: {comida_sug}."
+        except Exception as e:
+            print(f"      ⚠️ No se pudo inyectar el contexto de costumbrismo: {e}")
+            
+        # Calcular termostato de costumbrismo según sentimiento_general
+        intensidad_cost = "media"
+        if sentimiento_general == "positivo":
+            intensidad_cost = "alta"
+        elif sentimiento_general == "negativo":
+            intensidad_cost = "baja"
+            
         prompt_inicio_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_inicio_unificado(
             puntos_clave=puntos_clave,
             pueblo_saludo=pueblo_especial,
-            texto_cta=cta_inicio_limpio if interpr_inicio else ""
+            texto_cta=cta_inicio_limpio if interpr_inicio else "",
+            contexto_costumbrista=contexto_cost_sug,
+            intensidad_costumbrista=intensidad_cost
         )
         texto_monologo_inicio = generar_texto_con_gemini(prompt_inicio_unificado, model_type="pro")
 
@@ -2412,13 +2446,39 @@ nombre_archivo_feeds: str, idioma_destino: str = 'es', min_items: int = 5, solo_
              texto_monologo_cierre = cached_outro.get('text')
         else:
             interpr_cierre = debe_interpretar_cta("cierre", dia_semana_str)
+            
+            # Extraer provincia para inyección costumbrista del cierre
+            pueblo_nombre = pueblo_especial
+            provincia_nombre = "General_Manchega"
+            if "(" in pueblo_especial and ")" in pueblo_especial:
+                parts = pueblo_especial.split("(")
+                pueblo_nombre = parts[0].strip()
+                provincia_nombre = parts[1].replace(")", "").strip()
+                
+            contexto_cost_cierre = ""
+            try:
+                import costumbrismo
+                comidas = costumbrismo.comidas_provincias.get(provincia_nombre, costumbrismo.comidas_provincias["General_Manchega"])
+                comida_sug = random.choice(comidas)
+                contexto_cost_cierre = f"Plato típico de {provincia_nombre} para el almuerzo/cena: {comida_sug}."
+            except Exception as e:
+                pass
+                
+            intensidad_cost_cierre = "media"
+            if sentimiento_general == "positivo":
+                intensidad_cost_cierre = "alta"
+            elif sentimiento_general == "negativo":
+                intensidad_cost_cierre = "baja"
+                
             prompt_cierre_unificado = mcmcn_prompts.PromptsCreativos.generar_monologo_cierre_unificado(
                 contexto=contexto_cierre_str,
                 texto_cta=cta_cierre_limpio if interpr_cierre else "",
                 texto_base_despedida=despedida_base,
                 texto_firma=firma_base,
                 # dato_curioso_resolucion=dato_curioso_resolucion, # DESACTIVADO
-                sentimiento_general=sentimiento_general
+                sentimiento_general=sentimiento_general,
+                contexto_costumbrista=contexto_cost_cierre,
+                intensidad_costumbrista=intensidad_cost_cierre
             )
             
             texto_monologo_cierre = generar_texto_con_gemini(prompt_cierre_unificado, model_type="pro")

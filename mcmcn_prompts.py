@@ -502,7 +502,9 @@ class PromptsCreativos:
     def generar_monologo_inicio_unificado(
         puntos_clave: Dict[str, str],
         pueblo_saludo: str = "",
-        texto_cta: str = ""
+        texto_cta: str = "",
+        contexto_costumbrista: str = "",
+        intensidad_costumbrista: str = "media"
     ) -> str:
         """
         Genera el monologo de apertura usando los puntos clave seleccionados por el editor.
@@ -515,11 +517,26 @@ class PromptsCreativos:
         instruccion_cta = f'\n📢 CTA (OBLIGATORIA):\n"{texto_cta}"\n(Antes de la CTA, escribe `[CORTINILLA]`)' if texto_cta else ""
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
 
+        instruccion_costumbrista = ""
+        if contexto_costumbrista:
+            instruccion_costumbrista = f"""
+        ## CONTEXTO COSTUMBRISTA HIPER-LOCAL RECOMENDADO (ÚSALO SUTILMENTE EN EL SALUDO):
+        {contexto_costumbrista}
+        """
+
+        instruccion_termostato = ""
+        if intensidad_costumbrista == "alta":
+            instruccion_termostato = "- TONO COSTUMBRISTA MÁXIMO (ALTO): Despliega tu carisma manchego rural. Saluda con entusiasmo y alegría, usando alguna chanza regional, refrán divertido o guiño a la comida tradicional de la zona."
+        elif intensidad_costumbrista == "baja":
+            instruccion_termostato = "- TONO COSTUMBRISTA MÍNIMO (SOBRIO/EMPATÍA): Debido al carácter del día, mantén un tono respetuoso, cálido pero sobrio. Saluda al pueblo con amabilidad y absoluto respeto, sin refranes excesivos ni humor festivo."
+        else:
+            instruccion_termostato = "- TONO COSTUMBRISTA ESTÁNDAR (MEDIO): Mantén tu cercanía habitual y un lenguaje oral natural con algún toque costumbrista sutil y simpático, sin saturar."
+
         return f"""
         {persona_base}
         
         ## TU MISIÓN
-        Eres la locutora estrella. Vas a abrir el podcast con energía. 
+        Eres la locutora estrella. Vas a abrir el podcast con energía y empatía. 
         El "Editor de Mesa" te ha pasado estos 3 puntos clave para hoy:
         1. {p1}
         2. {p2}
@@ -535,6 +552,8 @@ class PromptsCreativos:
 
         Ejemplo de estilo: "¡Buenos días! En este [FECHA_HOY], mandamos un abrazo a la gente de [PUEBLO_SALUDO]... y ojo con [DATO_1] que viene fuerte..."
 
+        {instruccion_costumbrista}
+        {instruccion_termostato}
         {instruccion_cta}
 
         ## REGLAS DE ESTILO:
@@ -544,7 +563,6 @@ class PromptsCreativos:
 
         Devuelve SOLO el texto de la locución.
         """
-        return prompt
 
     @staticmethod
     def generar_segmento_audiencia_integrado(autor: str, texto_mensaje: str, sentimiento_general: str = "neutro") -> str:
@@ -888,7 +906,9 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         texto_base_despedida: str = "",
         texto_firma: str = "",
         dato_curioso_resolucion: str = "",
-        sentimiento_general: str = "neutro"
+        sentimiento_general: str = "neutro",
+        contexto_costumbrista: str = "",
+        intensidad_costumbrista: str = "media"
     ) -> str:
         """
         NUEVO PROMPT UNIFICADO: Genera todo el monólogo de cierre en una sola llamada.
@@ -935,6 +955,21 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
             - Reinterprétala con tu propio estilo para que suene natural como última frase, pero manteniendo el significado original.
             """
 
+        instruccion_costumbrista = ""
+        if contexto_costumbrista:
+            instruccion_costumbrista = f"""
+        ## CONTEXTO COSTUMBRISTA HIPER-LOCAL RECOMENDADO:
+        {contexto_costumbrista}
+        """
+
+        instruccion_termostato = ""
+        if intensidad_costumbrista == "alta":
+            instruccion_termostato = "- TONO COSTUMBRISTA MÁXIMO (ALTO): Despídete derrochando cariño y cercanía regional, tal vez sugiriendo un refrán o deseando que disfruten del plato típico sugerido."
+        elif intensidad_costumbrista == "baja":
+            instruccion_termostato = "- TONO COSTUMBRISTA MÍNIMO (SOBRIO/EMPATÍA): Despídete con un tono cálido, pero sobrio y de absoluto respeto, omitiendo chanzas alegres o refranes humorísticos debido al contexto formal o delicado de hoy."
+        else:
+            instruccion_termostato = "- TONO COSTUMBRISTA ESTÁNDAR (MEDIO): Despídete con tu habitual cercanía, agradeciendo y enviando un abrazo manchego equilibrado."
+
         instrucciones_despedida = PROMPTS_CONFIG.get('analysis_prompts', {}).get('despedida_instrucciones', "Cierra el programa.")
         persona_base = PROMPTS_CONFIG.get('persona_base', "Eres Dorotea.")
 
@@ -948,6 +983,9 @@ ENTREGA: Solo el texto reescrito, listo para locución, sin ningún tipo de form
         CONTEXTO:
         - Sentimiento general hoy (determinará la música final): {sentimiento_general}
         
+        {instruccion_costumbrista}
+        {instruccion_termostato}
+
         ESTRUCTURA VARIABLE (Usa si aplica):
         1.  **Reflexión Final (Resumen):** "{contexto}" (Úsalo solo para dar una pincelada de cierre, NO para volver a contar las noticias).
         {instruccion_cta}
